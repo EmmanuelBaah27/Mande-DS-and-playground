@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Mande Design System
 
-## Getting Started
+Documentation and component library for the Mande Design System. Built with **Next.js** and **Storybook** (no Vite).
 
-First, run the development server:
+## Tech Stack
+
+- **Next.js 16** — App router, React 19
+- **Storybook 8** — `@storybook/react-webpack5` (Webpack, no Vite)
+- **Tailwind CSS v4** — Design tokens, utilities
+- **TypeScript** — Full type safety
+- **Atomic Design** — Atoms → Molecules → Organisms
+
+## Quick Start
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run storybook
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:6006](http://localhost:6006) to view the design system.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Scripts
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start Next.js dev server |
+| `npm run storybook` | Start Storybook |
+| `npm run build-storybook` | Build static Storybook for deployment |
 
-## Learn More
+## Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+├── app/
+│   └── globals.css      # Design tokens + Tailwind
+├── components/
+│   ├── atoms/           # Button, Input, Label, Chip
+│   ├── molecules/       # InputWithLabel, etc.
+│   └── organisms/       # (future)
+├── lib/
+│   └── utils.ts         # cn() + tailwind-merge config
+└── stories/             # Intro, Design Tokens docs
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Pushing to a Separate Repo
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This project is self-contained. To push to a new repository:
 
-## Deploy on Vercel
+```bash
+git init
+git remote add origin <your-repo-url>
+git add .
+git commit -m "Initial Mande Design System"
+git push -u origin main
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Design Tokens
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+All tokens live in `src/app/globals.css` under `@theme`:
+
+- **Typography** — H1–H3, xlg, lg, base, small
+- **Colors** — Neutral, Primary, Teal, Success, Negative, Warning, Blush, Info
+- **Spacing** — 3xs → 9xl
+- **Radius** — none → full
+# Mande-Design-System
