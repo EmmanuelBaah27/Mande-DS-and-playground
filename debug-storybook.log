@@ -1,0 +1,42 @@
+[21:43:48.600] [INFO] storybook v10.2.17
+[21:43:50.156] [DEBUG] Getting package.json info for /Users/eugene/Desktop/Develop/Nextjs/mande-design-system/package.json...
+[21:43:50.158] [WARN] You are currently using Storybook 10.2.17 but you have packages which are incompatible with it:
+
+- @storybook/addon-essentials@8.6.14 which depends on 8.6.14
+ Repo: https://github.com/storybookjs/storybook/tree/next/code/addons/essentials
+- @storybook/addon-interactions@8.6.14 which depends on 8.6.14
+ Repo: https://github.com/storybookjs/storybook/tree/next/code/addons/interactions
+
+Please consider updating your packages or contacting the maintainers for compatibility details.
+
+For more details on compatibility guidance, see:
+https://github.com/storybookjs/storybook/issues/32836
+[21:43:50.187] [ERROR] [38;2;241;97;97mSB_CORE-SERVER_0002 (CriticalPresetLoadError): Storybook failed to load the following preset: @storybook/nextjs/preset.
+
+Please check whether your setup is correct, the Storybook dependencies (and their peer dependencies) are installed correctly and there are no package version clashes.
+
+If you believe this is a bug, please open an issue on Github.
+
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@storybook/nextjs' imported from /Users/eugene/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/_node-chunks/chunk-5BFW6O7C.js
+    at packageResolve (node:internal/modules/esm/resolve:844:9)
+    at moduleResolve (node:internal/modules/esm/resolve:901:20)
+    at defaultResolve (node:internal/modules/esm/resolve:1121:11)
+    at nextResolve (node:internal/modules/esm/hooks:750:28)
+    at Hooks.resolve (node:internal/modules/esm/hooks:238:30)
+    at MessagePort.handleMessage (node:internal/modules/esm/worker:199:24)
+    at [nodejs.internal.kHybridDispatch] (node:internal/event_target:822:20)
+    at exports.emitMessage (node:internal/per_context/messageport:23:28)
+
+More info: 
+[39m
+    at loadPreset (file:///Users/eugene/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/_node-chunks/chunk-LZBZZS4H.js:10081:13)
+    at async Promise.all (index 0)
+    at async loadPresets (file:///Users/eugene/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/_node-chunks/chunk-LZBZZS4H.js:10090:73)
+    at async getPresets (file:///Users/eugene/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/_node-chunks/chunk-LZBZZS4H.js:10121:23)
+    at async buildDevStandalone (file:///Users/eugene/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/core-server/index.js:7661:17)
+    at async withTelemetry (file:///Users/eugene/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/_node-chunks/chunk-FTTIUZEI.js:218:12)
+    at async dev (file:///Users/eugene/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/bin/core.js:2734:3)
+    at async _Command.<anonymous> (file:///Users/eugene/.npm/_npx/6fe9a9991b157df1/node_modules/storybook/dist/bin/core.js:2804:92)
+[21:43:50.197] [WARN] Broken build, fix the error above.
+You may need to refresh the browser.
+[21:43:51.786] [INFO] Storybook collects completely anonymous usage telemetry. We use it to shape Storybook's roadmap and prioritize features. You can learn more, including how to opt out, at https://storybook.js.org/telemetry
