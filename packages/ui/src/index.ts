@@ -5,6 +5,33 @@ export {
 } from "./components/ui/button";
 export type { ButtonProps as ShadcnButtonProps } from "./components/ui/button";
 
+export { Input as ShadcnInput } from "./components/ui/input";
+
+export {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "./components/ui/card";
+
+export { Badge, badgeVariants } from "./components/ui/badge";
+export type { BadgeProps } from "./components/ui/badge";
+
+export {
+  Dialog,
+  DialogTrigger,
+  DialogPortal,
+  DialogOverlay,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from "./components/ui/dialog";
+
 // Legacy atoms (will migrate to shadcn incrementally)
 export { Button, buttonVariants } from "./components/atoms/Button";
 export type { ButtonProps } from "./components/atoms/Button/Button";
