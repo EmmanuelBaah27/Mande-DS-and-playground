@@ -1,4 +1,3 @@
-import { Meta } from "@storybook/react";
 import { Label } from "./Label";
 
 const meta = {

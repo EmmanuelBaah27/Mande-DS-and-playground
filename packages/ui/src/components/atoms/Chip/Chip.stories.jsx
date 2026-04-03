@@ -1,4 +1,3 @@
-import { Meta } from "@storybook/react";
 import { Chip } from "./Chip";
 
 const meta = {

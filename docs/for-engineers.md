@@ -69,13 +69,13 @@ All tokens are CSS custom properties. Use them via Tailwind classes or directly:
 ```css
 /* Via Tailwind */
 .my-element {
-  @apply text-primary-500 p-lg rounded-md;
+  @apply text-primary-500 p-4 rounded-3;
 }
 
 /* Direct CSS variable access */
 .my-element {
   color: var(--color-primary-500);
-  padding: var(--spacing-lg);
-  border-radius: var(--radius-md);
+  padding: calc(var(--spacing) * 4); /* 16px */
+  border-radius: var(--radius-3);    /* 12px */
 }
 ```

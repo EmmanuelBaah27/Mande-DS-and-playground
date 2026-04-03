@@ -13,20 +13,21 @@
     "lint": "turbo run lint"
   },
   "devDependencies": {
-    "@storybook/addon-a11y": "^8.4.7",
-    "@storybook/addon-essentials": "^8.4.7",
-    "@storybook/addon-interactions": "^8.4.7",
-    "@storybook/addon-links": "^8.4.7",
-    "@storybook/addon-onboarding": "^8.4.7",
-    "@storybook/addon-webpack5-compiler-swc": "^4.0.2",
-    "@storybook/react": "^8.4.7",
-    "@storybook/react-webpack5": "^8.4.7",
+    "@storybook/addon-a11y": "^8.6.18",
+    "@storybook/addon-essentials": "^8.6.18",
+    "@storybook/addon-interactions": "^8.6.18",
+    "@storybook/addon-links": "^8.6.18",
+    "@storybook/addon-onboarding": "^8.6.18",
+    "@storybook/react": "^8.6.18",
+    "@storybook/react-vite": "^8.6.18",
     "@tailwindcss/postcss": "^4.2.2",
-    "postcss-loader": "^8.2.1",
+    "@tailwindcss/vite": "^4.2.2",
+    "@vitejs/plugin-react": "^4.7.0",
     "prettier": "^3.2.0",
-    "storybook": "^8.4.7",
+    "storybook": "^8.6.18",
     "tailwindcss": "^4.2.2",
     "turbo": "^2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vite": "^6.4.1"
   }
 }

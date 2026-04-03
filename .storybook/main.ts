@@ -1,5 +1,7 @@
-import type { StorybookConfig } from "@storybook/react-webpack5";
+import type { StorybookConfig } from "@storybook/react-vite";
 import path from "path";
+import tailwindcss from "@tailwindcss/vite";
+import react from "@vitejs/plugin-react";
 
 const config: StorybookConfig = {
   stories: [
@@ -7,7 +9,6 @@ const config: StorybookConfig = {
     "../packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
   ],
   addons: [
-    "@storybook/addon-webpack5-compiler-swc",
     "@storybook/addon-onboarding",
     "@storybook/addon-links",
     "@storybook/addon-essentials",
@@ -15,64 +16,19 @@ const config: StorybookConfig = {
     "@storybook/addon-a11y",
   ],
   framework: {
-    name: "@storybook/react-webpack5",
+    name: "@storybook/react-vite",
     options: {},
   },
-  webpackFinal: async (config) => {
+  viteFinal: async (config) => {
+    config.plugins = config.plugins || [];
+    config.plugins.push(tailwindcss());
+    config.plugins.push(react());
+
     config.resolve = config.resolve || {};
     config.resolve.alias = {
       ...config.resolve.alias,
       "@": path.resolve(__dirname, "../packages/ui/src"),
     };
-
-    // Ensure CSS is processed by PostCSS (Tailwind v4) so design tokens and utilities apply
-    const findCssRule = (rules: unknown[]): { rule: unknown; use: unknown[] } | null => {
-      for (const rule of rules) {
-        if (typeof rule !== "object" || rule === null) continue;
-        const r = rule as Record<string, unknown>;
-        if (r.oneOf && Array.isArray(r.oneOf)) {
-          const found = findCssRule(r.oneOf);
-          if (found) return found;
-        }
-        if (r.test && r.test instanceof RegExp && r.test.toString().includes("css")) {
-          const use = r.use
-            ? Array.isArray(r.use)
-              ? r.use
-              : [r.use]
-            : r.loader
-              ? [r.loader]
-              : [];
-          return { rule: r, use };
-        }
-      }
-      return null;
-    };
-
-    const rules = config.module?.rules ?? [];
-    const found = findCssRule(rules);
-    if (found) {
-      const { use } = found;
-      const hasPostcss = use.some(
-        (u) =>
-          typeof u === "object" &&
-          u !== null &&
-          "loader" in (u as object) &&
-          String((u as { loader?: string }).loader).includes("postcss")
-      );
-      if (!hasPostcss) {
-        (found.rule as Record<string, unknown>).use = [
-          ...use,
-          {
-            loader: require.resolve("postcss-loader"),
-            options: {
-              postcssOptions: {
-                config: path.resolve(__dirname, ".."),
-              },
-            },
-          },
-        ];
-      }
-    }
 
     return config;
   },

@@ -1,4 +1,3 @@
-import { Meta } from "@storybook/react";
 import { useState } from "react";
 import { Checkbox } from "./Checkbox";
 

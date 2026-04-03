@@ -7,7 +7,7 @@ import { cn } from "../../lib/utils";
 // 1. Define your variants here
 const templateVariants = cva(
   // Base styles that always apply
-  "inline-flex items-center justify-center rounded-md transition-colors",
+  "inline-flex items-center justify-center rounded-3 transition-colors",
   {
     variants: {
       variant: {
@@ -15,8 +15,8 @@ const templateVariants = cva(
         primary: "bg-primary-500 text-neutral-black",
       },
       size: {
-        default: "h-10 px-xl py-sm text-base-medium",
-        sm: "h-8 px-md py-xs text-small-medium",
+        default: "h-10 px-5 py-2 text-base-medium",
+        sm: "h-8 px-3 py-1.5 text-small-medium",
       },
     },
     defaultVariants: {

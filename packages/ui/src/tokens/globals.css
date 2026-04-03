@@ -2,38 +2,172 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@theme {
+/* ============================================================
+   MANDE DESIGN SYSTEM — ALL TOKENS (SINGLE FILE)
+   Colors in OKLCH, typography/spacing/radius in px
+   ============================================================ */
+
+@theme static {
+  /* --------------------------------------------------------
+     GREY (Pure Neutral)
+     Figma hand-tuned — HSL 0 0 X, no hue tint
+     -------------------------------------------------------- */
+  --color-grey-white: oklch(100.0% 0 0);          /* #FFFFFF */
+  --color-grey-50: oklch(98.5% 0 0);              /* #FAFAFA */
+  --color-grey-100: oklch(97.0% 0 0);             /* #F5F5F5 */
+  --color-grey-200: oklch(93.1% 0 0);             /* #E8E8E8 */
+  --color-grey-300: oklch(90.1% 0 0);             /* #DEDEDE */
+  --color-grey-400: oklch(69.3% 0 0);             /* #9C9C9C */
+  --color-grey-500: oklch(49.3% 0 0);             /* #616161 */
+  --color-grey-600: oklch(43.9% 0 0);             /* #525252 */
+  --color-grey-700: oklch(36.0% 0 0);             /* #3D3D3D */
+  --color-grey-800: oklch(28.1% 0 0);             /* #292929 */
+  --color-grey-900: oklch(19.1% 0 0);             /* #141414 */
+
+  /* Transparent greys — palette black at opacity */
+  --color-grey-100-alpha: oklch(19.1% 0 0 / 5%);
+  --color-grey-200-alpha: oklch(19.1% 0 0 / 8%);
+  --color-grey-300-alpha: oklch(19.1% 0 0 / 12%);
+
+  /* --------------------------------------------------------
+     LIME — Seed: #C4E03E
+     Manually crafted with chroma taper
+     -------------------------------------------------------- */
+  --color-lime-50: oklch(98.0% 0.030 120);        /* #F5FCE6 */
+  --color-lime-100: oklch(96.0% 0.060 119);       /* #EDF8CB */
+  --color-lime-200: oklch(93.0% 0.095 119);       /* #E1F2A9 */
+  --color-lime-300: oklch(90.0% 0.135 119);       /* #D4EB80 */
+  --color-lime-400: oklch(88.0% 0.160 119);       /* #CCE661 */
+  --color-lime-500: oklch(85.8% 0.181 119);       /* #C4E03E */
+  --color-lime-600: oklch(72.0% 0.155 119);       /* #9BB12A */
+  --color-lime-700: oklch(58.0% 0.125 119);       /* #73841D */
+  --color-lime-800: oklch(44.0% 0.095 119);       /* #4D5910 */
+  --color-lime-900: oklch(30.0% 0.065 119);       /* #2A3205 */
+
+  /* --------------------------------------------------------
+     TEAL — Seed: #026A72
+     Harmonized: lightness/chroma curves match other palettes
+     -------------------------------------------------------- */
+  --color-teal-50: oklch(97.0% 0.014 204);        /* #ECFCFE */
+  --color-teal-100: oklch(93.5% 0.032 204);       /* #CEF5FA */
+  --color-teal-200: oklch(88.0% 0.055 204);       /* #A2E8F1 */
+  --color-teal-300: oklch(80.0% 0.078 204);       /* #6AD4E2 */
+  --color-teal-400: oklch(70.0% 0.085 204);       /* #3DB9C8 */
+  --color-teal-500: oklch(47.8% 0.081 204);       /* #026A72 */
+  --color-teal-600: oklch(40.6% 0.069 203);       /* #01545A */
+  --color-teal-700: oklch(33.9% 0.057 204);       /* #014045 */
+  --color-teal-800: oklch(27.1% 0.046 204);       /* #002D31 */
+  --color-teal-900: oklch(20.3% 0.031 205);       /* #001B1D */
+
+  /* --------------------------------------------------------
+     BLUSH — Seed: #D07BAD
+     -------------------------------------------------------- */
+  --color-blush-50: oklch(96.6% 0.011 339);       /* #F9F1F6 */
+  --color-blush-100: oklch(93.4% 0.020 346);      /* #F4E4EC */
+  --color-blush-200: oklch(87.6% 0.041 346);      /* #EBCCDC */
+  --color-blush-300: oklch(80.9% 0.067 344);      /* #E1B0CB */
+  --color-blush-400: oklch(75.4% 0.090 345);      /* #D998BC */
+  --color-blush-500: oklch(69.0% 0.122 345);      /* #D07BAD */
+  --color-blush-600: oklch(58.6% 0.131 345);      /* #B1598E */
+  --color-blush-700: oklch(47.0% 0.106 344);      /* #834069 */
+  --color-blush-800: oklch(36.4% 0.081 345);      /* #5B2B48 */
+  --color-blush-900: oklch(24.7% 0.055 345);      /* #331527 */
+
+  /* --------------------------------------------------------
+     ORANGE — Seed: #EA580C
+     -------------------------------------------------------- */
+  --color-orange-50: oklch(96.6% 0.016 27);       /* #FFF0EE */
+  --color-orange-100: oklch(92.7% 0.037 28);      /* #FFDED9 */
+  --color-orange-200: oklch(86.1% 0.073 29);      /* #FEC0B6 */
+  --color-orange-300: oklch(78.8% 0.122 32);      /* #FE9C88 */
+  --color-orange-400: oklch(71.7% 0.178 38);      /* #FE744A */
+  --color-orange-500: oklch(64.6% 0.194 41);      /* #EA580C */
+  --color-orange-600: oklch(54.4% 0.164 41);      /* #BA4407 */
+  --color-orange-700: oklch(44.6% 0.134 41);      /* #8E3204 */
+  --color-orange-800: oklch(34.7% 0.104 41);      /* #642102 */
+  --color-orange-900: oklch(24.1% 0.072 41);      /* #3A1001 */
+
+  /* --------------------------------------------------------
+     BLUE — Seed: #3B82F6
+     -------------------------------------------------------- */
+  --color-blue-50: oklch(97.0% 0.014 255);        /* #EFF6FF */
+  --color-blue-100: oklch(93.2% 0.032 256);       /* #DBEAFE */
+  --color-blue-200: oklch(88.2% 0.057 254);       /* #BFDBFE */
+  --color-blue-300: oklch(80.9% 0.096 252);       /* #93C5FD */
+  --color-blue-400: oklch(71.4% 0.143 255);       /* #60A5FA */
+  --color-blue-500: oklch(62.3% 0.188 260);       /* #3B82F6 */
+  --color-blue-600: oklch(54.6% 0.215 263);       /* #2563EB */
+  --color-blue-700: oklch(48.8% 0.217 264);       /* #1D4ED8 */
+  --color-blue-800: oklch(42.4% 0.181 266);       /* #1E40AF */
+  --color-blue-900: oklch(37.9% 0.138 266);       /* #1E3A8A */
+
+  /* --------------------------------------------------------
+     RED — Seed: #B81416
+     -------------------------------------------------------- */
+  --color-red-50: oklch(97.1% 0.013 17);          /* #FEF2F2 */
+  --color-red-100: oklch(93.6% 0.031 18);         /* #FEE2E2 */
+  --color-red-200: oklch(88.5% 0.059 18);         /* #FECACA */
+  --color-red-300: oklch(80.8% 0.103 20);         /* #FCA5A5 */
+  --color-red-400: oklch(71.1% 0.166 22);         /* #F87171 */
+  --color-red-500: oklch(49.9% 0.194 28);         /* #B81416 */
+  --color-red-600: oklch(42.5% 0.165 28);         /* #940E0F */
+  --color-red-700: oklch(35.2% 0.137 28);         /* #720809 */
+  --color-red-800: oklch(28.9% 0.112 28);         /* #560505 */
+  --color-red-900: oklch(21.7% 0.084 28);         /* #380202 */
+
+  /* --------------------------------------------------------
+     GREEN — Seed: #227D3C (gamut-safe)
+     Harmonized: lightness/chroma curves match other palettes
+     -------------------------------------------------------- */
+  --color-green-50: oklch(97.0% 0.020 149);       /* #E8FCF0 */
+  --color-green-100: oklch(93.5% 0.048 149);      /* #C4F3D4 */
+  --color-green-200: oklch(88.0% 0.080 149);      /* #93E5B2 */
+  --color-green-300: oklch(80.0% 0.110 149);      /* #5FD08C */
+  --color-green-400: oklch(70.0% 0.125 149);      /* #3BB567 */
+  --color-green-500: oklch(52.0% 0.129 149);      /* #227D3C */
+  --color-green-600: oklch(43.0% 0.107 149);      /* #185F2D */
+  --color-green-700: oklch(35.0% 0.087 149);      /* #0F461F */
+  --color-green-800: oklch(27.0% 0.067 149);      /* #072F13 */
+  --color-green-900: oklch(19.0% 0.047 149);      /* #031907 */
+
+  /* --------------------------------------------------------
+     YELLOW — Seed: #EAB308
+     -------------------------------------------------------- */
+  --color-yellow-50: oklch(98.7% 0.026 102);      /* #FEFCE8 */
+  --color-yellow-100: oklch(97.3% 0.069 103);     /* #FEF9C3 */
+  --color-yellow-200: oklch(94.5% 0.124 102);     /* #FEF08A */
+  --color-yellow-300: oklch(90.5% 0.166 98);      /* #FDE047 */
+  --color-yellow-400: oklch(86.1% 0.173 92);      /* #FACC15 */
+  --color-yellow-500: oklch(79.5% 0.162 86);      /* #EAB308 */
+  --color-yellow-600: oklch(68.1% 0.142 76);      /* #CA8A04 */
+  --color-yellow-700: oklch(55.4% 0.121 66);      /* #A16207 */
+  --color-yellow-800: oklch(47.6% 0.103 62);      /* #854D0E */
+  --color-yellow-900: oklch(42.1% 0.090 58);      /* #713F12 */
+
+  /* --------------------------------------------------------
+     TYPOGRAPHY
+     -------------------------------------------------------- */
   --font-family-sans: "Inter", system-ui, sans-serif;
   --font-family-inter: "Inter", system-ui, sans-serif;
 
-  /* HEADER Category */
   --font-size-H1: 28px;
   --font-size-H2: 24px;
   --font-size-H3: 20px;
-
-  /* XLARGE (XLG) Category */
   --font-size-xlg-regular: 18px;
   --font-size-xlg-medium: 18px;
   --font-size-xlg-semibold: 18px;
-
-  /* LARGE (LG) Category */
   --font-size-lg-regular: 16px;
   --font-size-lg-medium: 16px;
   --font-size-lg-semibold: 16px;
-
-  /* BASE Category */
   --font-size-base-regular: 14px;
   --font-size-base-medium: 14px;
   --font-size-base-semibold: 14px;
-
-  /* SMALL (S) Category */
   --font-size-small-regular: 12px;
   --font-size-small-medium: 12px;
   --font-size-small-semibold: 12px;
 
-  /* Line Heights */
-  --line-height-H1: 40px;
-  --line-height-H2: 34px;
+  --line-height-H1: 36px;
+  --line-height-H2: 32px;
   --line-height-H3: 28px;
   --line-height-xlg-regular: 26px;
   --line-height-xlg-medium: 26px;
@@ -48,7 +182,6 @@
   --line-height-small-medium: 18px;
   --line-height-small-semibold: 18px;
 
-  /* Font Weights */
   --font-weight-H1: 600;
   --font-weight-H2: 600;
   --font-weight-H3: 600;
@@ -65,7 +198,6 @@
   --font-weight-small-medium: 500;
   --font-weight-small-semibold: 600;
 
-  /* Letter Spacing */
   --letter-spacing-H1: -0.56px;
   --letter-spacing-H2: -0.48px;
   --letter-spacing-H3: -0.4px;
@@ -82,173 +214,247 @@
   --letter-spacing-small-medium: 0px;
   --letter-spacing-small-semibold: 0px;
 
-  --spacing-none: 0px;
-  --spacing-3xs: 2px;
-  --spacing-2xs: 4px;
-  --spacing-xs: 6px;
-  --spacing-sm: 8px;
-  --spacing-md: 12px;
-  --spacing-lg: 16px;
-  --spacing-xl: 20px;
-  --spacing-2xl: 24px;
-  --spacing-3xl: 32px;
-  --spacing-4xl: 40px;
-  --spacing-5xl: 48px;
-  --spacing-6xl: 56px;
-  --spacing-7xl: 64px;
-  --spacing-8xl: 72px;
-  --spacing-9xl: 80px;
+  /* Paragraph spacing — margin-bottom between text blocks */
+  --paragraph-spacing-H1: 24px;
+  --paragraph-spacing-H2: 20px;
+  --paragraph-spacing-H3: 18px;
+  --paragraph-spacing-xlg: 20px;
+  --paragraph-spacing-lg: 16px;
+  --paragraph-spacing-base: 14px;
 
-  --radius-none: 0px;
-  --radius-3xs: 2px;
-  --radius-2xs: 4px;
-  --radius-xs: 6px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-2xl: 24px;
-  --radius-3xl: 32px;
-  --radius-4xl: 40px;
-  --radius-5xl: 48px;
+  /* --------------------------------------------------------
+     SPACING
+     Uses Tailwind v4's default --spacing multiplier (0.25rem = 4px).
+     All values follow N × 4px, so no explicit tokens needed.
+     Usage: p-5 = 20px, gap-3 = 12px, m-0.5 = 2px, etc.
+     -------------------------------------------------------- */
+
+  /* --------------------------------------------------------
+     BORDER RADIUS
+     -------------------------------------------------------- */
+  --radius-0: 0px;
+  --radius-0-5: 2px;
+  --radius-1: 4px;
+  --radius-1-5: 6px;
+  --radius-2: 8px;
+  --radius-3: 12px;
+  --radius-4: 16px;
+  --radius-5: 20px;
+  --radius-6: 24px;
+  --radius-8: 32px;
+  --radius-10: 40px;
+  --radius-12: 48px;
   --radius-full: 1000px;
 
-  /* Complete Color Palette */
-  --color-neutral-white: hsl(0 0% 100%);
-  --color-neutral-50: hsl(0 0% 98%);
-  --color-neutral-100: hsl(180 4% 95%);
-  --color-neutral-200: hsl(180 5% 93%);
-  --color-neutral-300: hsl(180 4% 89%);
-  --color-neutral-400: hsl(180 1% 74%);
-  --color-neutral-450: hsl(180 0% 56%);
-  --color-neutral-500: hsl(180 1% 38%);
-  --color-neutral-600: hsl(180 2% 22%);
-  --color-neutral-700: hsl(180 3% 15%);
-  --color-neutral-800: hsl(180 2% 10%);
-  --color-neutral-900: hsl(180 4% 11%);
-  --color-neutral-black: hsl(180 4% 11%);
-
-  --color-primary-100: hsl(75 78% 93%);
-  --color-primary-200: hsl(75 77% 88%);
-  --color-primary-300: hsl(75 78% 80%);
-  --color-primary-400: hsl(75 80% 73%);
-  --color-primary-500: hsl(75 79% 62%);
-  --color-primary-600: hsl(75 80% 24%);
-  --color-primary-700: hsl(75 80% 12%);
-  --color-primary-800: hsl(75 80% 10%);
-  --color-primary-900: hsl(75 80% 6%);
-
-  --color-success-100: hsl(132 90% 96%);
-  --color-success-200: hsl(132 56% 86%);
-  --color-success-300: hsl(132 44% 74%);
-  --color-success-400: hsl(132 56% 56%);
-  --color-success-500: hsl(132 100% 26%);
-  --color-success-600: hsl(132 96% 20%);
-  --color-success-700: hsl(132 57% 20%);
-  --color-success-800: hsl(132 41% 16%);
-  --color-success-900: hsl(132 29% 12%);
-
-  --color-teal-100: hsl(184 41% 92%);
-  --color-teal-200: hsl(184 41% 84%);
-  --color-teal-300: hsl(184 40% 76%);
-  --color-teal-400: hsl(184 60% 44%);
-  --color-teal-500: hsl(184 96% 20%);
-  --color-teal-600: hsl(184 95% 16%);
-  --color-teal-700: hsl(184 39% 18%);
-  --color-teal-800: hsl(184 41% 14%);
-  --color-teal-900: hsl(184 25% 12%);
-
-  --color-info-100: hsl(208 90% 96%);
-  --color-info-200: hsl(208 89% 83%);
-  --color-info-300: hsl(208 87% 72%);
-  --color-info-400: hsl(208 90% 60%);
-  --color-info-500: hsl(208 97% 46%);
-  --color-info-600: hsl(208 96% 32%);
-  --color-info-700: hsl(208 48% 22%);
-  --color-info-800: hsl(208 39% 18%);
-  --color-info-900: hsl(208 38% 14%);
-
-  --color-negative-100: hsl(359 90% 96%);
-  --color-negative-200: hsl(359 80% 90%);
-  --color-negative-300: hsl(359 80% 84%);
-  --color-negative-400: hsl(359 80% 60%);
-  --color-negative-500: hsl(359 80% 40%);
-  --color-negative-600: hsl(359 96% 28%);
-  --color-negative-700: hsl(359 53% 20%);
-  --color-negative-800: hsl(359 41% 16%);
-  --color-negative-900: hsl(359 26% 12%);
-
-  --color-warning-100: hsl(25 87% 94%);
-  --color-warning-200: hsl(25 86% 86%);
-  --color-warning-300: hsl(25 96% 82%);
-  --color-warning-400: hsl(25 98% 74%);
-  --color-warning-500: hsl(25 96% 64%);
-  --color-warning-600: hsl(25 78% 48%);
-  --color-warning-700: hsl(25 96% 32%);
-  --color-warning-800: hsl(25 95% 16%);
-  --color-warning-900: hsl(25 26% 12%);
-
-  --color-blush-100: hsl(0 90% 96%);
-  --color-blush-200: hsl(359 80% 90%);
-  --color-blush-300: hsl(358 80% 84%);
-  --color-blush-400: hsl(324 57% 79%);
-  --color-blush-500: hsl(324 56% 64%);
-  --color-blush-600: hsl(324 96% 20%);
-  --color-blush-700: hsl(324 60% 18%);
-  --color-blush-800: hsl(324 48% 18%);
-  --color-blush-900: hsl(324 25% 12%);
+  /* --------------------------------------------------------
+     SHADOWS
+     -------------------------------------------------------- */
+  --shadow-2xs: 0 1px 0 0 rgba(0, 0, 0, 0.05);
+  --shadow-xs: 0 1px 2px 0 rgba(23, 23, 23, 0.04);
+  --shadow-sm: 0 1px 4px 0 rgba(23, 23, 23, 0.04);
+  --shadow-md: 0 4px 6px -1px rgba(23, 23, 23, 0.08);
+  --shadow-lg: 0 10px 15px -3px rgba(23, 23, 23, 0.08);
+  --shadow-xl: 0 20px 25px -5px rgba(23, 23, 23, 0.08);
+  --shadow-2xl: 0 25px 50px 12px rgba(23, 23, 23, 0.08);
 }
 
+/* --------------------------------------------------------
+   SEMANTIC COLOR ALIASES
+   -------------------------------------------------------- */
+:root {
+  --semantic-neutral-bg: var(--color-grey-white);
+  --semantic-neutral-bg-subtle: var(--color-grey-50);
+  --semantic-neutral-bg-muted: var(--color-grey-100);
+  --semantic-neutral-border: var(--color-grey-300);
+  --semantic-neutral-border-subtle: var(--color-grey-200-alpha);
+  --semantic-neutral-border-strong: var(--color-grey-400);
+  --semantic-neutral-text: var(--color-grey-900);
+  --semantic-neutral-text-secondary: var(--color-grey-500);
+  --semantic-neutral-text-muted: var(--color-grey-400);
+  --semantic-neutral-text-inverted: var(--color-grey-white);
+
+  --semantic-primary-bg: var(--color-lime-500);
+  --semantic-primary-bg-subtle: var(--color-lime-100);
+  --semantic-primary-bg-hover: var(--color-lime-400);
+  --semantic-primary-border: var(--color-lime-500);
+  --semantic-primary-text: var(--color-lime-900);
+  --semantic-primary-text-on-bg: var(--color-grey-900);
+
+  --semantic-success-bg: var(--color-green-500);
+  --semantic-success-bg-subtle: var(--color-green-50);
+  --semantic-success-border: var(--color-green-300);
+  --semantic-success-text: var(--color-green-700);
+  --semantic-success-text-on-bg: var(--color-grey-white);
+
+  --semantic-warning-bg: var(--color-yellow-500);
+  --semantic-warning-bg-subtle: var(--color-yellow-50);
+  --semantic-warning-border: var(--color-yellow-300);
+  --semantic-warning-text: var(--color-yellow-800);
+  --semantic-warning-text-on-bg: var(--color-grey-900);
+
+  --semantic-danger-bg: var(--color-red-500);
+  --semantic-danger-bg-subtle: var(--color-red-50);
+  --semantic-danger-bg-hover: var(--color-red-600);
+  --semantic-danger-border: var(--color-red-300);
+  --semantic-danger-text: var(--color-red-600);
+  --semantic-danger-text-on-bg: var(--color-grey-white);
+
+  --semantic-info-bg: var(--color-blue-600);
+  --semantic-info-bg-subtle: var(--color-blue-50);
+  --semantic-info-border: var(--color-blue-300);
+  --semantic-info-text: var(--color-blue-700);
+  --semantic-info-text-on-bg: var(--color-grey-white);
+
+  --semantic-accent-bg: var(--color-teal-500);
+  --semantic-accent-bg-subtle: var(--color-teal-50);
+  --semantic-accent-border: var(--color-teal-300);
+  --semantic-accent-text: var(--color-teal-700);
+  --semantic-accent-text-on-bg: var(--color-grey-white);
+
+  --semantic-orange-bg: var(--color-orange-500);
+  --semantic-orange-bg-subtle: var(--color-orange-50);
+  --semantic-orange-border: var(--color-orange-300);
+  --semantic-orange-text: var(--color-orange-700);
+  --semantic-orange-text-on-bg: var(--color-grey-white);
+
+  --semantic-blush-bg: var(--color-blush-500);
+  --semantic-blush-bg-subtle: var(--color-blush-50);
+  --semantic-blush-border: var(--color-blush-300);
+  --semantic-blush-text: var(--color-blush-700);
+  --semantic-blush-text-on-bg: var(--color-grey-white);
+
+  --semantic-surface-page: var(--color-grey-50);
+  --semantic-surface-card: var(--color-grey-white);
+  --semantic-surface-overlay: oklch(19.1% 0 0 / 50%);
+  --semantic-surface-disabled: var(--color-grey-100);
+
+  --semantic-focus-ring: var(--color-grey-500);
+  --semantic-disabled-bg: var(--color-grey-200);
+  --semantic-disabled-text: var(--color-grey-400);
+}
+
+/* --------------------------------------------------------
+   DARK MODE
+   -------------------------------------------------------- */
+.dark {
+  --semantic-neutral-bg: var(--color-grey-900);
+  --semantic-neutral-bg-subtle: var(--color-grey-800);
+  --semantic-neutral-bg-muted: var(--color-grey-700);
+  --semantic-neutral-border: var(--color-grey-600);
+  --semantic-neutral-border-subtle: oklch(100% 0 0 / 10%);
+  --semantic-neutral-border-strong: var(--color-grey-500);
+  --semantic-neutral-text: var(--color-grey-50);
+  --semantic-neutral-text-secondary: var(--color-grey-400);
+  --semantic-neutral-text-muted: var(--color-grey-400);
+  --semantic-neutral-text-inverted: var(--color-grey-900);
+
+  --semantic-primary-bg: var(--color-lime-500);
+  --semantic-primary-bg-subtle: var(--color-lime-900);
+  --semantic-primary-bg-hover: var(--color-lime-400);
+  --semantic-primary-border: var(--color-lime-600);
+  --semantic-primary-text: var(--color-lime-400);
+  --semantic-primary-text-on-bg: var(--color-grey-900);
+
+  --semantic-success-bg: var(--color-green-500);
+  --semantic-success-bg-subtle: var(--color-green-900);
+  --semantic-success-border: var(--color-green-700);
+  --semantic-success-text: var(--color-green-400);
+  --semantic-success-text-on-bg: var(--color-grey-white);
+
+  --semantic-warning-bg: var(--color-yellow-500);
+  --semantic-warning-bg-subtle: var(--color-yellow-900);
+  --semantic-warning-border: var(--color-yellow-700);
+  --semantic-warning-text: var(--color-yellow-400);
+  --semantic-warning-text-on-bg: var(--color-grey-900);
+
+  --semantic-danger-bg: var(--color-red-500);
+  --semantic-danger-bg-subtle: var(--color-red-900);
+  --semantic-danger-bg-hover: var(--color-red-400);
+  --semantic-danger-border: var(--color-red-700);
+  --semantic-danger-text: var(--color-red-400);
+  --semantic-danger-text-on-bg: var(--color-grey-white);
+
+  --semantic-info-bg: var(--color-blue-500);
+  --semantic-info-bg-subtle: var(--color-blue-900);
+  --semantic-info-border: var(--color-blue-700);
+  --semantic-info-text: var(--color-blue-400);
+  --semantic-info-text-on-bg: var(--color-grey-white);
+
+  --semantic-accent-bg: var(--color-teal-400);
+  --semantic-accent-bg-subtle: var(--color-teal-900);
+  --semantic-accent-border: var(--color-teal-700);
+  --semantic-accent-text: var(--color-teal-300);
+  --semantic-accent-text-on-bg: var(--color-grey-900);
+
+  --semantic-orange-bg: var(--color-orange-500);
+  --semantic-orange-bg-subtle: var(--color-orange-900);
+  --semantic-orange-border: var(--color-orange-700);
+  --semantic-orange-text: var(--color-orange-400);
+  --semantic-orange-text-on-bg: var(--color-grey-white);
+
+  --semantic-blush-bg: var(--color-blush-500);
+  --semantic-blush-bg-subtle: var(--color-blush-900);
+  --semantic-blush-border: var(--color-blush-700);
+  --semantic-blush-text: var(--color-blush-400);
+  --semantic-blush-text-on-bg: var(--color-grey-white);
+
+  --semantic-surface-page: var(--color-grey-900);
+  --semantic-surface-card: var(--color-grey-800);
+  --semantic-surface-overlay: oklch(0% 0 0 / 60%);
+  --semantic-surface-disabled: var(--color-grey-700);
+
+  --semantic-focus-ring: var(--color-grey-400);
+  --semantic-disabled-bg: var(--color-grey-700);
+  --semantic-disabled-text: var(--color-grey-500);
+}
+
+/* --------------------------------------------------------
+   TYPOGRAPHY UTILITIES
+   -------------------------------------------------------- */
 @layer utilities {
+  /* Headings — line-height stays fixed per level, font-size scales with breakpoint */
   .text-H1 {
-    font-size: var(--font-size-H3);
-    line-height: var(--line-height-H3);
-    font-weight: var(--font-weight-H3);
+    font-size: 20px;                          /* mobile */
+    line-height: var(--line-height-H1);       /* 36 — constant */
+    font-weight: 600;
     letter-spacing: var(--letter-spacing-H3);
   }
   .text-H2 {
-    font-size: var(--font-size-xlg-semibold);
-    line-height: var(--line-height-xlg-semibold);
-    font-weight: var(--font-weight-xlg-semibold);
+    font-size: 18px;                          /* mobile */
+    line-height: var(--line-height-H2);       /* 32 — constant */
+    font-weight: 600;
     letter-spacing: var(--letter-spacing-xlg-semibold);
   }
   .text-H3 {
-    font-size: var(--font-size-xlg-semibold);
-    line-height: var(--line-height-xlg-semibold);
-    font-weight: var(--font-weight-xlg-semibold);
+    font-size: 18px;                          /* mobile */
+    line-height: var(--line-height-H3);       /* 28 — constant */
+    font-weight: 600;
     letter-spacing: var(--letter-spacing-xlg-semibold);
   }
   @media (min-width: 768px) {
     .text-H1 {
-      font-size: var(--font-size-H2);
-      line-height: var(--line-height-H2);
-      font-weight: var(--font-weight-H2);
+      font-size: var(--font-size-H2);        /* 24 — tablet */
       letter-spacing: var(--letter-spacing-H2);
     }
     .text-H2 {
-      font-size: var(--font-size-H3);
-      line-height: var(--line-height-H3);
-      font-weight: var(--font-weight-H3);
+      font-size: var(--font-size-H3);        /* 20 — tablet */
       letter-spacing: var(--letter-spacing-H3);
+    }
+    .text-H3 {
+      font-size: 18px;                       /* 18 — tablet */
     }
   }
   @media (min-width: 1024px) {
     .text-H1 {
-      font-size: var(--font-size-H1);
-      line-height: var(--line-height-H1);
-      font-weight: var(--font-weight-H1);
+      font-size: var(--font-size-H1);        /* 28 — desktop */
       letter-spacing: var(--letter-spacing-H1);
     }
     .text-H2 {
-      font-size: var(--font-size-H2);
-      line-height: var(--line-height-H2);
-      font-weight: var(--font-weight-H2);
+      font-size: var(--font-size-H2);        /* 24 — desktop */
       letter-spacing: var(--letter-spacing-H2);
     }
     .text-H3 {
-      font-size: var(--font-size-H3);
-      line-height: var(--line-height-H3);
-      font-weight: var(--font-weight-H3);
+      font-size: var(--font-size-H3);        /* 20 — desktop */
       letter-spacing: var(--letter-spacing-H3);
     }
   }
@@ -269,78 +475,18 @@
     font-weight: inherit;
     letter-spacing: inherit;
   }
-  .text-xlg-regular {
-    font-size: var(--font-size-xlg-regular);
-    line-height: var(--line-height-xlg-regular);
-    font-weight: var(--font-weight-xlg-regular);
-    letter-spacing: var(--letter-spacing-xlg-regular);
-  }
-  .text-xlg-medium {
-    font-size: var(--font-size-xlg-medium);
-    line-height: var(--line-height-xlg-medium);
-    font-weight: var(--font-weight-xlg-medium);
-    letter-spacing: var(--letter-spacing-xlg-medium);
-  }
-  .text-xlg-semibold {
-    font-size: var(--font-size-xlg-semibold);
-    line-height: var(--line-height-xlg-semibold);
-    font-weight: var(--font-weight-xlg-semibold);
-    letter-spacing: var(--letter-spacing-xlg-semibold);
-  }
-  .text-lg-regular {
-    font-size: var(--font-size-lg-regular);
-    line-height: var(--line-height-lg-regular);
-    font-weight: var(--font-weight-lg-regular);
-    letter-spacing: var(--letter-spacing-lg-regular);
-  }
-  .text-lg-medium {
-    font-size: var(--font-size-lg-medium);
-    line-height: var(--line-height-lg-medium);
-    font-weight: var(--font-weight-lg-medium);
-    letter-spacing: var(--letter-spacing-lg-medium);
-  }
-  .text-lg-semibold {
-    font-size: var(--font-size-lg-semibold);
-    line-height: var(--line-height-lg-semibold);
-    font-weight: var(--font-weight-lg-semibold);
-    letter-spacing: var(--letter-spacing-lg-semibold);
-  }
-  .text-base-regular {
-    font-size: var(--font-size-base-regular);
-    line-height: var(--line-height-base-regular);
-    font-weight: var(--font-weight-base-regular);
-    letter-spacing: var(--letter-spacing-base-regular);
-  }
-  .text-base-medium {
-    font-size: var(--font-size-base-medium);
-    line-height: var(--line-height-base-medium);
-    font-weight: var(--font-weight-base-medium);
-    letter-spacing: var(--letter-spacing-base-medium);
-  }
-  .text-base-semibold {
-    font-size: var(--font-size-base-semibold);
-    line-height: var(--line-height-base-semibold);
-    font-weight: var(--font-weight-base-semibold);
-    letter-spacing: var(--letter-spacing-base-semibold);
-  }
-  .text-small-regular {
-    font-size: var(--font-size-small-regular);
-    line-height: var(--line-height-small-regular);
-    font-weight: var(--font-weight-small-regular);
-    letter-spacing: var(--letter-spacing-small-regular);
-  }
-  .text-small-medium {
-    font-size: var(--font-size-small-medium);
-    line-height: var(--line-height-small-medium);
-    font-weight: var(--font-weight-small-medium);
-    letter-spacing: var(--letter-spacing-small-medium);
-  }
-  .text-small-semibold {
-    font-size: var(--font-size-small-semibold);
-    line-height: var(--line-height-small-semibold);
-    font-weight: var(--font-weight-small-semibold);
-    letter-spacing: var(--letter-spacing-small-semibold);
-  }
+  .text-xlg-regular { font-size: var(--font-size-xlg-regular); line-height: var(--line-height-xlg-regular); font-weight: var(--font-weight-xlg-regular); letter-spacing: var(--letter-spacing-xlg-regular); }
+  .text-xlg-medium { font-size: var(--font-size-xlg-medium); line-height: var(--line-height-xlg-medium); font-weight: var(--font-weight-xlg-medium); letter-spacing: var(--letter-spacing-xlg-medium); }
+  .text-xlg-semibold { font-size: var(--font-size-xlg-semibold); line-height: var(--line-height-xlg-semibold); font-weight: var(--font-weight-xlg-semibold); letter-spacing: var(--letter-spacing-xlg-semibold); }
+  .text-lg-regular { font-size: var(--font-size-lg-regular); line-height: var(--line-height-lg-regular); font-weight: var(--font-weight-lg-regular); letter-spacing: var(--letter-spacing-lg-regular); }
+  .text-lg-medium { font-size: var(--font-size-lg-medium); line-height: var(--line-height-lg-medium); font-weight: var(--font-weight-lg-medium); letter-spacing: var(--letter-spacing-lg-medium); }
+  .text-lg-semibold { font-size: var(--font-size-lg-semibold); line-height: var(--line-height-lg-semibold); font-weight: var(--font-weight-lg-semibold); letter-spacing: var(--letter-spacing-lg-semibold); }
+  .text-base-regular { font-size: var(--font-size-base-regular); line-height: var(--line-height-base-regular); font-weight: var(--font-weight-base-regular); letter-spacing: var(--letter-spacing-base-regular); }
+  .text-base-medium { font-size: var(--font-size-base-medium); line-height: var(--line-height-base-medium); font-weight: var(--font-weight-base-medium); letter-spacing: var(--letter-spacing-base-medium); }
+  .text-base-semibold { font-size: var(--font-size-base-semibold); line-height: var(--line-height-base-semibold); font-weight: var(--font-weight-base-semibold); letter-spacing: var(--letter-spacing-base-semibold); }
+  .text-small-regular { font-size: var(--font-size-small-regular); line-height: var(--line-height-small-regular); font-weight: var(--font-weight-small-regular); letter-spacing: var(--letter-spacing-small-regular); }
+  .text-small-medium { font-size: var(--font-size-small-medium); line-height: var(--line-height-small-medium); font-weight: var(--font-weight-small-medium); letter-spacing: var(--letter-spacing-small-medium); }
+  .text-small-semibold { font-size: var(--font-size-small-semibold); line-height: var(--line-height-small-semibold); font-weight: var(--font-weight-small-semibold); letter-spacing: var(--letter-spacing-small-semibold); }
 }
 
 @layer base {

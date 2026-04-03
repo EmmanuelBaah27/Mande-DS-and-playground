@@ -6,8 +6,8 @@ import { cn } from "../../../lib/utils";
 
 const checkboxVariants = cva(
   [
-    "inline-flex items-center gap-sm cursor-pointer select-none",
-    "focus-within:outline-none focus-within:ring-2 focus-within:ring-neutral-500 focus-within:ring-offset-2 rounded-2xs",
+    "inline-flex items-center gap-2 cursor-pointer select-none",
+    "focus-within:outline-none focus-within:ring-2 focus-within:ring-neutral-500 focus-within:ring-offset-2 rounded-1",
     "has-[:disabled]:cursor-not-allowed has-[:disabled]:pointer-events-none",
   ],
   {

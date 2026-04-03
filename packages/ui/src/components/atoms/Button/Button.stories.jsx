@@ -1,4 +1,3 @@
-import { Meta } from "@storybook/react";
 import { Plus } from "@phosphor-icons/react";
 import { Button } from "./Button";
 

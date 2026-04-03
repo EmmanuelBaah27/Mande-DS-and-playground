@@ -48,14 +48,14 @@ const buttonVariants = cva(
         ],
       },
       size: {
-        default: "h-[40px] py-[10px] px-xl",
-        sm: "h-[32px] py-2xs px-md",
-        icon: "h-3xl w-3xl p-sm",
+        default: "h-[40px] py-[10px] px-5",
+        sm: "h-[32px] py-1 px-3",
+        icon: "h-8 w-8 p-2",
       },
       iconPosition: {
         none: "",
-        left: "gap-sm",
-        right: "gap-sm",
+        left: "gap-2",
+        right: "gap-2",
         only: "",
       },
     },
@@ -63,12 +63,12 @@ const buttonVariants = cva(
       {
         size: "default",
         iconPosition: "left",
-        className: "pl-md pr-xl gap-sm",
+        className: "pl-3 pr-5 gap-2",
       },
       {
         size: "default",
         iconPosition: "right",
-        className: "pl-xl pr-md gap-sm",
+        className: "pl-5 pr-3 gap-2",
       },
       {
         size: "default",
@@ -78,22 +78,22 @@ const buttonVariants = cva(
       {
         size: "sm",
         iconPosition: "left",
-        className: "pl-sm pr-md gap-2xs",
+        className: "pl-2 pr-3 gap-1",
       },
       {
         size: "sm",
         iconPosition: "right",
-        className: "pl-md pr-sm gap-2xs",
+        className: "pl-3 pr-2 gap-1",
       },
       {
         size: "sm",
         iconPosition: "only",
-        className: "h-[32px] w-[32px] p-sm",
+        className: "h-[32px] w-[32px] p-2",
       },
       {
         size: "icon",
         iconPosition: "only",
-        className: "h-3xl w-3xl p-sm",
+        className: "h-8 w-8 p-2",
       },
     ],
     defaultVariants: {
