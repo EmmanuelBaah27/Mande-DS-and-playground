@@ -1,65 +1,76 @@
 # Mande Design System
 
-Documentation and component library for the Mande Design System. Built with **Next.js** and **Storybook** (no Vite).
+A shared design system and prototyping playground for the Mande team. Components are built from our Figma designs and used to prototype real screens before engineering picks them up.
 
-## Tech Stack
-
-- **Next.js 16** — App router, React 19
-- **Storybook 8** — `@storybook/react-webpack5` (Webpack, no Vite)
-- **Tailwind CSS v4** — Design tokens, utilities
-- **TypeScript** — Full type safety
-- **Atomic Design** — Atoms → Molecules → Organisms
-
-## Quick Start
+## Quick start
 
 ```bash
-npm install
-npm run storybook
+# Install pnpm if you don't have it
+npm install -g pnpm
+
+# Install dependencies
+pnpm install
+
+# Start the playground (build screens)
+pnpm dev:playground
+
+# Start Storybook (browse/review components)
+pnpm dev:storybook
+
+# Start both at once
+pnpm dev
 ```
 
-Open [http://localhost:6006](http://localhost:6006) to view the design system.
+## What's what
 
-## Scripts
+| Folder | What it is | Who works here |
+|--------|-----------|----------------|
+| `packages/ui/` | The component library (Button, Input, etc.) | Design engineer |
+| `apps/playground/` | Screen prototypes built with components | Everyone (PMs, designers, engineers) |
+| `.storybook/` | Storybook config for component playground | Design engineer |
 
-| Command | Description |
+## Available scripts
+
+| Command | What it does |
 |---------|-------------|
-| `npm run dev` | Start Next.js dev server |
-| `npm run storybook` | Start Storybook |
-| `npm run build-storybook` | Build static Storybook for deployment |
+| `pnpm dev` | Runs playground + Storybook together |
+| `pnpm dev:playground` | Playground only at [localhost:3000](http://localhost:3000) |
+| `pnpm dev:storybook` | Storybook only at [localhost:6006](http://localhost:6006) |
+| `pnpm build` | Builds everything |
 
-## Structure
+## Using components in a screen
 
-```
-src/
-├── app/
-│   └── globals.css      # Design tokens + Tailwind
-├── components/
-│   ├── atoms/           # Button, Input, Label, Chip
-│   ├── molecules/       # InputWithLabel, etc.
-│   └── organisms/       # (future)
-├── lib/
-│   └── utils.ts         # cn() + tailwind-merge config
-└── stories/             # Intro, Design Tokens docs
-```
+```tsx
+import { Button, Input, Checkbox } from "@mande/ui";
 
-## Pushing to a Separate Repo
-
-This project is self-contained. To push to a new repository:
-
-```bash
-git init
-git remote add origin <your-repo-url>
-git add .
-git commit -m "Initial Mande Design System"
-git push -u origin main
+export default function MyScreen() {
+  return (
+    <div className="p-xl">
+      <h1 className="text-H1 text-neutral-900">My Screen</h1>
+      <Input placeholder="Enter something" />
+      <Button>Click me</Button>
+    </div>
+  );
+}
 ```
 
-## Design Tokens
+## Design tokens
 
-All tokens live in `src/app/globals.css` under `@theme`:
+All tokens live in `packages/ui/src/tokens/globals.css` under `@theme`:
 
-- **Typography** — H1–H3, xlg, lg, base, small
+- **Typography** — H1-H3, xlg, lg, base, small (with regular/medium/semibold weights)
 - **Colors** — Neutral, Primary, Teal, Success, Negative, Warning, Blush, Info
-- **Spacing** — 3xs → 9xl
-- **Radius** — none → full
-# Mande-Design-System
+- **Spacing** — 3xs (2px) to 9xl (80px)
+- **Border radius** — none to full
+
+## Deployed links
+
+- **Storybook**: Auto-deploys to GitHub Pages on every push to `main`
+- **Playground**: Connect to [Vercel](https://vercel.com) for auto-deploys with PR previews
+
+## Learn more
+
+- [How to add a screen](docs/for-designers.md) — for PMs and designers
+- [How to add a component](docs/new-component-checklist.md) — for the design engineer
+- [How to consume in your app](docs/for-engineers.md) — for developers
+- [Contributing guide](CONTRIBUTING.md) — workflow and conventions

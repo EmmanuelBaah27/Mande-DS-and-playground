@@ -1,4 +1,4 @@
-import "../src/app/globals.css";
+import "../packages/ui/src/tokens/globals.css";
 
 const preview = {
   parameters: {

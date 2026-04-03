@@ -3,7 +3,8 @@ import path from "path";
 
 const config: StorybookConfig = {
   stories: [
-    "../src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../packages/ui/src/**/*.mdx",
+    "../packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
   ],
   addons: [
     "@storybook/addon-webpack5-compiler-swc",
@@ -17,12 +18,11 @@ const config: StorybookConfig = {
     name: "@storybook/react-webpack5",
     options: {},
   },
-  staticDirs: ["../public"],
   webpackFinal: async (config) => {
     config.resolve = config.resolve || {};
     config.resolve.alias = {
       ...config.resolve.alias,
-      "@": path.resolve(__dirname, "../src"),
+      "@": path.resolve(__dirname, "../packages/ui/src"),
     };
 
     // Ensure CSS is processed by PostCSS (Tailwind v4) so design tokens and utilities apply

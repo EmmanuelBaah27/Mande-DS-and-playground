@@ -2,24 +2,15 @@
   "name": "mande-design-system",
   "version": "0.1.0",
   "private": true,
-  "description": "Mande Design System — documentation and component library",
+  "packageManager": "pnpm@10.33.0",
+  "description": "Mande Design System — components, tokens, and prototype playground",
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
-  },
-  "dependencies": {
-    "@phosphor-icons/react": "^2.1.10",
-    "@radix-ui/react-slot": "^1.2.3",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "next": "15.4.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
-    "tailwind-merge": "^3.3.1"
+    "dev": "turbo run dev",
+    "dev:playground": "turbo run dev --filter=@mande/playground",
+    "dev:storybook": "storybook dev -p 6006",
+    "build": "turbo run build",
+    "build-storybook": "storybook build",
+    "lint": "turbo run lint"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^8.4.7",
@@ -27,19 +18,15 @@
     "@storybook/addon-interactions": "^8.4.7",
     "@storybook/addon-links": "^8.4.7",
     "@storybook/addon-onboarding": "^8.4.7",
-    "@storybook/addon-webpack5-compiler-babel": "^4.0.0",
     "@storybook/addon-webpack5-compiler-swc": "^4.0.2",
     "@storybook/react": "^8.4.7",
     "@storybook/react-webpack5": "^8.4.7",
     "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "15.4.6",
     "postcss-loader": "^8.2.1",
+    "prettier": "^3.2.0",
     "storybook": "^8.4.7",
     "tailwindcss": "^4",
+    "turbo": "^2",
     "typescript": "^5"
   }
 }
