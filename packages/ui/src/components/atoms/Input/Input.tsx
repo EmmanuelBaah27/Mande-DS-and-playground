@@ -5,28 +5,28 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../../lib/utils";
 
 const inputVariants = cva(
-  "flex h-10 w-full rounded-3 border bg-white px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-neutral-450 transition-colors focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0",
+  "flex h-10 w-full rounded-3 border bg-background px-3 py-2 text-sm text-foreground ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground transition-colors focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0",
   {
     variants: {
       error: {
         false: [
-          "border-neutral-300",
-          "hover:border-neutral-450",
-          "focus-visible:border-neutral-450",
+          "border-input",
+          "hover:border-border-strong",
+          "focus-visible:border-border-strong",
         ],
         true: [
-          "border-negative-300",
-          "hover:border-negative-500",
-          "focus-visible:border-negative-600",
+          "border-danger-border",
+          "hover:border-danger",
+          "focus-visible:border-danger",
         ],
       },
       disabled: {
         false: "",
         true: [
           "cursor-not-allowed opacity-50",
-          "bg-neutral-100",
-          "border-neutral-300",
-          "hover:border-neutral-300",
+          "bg-muted",
+          "border-input",
+          "hover:border-input",
           "focus:outline-none focus:ring-0 focus:ring-offset-0",
           "focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0",
           "focus-within:outline-none focus-within:ring-0 focus-within:ring-offset-0",
@@ -38,8 +38,8 @@ const inputVariants = cva(
         error: true,
         disabled: true,
         class: [
-          "border-negative-300",
-          "hover:border-negative-300",
+          "border-danger-border",
+          "hover:border-danger-border",
           "focus:outline-none focus:ring-0 focus:ring-offset-0",
           "focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0",
           "focus-within:outline-none focus-within:ring-0 focus-within:ring-offset-0",

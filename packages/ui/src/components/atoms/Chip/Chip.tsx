@@ -5,13 +5,13 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "../../../lib/utils";
 
 const chipVariants = cva(
-  "inline-flex items-center justify-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none",
+  "inline-flex items-center justify-center rounded-full border transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none",
   {
     variants: {
       variant: {
         default:
-          "bg-white border-neutral-300 text-neutral-900 hover:bg-neutral-50",
-        selected: "bg-teal-100 border-teal-200 text-neutral-900",
+          "bg-background border-border text-foreground hover:bg-subtle",
+        selected: "bg-accent-subtle border-accent-border text-foreground",
       },
       size: {
         default:

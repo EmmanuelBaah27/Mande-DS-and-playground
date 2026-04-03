@@ -105,6 +105,9 @@ importers:
 
   packages/ui:
     dependencies:
+      '@central-icons-react/all':
+        specifier: ^1.1.178
+        version: 1.1.178(react@19.2.3)
       '@phosphor-icons/react':
         specifier: ^2.1.10
         version: 2.1.10(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -232,6 +235,11 @@ packages:
   '@babel/types@7.29.0':
     resolution: {integrity: sha512-LwdZHpScM4Qz8Xw2iKSzS+cfglZzJGvofQICy7W7v4caru4EaAmyUuO6BGrbyQ2mYV11W0U8j5mBhd14dd3B0A==}
     engines: {node: '>=6.9.0'}
+
+  '@central-icons-react/all@1.1.178':
+    resolution: {integrity: sha512-ufdVx2Qa2XvbUi/ERXOoo4Mt0Xna9DvQK/GQGbhcgJFa0LIi6LkLeTS7HvOOnsc28dO1RXjBl6Kg2Afn6m8sng==}
+    peerDependencies:
+      react: '>=14.0.0 <= 19'
 
   '@emnapi/core@1.9.2':
     resolution: {integrity: sha512-UC+ZhH3XtczQYfOlu3lNEkdW/p4dsJ1r/bP7H8+rhao3TTTMO1ATq/4DdIi23XuGoFY+Cz0JmCbdVl0hz9jZcA==}
@@ -3427,6 +3435,10 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.27.1
       '@babel/helper-validator-identifier': 7.28.5
+
+  '@central-icons-react/all@1.1.178(react@19.2.3)':
+    dependencies:
+      react: 19.2.3
 
   '@emnapi/core@1.9.2':
     dependencies:

@@ -8,43 +8,43 @@ import { cn } from "../../../lib/utils";
 const buttonVariants = cva(
   [
     "inline-flex items-center justify-center rounded-full text-base-medium transition-colors",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500 focus-visible:ring-offset-2",
-    "disabled:pointer-events-none cursor-pointer ring-offset-neutral-white",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+    "disabled:pointer-events-none cursor-pointer ring-offset-background",
   ],
   {
     variants: {
       variant: {
         primary: [
-          "bg-primary-500 text-neutral-black",
-          "hover:bg-primary-400 focus:bg-primary-400",
-          "disabled:bg-neutral-200 disabled:text-neutral-400",
+          "bg-primary text-primary-foreground",
+          "hover:bg-primary-hover focus:bg-primary-hover",
+          "disabled:bg-disabled disabled:text-disabled-foreground",
         ],
         secondary: [
-          "bg-neutral-white text-neutral-black border border-neutral-300",
-          "hover:bg-neutral-50 hover:border-neutral-300 focus:bg-neutral-50 focus:ring-neutral-400",
-          "disabled:bg-neutral-white disabled:border-neutral-200 disabled:text-neutral-400",
+          "bg-background text-foreground border border-border",
+          "hover:bg-subtle hover:border-border focus:bg-subtle focus:ring-ring",
+          "disabled:bg-background disabled:border-border-subtle disabled:text-disabled-foreground",
         ],
         tertiary: [
-          "bg-transparent text-neutral-black",
-          "hover:bg-neutral-100 focus:bg-neutral-100",
-          "disabled:text-neutral-400",
+          "bg-transparent text-foreground",
+          "hover:bg-muted focus:bg-muted",
+          "disabled:text-disabled-foreground",
         ],
         destructive: [
-          "bg-negative-500 text-neutral-white",
-          "hover:bg-negative-600 focus:bg-negative-600 focus:ring-neutral-400",
-          "disabled:bg-neutral-200 disabled:text-neutral-400",
+          "bg-destructive text-destructive-foreground",
+          "hover:bg-destructive-hover focus:bg-destructive-hover focus:ring-ring",
+          "disabled:bg-disabled disabled:text-disabled-foreground",
         ],
         "secondary-destructive": [
-          "bg-neutral-white text-negative-500 border border-negative-300",
-          "hover:bg-negative-100 hover:text-negative-600 hover:border-negative-300",
-          "focus:bg-negative-50 focus:text-negative-600 focus:ring-neutral-400",
-          "disabled:bg-neutral-white disabled:border-neutral-200 disabled:text-neutral-400",
+          "bg-background text-danger border border-danger-border",
+          "hover:bg-danger-subtle hover:text-danger hover:border-danger-border",
+          "focus:bg-danger-subtle focus:text-danger focus:ring-ring",
+          "disabled:bg-background disabled:border-border-subtle disabled:text-disabled-foreground",
         ],
         "tertiary-destructive": [
-          "bg-transparent text-negative-500",
-          "hover:bg-negative-100 hover:text-negative-600",
-          "focus:bg-transparent focus:text-negative-600 focus:ring-neutral-400",
-          "disabled:text-neutral-400",
+          "bg-transparent text-danger",
+          "hover:bg-danger-subtle hover:text-danger",
+          "focus:bg-transparent focus:text-danger focus:ring-ring",
+          "disabled:text-disabled-foreground",
         ],
       },
       size: {

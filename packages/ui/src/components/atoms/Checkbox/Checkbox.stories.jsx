@@ -94,7 +94,7 @@ export const Interactive = {
           <button
             type="button"
             onClick={() => setIndeterminate(!indeterminate)}
-            className="text-sm text-primary-500 hover:underline"
+            className="text-sm text-primary hover:underline"
           >
             Toggle indeterminate
           </button>
@@ -108,7 +108,7 @@ export const AllStates = {
   render: () => (
     <div className="flex flex-col gap-8 p-8">
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-neutral-900">
+        <h2 className="mb-4 text-lg font-semibold text-foreground">
           Default size
         </h2>
         <div className="flex flex-wrap gap-6">
@@ -119,7 +119,7 @@ export const AllStates = {
         </div>
       </section>
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-neutral-900">
+        <h2 className="mb-4 text-lg font-semibold text-foreground">
           Small size
         </h2>
         <div className="flex flex-wrap gap-6">
@@ -130,7 +130,7 @@ export const AllStates = {
         </div>
       </section>
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-neutral-900">
+        <h2 className="mb-4 text-lg font-semibold text-foreground">
           With subtext
         </h2>
         <Checkbox

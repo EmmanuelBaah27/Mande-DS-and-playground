@@ -1,1 +1,3 @@
-/* Storybook preview styles — globals.css is imported via preview.ts */
+@import "tailwindcss";
+@import "../packages/ui/src/tokens/globals.css";
+@source "../packages/ui/src";

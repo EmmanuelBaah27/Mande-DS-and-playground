@@ -7,7 +7,7 @@ import { cn } from "../../../lib/utils";
 const checkboxVariants = cva(
   [
     "inline-flex items-center gap-2 cursor-pointer select-none",
-    "focus-within:outline-none focus-within:ring-2 focus-within:ring-neutral-500 focus-within:ring-offset-2 rounded-1",
+    "focus-within:outline-none focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2 rounded-1",
     "has-[:disabled]:cursor-not-allowed has-[:disabled]:pointer-events-none",
   ],
   {
@@ -27,15 +27,15 @@ const boxVariants = cva(
   [
     "shrink-0 flex items-center justify-center rounded-[var(--checkbox-radius)] border border-solid transition-colors relative overflow-hidden",
     "shadow-[0px_1px_2px_0px_rgba(0,0,0,0.07)]",
-    "border-neutral-300 bg-neutral-white",
-    "peer-hover:border-neutral-400",
-    "peer-disabled:border-neutral-300 peer-disabled:bg-neutral-100",
-    "peer-checked:bg-neutral-black peer-checked:border-neutral-black",
+    "border-border bg-background",
+    "peer-hover:border-border-strong",
+    "peer-disabled:border-border peer-disabled:bg-muted",
+    "peer-checked:bg-foreground peer-checked:border-foreground",
     "peer-checked:[&_.check-icon]:opacity-100",
-    "peer-checked:peer-disabled:bg-neutral-200 peer-checked:peer-disabled:border-neutral-200",
-    "group-data-[indeterminate=true]:bg-neutral-black group-data-[indeterminate=true]:border-neutral-black",
+    "peer-checked:peer-disabled:bg-disabled peer-checked:peer-disabled:border-disabled",
+    "group-data-[indeterminate=true]:bg-foreground group-data-[indeterminate=true]:border-foreground",
     "group-data-[indeterminate=true]:[&_.minus-icon]:opacity-100",
-    "group-data-[indeterminate=true]:peer-disabled:bg-neutral-200 group-data-[indeterminate=true]:peer-disabled:border-neutral-200",
+    "group-data-[indeterminate=true]:peer-disabled:bg-disabled group-data-[indeterminate=true]:peer-disabled:border-disabled",
   ],
   {
     variants: {
@@ -57,7 +57,7 @@ const CheckIcon = ({ size }: { size: "default" | "sm" }) => (
     viewBox="0 0 12 10"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className="check-icon shrink-0 text-neutral-white absolute inset-0 m-auto opacity-0 group-data-[indeterminate=true]:opacity-0"
+    className="check-icon shrink-0 text-inverted-foreground absolute inset-0 m-auto opacity-0 group-data-[indeterminate=true]:opacity-0"
     aria-hidden
   >
     <path
@@ -77,7 +77,7 @@ const MinusIcon = ({ size }: { size: "default" | "sm" }) => (
     viewBox="0 0 10 2"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className="minus-icon shrink-0 text-neutral-white absolute inset-0 m-auto opacity-0"
+    className="minus-icon shrink-0 text-inverted-foreground absolute inset-0 m-auto opacity-0"
     aria-hidden
   >
     <path
@@ -188,12 +188,12 @@ const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
         {hasLabel && (
           <span className="flex flex-col gap-0">
             {label && (
-              <span className="text-base-medium text-neutral-black">
+              <span className="text-base-medium text-foreground">
                 {label}
               </span>
             )}
             {subtext && (
-              <span className="text-small-regular text-neutral-500">
+              <span className="text-small-regular text-muted-foreground">
                 {subtext}
               </span>
             )}

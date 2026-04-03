@@ -1,4 +1,11 @@
-// Atoms
+// shadcn components
+export {
+  Button as ShadcnButton,
+  buttonVariants as shadcnButtonVariants,
+} from "./components/ui/button";
+export type { ButtonProps as ShadcnButtonProps } from "./components/ui/button";
+
+// Legacy atoms (will migrate to shadcn incrementally)
 export { Button, buttonVariants } from "./components/atoms/Button";
 export type { ButtonProps } from "./components/atoms/Button/Button";
 

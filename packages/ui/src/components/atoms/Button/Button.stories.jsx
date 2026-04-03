@@ -126,7 +126,7 @@ export const AllVariants = {
   render: () => (
     <div className="flex flex-col gap-8 p-8">
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-neutral-900">
+        <h2 className="mb-4 text-lg font-semibold text-foreground">
           Variants
         </h2>
         <div className="flex flex-wrap gap-4">
@@ -139,7 +139,7 @@ export const AllVariants = {
         </div>
       </section>
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-neutral-900">
+        <h2 className="mb-4 text-lg font-semibold text-foreground">
           Sizes
         </h2>
         <div className="flex flex-wrap items-center gap-4">
@@ -149,7 +149,7 @@ export const AllVariants = {
         </div>
       </section>
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-neutral-900">
+        <h2 className="mb-4 text-lg font-semibold text-foreground">
           States
         </h2>
         <div className="flex flex-wrap gap-4">
@@ -159,7 +159,7 @@ export const AllVariants = {
         </div>
       </section>
       <section>
-        <h2 className="mb-4 text-lg font-semibold text-neutral-900">
+        <h2 className="mb-4 text-lg font-semibold text-foreground">
           With Icons
         </h2>
         <div className="flex flex-wrap gap-4">

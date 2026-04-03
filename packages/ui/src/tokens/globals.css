@@ -259,6 +259,60 @@
 }
 
 /* --------------------------------------------------------
+   SEMANTIC UTILITY COLORS (shadcn-compatible)
+   @theme inline keeps var() references live so dark mode
+   switching works at runtime. Generates TW utilities like
+   bg-primary, text-foreground, border-border, etc.
+   -------------------------------------------------------- */
+@theme inline {
+  --color-background: var(--semantic-neutral-bg);
+  --color-foreground: var(--semantic-neutral-text);
+
+  --color-muted: var(--semantic-neutral-bg-muted);
+  --color-muted-foreground: var(--semantic-neutral-text-secondary);
+
+  --color-popover: var(--semantic-surface-card);
+  --color-popover-foreground: var(--semantic-neutral-text);
+
+  --color-card: var(--semantic-surface-card);
+  --color-card-foreground: var(--semantic-neutral-text);
+
+  --color-primary: var(--semantic-primary-bg);
+  --color-primary-foreground: var(--semantic-primary-text-on-bg);
+
+  --color-secondary: var(--semantic-neutral-bg-muted);
+  --color-secondary-foreground: var(--semantic-neutral-text);
+
+  --color-accent: var(--semantic-neutral-bg-subtle);
+  --color-accent-foreground: var(--semantic-neutral-text);
+
+  --color-destructive: var(--semantic-danger-bg);
+  --color-destructive-foreground: var(--semantic-danger-text-on-bg);
+
+  --color-border: var(--semantic-neutral-border);
+  --color-input: var(--semantic-neutral-border);
+  --color-ring: var(--semantic-focus-ring);
+
+  /* Extended Mande tokens (beyond shadcn base) */
+  --color-primary-hover: var(--semantic-primary-bg-hover);
+  --color-destructive-hover: var(--semantic-danger-bg-hover);
+  --color-subtle: var(--semantic-neutral-bg-subtle);
+  --color-inverted-foreground: var(--semantic-neutral-text-inverted);
+  --color-danger: var(--semantic-danger-text);
+  --color-danger-border: var(--semantic-danger-border);
+  --color-danger-subtle: var(--semantic-danger-bg-subtle);
+  --color-accent-subtle: var(--semantic-accent-bg-subtle);
+  --color-accent-border: var(--semantic-accent-border);
+  --color-border-subtle: var(--semantic-neutral-border-subtle);
+  --color-border-strong: var(--semantic-neutral-border-strong);
+  --color-disabled: var(--semantic-disabled-bg);
+  --color-disabled-foreground: var(--semantic-disabled-text);
+  --color-overlay: var(--semantic-surface-overlay);
+
+  --radius: 0.5rem;
+}
+
+/* --------------------------------------------------------
    SEMANTIC COLOR ALIASES
    -------------------------------------------------------- */
 :root {

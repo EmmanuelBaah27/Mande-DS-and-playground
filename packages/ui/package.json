@@ -6,9 +6,12 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./tokens": "./src/tokens/globals.css"
+    "./tokens": "./src/tokens/globals.css",
+    "./components/*": "./src/components/*",
+    "./lib/*": "./src/lib/*"
   },
   "dependencies": {
+    "@central-icons-react/all": "^1.1.178",
     "@phosphor-icons/react": "^2.1.10",
     "@radix-ui/react-slot": "^1.2.3",
     "class-variance-authority": "^0.7.1",
