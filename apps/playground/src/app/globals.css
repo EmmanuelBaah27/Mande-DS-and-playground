@@ -1,4 +1,2 @@
-@import "@mande/ui/tokens";
 @import "tailwindcss";
-
-@custom-variant dark (&:is(.dark *));
+@import "@mande/ui/tokens";
