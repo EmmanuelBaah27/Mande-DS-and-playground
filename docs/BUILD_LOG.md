@@ -110,3 +110,36 @@ Chronological record of all work done on the Mande Design System.
 - Storybook starts and serves on port 6006
 - All component stories render
 - No old token names remain in codebase (grep verified)
+
+---
+
+## 2026-04-03 — shadcn/ui integration + Storybook Tailwind fix (Session 3)
+
+### What was done
+1. **Diagnosed missing Tailwind utility classes** — `globals.css` had `@theme static` for CSS vars but NO `@import "tailwindcss"`, so TW4 never generated bg-*, text-*, border-* utilities
+2. **Fixed Storybook CSS entry** — `.storybook/preview.css` now has `@import "tailwindcss"`, `@import globals.css`, and `@source` directive
+3. **Added `@theme inline` block** with shadcn-compatible semantic utility colors (background, foreground, primary, destructive, etc.) referencing existing `:root`/`.dark` semantic vars
+4. **Installed shadcn/ui** — created `components.json`, added first Button component
+5. **Installed `@central-icons-react/all`** — Emmanuel's licensed icon library (replaces lucide-react)
+6. **Updated all existing components** to use semantic token classes (`bg-primary`, `text-foreground` etc.)
+7. **Updated package.json exports** with wildcard patterns for components and lib
+
+### Key learnings
+- **`@theme static` vs `@theme inline`**: `static` = always emit CSS vars, `inline` = keep var() references live at runtime. Use `static` for primitive color scales, `inline` for semantic utility mappings that change in dark mode
+- **`@import "tailwindcss"` is REQUIRED** in the CSS entry point for utility class generation. Without it, only CSS custom properties are emitted
+- **`@source` directive** tells TW4 where to scan for utility class usage in a monorepo
+
+### Files changed
+- `.storybook/preview.css` — added TW import + source directive
+- `.storybook/preview.ts` — imports preview.css instead of globals.css directly
+- `packages/ui/components.json` — new (shadcn CLI config)
+- `packages/ui/package.json` — added exports, @central-icons-react/all dep
+- `packages/ui/src/tokens/globals.css` — added @theme inline semantic block
+- `packages/ui/src/components/ui/button.tsx` — new (shadcn Button)
+- `packages/ui/src/components/ui/button.stories.tsx` — new
+- All existing atom/molecule components — updated to semantic classes
+
+### Verified
+- shadcn Button renders with Mande OKLCH colors (lime primary, red destructive, all 6 variants)
+- Color palette stories still render all 9 palettes
+- Storybook sidebar shows SHADCN section alongside ATOMS/MOLECULES
