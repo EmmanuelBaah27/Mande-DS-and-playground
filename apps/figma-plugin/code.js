@@ -205,16 +205,17 @@ async function buildComponentSet(group, page, wrapper) {
         clone = exactNode.clone();
         page.appendChild(clone);
       } else {
-        // Scale from closest existing size
-        var closestSize = findClosestSize(existingSizes, targetSize);
-        var sourceNode = figma.getNodeById(sizeMap[closestSize]);
+        // Scale from the 24px icon (canonical 2px-stroke source).
+        // Fall back to closest size if 24px isn't available.
+        var sourceSize = sizeMap[24] ? 24 : findClosestSize(existingSizes, targetSize);
+        var sourceNode = figma.getNodeById(sizeMap[sourceSize]);
         if (!sourceNode || sourceNode.type !== "COMPONENT") continue;
 
         clone = sourceNode.clone();
         page.appendChild(clone);
 
         // rescale() scales the frame + all children + strokes proportionally
-        var scale = targetSize / closestSize;
+        var scale = targetSize / sourceSize;
         clone.rescale(scale);
       }
 
