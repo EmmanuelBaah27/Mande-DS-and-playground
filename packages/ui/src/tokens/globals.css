@@ -32,16 +32,16 @@
      LIME — Seed: #C4E03E
      Manually crafted with chroma taper
      -------------------------------------------------------- */
-  --color-lime-50: oklch(98.0% 0.030 120);        /* #F5FCE6 */
-  --color-lime-100: oklch(96.0% 0.060 119);       /* #EDF8CB */
-  --color-lime-200: oklch(93.0% 0.095 119);       /* #E1F2A9 */
-  --color-lime-300: oklch(90.0% 0.135 119);       /* #D4EB80 */
-  --color-lime-400: oklch(88.0% 0.160 119);       /* #CCE661 */
-  --color-lime-500: oklch(85.8% 0.181 119);       /* #C4E03E */
-  --color-lime-600: oklch(72.0% 0.155 119);       /* #9BB12A */
-  --color-lime-700: oklch(58.0% 0.125 119);       /* #73841D */
-  --color-lime-800: oklch(44.0% 0.095 119);       /* #4D5910 */
-  --color-lime-900: oklch(30.0% 0.065 119);       /* #2A3205 */
+  --color-lime-50: oklch(98.0% 0.022 120);        /* sRGB-safe */
+  --color-lime-100: oklch(96.0% 0.050 119);
+  --color-lime-200: oklch(93.0% 0.082 119);
+  --color-lime-300: oklch(90.0% 0.115 119);
+  --color-lime-400: oklch(88.0% 0.135 119);       /* primary hover */
+  --color-lime-500: oklch(85.8% 0.152 119);       /* primary */
+  --color-lime-600: oklch(72.0% 0.140 119);
+  --color-lime-700: oklch(58.0% 0.115 119);
+  --color-lime-800: oklch(44.0% 0.088 119);
+  --color-lime-900: oklch(30.0% 0.060 119);
 
   /* --------------------------------------------------------
      TEAL — Seed: #026A72
