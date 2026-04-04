@@ -10,7 +10,7 @@ import {
 import { Button } from "./button"
 
 const meta: Meta<typeof Card> = {
-  title: "SHADCN/Card",
+  title: "Components/Card",
   component: Card,
   parameters: { layout: "centered" },
   tags: ["autodocs"],
@@ -32,7 +32,7 @@ export const Default: Story = {
         </p>
       </CardContent>
       <CardFooter className="gap-2">
-        <Button variant="outline" size="sm">Cancel</Button>
+        <Button variant="secondary" size="sm">Cancel</Button>
         <Button size="sm">Confirm</Button>
       </CardFooter>
     </Card>

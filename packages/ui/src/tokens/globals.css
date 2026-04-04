@@ -7,25 +7,26 @@
 
 @theme static {
   /* --------------------------------------------------------
-     NEUTRAL — sourced from base.org website CSS
-     Light/dark ends are pure; 400–600 carry a cool blue-grey tint
+     NEUTRAL — synced from Figma Primitives / Color / Grey
+     Light end (50–300) tapers from pure to subtle cool tint;
+     mid/dark (500–900) carry a consistent cool blue-grey hue
      -------------------------------------------------------- */
   --color-neutral-white: oklch(100.0% 0 0);            /* #FFFFFF */
-  --color-neutral-50: oklch(98.3% 0 0);                /* #FAFAFA */
+  --color-neutral-50:  oklch(98.3% 0 0);               /* #FAFAFA */
   --color-neutral-100: oklch(96.5% 0 0);               /* #F5F5F5 */
-  --color-neutral-200: oklch(93.8% 0 0);               /* #ECECEC */
-  --color-neutral-300: oklch(88.7% 0 0);               /* #DCDCDC */
-  --color-neutral-400: oklch(74.5% 0.012 252);         /* #B1B7C3 */
-  --color-neutral-500: oklch(61.0% 0.015 252);         /* #8A919E */
-  --color-neutral-600: oklch(52.5% 0.016 255);         /* #717886 */
-  --color-neutral-700: oklch(46.0% 0 0);               /* #666666 */
-  --color-neutral-800: oklch(32.3% 0 0);               /* #454545 */
-  --color-neutral-900: oklch(24.5% 0.011 255);         /* #32353D */
+  --color-neutral-200: oklch(92.5% 0 0);               /* #E8E8E8 */
+  --color-neutral-300: oklch(88.7% 0.006 252);         /* #DADDE2 */
+  --color-neutral-400: oklch(60.0% 0.013 254);         /* ~#8A8F9A — AA-large text (≈3.2:1 on white) */
+  --color-neutral-500: oklch(43.5% 0.013 255);         /* #5E636E — AA text, Figma "default" (6:1 on white) */
+  --color-neutral-600: oklch(40.0% 0.011 255);         /* #565A61 */
+  --color-neutral-700: oklch(28.0% 0.010 255);         /* #393C41 */
+  --color-neutral-800: oklch(20.0% 0.005 255);         /* #27282B */
+  --color-neutral-900: oklch(12.5% 0 0);               /* #171717 */
 
-  /* Transparent neutrals — palette dark at opacity */
-  --color-neutral-100-alpha: oklch(24.5% 0.011 255 / 5%);
-  --color-neutral-200-alpha: oklch(24.5% 0.011 255 / 8%);
-  --color-neutral-300-alpha: oklch(24.5% 0.011 255 / 12%);
+  /* Transparent neutrals — neutral-900 (#171717) at opacity; a{n} = alpha at n% */
+  --color-neutral-a4:  oklch(12.5% 0 0 / 4%);
+  --color-neutral-a8:  oklch(12.5% 0 0 / 8%);
+  --color-neutral-a16: oklch(12.5% 0 0 / 16%);
 
   /* --------------------------------------------------------
      LIME — Seed: #C4E03E
@@ -308,6 +309,22 @@
   --color-overlay: var(--semantic-surface-overlay);
 
   --radius: 0.5rem;
+
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --color-sidebar-border: var(--sidebar-border);
+
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+
+  --color-sidebar-accent: var(--sidebar-accent);
+
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+
+  --color-sidebar-primary: var(--sidebar-primary);
+
+  --color-sidebar-foreground: var(--sidebar-foreground);
+
+  --color-sidebar: var(--sidebar);
 }
 
 /* --------------------------------------------------------
@@ -318,7 +335,7 @@
   --semantic-neutral-bg-subtle: var(--color-neutral-50);
   --semantic-neutral-bg-muted: var(--color-neutral-100);
   --semantic-neutral-border: var(--color-neutral-300);
-  --semantic-neutral-border-subtle: var(--color-neutral-200-alpha);
+  --semantic-neutral-border-subtle: var(--color-neutral-a8);
   --semantic-neutral-border-strong: var(--color-neutral-400);
   --semantic-neutral-text: var(--color-neutral-900);
   --semantic-neutral-text-secondary: var(--color-neutral-500);
@@ -377,12 +394,20 @@
 
   --semantic-surface-page: var(--color-neutral-50);
   --semantic-surface-card: var(--color-neutral-white);
-  --semantic-surface-overlay: oklch(24.5% 0.011 255 / 50%);
+  --semantic-surface-overlay: oklch(12.5% 0 0 / 50%);
   --semantic-surface-disabled: var(--color-neutral-100);
 
   --semantic-focus-ring: var(--color-neutral-500);
   --semantic-disabled-bg: var(--color-neutral-200);
   --semantic-disabled-text: var(--color-neutral-400);
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
 /* --------------------------------------------------------
@@ -458,6 +483,14 @@
   --semantic-focus-ring: var(--color-neutral-400);
   --semantic-disabled-bg: var(--color-neutral-700);
   --semantic-disabled-text: var(--color-neutral-500);
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
 }
 
 /* --------------------------------------------------------
@@ -544,5 +577,20 @@
 @layer base {
   body {
     font-family: "Inter", system-ui, sans-serif;
+    /* Inter character variants — matches Figma configuration */
+    font-feature-settings:
+      "cv01" 1,   /* Alternate one           */
+      "cv02" 1,   /* Open four               */
+      "cv03" 1,   /* Open six                */
+      "cv04" 1,   /* Open nine               */
+      "cv05" 1,   /* Lower-case l with tail  */
+      "cv06" 1,   /* r with curved tail      */
+      "cv07" 1,   /* Alternate German ß      */
+      "cv08" 1,   /* Upper-case I with serif */
+      "cv09" 1;   /* Flat-top three          */
+    /* Rendering — eliminates subpixel colour fringing */
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 }

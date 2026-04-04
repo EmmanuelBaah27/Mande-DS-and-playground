@@ -12,7 +12,7 @@ import { Button } from "./button"
 import { Input } from "./input"
 
 const meta: Meta<typeof Dialog> = {
-  title: "SHADCN/Dialog",
+  title: "Components/Dialog",
   component: Dialog,
   parameters: { layout: "centered" },
   tags: ["autodocs"],
@@ -25,7 +25,7 @@ export const Default: Story = {
   render: () => (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">Open Dialog</Button>
+        <Button variant="secondary">Open Dialog</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -36,7 +36,7 @@ export const Default: Story = {
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="outline">Cancel</Button>
+          <Button variant="secondary">Cancel</Button>
           <Button variant="destructive">Delete</Button>
         </DialogFooter>
       </DialogContent>

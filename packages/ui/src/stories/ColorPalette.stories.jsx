@@ -1,6 +1,6 @@
 const shades = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"];
 const neutralShades = ["white", "50", "100", "200", "300", "400", "500", "600", "700", "800", "900"];
-const alphaShades = ["100-alpha", "200-alpha", "300-alpha"];
+const alphaShades = ["a4", "a8", "a16"];
 
 const palettes = [
   { name: "Neutral", prefix: "neutral", shades: neutralShades },
