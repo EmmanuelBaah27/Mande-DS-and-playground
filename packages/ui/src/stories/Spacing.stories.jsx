@@ -48,7 +48,7 @@ const rowStyle = {
   alignItems: "center",
   gap: 16,
   padding: "10px 0",
-  borderBottom: "1px solid var(--color-grey-200)",
+  borderBottom: "1px solid var(--color-neutral-200)",
 };
 
 const labelStyle = {

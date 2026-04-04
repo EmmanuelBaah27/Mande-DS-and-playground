@@ -29,7 +29,7 @@ const tokenRow = {
   alignItems: "baseline",
   gap: 16,
   padding: "12px 0",
-  borderBottom: "1px solid var(--color-grey-200)",
+  borderBottom: "1px solid var(--color-neutral-200)",
 };
 
 const labelStyle = {
@@ -108,7 +108,7 @@ const TypographyShowcase = () => (
     </h2>
     <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
       <thead>
-        <tr style={{ borderBottom: "2px solid var(--color-grey-300)", textAlign: "left" }}>
+        <tr style={{ borderBottom: "2px solid var(--color-neutral-300)", textAlign: "left" }}>
           <th style={{ padding: "8px 12px", color: "#5F6161", fontWeight: 600 }}>Scale</th>
           <th style={{ padding: "8px 12px", color: "#5F6161", fontWeight: 600 }}>Size</th>
           <th style={{ padding: "8px 12px", color: "#5F6161", fontWeight: 600 }}>Line Height</th>
@@ -126,7 +126,7 @@ const TypographyShowcase = () => (
           { scale: "base", size: "14px", lh: "20px", weight: "400 / 500 / 600", ps: "14px" },
           { scale: "small", size: "12px", lh: "18px", weight: "400 / 500 / 600", ps: "\u2014" },
         ].map((row) => (
-          <tr key={row.scale} style={{ borderBottom: "1px solid var(--color-grey-200)" }}>
+          <tr key={row.scale} style={{ borderBottom: "1px solid var(--color-neutral-200)" }}>
             <td style={{ padding: "8px 12px", fontWeight: 500 }}>{row.scale}</td>
             <td style={{ padding: "8px 12px", fontFamily: "monospace" }}>{row.size}</td>
             <td style={{ padding: "8px 12px", fontFamily: "monospace" }}>{row.lh}</td>

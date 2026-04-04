@@ -1,10 +1,10 @@
 const shades = ["50", "100", "200", "300", "400", "500", "600", "700", "800", "900"];
-const greyShades = ["white", "50", "100", "200", "300", "400", "500", "600", "700", "800", "900"];
+const neutralShades = ["white", "50", "100", "200", "300", "400", "500", "600", "700", "800", "900"];
 const alphaShades = ["100-alpha", "200-alpha", "300-alpha"];
 
 const palettes = [
-  { name: "Grey", prefix: "grey", shades: greyShades },
-  { name: "Grey (Transparent)", prefix: "grey", shades: alphaShades },
+  { name: "Neutral", prefix: "neutral", shades: neutralShades },
+  { name: "Neutral (Transparent)", prefix: "neutral", shades: alphaShades },
   { name: "Lime", prefix: "lime", shades },
   { name: "Teal", prefix: "teal", shades },
   { name: "Blush", prefix: "blush", shades },

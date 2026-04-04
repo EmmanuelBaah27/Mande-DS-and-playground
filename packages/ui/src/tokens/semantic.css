@@ -4,7 +4,7 @@
    Components should use THESE tokens, never primitives directly.
 
    Structure:
-   - neutral.*   → grey palette (surfaces, text, borders)
+   - neutral.*   → neutral palette (surfaces, text, borders)
    - primary.*   → lime palette (brand, CTAs, active states)
    - success.*   → green palette (positive feedback, confirmations)
    - warning.*   → yellow palette (caution, non-blocking alerts)
@@ -19,17 +19,17 @@
    LIGHT MODE (default)
    -------------------------------------------------------- */
 :root {
-  /* --- Neutral (grey) --- */
-  --semantic-neutral-bg: var(--color-grey-white);
-  --semantic-neutral-bg-subtle: var(--color-grey-50);
-  --semantic-neutral-bg-muted: var(--color-grey-100);
-  --semantic-neutral-border: var(--color-grey-300);
-  --semantic-neutral-border-subtle: var(--color-grey-200-alpha);
-  --semantic-neutral-border-strong: var(--color-grey-400);
-  --semantic-neutral-text: var(--color-grey-900);
-  --semantic-neutral-text-secondary: var(--color-grey-500);
-  --semantic-neutral-text-muted: var(--color-grey-400);
-  --semantic-neutral-text-inverted: var(--color-grey-white);
+  /* --- Neutral (neutral) --- */
+  --semantic-neutral-bg: var(--color-neutral-white);
+  --semantic-neutral-bg-subtle: var(--color-neutral-50);
+  --semantic-neutral-bg-muted: var(--color-neutral-100);
+  --semantic-neutral-border: var(--color-neutral-300);
+  --semantic-neutral-border-subtle: var(--color-neutral-200-alpha);
+  --semantic-neutral-border-strong: var(--color-neutral-400);
+  --semantic-neutral-text: var(--color-neutral-900);
+  --semantic-neutral-text-secondary: var(--color-neutral-500);
+  --semantic-neutral-text-muted: var(--color-neutral-400);
+  --semantic-neutral-text-inverted: var(--color-neutral-white);
 
   /* --- Primary (lime) — brand, CTAs --- */
   --semantic-primary-bg: var(--color-lime-500);
@@ -37,21 +37,21 @@
   --semantic-primary-bg-hover: var(--color-lime-400);
   --semantic-primary-border: var(--color-lime-500);
   --semantic-primary-text: var(--color-lime-900);
-  --semantic-primary-text-on-bg: var(--color-grey-900);
+  --semantic-primary-text-on-bg: var(--color-neutral-900);
 
   /* --- Success (green) --- */
   --semantic-success-bg: var(--color-green-500);
   --semantic-success-bg-subtle: var(--color-green-50);
   --semantic-success-border: var(--color-green-300);
   --semantic-success-text: var(--color-green-700);
-  --semantic-success-text-on-bg: var(--color-grey-white);
+  --semantic-success-text-on-bg: var(--color-neutral-white);
 
   /* --- Warning (yellow) --- */
   --semantic-warning-bg: var(--color-yellow-500);
   --semantic-warning-bg-subtle: var(--color-yellow-50);
   --semantic-warning-border: var(--color-yellow-300);
   --semantic-warning-text: var(--color-yellow-800);
-  --semantic-warning-text-on-bg: var(--color-grey-900);
+  --semantic-warning-text-on-bg: var(--color-neutral-900);
 
   /* --- Danger (red) — errors, destructive --- */
   --semantic-danger-bg: var(--color-red-500);
@@ -59,46 +59,46 @@
   --semantic-danger-bg-hover: var(--color-red-600);
   --semantic-danger-border: var(--color-red-300);
   --semantic-danger-text: var(--color-red-600);
-  --semantic-danger-text-on-bg: var(--color-grey-white);
+  --semantic-danger-text-on-bg: var(--color-neutral-white);
 
   /* --- Info (blue) --- */
   --semantic-info-bg: var(--color-blue-600);
   --semantic-info-bg-subtle: var(--color-blue-50);
   --semantic-info-border: var(--color-blue-300);
   --semantic-info-text: var(--color-blue-700);
-  --semantic-info-text-on-bg: var(--color-grey-white);
+  --semantic-info-text-on-bg: var(--color-neutral-white);
 
   /* --- Accent (teal) --- */
   --semantic-accent-bg: var(--color-teal-500);
   --semantic-accent-bg-subtle: var(--color-teal-50);
   --semantic-accent-border: var(--color-teal-300);
   --semantic-accent-text: var(--color-teal-700);
-  --semantic-accent-text-on-bg: var(--color-grey-white);
+  --semantic-accent-text-on-bg: var(--color-neutral-white);
 
   /* --- Orange --- */
   --semantic-orange-bg: var(--color-orange-500);
   --semantic-orange-bg-subtle: var(--color-orange-50);
   --semantic-orange-border: var(--color-orange-300);
   --semantic-orange-text: var(--color-orange-700);
-  --semantic-orange-text-on-bg: var(--color-grey-white);
+  --semantic-orange-text-on-bg: var(--color-neutral-white);
 
   /* --- Blush --- */
   --semantic-blush-bg: var(--color-blush-500);
   --semantic-blush-bg-subtle: var(--color-blush-50);
   --semantic-blush-border: var(--color-blush-300);
   --semantic-blush-text: var(--color-blush-700);
-  --semantic-blush-text-on-bg: var(--color-grey-white);
+  --semantic-blush-text-on-bg: var(--color-neutral-white);
 
   /* --- Surface shortcuts (common patterns) --- */
-  --semantic-surface-page: var(--color-grey-50);
-  --semantic-surface-card: var(--color-grey-white);
+  --semantic-surface-page: var(--color-neutral-50);
+  --semantic-surface-card: var(--color-neutral-white);
   --semantic-surface-overlay: oklch(19.1% 0 0 / 50%);
-  --semantic-surface-disabled: var(--color-grey-100);
+  --semantic-surface-disabled: var(--color-neutral-100);
 
   /* --- Interactive --- */
-  --semantic-focus-ring: var(--color-grey-500);
-  --semantic-disabled-bg: var(--color-grey-200);
-  --semantic-disabled-text: var(--color-grey-400);
+  --semantic-focus-ring: var(--color-neutral-500);
+  --semantic-disabled-bg: var(--color-neutral-200);
+  --semantic-disabled-text: var(--color-neutral-400);
 }
 
 /* --------------------------------------------------------
@@ -107,16 +107,16 @@
    -------------------------------------------------------- */
 .dark {
   /* --- Neutral --- */
-  --semantic-neutral-bg: var(--color-grey-900);
-  --semantic-neutral-bg-subtle: var(--color-grey-800);
-  --semantic-neutral-bg-muted: var(--color-grey-700);
-  --semantic-neutral-border: var(--color-grey-600);
+  --semantic-neutral-bg: var(--color-neutral-900);
+  --semantic-neutral-bg-subtle: var(--color-neutral-800);
+  --semantic-neutral-bg-muted: var(--color-neutral-700);
+  --semantic-neutral-border: var(--color-neutral-600);
   --semantic-neutral-border-subtle: oklch(100% 0 0 / 10%);
-  --semantic-neutral-border-strong: var(--color-grey-500);
-  --semantic-neutral-text: var(--color-grey-50);
-  --semantic-neutral-text-secondary: var(--color-grey-400);
-  --semantic-neutral-text-muted: var(--color-grey-400);
-  --semantic-neutral-text-inverted: var(--color-grey-900);
+  --semantic-neutral-border-strong: var(--color-neutral-500);
+  --semantic-neutral-text: var(--color-neutral-50);
+  --semantic-neutral-text-secondary: var(--color-neutral-400);
+  --semantic-neutral-text-muted: var(--color-neutral-400);
+  --semantic-neutral-text-inverted: var(--color-neutral-900);
 
   /* --- Primary (lime) --- */
   --semantic-primary-bg: var(--color-lime-500);
@@ -124,21 +124,21 @@
   --semantic-primary-bg-hover: var(--color-lime-400);
   --semantic-primary-border: var(--color-lime-600);
   --semantic-primary-text: var(--color-lime-400);
-  --semantic-primary-text-on-bg: var(--color-grey-900);
+  --semantic-primary-text-on-bg: var(--color-neutral-900);
 
   /* --- Success (green) --- */
   --semantic-success-bg: var(--color-green-500);
   --semantic-success-bg-subtle: var(--color-green-950);
   --semantic-success-border: var(--color-green-700);
   --semantic-success-text: var(--color-green-400);
-  --semantic-success-text-on-bg: var(--color-grey-white);
+  --semantic-success-text-on-bg: var(--color-neutral-white);
 
   /* --- Warning (yellow) --- */
   --semantic-warning-bg: var(--color-yellow-500);
   --semantic-warning-bg-subtle: var(--color-yellow-950);
   --semantic-warning-border: var(--color-yellow-700);
   --semantic-warning-text: var(--color-yellow-400);
-  --semantic-warning-text-on-bg: var(--color-grey-900);
+  --semantic-warning-text-on-bg: var(--color-neutral-900);
 
   /* --- Danger (red) --- */
   --semantic-danger-bg: var(--color-red-500);
@@ -146,44 +146,44 @@
   --semantic-danger-bg-hover: var(--color-red-400);
   --semantic-danger-border: var(--color-red-700);
   --semantic-danger-text: var(--color-red-400);
-  --semantic-danger-text-on-bg: var(--color-grey-white);
+  --semantic-danger-text-on-bg: var(--color-neutral-white);
 
   /* --- Info (blue) --- */
   --semantic-info-bg: var(--color-blue-500);
   --semantic-info-bg-subtle: var(--color-blue-950);
   --semantic-info-border: var(--color-blue-700);
   --semantic-info-text: var(--color-blue-400);
-  --semantic-info-text-on-bg: var(--color-grey-white);
+  --semantic-info-text-on-bg: var(--color-neutral-white);
 
   /* --- Accent (teal) --- */
   --semantic-accent-bg: var(--color-teal-400);
   --semantic-accent-bg-subtle: var(--color-teal-950);
   --semantic-accent-border: var(--color-teal-700);
   --semantic-accent-text: var(--color-teal-300);
-  --semantic-accent-text-on-bg: var(--color-grey-900);
+  --semantic-accent-text-on-bg: var(--color-neutral-900);
 
   /* --- Orange --- */
   --semantic-orange-bg: var(--color-orange-500);
   --semantic-orange-bg-subtle: var(--color-orange-950);
   --semantic-orange-border: var(--color-orange-700);
   --semantic-orange-text: var(--color-orange-400);
-  --semantic-orange-text-on-bg: var(--color-grey-white);
+  --semantic-orange-text-on-bg: var(--color-neutral-white);
 
   /* --- Blush --- */
   --semantic-blush-bg: var(--color-blush-500);
   --semantic-blush-bg-subtle: var(--color-blush-950);
   --semantic-blush-border: var(--color-blush-700);
   --semantic-blush-text: var(--color-blush-400);
-  --semantic-blush-text-on-bg: var(--color-grey-white);
+  --semantic-blush-text-on-bg: var(--color-neutral-white);
 
   /* --- Surfaces --- */
-  --semantic-surface-page: var(--color-grey-900);
-  --semantic-surface-card: var(--color-grey-800);
+  --semantic-surface-page: var(--color-neutral-900);
+  --semantic-surface-card: var(--color-neutral-800);
   --semantic-surface-overlay: oklch(0% 0 0 / 60%);
-  --semantic-surface-disabled: var(--color-grey-700);
+  --semantic-surface-disabled: var(--color-neutral-700);
 
   /* --- Interactive --- */
-  --semantic-focus-ring: var(--color-grey-400);
-  --semantic-disabled-bg: var(--color-grey-700);
-  --semantic-disabled-text: var(--color-grey-500);
+  --semantic-focus-ring: var(--color-neutral-400);
+  --semantic-disabled-bg: var(--color-neutral-700);
+  --semantic-disabled-text: var(--color-neutral-500);
 }

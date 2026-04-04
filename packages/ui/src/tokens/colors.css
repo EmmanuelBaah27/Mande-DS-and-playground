@@ -2,7 +2,7 @@
    MANDE DESIGN SYSTEM — PRIMITIVE COLOR TOKENS
    Format: OKLCH (Oklab Lightness, Chroma, Hue)
 
-   Grey: Hand-tuned from Figma (pure neutral)
+   Neutral: Hand-tuned from Figma (pure neutral)
    All others: Seed from Figma 500, shades via tints.dev or
    manually crafted with gamut-safe chroma values
    ============================================================ */
@@ -15,22 +15,22 @@
      GREY (Pure Neutral)
      Figma hand-tuned — HSL 0 0 X, no hue tint
      -------------------------------------------------------- */
-  --color-grey-white: oklch(100.0% 0 0);          /* #FFFFFF */
-  --color-grey-50: oklch(98.5% 0 0);              /* #FAFAFA */
-  --color-grey-100: oklch(97.0% 0 0);             /* #F5F5F5 */
-  --color-grey-200: oklch(93.1% 0 0);             /* #E8E8E8 */
-  --color-grey-300: oklch(90.1% 0 0);             /* #DEDEDE */
-  --color-grey-400: oklch(69.3% 0 0);             /* #9C9C9C */
-  --color-grey-500: oklch(49.3% 0 0);             /* #616161 */
-  --color-grey-600: oklch(43.9% 0 0);             /* #525252 */
-  --color-grey-700: oklch(36.0% 0 0);             /* #3D3D3D */
-  --color-grey-800: oklch(28.1% 0 0);             /* #292929 */
-  --color-grey-900: oklch(19.1% 0 0);             /* #141414 */
+  --color-neutral-white: oklch(100.0% 0 0);          /* #FFFFFF */
+  --color-neutral-50: oklch(98.5% 0 0);              /* #FAFAFA */
+  --color-neutral-100: oklch(97.0% 0 0);             /* #F5F5F5 */
+  --color-neutral-200: oklch(93.1% 0 0);             /* #E8E8E8 */
+  --color-neutral-300: oklch(90.1% 0 0);             /* #DEDEDE */
+  --color-neutral-400: oklch(69.3% 0 0);             /* #9C9C9C */
+  --color-neutral-500: oklch(49.3% 0 0);             /* #616161 */
+  --color-neutral-600: oklch(43.9% 0 0);             /* #525252 */
+  --color-neutral-700: oklch(36.0% 0 0);             /* #3D3D3D */
+  --color-neutral-800: oklch(28.1% 0 0);             /* #292929 */
+  --color-neutral-900: oklch(19.1% 0 0);             /* #141414 */
 
-  /* Transparent greys — palette black at opacity */
-  --color-grey-100-alpha: oklch(19.1% 0 0 / 5%);
-  --color-grey-200-alpha: oklch(19.1% 0 0 / 8%);
-  --color-grey-300-alpha: oklch(19.1% 0 0 / 12%);
+  /* Transparent neutrals — palette black at opacity */
+  --color-neutral-100-alpha: oklch(19.1% 0 0 / 5%);
+  --color-neutral-200-alpha: oklch(19.1% 0 0 / 8%);
+  --color-neutral-300-alpha: oklch(19.1% 0 0 / 12%);
 
   /* --------------------------------------------------------
      LIME — Seed: #C4E03E
