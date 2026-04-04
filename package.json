@@ -7,9 +7,9 @@
   "scripts": {
     "dev": "turbo run dev",
     "dev:playground": "turbo run dev --filter=@mande/playground",
-    "dev:storybook": "storybook dev -p 6006",
+    "dev:storybook": "STORYBOOK_DISABLE_TELEMETRY=1 storybook dev -p 6006",
     "build": "turbo run build",
-    "build-storybook": "storybook build",
+    "build-storybook": "STORYBOOK_DISABLE_TELEMETRY=1 storybook build",
     "lint": "turbo run lint"
   },
   "devDependencies": {
