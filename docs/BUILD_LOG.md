@@ -143,3 +143,32 @@ Chronological record of all work done on the Mande Design System.
 - shadcn Button renders with Mande OKLCH colors (lime primary, red destructive, all 6 variants)
 - Color palette stories still render all 9 palettes
 - Storybook sidebar shows SHADCN section alongside ATOMS/MOLECULES
+
+---
+
+## 2026-04-04 — Full component library + story coverage (Session 3)
+
+### What was done
+1. **Inter Variable font** — switched Google Fonts URL to variable axis (`opsz,wght@0,14..32,100..900`). Added 9 OpenType character variants (cv01–cv09) matching Figma typeface config. Added antialiasing (`-webkit-font-smoothing: antialiased` etc.) to eliminate colour fringing.
+2. **Fixed components.json** — changed `iconLibrary: "lucide"` → `"none"` so shadcn CLI stops injecting Lucide into new components.
+3. **Central Icons license** — stored key in `.npmrc` (gitignored).
+4. **Installed all 52 shadcn components** — used `--overwrite` strategy to bypass interactive prompts. Applied Mande token overrides: `rounded-1/2/3`, semantic colours, no `ring-offset-background`, dark overlays.
+5. **Zero Lucide** — wrote Node introspection script to get real Central Icons names (our style has 1,906 icons). Bulk-replaced all wrong names with sed across 17 files.
+6. **Wrote 46 Storybook stories** — grouped as `Components/{Form|Display|Navigation|Overlays|Feedback|Layout}/{Name}`.
+7. **Rewrote index.ts** — clean grouped exports for all 52 components, removed legacy atom exports.
+8. **Deleted legacy atom stories** — Button, Input, Checkbox, Label, Chip stories in `/atoms/` removed.
+9. **Switched icon stroke 1.5 → 2** — one change in `Icon` wrapper propagates everywhere.
+
+### Key files changed
+- `packages/ui/src/components/ui/icon.tsx` — stroke prop changed to `"2"`
+- `packages/ui/src/components/ui/*.tsx` — all 52 components (icon + token overrides)
+- `packages/ui/src/components/ui/*.stories.tsx` — 46 story files
+- `packages/ui/src/index.ts` — full rewrite
+- `packages/ui/src/tokens/globals.css` — Inter font-feature-settings + antialiasing
+- `.storybook/preview.css`, `apps/playground/src/app/globals.css` — Inter Variable URL
+
+### Verified
+- Zero `lucide-react` imports (`grep` confirmed)
+- Zero bad icon names (verified against package)
+- 46 story files present, all grouped correctly
+- Commit `6aba0a6` pushed to origin/main

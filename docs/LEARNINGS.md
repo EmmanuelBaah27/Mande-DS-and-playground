@@ -90,3 +90,87 @@ The shadow tokens use `rgba(23, 23, 23, ...)` instead of `rgba(0, 0, 0, ...)`. P
 ### Storybook version alignment matters
 
 When using Storybook with the Vite builder (`@storybook/react-vite`), all `@storybook/*` packages must be on the same minor version. A split between 8.4.7 (addons) and 8.6.18 (vite builder) caused `Meta` export errors. Always update them together.
+
+---
+
+## 2026-04-04 — Session 3: Full Component Library
+
+### OpenType feature settings for Inter
+
+Inter has 9 character variants accessible via `font-feature-settings`. These are not on by default — you must opt in with CSS:
+
+```css
+font-feature-settings:
+  "cv01" 1,   /* Alternate one           */
+  "cv02" 1,   /* Open four               */
+  "cv03" 1,   /* Open six                */
+  "cv04" 1,   /* Open nine               */
+  "cv05" 1,   /* Lower-case l with tail  */
+  "cv06" 1,   /* r with curved tail      */
+  "cv07" 1,   /* Alternate German ß      */
+  "cv08" 1,   /* Upper-case I with serif */
+  "cv09" 1;   /* Flat-top three          */
+```
+
+`"cv08" 1` (I with serif) is especially important for readability — it prevents `I`, `l`, and `1` from being visually ambiguous.
+
+### Font smoothing eliminates colour fringing
+
+Subpixel rendering (the default on macOS) renders text using red/blue colour channels on the pixel edges — visible as colour "spills". Three properties together fix it:
+
+```css
+text-rendering: optimizeLegibility;
+-webkit-font-smoothing: antialiased;
+-moz-osx-font-smoothing: grayscale;
+```
+
+This switches from subpixel to greyscale antialiasing. Text looks slightly thinner but is cleaner, especially for Inter's thin strokes.
+
+### Inter Variable vs static Inter
+
+The static Google Fonts URL (`family=Inter:wght@400;500;600;700`) only loads the specific weights requested. The variable URL (`family=Inter:ital,opsz,wght@0,14..32,100..900`) loads the full variable font with:
+- All weights 100–900 (no individual weight requests needed)
+- Optical sizing axis (`opsz`) — letters subtly adjust for small vs large text
+- Italic axis
+
+Slightly larger initial download, but eliminates FOUT at unusual weights and enables optical sizing.
+
+### shadcn CLI `--overwrite` strategy
+
+The CLI prompts interactively when target files already exist. This blocks batch installs. The solution:
+1. Back up any files you've customised
+2. Run install with `--overwrite` flag — no prompts
+3. Immediately restore the backed-up custom files
+
+Risk: `--overwrite` reverts your changes. Always restore immediately and never assume your customisations survived.
+
+### Icon package introspection
+
+`@central-icons-react/all` exports icons keyed by `{style}/{IconName}`. To find the real names for a given style, require the package and filter:
+
+```js
+const { centralIcons } = require('/path/to/package')
+const style = 'round-outlined-radius-2-stroke-1.5'
+const names = Object.keys(centralIcons)
+  .filter(k => k.startsWith(style + '/'))
+  .map(k => k.split('/')[1])
+```
+
+The "Medium" suffix that shadcn-generated code assumed (e.g. `IconHomeMedium`) doesn't exist. Real names are plain: `IconHome`, `IconBell`, `IconMagnifyingGlass`.
+
+### Inline SVGs over Icon wrapper for indicator marks
+
+For checkbox checks, radio dots, and grip handles — use inline `<svg>` rather than the `<Icon>` wrapper. Reasons:
+- These marks need pixel-perfect sizing (often 10×8px or 8×8px) that doesn't map to the Icon component's `16|20|24|32` size system
+- The Icon wrapper adds a `<span>` with flex layout that can interfere with absolutely-positioned indicator marks
+- The marks are structural, not semantic — they're not icons from the library
+
+### pnpm behind nvm in non-interactive shells
+
+Claude Code's Bash tool runs in a non-interactive shell that doesn't source `~/.zshrc` or `~/.bash_profile`. nvm-managed node/pnpm aren't on PATH. Fix:
+
+```bash
+export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" && pnpm <command>
+```
+
+Must prepend this to every pnpm/node command in Bash tool calls.
