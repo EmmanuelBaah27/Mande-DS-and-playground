@@ -22,6 +22,20 @@ Mande Design System — Turborepo monorepo:
 - `apps/playground/` — Next.js prototyping app
 - `.storybook/` — Storybook 8 with Vite builder
 
+## Before touching components from third-party packages
+
+When a component wraps a third-party primitive (shadcn, Radix, etc.), verify the installed package version exports before writing or editing:
+
+```bash
+node -e "console.log(Object.keys(require('package-name')))"
+```
+
+Breaking API changes (renamed exports, removed props) are common across major versions and won't surface until build time. Check first, especially after `pnpm install` or when a component wasn't authored here.
+
+Known breaking changes already encountered:
+- `react-resizable-panels` v4: `PanelGroup`→`Group`, `PanelResizeHandle`→`Separator`
+- `calendar.tsx` `String.raw` template literals: not supported by Storybook's Babel docgen parser — use regular escaped strings instead
+
 ## Standards
 
 - **Icons**: `@central-icons-react/all` via `<Icon>` wrapper in `packages/ui/src/components/ui/icon.tsx`. Stroke 2, join round, radius 2, outlined. Zero Lucide.
