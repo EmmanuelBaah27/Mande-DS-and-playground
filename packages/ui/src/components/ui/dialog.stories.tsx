@@ -12,7 +12,7 @@ import { Button } from "./button"
 import { Input } from "./input"
 
 const meta: Meta<typeof Dialog> = {
-  title: "Components/Dialog",
+  title: "Components/Overlays/Dialog",
   component: Dialog,
   parameters: { layout: "centered" },
   tags: ["autodocs"],
