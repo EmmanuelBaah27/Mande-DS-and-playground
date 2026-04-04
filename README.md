@@ -5,11 +5,15 @@ A shared design system and prototyping playground for the Mande team. Components
 ## Quick start
 
 ```bash
-# Install pnpm if you don't have it
-npm install -g pnpm
+# Use the repo’s pnpm version (avoids lockfile / script-policy mismatches)
+corepack enable
+corepack prepare pnpm@10.33.0 --activate
 
 # Install dependencies
 pnpm install
+
+# Note: @central-icons-react/all preinstall is skipped via pnpm config so install works
+# without CENTRAL_LICENSE_KEY. Use pnpm 10.x as above.
 
 # Start the playground (build screens)
 pnpm dev:playground

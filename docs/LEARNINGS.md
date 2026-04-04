@@ -174,3 +174,13 @@ export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" && pnpm <command>
 ```
 
 Must prepend this to every pnpm/node command in Bash tool calls.
+
+---
+
+## 2026-04-04 — Central Icons preinstall + pnpm script policy
+
+### Technical
+- **`@central-icons-react/all` preinstall** — runs `license-check.js` and throws if `CENTRAL_LICENSE_KEY` is unset. The published tarball still contains icon modules; skipping the script unblocks local/CI install.
+- **`neverBuiltDependencies` vs `onlyBuiltDependencies`** — pnpm 10.33 rejects having both in the same workspace config (`ERR_PNPM_CONFIG_CONFLICT_BUILT_DEPENDENCIES`). Use **`ignoredBuiltDependencies`** for packages that must never run lifecycle scripts alongside an `onlyBuiltDependencies` allowlist.
+- **`CENTRAL_LICENSE_KEY` belongs in the environment** — not in `.npmrc`. npm/pnpm config files are not automatically exposed as `process.env` to dependency `preinstall` scripts.
+- **Lockfile “not compatible with current pnpm”** — install with the `packageManager` version (Corepack or `npx pnpm@<version>`) so the lockfile and script policies match.

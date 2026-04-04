@@ -28,6 +28,7 @@ Key decisions, patterns, and processes for the Mande Design System. Updated as t
 ### Central Icons (not Lucide)
 **Why:** Emmanuel has a license for `@central-icons-react/all`. Icons are configurable via `stroke`, `join`, `radius`, `fill` props. Currently using: stroke 2, join round, radius 2, outlined.
 **Wrapper**: `packages/ui/src/components/ui/icon.tsx` locks these to project standards. One place to change if we switch style.
+**Install:** `@central-icons-react/all` is listed under `ignoredBuiltDependencies` in `pnpm-workspace.yaml` so its `preinstall` license script does not block `pnpm install`. Team members still need a valid subscription for compliance; use **pnpm 10.x** (`packageManager` in root `package.json`). Optional: set `CENTRAL_LICENSE_KEY` in the environment if Central Icons requires it for your workflow.
 
 ### Dark mode deferred
 **Why:** Ship light mode first, get the system working in production, then layer in dark mode once the token structure is battle-tested.

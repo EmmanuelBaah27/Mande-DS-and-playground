@@ -43,10 +43,7 @@ Changed `"iconLibrary": "lucide"` → `"iconLibrary": "none"` so the shadcn CLI 
 
 ### 3. Central Icons license
 
-Stored license key `6509FD2D-1293-4A8F-A68D-A638BB796CDF` in `.npmrc` (gitignored):
-```
-CENTRAL_LICENSE_KEY=6509FD2D-1293-4A8F-A68D-A638BB796CDF
-```
+Use a **shell environment variable** `CENTRAL_LICENSE_KEY` if required by your Central Icons subscription (not `.npmrc`). The repo skips the package preinstall via `ignoredBuiltDependencies` in `pnpm-workspace.yaml` so installs succeed without the key when using pnpm 10.x (see `packageManager` in root `package.json`).
 
 ### 4. All 52 shadcn components installed and tokenised
 

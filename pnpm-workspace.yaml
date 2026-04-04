@@ -1,6 +1,9 @@
 packages:
   - "packages/*"
   - "apps/*"
+# Skip Central Icons preinstall (license gate). Icons ship in the package; install works without CENTRAL_LICENSE_KEY.
+ignoredBuiltDependencies:
+  - "@central-icons-react/all"
 onlyBuiltDependencies:
   - '@swc/core'
   - esbuild
