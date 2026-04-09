@@ -22,6 +22,17 @@ Mande Design System — Turborepo monorepo:
 - `apps/playground/` — Next.js prototyping app
 - `.storybook/` — Storybook 8 with Vite builder
 
+## Product context
+
+**Always read `docs/product/OVERVIEW.md` at the start of every session.**
+
+Feature-level context lives in separate files — read the relevant one(s) when working on a specific feature:
+- `docs/product/home.md`
+- `docs/product/chat-assistant.md`
+- `docs/product/career-discovery.md`
+
+When work spans multiple features, read all relevant files. When a new feature or initiative starts, create a new file in `docs/product/` using the same template structure.
+
 ## Before touching components from third-party packages
 
 When a component wraps a third-party primitive (shadcn, Radix, etc.), verify the installed package version exports before writing or editing:
