@@ -184,3 +184,37 @@ Chronological record of all work done on the Mande Design System.
 
 ### Verified
 - `npx pnpm@10.33.0 install` — succeeds with no `CENTRAL_LICENSE_KEY` set
+
+---
+
+## 2026-04-08 — Storybook fixes, Icon Browser, product docs, chat screen (Session 4)
+
+### What was done
+1. **Storybook `optimizeDeps`** — added `include` list of all Radix/shadcn packages to `.storybook/main.ts` so Vite pre-bundles them at startup instead of lazily on first story visit. Eliminates the "dependencies optimized, reloading" flash.
+2. **Icon Browser story** — `Foundations/Icon Browser`: searchable grid of all 1,906 Central Icons, filter by 38 categories, outlined/filled toggle, click any icon to copy its name. Built as `IconBrowser.stories.jsx` + static `icon-categories.js` (generated from `icons-index.json`).
+   - Root cause of initial failure: `@central-icons-react/all` `exports` field blocks subpath JSON imports in Vite. Fixed by generating a local static JS module instead.
+   - Subsequent failure: rendering all 1,906 icons at once triggered 1,906 simultaneous dynamic imports — fatal fetch error. Fixed: already working after static data approach.
+3. **Product context docs** — created `docs/product/` with `OVERVIEW.md` (always-loaded) + feature files: `chat-assistant.md`, `career-discovery.md`, `home.md`. Updated `CLAUDE.md` to auto-load OVERVIEW and pull feature files on demand.
+4. **Chat screen scaffold** — `apps/playground/screens/chat/page.tsx`: sidebar with Home/Chat/Career nav, session dropdown in navbar, message thread with user/assistant bubbles, input with Enter-to-send.
+
+### Files changed
+- `.storybook/main.ts` — `optimizeDeps.include` list
+- `packages/ui/src/stories/IconBrowser.stories.jsx` — new
+- `packages/ui/src/stories/icon-categories.js` — new (generated)
+- `docs/product/OVERVIEW.md` — new
+- `docs/product/chat-assistant.md` — new
+- `docs/product/career-discovery.md` — new
+- `docs/product/home.md` — new
+- `CLAUDE.md` — product context section added
+- `apps/playground/src/app/screens/chat/page.tsx` — new
+
+### Verified
+- Icon Browser renders in Storybook at Foundations/Icon Browser
+- Storybook dev server running on port 6006
+- Playground compiling the /screens/chat route
+
+### What's next
+- Fix chat screen compile error (Next.js exiting after compiling route — likely a type error or bad import)
+- Complete the chat screen UI (next session)
+- Animations: install `motion` + `tailwindcss-animate`, spring physics on modals/drawers
+- Storybook GitHub Pages deployment

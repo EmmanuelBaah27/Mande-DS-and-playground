@@ -184,3 +184,19 @@ Must prepend this to every pnpm/node command in Bash tool calls.
 - **`neverBuiltDependencies` vs `onlyBuiltDependencies`** — pnpm 10.33 rejects having both in the same workspace config (`ERR_PNPM_CONFIG_CONFLICT_BUILT_DEPENDENCIES`). Use **`ignoredBuiltDependencies`** for packages that must never run lifecycle scripts alongside an `onlyBuiltDependencies` allowlist.
 - **`CENTRAL_LICENSE_KEY` belongs in the environment** — not in `.npmrc`. npm/pnpm config files are not automatically exposed as `process.env` to dependency `preinstall` scripts.
 - **Lockfile “not compatible with current pnpm”** — install with the `packageManager` version (Corepack or `npx pnpm@<version>`) so the lockfile and script policies match.
+
+---
+
+## 2026-04-08 — Session 5: Icon Browser, Vite optimizeDeps, product docs
+
+### Technical
+
+- **Vite `exports` field blocks package subpath JSON imports** — `@central-icons-react/all/icons-index.json` exists on disk but the package's `exports` map only exposes JS modules (`./*` → `./*/index.mjs`). Vite respects `exports` strictly and blocks the import. Fix: generate a local static JS module from the JSON at a point in time. Downside: goes stale on package upgrades — add a regeneration comment.
+
+- **`optimizeDeps.include` in Storybook `viteFinal`** — Vite dev server discovers dependencies lazily. Without an explicit include list, it bundles Radix/shadcn packages on first story visit and reloads. Adding all known deps to `optimizeDeps.include` moves this work to startup, making story navigation instant.
+
+- **`CentralIcon` uses dynamic imports per icon** — each render of `<CentralIcon name=”IconHome” />` triggers a dynamic `import()` for that icon's module. Rendering 1,906 icons simultaneously causes 1,906 parallel fetch attempts that overwhelm the dev server. Paginate or virtualize large icon grids.
+
+### Process
+
+- **Per-feature product docs beat one big PRD** — a `docs/product/` folder with one file per initiative keeps context targeted. Claude reads only what's relevant rather than scanning an entire product spec. `OVERVIEW.md` as always-loaded connective tissue + feature files on demand is the right split.
