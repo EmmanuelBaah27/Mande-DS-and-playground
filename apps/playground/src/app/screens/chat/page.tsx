@@ -1,10 +1,11 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import Link from "next/link"
+import ReactMarkdown from "react-markdown"
 import {
   Button,
   Icon,
-  Input,
   Select,
   SelectContent,
   SelectItem,
@@ -107,8 +108,8 @@ const CHAT_HISTORY: ChatSession[] = [
 
 const NAV_ITEMS = [
   { id: "home", label: "Home", icon: "IconHome" },
-  { id: "chat", label: "Chat assistant", icon: "IconBubble" },
-  { id: "career", label: "Career discovery", icon: "IconCompass" },
+  { id: "chat", label: "Chat assistant", icon: "IconBubbleSparkle" },
+  { id: "career", label: "Career discovery", icon: "IconCompassRound" },
 ]
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -116,51 +117,93 @@ const NAV_ITEMS = [
 function Sidebar({
   activeNav,
   onNavChange,
+  isOpen,
+  onToggle,
 }: {
   activeNav: string
   onNavChange: (id: string) => void
+  isOpen: boolean
+  onToggle: () => void
 }) {
   return (
-    <aside className="w-60 shrink-0 flex flex-col border-r border-neutral-200 bg-white h-screen">
+    <aside
+      className={cn(
+        "shrink-0 flex flex-col bg-neutral-50 border border-neutral-200 shadow-sm rounded-2 m-2 transition-all duration-200 overflow-hidden sticky top-2 self-start h-[calc(100vh-1rem)]",
+        isOpen ? "w-60" : "w-14"
+      )}
+    >
       {/* Logo */}
-      <div className="h-14 flex items-center px-4 border-b border-neutral-200">
-        <span className="text-base-semibold text-neutral-900">Mande</span>
+      <div className="h-14 flex items-center px-4 gap-3">
+        {isOpen && (
+          <Link href="/" className="flex-1 hover:opacity-80 transition-opacity">
+            <img src="/logo.svg" alt="Mande" width={84} height={24} />
+          </Link>
+        )}
+        <button
+          onClick={onToggle}
+          className={cn(
+            "flex items-center justify-center rounded-1 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 p-1 transition-colors",
+            !isOpen && "mx-auto"
+          )}
+          aria-label="Toggle sidebar"
+        >
+          <Icon name="IconLayoutLeft" size={16} />
+        </button>
       </div>
 
       {/* Nav */}
       <nav className="flex-1 p-3 flex flex-col gap-1">
-        {NAV_ITEMS.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => onNavChange(item.id)}
-            className={cn(
-              "flex items-center gap-3 px-3 py-2 rounded-2 text-sm-medium transition-colors w-full text-left",
-              activeNav === item.id
-                ? "bg-primary-100 text-primary-700"
-                : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
-            )}
-          >
-            <Icon
-              name={item.icon}
-              size={16}
-              className={activeNav === item.id ? "text-primary-600" : "text-neutral-400"}
-            />
-            {item.label}
-          </button>
-        ))}
+        {NAV_ITEMS.map((item) => {
+          const isActive = activeNav === item.id
+          return (
+            <button
+              key={item.id}
+              onClick={() => onNavChange(item.id)}
+              className={cn(
+                "flex items-center gap-3 px-3 py-2 rounded-2 text-sm transition-colors w-full",
+                isOpen ? "text-left" : "justify-center",
+                isActive
+                  ? "bg-neutral-200 text-neutral-900"
+                  : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
+              )}
+            >
+              <Icon
+                name={item.icon}
+                size={16}
+                fill={isActive ? "filled" : "outlined"}
+                className={isActive ? "text-neutral-900" : "text-neutral-400"}
+              />
+              {isOpen && (
+                <span className={isActive ? "text-sm-medium" : "text-sm-regular"}>
+                  {item.label}
+                </span>
+              )}
+            </button>
+          )
+        })}
       </nav>
 
       {/* User */}
       <div className="p-3 border-t border-neutral-200">
-        <button className="flex items-center gap-3 px-3 py-2 rounded-2 w-full hover:bg-neutral-100 transition-colors">
-          <Avatar className="h-7 w-7">
-            <AvatarFallback className="text-xs bg-primary-100 text-primary-700">EB</AvatarFallback>
+        <button
+          className={cn(
+            "flex items-center gap-3 px-3 py-2 rounded-2 w-full hover:bg-neutral-100 transition-colors",
+            !isOpen && "justify-center px-0"
+          )}
+        >
+          <Avatar className="h-7 w-7 shrink-0">
+            <AvatarFallback variant="primary" className="text-xs font-medium">
+              EB
+            </AvatarFallback>
           </Avatar>
-          <div className="flex-1 text-left">
-            <p className="text-sm-medium text-neutral-900 leading-none">Emmanuel Baah</p>
-            <p className="text-xs-regular text-neutral-400 mt-0.5">hello@mande.com</p>
-          </div>
-          <Icon name="IconDotsHorizontal" size={16} className="text-neutral-400" />
+          {isOpen && (
+            <>
+              <p className="text-xs-medium text-neutral-900 leading-none flex-1 text-left">
+                Emmanuel Baah
+              </p>
+              <Icon name="IconArrowTopBottom" size={16} className="text-neutral-400" />
+            </>
+          )}
         </button>
       </div>
     </aside>
@@ -177,12 +220,12 @@ function ChatNavbar({
   onSessionChange: (id: string) => void
 }) {
   return (
-    <header className="h-14 flex items-center px-4 border-b border-neutral-200 bg-white gap-3 shrink-0">
+    <header className="h-14 flex items-center px-4 bg-white gap-3 shrink-0">
       <Select value={activeSessionId} onValueChange={onSessionChange}>
-        <SelectTrigger className="w-72 border-0 shadow-none bg-transparent px-0 font-medium text-neutral-900 focus:ring-0">
+        <SelectTrigger className="w-auto max-w-xs border border-neutral-200 shadow-none bg-transparent px-3 gap-3 font-medium text-neutral-900 focus:ring-0 hover:bg-neutral-50 transition-colors [&>span]:truncate [&>span]:max-w-[28ch]">
           <SelectValue />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent className="border-neutral-200">
           {sessions.map((s) => (
             <SelectItem key={s.id} value={s.id}>
               {s.title}
@@ -192,11 +235,8 @@ function ChatNavbar({
       </Select>
 
       <div className="ml-auto flex items-center gap-2">
-        <Button variant="ghost" size="icon">
-          <Icon name="IconEdit" size={16} />
-        </Button>
-        <Button variant="ghost" size="icon">
-          <Icon name="IconDotsHorizontal" size={16} />
+        <Button variant="tertiary" size="icon">
+          <Icon name="IconEditSmall1" size={16} />
         </Button>
       </div>
     </header>
@@ -206,34 +246,31 @@ function ChatNavbar({
 function MessageBubble({ message }: { message: Message }) {
   const isUser = message.role === "user"
 
-  return (
-    <div className={cn("flex gap-3", isUser && "flex-row-reverse")}>
-      {/* Avatar */}
-      <Avatar className="h-8 w-8 shrink-0 mt-0.5">
-        <AvatarFallback
-          className={cn(
-            "text-xs",
-            isUser ? "bg-primary-100 text-primary-700" : "bg-neutral-100 text-neutral-600"
-          )}
-        >
-          {isUser ? "EB" : "AI"}
-        </AvatarFallback>
-      </Avatar>
-
-      {/* Bubble */}
-      <div className={cn("max-w-[72%] flex flex-col gap-1", isUser && "items-end")}>
-        <div
-          className={cn(
-            "px-4 py-3 rounded-3 text-sm leading-relaxed whitespace-pre-wrap",
-            isUser
-              ? "bg-primary-500 text-white rounded-tr-1"
-              : "bg-white border border-neutral-200 text-neutral-800 rounded-tl-1"
-          )}
-        >
-          {message.content}
+  if (isUser) {
+    return (
+      <div className="flex justify-end">
+        <div className="max-w-[72%]">
+          <div className="px-4 py-3 rounded-3 rounded-tr-1 text-sm leading-relaxed bg-neutral-100 text-neutral-900">
+            {message.content}
+          </div>
         </div>
-        <span className="text-xs text-neutral-400 px-1">{message.timestamp}</span>
       </div>
+    )
+  }
+
+  return (
+    <div className="text-neutral-900 text-sm leading-relaxed">
+      <ReactMarkdown
+        components={{
+          p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+          strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+          ol: ({ children }) => <ol className="list-decimal pl-5 mb-2 space-y-0.5">{children}</ol>,
+          ul: ({ children }) => <ul className="list-disc pl-5 mb-2 space-y-0.5">{children}</ul>,
+          li: ({ children }) => <li>{children}</li>,
+        }}
+      >
+        {message.content}
+      </ReactMarkdown>
     </div>
   )
 }
@@ -244,11 +281,27 @@ function MessageInput({
   onSend: (text: string) => void
 }) {
   const [value, setValue] = useState("")
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  const resize = () => {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = "auto"
+    el.style.height = `${el.scrollHeight}px`
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setValue(e.target.value)
+    resize()
+  }
 
   const handleSend = () => {
     if (!value.trim()) return
     onSend(value.trim())
     setValue("")
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto"
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -259,21 +312,22 @@ function MessageInput({
   }
 
   return (
-    <div className="p-4 border-t border-neutral-200 bg-white">
-      <div className="flex gap-2 items-end max-w-3xl mx-auto">
-        <div className="flex-1 relative">
-          <Input
-            value={value}
-            onChange={(e) => setValue(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="Ask anything about your career…"
-            className="pr-4"
-          />
-        </div>
+    <div className="px-4 pb-4 bg-white">
+      <div className="relative max-w-3xl mx-auto">
+        <textarea
+          ref={textareaRef}
+          rows={2}
+          value={value}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          placeholder="Ask anything about your career…"
+          className="w-full min-h-[80px] resize-none rounded-4 border border-neutral-200 bg-white px-4 pt-3 pb-14 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-0 leading-relaxed"
+        />
         <Button
           onClick={handleSend}
           disabled={!value.trim()}
           size="icon"
+          className="absolute bottom-4 right-4"
         >
           <Icon name="IconArrowUp" size={16} />
         </Button>
@@ -291,6 +345,7 @@ export default function ChatPage() {
   const [activeNav, setActiveNav] = useState("chat")
   const [sessions, setSessions] = useState<ChatSession[]>(CHAT_HISTORY)
   const [activeSessionId, setActiveSessionId] = useState(CHAT_HISTORY[0].id)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
@@ -316,8 +371,13 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-screen bg-neutral-50 overflow-hidden">
-      <Sidebar activeNav={activeNav} onNavChange={setActiveNav} />
+    <div className="flex h-screen bg-white overflow-hidden">
+      <Sidebar
+        activeNav={activeNav}
+        onNavChange={setActiveNav}
+        isOpen={sidebarOpen}
+        onToggle={() => setSidebarOpen((v) => !v)}
+      />
 
       <div className="flex-1 flex flex-col min-w-0">
         <ChatNavbar
@@ -327,13 +387,18 @@ export default function ChatPage() {
         />
 
         {/* Message thread */}
-        <div className="flex-1 overflow-y-auto py-6 px-4">
-          <div className="max-w-3xl mx-auto flex flex-col gap-6">
-            {activeSession.messages.map((msg) => (
-              <MessageBubble key={msg.id} message={msg} />
-            ))}
-            <div ref={bottomRef} />
+        <div className="relative flex-1 overflow-y-auto flex flex-col">
+          <div className="flex-1 py-6 px-4">
+            <div className="max-w-3xl mx-auto flex flex-col gap-6">
+              {activeSession.messages.map((msg) => (
+                <MessageBubble key={msg.id} message={msg} />
+              ))}
+              <div ref={bottomRef} />
+            </div>
           </div>
+
+          {/* Gradient fade above input */}
+          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent" />
         </div>
 
         <MessageInput onSend={handleSend} />

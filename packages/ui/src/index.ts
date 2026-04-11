@@ -24,6 +24,10 @@ export {
 } from "./components/ui/select"
 
 export { Checkbox } from "./components/ui/checkbox"
+export type { CheckboxProps } from "./components/ui/checkbox"
+
+export { InputWithLabel } from "./components/ui/input-with-label"
+export type { InputWithLabelProps } from "./components/ui/input-with-label"
 
 export { RadioGroup, RadioGroupItem } from "./components/ui/radio-group"
 
@@ -54,7 +58,11 @@ export {
 export { Badge, badgeVariants } from "./components/ui/badge"
 export type { BadgeProps } from "./components/ui/badge"
 
+export { Chip, chipVariants } from "./components/ui/chip"
+export type { ChipProps } from "./components/ui/chip"
+
 export { Avatar, AvatarImage, AvatarFallback } from "./components/ui/avatar"
+export type { AvatarVariant } from "./components/ui/avatar"
 
 export {
   Card,

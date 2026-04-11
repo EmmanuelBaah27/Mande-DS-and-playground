@@ -5,6 +5,16 @@ import * as AvatarPrimitive from "@radix-ui/react-avatar"
 
 import { cn } from "@/lib/utils"
 
+export type AvatarVariant = "primary" | "blue" | "green" | "blush" | "orange"
+
+const variantClasses: Record<AvatarVariant, string> = {
+  primary: "bg-primary-200 text-primary-900",
+  blue: "bg-blue-200 text-blue-900",
+  green: "bg-green-200 text-green-900",
+  blush: "bg-blush-200 text-blush-900",
+  orange: "bg-orange-200 text-orange-900",
+}
+
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
@@ -34,12 +44,13 @@ AvatarImage.displayName = AvatarPrimitive.Image.displayName
 
 const AvatarFallback = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Fallback>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
->(({ className, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback> & { variant?: AvatarVariant }
+>(({ className, variant, ...props }, ref) => (
   <AvatarPrimitive.Fallback
     ref={ref}
     className={cn(
       "flex h-full w-full items-center justify-center rounded-full bg-muted",
+      variant && variantClasses[variant],
       className
     )}
     {...props}
