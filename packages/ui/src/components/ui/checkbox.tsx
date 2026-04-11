@@ -3,7 +3,7 @@ import * as CheckboxPrimitive from "@radix-ui/react-checkbox"
 
 import { cn } from "@/lib/utils"
 
-const Checkbox = React.forwardRef<
+const CheckboxRoot = React.forwardRef<
   React.ElementRef<typeof CheckboxPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root>
 >(({ className, ...props }, ref) => (
@@ -28,6 +28,42 @@ const Checkbox = React.forwardRef<
     </CheckboxPrimitive.Indicator>
   </CheckboxPrimitive.Root>
 ))
-Checkbox.displayName = CheckboxPrimitive.Root.displayName
+CheckboxRoot.displayName = CheckboxPrimitive.Root.displayName
+
+export interface CheckboxProps
+  extends React.ComponentPropsWithoutRef<typeof CheckboxPrimitive.Root> {
+  label?: string
+  subtext?: string
+}
+
+const Checkbox = React.forwardRef<
+  React.ElementRef<typeof CheckboxPrimitive.Root>,
+  CheckboxProps
+>(({ label, subtext, id, className, ...props }, ref) => {
+  const generatedId = React.useId()
+  const checkboxId = id ?? generatedId
+
+  if (!label) {
+    return <CheckboxRoot ref={ref} id={id} className={className} {...props} />
+  }
+
+  return (
+    <div className="flex items-start gap-3">
+      <CheckboxRoot ref={ref} id={checkboxId} className="mt-0.5" {...props} />
+      <div className="flex flex-col gap-0.5">
+        <label
+          htmlFor={checkboxId}
+          className="text-sm-medium text-neutral-900 cursor-pointer leading-none"
+        >
+          {label}
+        </label>
+        {subtext && (
+          <span className="text-xs-regular text-neutral-400">{subtext}</span>
+        )}
+      </div>
+    </div>
+  )
+})
+Checkbox.displayName = "Checkbox"
 
 export { Checkbox }

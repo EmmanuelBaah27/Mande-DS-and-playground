@@ -1,11 +1,10 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@mande/ui"],
-  webpack: (config) => {
-    config.resolve.alias["@"] = path.resolve(__dirname, "../../packages/ui/src");
-    return config;
+  // @ alias is resolved via tsconfig paths (Turbopack reads these automatically)
+  experimental: {
+    optimizePackageImports: ["@mande/ui", "@central-icons-react/all"],
   },
 };
 

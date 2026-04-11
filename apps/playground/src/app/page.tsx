@@ -7,6 +7,11 @@ const screens = [
     description: "Main landing screen with hero section and feature highlights",
   },
   {
+    name: "Chat assistant",
+    path: "/screens/chat",
+    description: "AI career assistant with threaded conversations and session history",
+  },
+  {
     name: "Onboarding",
     path: "/screens/onboarding",
     description: "User onboarding flow with form inputs and progress steps",

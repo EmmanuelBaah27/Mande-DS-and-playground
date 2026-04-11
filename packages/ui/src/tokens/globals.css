@@ -146,6 +146,7 @@
   /* --------------------------------------------------------
      TYPOGRAPHY
      -------------------------------------------------------- */
+  --font-sans: "Inter", system-ui, sans-serif;
   --font-family-sans: "Inter", system-ui, sans-serif;
   --font-family-inter: "Inter", system-ui, sans-serif;
 
