@@ -7,6 +7,8 @@
 3. **Engineers** consume the component library in their apps
 4. **Everyone** reviews work via deployed Storybook and Vercel previews
 
+> See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for the live preview URLs and how the deploy pipelines are wired.
+
 ## Workflow
 
 ### For everyone: the branch + PR flow
