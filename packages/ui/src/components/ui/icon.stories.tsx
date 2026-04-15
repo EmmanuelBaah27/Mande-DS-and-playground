@@ -37,7 +37,7 @@ const SAMPLE_ICONS = [
   "IconArrowLeft",
   "IconChevronBottom",
   "IconBarsThree",
-]
+] as const
 
 export const Sizes: Story = {
   render: () => (

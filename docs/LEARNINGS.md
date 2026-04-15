@@ -187,6 +187,29 @@ Must prepend this to every pnpm/node command in Bash tool calls.
 
 ---
 
+## 2026-04-15 — Session 6: Harden & pin
+
+### Technical
+
+- **Turbo 2.9.3 without `--filter='*'` picks up only root-adjacent packages.** A task like `typecheck` that isn't chained via `dependsOn` to a task that crosses workspaces will silently only run in one package. Fix: root script passes `--filter='*'` to enumerate all workspaces and run the task wherever it's defined.
+
+- **`pnpm build-storybook` triggers pnpm's exec-first behaviour at the workspace root.** Because pnpm treats dash-separated names as potential binaries, it looks for an executable first. Also `pnpm run build-storybook` fails because pnpm doesn't default to the root workspace. Correct form from anywhere: `pnpm -w run build-storybook`.
+
+- **`react-resizable-panels` v4 no longer emits `data-panel-group-direction` on DOM.** v3's `<PanelGroup>` rendered that data-attr; v4's `<Group>` uses inline `style={{ flexDirection: ... }}`. Any shadcn-style CSS selector like `data-[panel-group-direction=vertical]:flex-col` is dead in v4. Must be rewritten using class-based conditionals or the v4 `aria-orientation` attribute on Separator.
+
+- **Icon `name: string` vs `CentralIconName` union.** Narrowing the wrapper's `name` prop to the full 1,906-icon union gives IntelliSense and catches typos, but cascades: any caller using a locally-defined string array must be `as const` for TS to keep the literals narrow. Pattern:
+  ```ts
+  const NAV_ITEMS = [{ id: "home", icon: "IconHome" }, ...] as const
+  ```
+
+- **`DateRange` from `react-day-picker` is required for range calendar stories.** Structural `{from: Date; to?: Date}` types don't satisfy `OnSelectHandler<DateRange | undefined>` because `DateRange.from` is `Date | undefined` — the library treats an empty range as `{from: undefined}`.
+
+- **Storybook caret-version drift is the one ecosystem worth pinning.** Session 2 showed an addon/core split breaking `Meta` exports. Caret versions keep it technically possible to drift. Pin `storybook` + every `@storybook/*` to the same exact version. Let other infra (turbo/vite/tailwind/typescript) float unless they've already burned us.
+
+- **Deploy workflow pnpm/Node pins must match `packageManager`.** Existing `deploy-storybook.yml` was on pnpm 9 + Node 20 while the project is pnpm 10.33.0 + Node 22. `pnpm install --frozen-lockfile` would fail on lockfile version mismatch the first time GH Pages is enabled. Pin the workflow to match `packageManager` in root `package.json`.
+
+---
+
 ## 2026-04-08 — Session 5: Icon Browser, Vite optimizeDeps, product docs
 
 ### Technical

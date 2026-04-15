@@ -4,6 +4,36 @@ Chronological record of all work done on the Mande Design System.
 
 ---
 
+## 2026-04-15 — Session 6: Harden & pin (Round 1)
+
+### What was done
+1. **Fixed 5 latent type errors in `packages/ui`** caught by `tsc --noEmit`:
+   - `alert-dialog.tsx` — Button `variant: "outline"` → `"secondary"` (Mande Button has no `outline`/`ghost`/`link`)
+   - `sidebar.tsx` — Button `variant="ghost"` → `"tertiary"`
+   - `icon.tsx` — `name: string` → `IconName = ComponentProps<typeof CentralIcon>["name"]`
+   - `resizable.stories.tsx` — react-resizable-panels v4: `direction` → `orientation` (×3)
+   - `calendar.stories.tsx` — use `DateRange` from `react-day-picker`
+2. **Downstream fix:** `apps/playground/.../chat/page.tsx` `NAV_ITEMS` now `as const` so icon names narrow to `IconName`
+3. **Removed dead dep** `lucide-react@1.7.0` from `packages/ui/package.json` (CLAUDE.md: Zero Lucide)
+4. **Pinned Storybook** (7 packages) to `8.6.18` exact in root `package.json`
+5. **Added CI plumbing**:
+   - `typecheck` script in `packages/ui` and `apps/playground`
+   - `typecheck` task in `turbo.json`
+   - Root `typecheck` script: `turbo run typecheck --filter='*'`
+   - New workflow `.github/workflows/ci.yml` — install + typecheck + build-storybook on PR
+6. **Updated `deploy-storybook.yml`** to pin pnpm 10.33.0 + Node 22 (was pnpm 9 + Node 20, which would fail against the current lockfile)
+
+### Verified
+- `pnpm install` succeeds, lucide-react gone
+- `pnpm typecheck` — 0 errors across both workspaces
+- `pnpm -w run build-storybook` succeeds at 8.6.18
+- `pnpm dev:playground` boots; `/screens/chat` returns 200 and compiles
+
+### Known, unfixed
+- `packages/ui/src/components/ui/resizable.tsx` uses `data-[panel-group-direction=vertical]` selectors that v4 no longer emits. Stories render correctly (v4 uses inline flex-direction), but wrapper-level styling via those attrs is dead. Not a type error — follow-up cleanup.
+
+---
+
 ## 2026-04-03 — Initial monorepo setup
 
 ### What was done

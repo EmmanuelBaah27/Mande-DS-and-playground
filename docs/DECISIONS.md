@@ -30,6 +30,16 @@ Key decisions, patterns, and processes for the Mande Design System. Updated as t
 **Wrapper**: `packages/ui/src/components/ui/icon.tsx` locks these to project standards. One place to change if we switch style.
 **Install:** `@central-icons-react/all` is listed under `ignoredBuiltDependencies` in `pnpm-workspace.yaml` so its `preinstall` license script does not block `pnpm install`. Team members still need a valid subscription for compliance; use **pnpm 10.x** (`packageManager` in root `package.json`). Optional: set `CENTRAL_LICENSE_KEY` in the environment if Central Icons requires it for your workflow.
 
+### Storybook versions pinned exactly; other infra floats
+**Why:** Storybook's addons + core + builder must stay in lockstep (addon/core split already broke `Meta` exports in Session 2). Caret makes silent drift possible. Pin `storybook` + every `@storybook/*` to the exact version (`8.6.18`, no `^`). Other infra (turbo, vite, tailwindcss, typescript) stays on `^` until a specific incident justifies pinning.
+
+### CI gates: typecheck + build-storybook on PR
+**Why:** Five latent type errors and one dead dep accumulated silently before Session 6 because nothing checked. `typecheck` (tsc --noEmit in each workspace, routed through turbo with `--filter='*'`) + `build-storybook` on every PR is the minimum bar. Lint gate can come later once lint configs settle.
+**Workflow:** `.github/workflows/ci.yml`
+
+### Icon `name` prop typed as the full CentralIcon union
+**Why:** Typing `name` as `string` accepts typos silently and offers no IntelliSense against 1,906 icons. Using `ComponentProps<typeof CentralIcon>["name"]` gives autocomplete and compile-time validation. Callers with locally-defined string arrays must use `as const` to keep literals narrow.
+
 ### Dark mode deferred
 **Why:** Ship light mode first, get the system working in production, then layer in dark mode once the token structure is battle-tested.
 

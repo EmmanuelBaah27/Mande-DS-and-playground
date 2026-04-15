@@ -12,6 +12,7 @@
     "lint": {
       "dependsOn": ["^build"]
     },
+    "typecheck": {},
     "build-storybook": {
       "outputs": ["storybook-static/**"]
     }

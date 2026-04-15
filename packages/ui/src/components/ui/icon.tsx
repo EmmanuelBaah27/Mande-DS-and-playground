@@ -1,13 +1,15 @@
 "use client"
 
+import type { ComponentProps } from "react"
 import { CentralIcon } from "@central-icons-react/all"
 import { cn } from "@/lib/utils"
 
+export type IconName = ComponentProps<typeof CentralIcon>["name"]
 export type IconSize = 16 | 20 | 24 | 32
 export type IconFill = "filled" | "outlined"
 
 export interface IconProps {
-  name: string
+  name: IconName
   size?: IconSize
   fill?: IconFill
   className?: string
