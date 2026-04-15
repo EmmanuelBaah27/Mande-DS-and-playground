@@ -5,7 +5,7 @@ import { CentralIcon } from "@central-icons-react/all"
 import { cn } from "@/lib/utils"
 
 export type IconName = ComponentProps<typeof CentralIcon>["name"]
-export type IconSize = 16 | 20 | 24 | 32
+export type IconSize = 12 | 16 | 20 | 24 | 32
 export type IconFill = "filled" | "outlined"
 
 export interface IconProps {
@@ -18,7 +18,7 @@ export interface IconProps {
 /**
  * Mande icon wrapper — locked to project standards:
  *   stroke 2 · join round · radius 2
- *   sizes: 16 | 20 | 24 | 32
+ *   sizes: 12 | 16 | 20 | 24 | 32
  *   fill:  filled | outlined
  */
 const Icon = ({ name, size = 20, fill = "outlined", className }: IconProps) => (

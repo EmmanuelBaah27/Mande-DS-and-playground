@@ -431,7 +431,7 @@ function StepList({
               )}
             >
               {isDone ? (
-                <Icon name="IconCheckmark2" size={16} />
+                <Icon name="IconCheckmark2" size={12} />
               ) : (
                 <span>{idx + 1}</span>
               )}
@@ -476,7 +476,7 @@ function ChallengeBlock({
       <div className="mt-8 p-5 rounded-3 bg-primary-50 border border-primary-200">
         <div className="flex items-center gap-2 mb-2">
           <div className="h-5 w-5 rounded-full bg-primary-500 flex items-center justify-center">
-            <Icon name="IconCheckmark2" size={16} className="text-white" />
+            <Icon name="IconCheckmark2" size={12} className="text-white" />
           </div>
           <p className="text-sm-medium text-primary-900">Challenge complete</p>
         </div>
@@ -732,7 +732,7 @@ export default function CareerDiscoveryPage() {
                           : "bg-neutral-200 text-neutral-500"
                       )}
                     >
-                      {pct === 100 ? <Icon name="IconCheckmark2" size={16} /> : pillar.number}
+                      {pct === 100 ? <Icon name="IconCheckmark2" size={12} /> : pillar.number}
                     </span>
                     <div className="flex-1 min-w-0">
                       <p
