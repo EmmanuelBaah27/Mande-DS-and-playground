@@ -4,6 +4,21 @@ Things learned while building the Mande Design System. Captured so they compound
 
 ---
 
+## 2026-04-15 — Session 7: Product context extraction
+
+### Process
+
+- **Raw source + distilled summary beats either alone.** Keeping the user-uploaded `.txt` files in `docs/product/` alongside the distilled `.md` files gives us two layers: the ground-truth artefacts (full curriculum, full system prompt, raw OKRs) and the scannable summaries (4 populated template files). Future sessions can rely on the summaries; edge cases can pull the full sources.
+- **The scaffolded product-docs pattern pays off when the team actually uploads context.** The Session 5 scaffolding (empty `OVERVIEW.md` + per-feature templates) sat empty for 2 sessions. Once the user had a pattern to pour content into, extraction took one session — far faster than writing from scratch or interviewing to derive it.
+- **"Delete from global directory" needs a preservation pass first.** The user's instruction would have dropped `Q1 2026 OKRs.txt` (root-only, no `docs/product/` copy). Flagging this and moving before deleting avoided silent data loss. Default: before any bulk delete, diff the target against what exists elsewhere and flag singletons.
+
+### Technical
+
+- **`git merge` across two long-lived streams that touched disjoint file sets is boring-safe.** Feature branch added hardening commits; `main` received product context uploads. Merge resolved via `ort` strategy with zero conflicts. Worth remembering that not every merge is a conflict festival — when scopes are disjoint, it's a non-event.
+- **`git mv` across a branch boundary triggers rename detection even if files are structurally in two places.** Git saw `Mande Positioining.txt` (root) → `docs/product/Mande Positioning.txt` as a "rename" because the root copy was deleted and the docs-folder copy with the typo was deleted — net effect looked like a cross-directory rename with typo fix. The content hash is what drives rename detection, not the path semantics.
+
+---
+
 ## 2026-04-03 — Session 1: Monorepo Setup
 
 ### Technical

@@ -4,6 +4,32 @@ Chronological record of all work done on the Mande Design System.
 
 ---
 
+## 2026-04-15 — Session 7: Product context extraction (Round 3)
+
+### What was done
+1. **Merged `origin/main` into the feature branch** to pick up product context files the user uploaded in commits `f64e8e8` and `dfb3901`.
+2. **Cleaned up root-level duplicates** — deleted 4 `.txt` files the user had inadvertently uploaded twice (once at repo root, once under `docs/product/`):
+   - `Career Clarity Evaluation Engine- Mande AI.txt`
+   - `Mande Curriculum.txt`
+   - `Mande Positioining.txt` (note: typo)
+   - `Q1 2026 OKRs.txt` (root-only — preserved by moving to `docs/product/` first)
+3. **Moved and renamed** source files under `docs/product/`:
+   - `Q1 2026 OKRs.txt` (root) → `docs/product/Q1-2026-OKRs.txt`
+   - `Mande Positioining.txt` → `Mande Positioning.txt` (typo fix)
+4. **Populated the four scaffolded product `.md` files** with content distilled from the `.txt` sources:
+   - `docs/product/OVERVIEW.md` — what Mande is, who it's for, core goals, design principles, Q1 focus, non-goals
+   - `docs/product/chat-assistant.md` — Curriculum Mode vs Open Mode, 7 challenge types, UI decisions, guardrails
+   - `docs/product/career-discovery.md` — 10-day challenge arc, PIVOTS, CIA strategy, all curriculum tasks mapped to challenge types
+   - `docs/product/home.md` — first-time vs returning flows, mobile-first, chat-forward routing, Q1 targets
+5. **Raw `.txt` files kept in `docs/product/` as source-of-truth**; the `.md` files are the session-loaded summaries per the CLAUDE.md pattern.
+
+### Verified
+- `ls` at repo root shows no loose `.txt` files
+- `ls docs/product/` shows 3 source `.txt` files (curriculum, positioning, evaluation engine), 1 OKRs `.txt`, and 4 populated `.md` files
+- `OVERVIEW.md` reads as a ~1-page grounding document — the brief Claude pulls in automatically via CLAUDE.md on every session
+
+---
+
 ## 2026-04-15 — Session 6: Harden & pin (Round 1)
 
 ### What was done

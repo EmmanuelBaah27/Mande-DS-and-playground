@@ -4,6 +4,21 @@ Key decisions, patterns, and processes for the Mande Design System. Updated as t
 
 ---
 
+## Product Context Decisions (Session 7)
+
+### Source `.txt` files stay in `docs/product/` alongside distilled `.md` files
+**Why:** The `.md` summaries are opinionated condensations optimised for session loading and the scaffolded template structure. The `.txt` files are the ground truth any contributor or Claude can fall back on when a summary loses nuance. Two layers beats one.
+**Files:** `docs/product/*.txt` (source) + `docs/product/*.md` (distilled). `CLAUDE.md` auto-loads `OVERVIEW.md` only.
+
+### OVERVIEW.md is the always-loaded brief; feature files load on demand
+**Why:** Per Session 5's scaffolding design, `OVERVIEW.md` gives every session product grounding at a predictable context cost (~1 page). Feature files (`chat-assistant.md`, `career-discovery.md`, `home.md`) load only when the session's work touches them — keeping context sharp when it matters.
+**Mechanism:** `CLAUDE.md` instruction pulls `OVERVIEW.md` every session; team/Claude reads feature files explicitly per task.
+
+### Preserve before deleting when a file has no duplicate
+**Why:** `Q1 2026 OKRs.txt` existed only at root. A bulk "delete the root duplicates" instruction would have dropped it entirely. Default now: before any delete of files provided by a human, check whether the target exists elsewhere; if singleton, move it to the preservation location first, then delete.
+
+---
+
 ## Architecture Decisions
 
 ### Monorepo with Turborepo + pnpm
