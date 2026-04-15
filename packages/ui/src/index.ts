@@ -2,6 +2,10 @@
 export { Icon } from "./components/ui/icon"
 export type { IconProps, IconSize, IconFill } from "./components/ui/icon"
 
+// ── Motion tokens ─────────────────────────────────────────────────────────────
+export { springs, durations, easings } from "./tokens/motion"
+export type { SpringName, DurationName, EasingName } from "./tokens/motion"
+
 // ── Form ──────────────────────────────────────────────────────────────────────
 export { Button, buttonVariants } from "./components/ui/button"
 export type { ButtonProps } from "./components/ui/button"
