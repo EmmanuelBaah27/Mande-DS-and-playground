@@ -1,0 +1,107 @@
+**The big picture**  
+The vision of Mande is to be a career operating system for professionals. Doing something revolutionary that no other company has ventured into.
+
+**What are we solving?**  
+Existing companies/ways of doing things   have already touched on bits and pieces of solving this problem. Think about LinkedIn, job boards, spreadsheets, vision boards, project management tools like Trello, career coaching business, and pen and paper.
+
+In terms of trends that have a direct correlation to what Mande does, there's AI i.e. ChatGPT based on its current capabilities. 
+
+**Target audience**  
+We're looking at early career professionals and new career transitioners in high performance industries
+
+**What makes us stand outstandout?**
+
+* The app was built by a team of people who've worked in career development for years. Helping people like the target audience build successful careers or gain career clarity  
+* The app uses artificial intelligence in multiple ways like networked information  
+* The app has a mood meter  
+* The app provides regular insights on users' career progress so far plus recommendations on what to do next   
+* The app realistically captures every facet of the user's career journey like the wins, tasks, milestones, learnings, setbacks, feedback, decisions
+
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+**Mande’s Vision:**  
+A career operating system for young African professionals.
+
+**How it works**  
+Mande works by seamlessly integrating into users' daily routines to comprehensively capture their professional journey. Users write down their daily experiences, like achievements, tasks, lessons, and challenges, creating a kind of digital micro-journal. Mande uses AI to study this information, giving regular tips and spotting patterns to suggest personalized advice for moving ahead in their careers. It's like having a helpful guide that not only looks at what's happened but also helps plan what comes next. With Mande, users get more than just a tool; it's a friendly companion that understands their work life, offering insights and guidance for a successful career journey.
+
+**Competitors:**  
+\- Existing companies/competitors have touched on bits and pieces of solving the career development problem, but none has developed an all-in-one solution that guides professionals from the beginning to the end of their career. Think about LinkedIn, private job boards, spreadsheets, vision boards, project management tools, career coaching businesses, brag books, journals, pen and paper, etc.
+
+**ICP (Ideal Customer Profile):**  
+The ICP includes early career professionals (21-27) and professionals transitioning to new careers (23-33 years).
+
+**Geolocation:**  
+The target geolocation is Africa, starting from Ghana and Nigeria (NG).
+
+**Target Industry:**  
+The target industry is high-performance/compensation industries, e.g., tech.
+
+**User Quote:**  
+"I am busy figuring out how to deliver excellent work. Managing my career alongside is quite overwhelming."
+
+**User Goals/Needs:**  
+\- Build ambitious careers.  
+\- Grow careers faster.  
+\- Seek validation for workplace advancement.
+
+**User Likes:**  
+\- Going out with friends, traveling, and road trips.  
+\- Making money
+
+**Mande’s Unique Attributes:**  
+The product was developed by a team with years of experience in career development, helping individuals like our target audience build successful careers and gain career clarity.
+
+It captures every facet of the user's career journey, including wins, tasks, learnings, and setbacks.
+
+It provides regular insights on users' career progress, along with recommendations on what to do next.
+
+It uses artificial intelligence to draw patterns or themes from pieces of connected yet scattered information the user provides (networked information).
+
+It has a mood meter to help users gauge their emotional and mental well-being at the workplace.
+
+**Product Values Users Can Get from Mande:**  
+Users can see a holistic assessment of their entire career journey, including wins, tasks, learnings, setbacks, feedback, decisions, and milestones.
+
+Users can use their insights to build a case for promotions, easily fill monthly reports, and change jobs.
+
+Users can use the mood meter to gauge their high and low productivity levels based on their state of mind.
+
+Insights tell users what they've been doing, where they're headed, and areas to improve.
+
+**Suggested Positioning Statements:**  
+1\. HERO: Build your dream career with less effort.  
+   \- Subtext: Track your daily work experiences and get AI-powered insights to improve your skills, check your progress, and achieve your goals.  
+   \- CTA: Try it \- it’s free.
+
+2\. HERO: Stay ready for opportunities, anytime\!  
+Subtext: Capture, organize, and recall career moments in seconds using Mande’s AI  
+ \- CTA: Try it for free.
+
+3\. HERO: The Intelligent Career Operating System You Didn’t Know You Need  
+Subtext: Mande empowers you with AI tools and playbooks to navigate the overwhelming world of work  
+Subtext: 
+
+Testimonials  
+Mande PIVOTS, Mande My Day, Mande Quant, Mande Goals
+
+An all-in-one toolkit to keep you moving. Think about a Microsoft Office Suite but for career management.
+
+Cards  
+Career Discovery: Discover career paths that fit your personality, interests, values and skills in less than a minute. It’s 100x cheaper than a career coach
+
+Career Journal: Keep track of your day-to-day work to understand your value at work/volunteering spaces and receive insights every sunday to improve your skill set.
+
+Problem-solving Assistant: Demonstrate competence and build trust with co-workers by knowing what to do at any time when you’re faced with a problem, challenge or big task at work.  
+
+Self-evaluator: Evaluate your performance objectively with a range of standard performance metrics by providing details on your initiatives taken, project contributions or completed tasks   
+\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_\_
+
+Resume Builder: Apply faster to jobs to gain unfair advantage. Generate resumes on-the-go from your Career Journal and other sources
+
+Cover Letter Writer: Goodbye to annoying cover letters. Write tailored cover letters in seconds by providing the right input
+
+LinkedIn Profile Builder: Compel profile viewers to hit connect faster by crafting personalized LinkedIn headlines and bios in minutes
+
+Interview Angel: Generate compelling answers to interview questions in seconds using content from your Career Journal and best-in-class storytelling frameworks
+
