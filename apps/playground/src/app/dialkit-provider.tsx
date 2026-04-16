@@ -3,5 +3,5 @@
 import { DialRoot } from "dialkit";
 
 export function DialKitProvider() {
-  return <DialRoot productionEnabled />;
+  return null;
 }
