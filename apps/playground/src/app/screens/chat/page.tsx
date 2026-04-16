@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import { useDialKit } from "dialkit"
 import ReactMarkdown from "react-markdown"
 import {
   Button,
@@ -110,13 +111,15 @@ function ChatNavbar({
   sessions,
   activeSessionId,
   onSessionChange,
+  navbarHeight,
 }: {
   sessions: ChatSession[]
   activeSessionId: string
   onSessionChange: (id: string) => void
+  navbarHeight: number
 }) {
   return (
-    <header className="h-14 flex items-center px-4 bg-white gap-3 shrink-0">
+    <header style={{ height: navbarHeight }} className="flex items-center px-4 bg-white gap-3 shrink-0">
       <Select value={activeSessionId} onValueChange={onSessionChange}>
         <SelectTrigger className="w-auto max-w-xs border border-neutral-200 shadow-none bg-transparent px-3 gap-3 font-medium text-neutral-900 focus:ring-0 hover:bg-neutral-50 transition-colors [&>span]:truncate [&>span]:max-w-[28ch]">
           <SelectValue />
@@ -139,14 +142,34 @@ function ChatNavbar({
   )
 }
 
-function MessageBubble({ message }: { message: Message }) {
+type BubbleParams = {
+  userBubbleMaxWidth: number
+  userBubblePaddingX: number
+  userBubblePaddingY: number
+  userBubbleRadius: number
+  userBubbleColor: string
+  userTextColor: string
+  assistantTextColor: string
+  fontSize: number
+}
+
+function MessageBubble({ message, params }: { message: Message; params: BubbleParams }) {
   const isUser = message.role === "user"
 
   if (isUser) {
     return (
       <div className="flex justify-end">
-        <div className="max-w-[72%]">
-          <div className="px-4 py-3 rounded-3 rounded-tr-1 text-sm leading-relaxed bg-neutral-100 text-neutral-900">
+        <div style={{ maxWidth: `${params.userBubbleMaxWidth}%` }}>
+          <div
+            className="rounded-3 rounded-tr-1 leading-relaxed"
+            style={{
+              padding: `${params.userBubblePaddingY}px ${params.userBubblePaddingX}px`,
+              borderRadius: params.userBubbleRadius,
+              backgroundColor: params.userBubbleColor,
+              color: params.userTextColor,
+              fontSize: params.fontSize,
+            }}
+          >
             {message.content}
           </div>
         </div>
@@ -155,7 +178,7 @@ function MessageBubble({ message }: { message: Message }) {
   }
 
   return (
-    <div className="text-neutral-900 text-sm leading-relaxed">
+    <div style={{ color: params.assistantTextColor, fontSize: params.fontSize }} className="leading-relaxed">
       <ReactMarkdown
         components={{
           p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
@@ -173,8 +196,10 @@ function MessageBubble({ message }: { message: Message }) {
 
 function MessageInput({
   onSend,
+  inputMinHeight,
 }: {
   onSend: (text: string) => void
+  inputMinHeight: number
 }) {
   const [value, setValue] = useState("")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -217,7 +242,8 @@ function MessageInput({
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder="Ask anything about your career…"
-          className="w-full min-h-[80px] resize-none rounded-4 border border-neutral-200 bg-white px-4 pt-3 pb-14 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-0 leading-relaxed"
+          style={{ minHeight: inputMinHeight }}
+          className="w-full resize-none rounded-4 border border-neutral-200 bg-white px-4 pt-3 pb-14 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-0 leading-relaxed"
         />
         <Button
           onClick={handleSend}
@@ -238,6 +264,31 @@ function MessageInput({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ChatPage() {
+  const p = useDialKit("Chat", {
+    layout: {
+      threadMaxWidth: [768, 400, 1200],
+      messageGap: [24, 4, 64],
+      threadPaddingY: [24, 0, 80],
+      threadPaddingX: [16, 0, 80],
+      inputMinHeight: [80, 40, 200],
+    },
+    userBubble: {
+      maxWidth: [72, 40, 100],
+      paddingX: [16, 4, 40],
+      paddingY: [12, 4, 32],
+      radius: [12, 0, 32],
+      bgColor: "#f5f5f5",
+      textColor: "#171717",
+    },
+    assistant: {
+      textColor: "#171717",
+    },
+    typography: {
+      fontSize: [14, 10, 24],
+    },
+    navbarHeight: [56, 32, 80],
+  })
+
   const [sessions, setSessions] = useState<ChatSession[]>(CHAT_HISTORY)
   const [activeSessionId, setActiveSessionId] = useState(CHAT_HISTORY[0].id)
   const [sidebarOpen, setSidebarOpen] = useState(true)
@@ -278,14 +329,28 @@ export default function ChatPage() {
           sessions={sessions}
           activeSessionId={activeSessionId}
           onSessionChange={setActiveSessionId}
+          navbarHeight={p.navbarHeight}
         />
 
         {/* Message thread */}
         <div className="relative flex-1 overflow-y-auto flex flex-col">
-          <div className="flex-1 py-6 px-4">
-            <div className="max-w-3xl mx-auto flex flex-col gap-6">
+          <div className="flex-1" style={{ padding: `${p.layout.threadPaddingY}px ${p.layout.threadPaddingX}px` }}>
+            <div className="mx-auto flex flex-col" style={{ maxWidth: p.layout.threadMaxWidth, gap: p.layout.messageGap }}>
               {activeSession.messages.map((msg) => (
-                <MessageBubble key={msg.id} message={msg} />
+                <MessageBubble
+                  key={msg.id}
+                  message={msg}
+                  params={{
+                    userBubbleMaxWidth: p.userBubble.maxWidth,
+                    userBubblePaddingX: p.userBubble.paddingX,
+                    userBubblePaddingY: p.userBubble.paddingY,
+                    userBubbleRadius: p.userBubble.radius,
+                    userBubbleColor: p.userBubble.bgColor,
+                    userTextColor: p.userBubble.textColor,
+                    assistantTextColor: p.assistant.textColor,
+                    fontSize: p.typography.fontSize,
+                  }}
+                />
               ))}
               <div ref={bottomRef} />
             </div>
@@ -295,7 +360,7 @@ export default function ChatPage() {
           <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent" />
         </div>
 
-        <MessageInput onSend={handleSend} />
+        <MessageInput onSend={handleSend} inputMinHeight={p.layout.inputMinHeight} />
       </div>
     </div>
   )
