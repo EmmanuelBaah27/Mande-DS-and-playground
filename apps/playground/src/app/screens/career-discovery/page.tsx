@@ -1,30 +1,29 @@
 "use client"
 
 import { useState } from "react"
-import Link from "next/link"
+import ReactMarkdown from "react-markdown"
+import { motion, AnimatePresence } from "motion/react"
 import {
   Button,
   Icon,
-  Badge,
   Progress,
+  Input,
   Avatar,
   AvatarFallback,
   Textarea,
+  StepIndicator,
+  EmptyState,
+  springs,
+  challengeLabels,
+  challengeColors,
 } from "@mande/ui"
+import type { ChallengeType } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
+import { AppSidebar } from "../../../components/app-sidebar"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type StepStatus = "completed" | "current" | "locked"
-
-type ChallengeType =
-  | "reflection"
-  | "commitment"
-  | "self-report"
-  | "research-action"
-  | "craft"
-  | "embedded-assessment"
-  | "external-assessment"
 
 type ChallengeInput = "textarea" | "confirm" | "url" | "short-text" | "list"
 
@@ -155,62 +154,35 @@ const PILLARS: Pillar[] = [
     title: "Finding Clarity",
     description: "Research paths, reach out to professionals, run informational interviews.",
     steps: [
-      {
-        id: "clar-1",
-        title: "Read your career report",
-        status: "locked",
-        lesson: "",
-      },
-      {
-        id: "clar-2",
-        title: "CIA strategy",
-        status: "locked",
-        lesson: "",
-      },
+      { id: "clar-1", title: "Read your career report", status: "locked", lesson: "" },
+      { id: "clar-2", title: "CIA strategy", status: "locked", lesson: "" },
       {
         id: "clar-3",
         title: "Read job descriptions",
         status: "locked",
         lesson: "",
-        challenge: {
-          type: "research-action",
-          prompt: "Read 3 job descriptions for paths you bookmarked. List the keywords you didn't understand.",
-          inputType: "list",
-        },
+        challenge: { type: "research-action", prompt: "Read 3 job descriptions for paths you bookmarked. List the keywords you didn't understand.", inputType: "list" },
       },
       {
         id: "clar-4",
         title: "Find 3 professionals",
         status: "locked",
         lesson: "",
-        challenge: {
-          type: "research-action",
-          prompt: "Use Boolean search to find 3 professionals in one of your chosen paths. List their names and contact channels.",
-          inputType: "list",
-        },
+        challenge: { type: "research-action", prompt: "Use Boolean search to find 3 professionals in one of your chosen paths. List their names and contact channels.", inputType: "list" },
       },
       {
         id: "clar-5",
         title: "Craft your cold message",
         status: "locked",
         lesson: "",
-        challenge: {
-          type: "craft",
-          prompt: "Write a cold message to the first professional on your list. You'll get AI assistance for this one — the next two you'll do solo.",
-          inputType: "textarea",
-          placeholder: "Hi [Name], I came across your profile while researching…",
-        },
+        challenge: { type: "craft", prompt: "Write a cold message to the first professional on your list. You'll get AI assistance for this one — the next two you'll do solo.", inputType: "textarea", placeholder: "Hi [Name], I came across your profile while researching…" },
       },
       {
         id: "clar-6",
         title: "Informational interview",
         status: "locked",
         lesson: "",
-        challenge: {
-          type: "reflection",
-          prompt: "Share your specific notes and action points from the informational interview — who you spoke to, what surprised you, and what you're doing next.",
-          inputType: "textarea",
-        },
+        challenge: { type: "reflection", prompt: "Share your specific notes and action points from the informational interview — who you spoke to, what surprised you, and what you're doing next.", inputType: "textarea" },
       },
     ],
   },
@@ -220,60 +192,26 @@ const PILLARS: Pillar[] = [
     title: "Making the Choice",
     description: "Decide your path and build the accountability structures around it.",
     steps: [
-      {
-        id: "choice-1",
-        title: "Calling the shots",
-        status: "locked",
-        lesson: "",
-      },
+      { id: "choice-1", title: "Calling the shots", status: "locked", lesson: "" },
       {
         id: "choice-2",
         title: "Choose your path",
         status: "locked",
         lesson: "",
-        challenge: {
-          type: "reflection",
-          prompt: "Choose a path that aligns best with what you've discovered — knowing you can switch at any time. Name the path and say why.",
-          inputType: "textarea",
-          placeholder: "I'm choosing… because…",
-        },
+        challenge: { type: "reflection", prompt: "Choose a path that aligns best with what you've discovered — knowing you can switch at any time. Name the path and say why.", inputType: "textarea", placeholder: "I'm choosing… because…" },
       },
       {
         id: "choice-3",
         title: "Ace the journey",
         status: "locked",
         lesson: "",
-        challenge: {
-          type: "self-report",
-          prompt: "Identify a distant mentor, a community, and outline a 30-day learning plan.",
-          inputType: "list",
-        },
+        challenge: { type: "self-report", prompt: "Identify a distant mentor, a community, and outline a 30-day learning plan.", inputType: "list" },
       },
     ],
   },
 ]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
-
-const CHALLENGE_LABELS: Record<ChallengeType, string> = {
-  reflection: "Reflection",
-  commitment: "Commitment",
-  "self-report": "Self-report",
-  "research-action": "Research & Action",
-  craft: "Craft",
-  "embedded-assessment": "Assessment",
-  "external-assessment": "External Assessment",
-}
-
-const CHALLENGE_COLORS: Record<ChallengeType, string> = {
-  reflection: "bg-blue-100 text-blue-800",
-  commitment: "bg-primary-100 text-primary-800",
-  "self-report": "bg-neutral-100 text-neutral-700",
-  "research-action": "bg-teal-100 text-teal-800",
-  craft: "bg-blush-100 text-blush-800",
-  "embedded-assessment": "bg-orange-100 text-orange-800",
-  "external-assessment": "bg-orange-100 text-orange-800",
-}
 
 function pillarProgress(pillar: Pillar) {
   const total = pillar.steps.length
@@ -288,109 +226,17 @@ function totalProgress(pillars: Pillar[]) {
   )
 }
 
-// ─── Sidebar (shared pattern) ─────────────────────────────────────────────────
+// ─── Step List ─────────────────────────────────────────────────────────────────
 
-const NAV_ITEMS = [
-  { id: "home", label: "Home", icon: "IconHome" },
-  { id: "chat", label: "Chat assistant", icon: "IconBubbleSparkle" },
-  { id: "career", label: "Career discovery", icon: "IconCompassRound" },
-] as const
-
-function Sidebar({
-  activeNav,
-  isOpen,
-  onToggle,
-}: {
-  activeNav: string
-  isOpen: boolean
-  onToggle: () => void
-}) {
-  return (
-    <aside
-      className={cn(
-        "shrink-0 flex flex-col bg-neutral-50 border border-neutral-200 shadow-sm rounded-2 m-2 transition-all duration-200 overflow-hidden sticky top-2 self-start h-[calc(100vh-1rem)]",
-        isOpen ? "w-60" : "w-14"
-      )}
-    >
-      {/* Logo */}
-      <div className="h-14 flex items-center px-4 gap-3">
-        {isOpen && (
-          <Link href="/" className="flex-1 hover:opacity-80 transition-opacity">
-            <img src="/logo.svg" alt="Mande" width={84} height={24} />
-          </Link>
-        )}
-        <button
-          onClick={onToggle}
-          className={cn(
-            "flex items-center justify-center rounded-1 text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 p-1 transition-colors",
-            !isOpen && "mx-auto"
-          )}
-          aria-label="Toggle sidebar"
-        >
-          <Icon name="IconLayoutLeft" size={16} />
-        </button>
-      </div>
-
-      {/* Nav */}
-      <nav className="flex-1 p-3 flex flex-col gap-1">
-        {NAV_ITEMS.map((item) => {
-          const isActive = activeNav === item.id
-          return (
-            <Link
-              key={item.id}
-              href={item.id === "chat" ? "/screens/chat" : item.id === "career" ? "/screens/career-discovery" : "/"}
-              className={cn(
-                "flex items-center gap-3 px-3 py-2 rounded-2 text-sm transition-colors w-full",
-                isOpen ? "text-left" : "justify-center",
-                isActive
-                  ? "bg-neutral-200 text-neutral-900"
-                  : "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
-              )}
-            >
-              <Icon
-                name={item.icon}
-                size={16}
-                fill={isActive ? "filled" : "outlined"}
-                className={isActive ? "text-neutral-900" : "text-neutral-400"}
-              />
-              {isOpen && (
-                <span className={isActive ? "text-sm-medium" : "text-sm-regular"}>
-                  {item.label}
-                </span>
-              )}
-            </Link>
-          )
-        })}
-      </nav>
-
-      {/* User */}
-      <div className="p-3 border-t border-neutral-200">
-        <button
-          className={cn(
-            "flex items-center gap-3 px-3 py-2 rounded-2 w-full hover:bg-neutral-100 transition-colors",
-            !isOpen && "justify-center px-0"
-          )}
-        >
-          <Avatar className="h-7 w-7 shrink-0">
-            <AvatarFallback variant="primary" className="text-xs font-medium">
-              EB
-            </AvatarFallback>
-          </Avatar>
-          {isOpen && (
-            <>
-              <p className="text-xs-medium text-neutral-900 leading-none flex-1 text-left">
-                Emmanuel Baah
-              </p>
-              <Icon name="IconArrowTopBottom" size={16} className="text-neutral-400" />
-            </>
-          )}
-        </button>
-      </div>
-    </aside>
-  )
+const stepListVariants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.04 } },
 }
 
-// ─── Step List ─────────────────────────────────────────────────────────────────
+const stepItemVariants = {
+  hidden: { opacity: 0, y: 6 },
+  show: { opacity: 1, y: 0, transition: springs.smooth },
+}
 
 function StepList({
   pillar,
@@ -402,40 +248,36 @@ function StepList({
   onStepSelect: (stepId: string) => void
 }) {
   return (
-    <div className="flex flex-col gap-1">
+    <motion.div
+      key={pillar.id}
+      className="flex flex-col gap-1"
+      variants={stepListVariants}
+      initial="hidden"
+      animate="show"
+    >
       {pillar.steps.map((step, idx) => {
         const isActive = step.id === activeStepId
         const isLocked = step.status === "locked"
-        const isDone = step.status === "completed"
 
         return (
-          <button
+          <motion.button
             key={step.id}
+            variants={stepItemVariants}
             onClick={() => !isLocked && onStepSelect(step.id)}
             disabled={isLocked}
             className={cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-2 text-left transition-colors w-full text-sm",
+              "flex items-center gap-3 px-3 py-2.5 rounded-2 text-left w-full text-sm",
+              "transition-colors active:scale-[0.98]",
               isActive && "bg-primary-50 text-primary-900",
               !isActive && !isLocked && "hover:bg-neutral-100 text-neutral-700",
-              isLocked && "opacity-40 cursor-not-allowed text-neutral-500"
+              isLocked && "cursor-not-allowed text-neutral-500"
             )}
           >
-            {/* Step indicator */}
-            <span
-              className={cn(
-                "flex-shrink-0 h-5 w-5 rounded-full flex items-center justify-center text-xs font-medium",
-                isDone && "bg-primary-500 text-white",
-                isActive && !isDone && "border-2 border-primary-500 text-primary-600",
-                isLocked && "border border-neutral-300 text-neutral-400",
-                !isDone && !isActive && !isLocked && "border border-neutral-300 text-neutral-500"
-              )}
-            >
-              {isDone ? (
-                <Icon name="IconCheckmark2" size={12} />
-              ) : (
-                <span>{idx + 1}</span>
-              )}
-            </span>
+            <StepIndicator
+              status={step.status === "current" ? "current" : step.status === "completed" ? "completed" : "locked"}
+              number={idx + 1}
+              size="sm"
+            />
 
             <span className={cn(isActive ? "text-sm-medium" : "text-sm-regular", "flex-1 leading-snug")}>
               {step.title}
@@ -445,16 +287,16 @@ function StepList({
               <span
                 className={cn(
                   "text-xs px-1.5 py-0.5 rounded-1 font-medium shrink-0",
-                  CHALLENGE_COLORS[step.challenge.type]
+                  challengeColors[step.challenge.type]
                 )}
               >
-                {CHALLENGE_LABELS[step.challenge.type].split(" ")[0]}
+                {challengeLabels[step.challenge.type].split(" ")[0]}
               </span>
             )}
-          </button>
+          </motion.button>
         )
       })}
-    </div>
+    </motion.div>
   )
 }
 
@@ -473,31 +315,34 @@ function ChallengeBlock({
 
   if (submitted) {
     return (
-      <div className="mt-8 p-5 rounded-3 bg-primary-50 border border-primary-200">
+      <motion.div
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={springs.snappy}
+        className="mt-10 p-5 rounded-3 bg-green-50 border border-green-200"
+      >
         <div className="flex items-center gap-2 mb-2">
-          <div className="h-5 w-5 rounded-full bg-primary-500 flex items-center justify-center">
-            <Icon name="IconCheckmark2" size={12} className="text-white" />
-          </div>
-          <p className="text-sm-medium text-primary-900">Challenge complete</p>
+          <StepIndicator status="completed" size="sm" />
+          <p className="text-sm-medium text-green-900">Challenge complete</p>
         </div>
-        <p className="text-sm text-primary-700">
+        <p className="text-sm text-green-700">
           Your reflection has been saved. You can continue to the next step.
         </p>
-      </div>
+      </motion.div>
     )
   }
 
   return (
-    <div className="mt-8 p-5 rounded-3 border border-neutral-200 bg-white">
+    <div className="mt-10 p-5 rounded-3 border border-neutral-200 bg-white">
       {/* Type badge */}
       <div className="flex items-center gap-2 mb-3">
         <span
           className={cn(
             "text-xs px-2 py-1 rounded-1 font-medium",
-            CHALLENGE_COLORS[challenge.type]
+            challengeColors[challenge.type]
           )}
         >
-          {CHALLENGE_LABELS[challenge.type]}
+          {challengeLabels[challenge.type]}
         </span>
       </div>
 
@@ -528,22 +373,22 @@ function ChallengeBlock({
       )}
 
       {challenge.inputType === "url" && (
-        <input
+        <Input
           type="url"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder={challenge.placeholder ?? "https://..."}
-          className="w-full h-10 px-3 rounded-2 border border-neutral-200 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 mb-4"
+          className="mb-4"
         />
       )}
 
       {challenge.inputType === "short-text" && (
-        <input
+        <Input
           type="text"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           placeholder={challenge.placeholder}
-          className="w-full h-10 px-3 rounded-2 border border-neutral-200 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 mb-4"
+          className="mb-4"
         />
       )}
 
@@ -563,6 +408,7 @@ function ChallengeBlock({
           onClick={onSubmit}
           icon={<Icon name="IconArrowRight" size={16} />}
           iconPosition="right"
+          className="active:scale-[0.97]"
         >
           Submit
         </Button>
@@ -572,6 +418,14 @@ function ChallengeBlock({
 }
 
 // ─── Lesson View ──────────────────────────────────────────────────────────────
+
+const markdownComponents = {
+  p: ({ children }: { children?: React.ReactNode }) => <p className="mb-3 last:mb-0">{children}</p>,
+  strong: ({ children }: { children?: React.ReactNode }) => <strong className="font-semibold text-neutral-900">{children}</strong>,
+  ol: ({ children }: { children?: React.ReactNode }) => <ol className="list-decimal pl-5 mb-3 space-y-0.5">{children}</ol>,
+  ul: ({ children }: { children?: React.ReactNode }) => <ul className="list-disc pl-5 mb-3 space-y-0.5">{children}</ul>,
+  li: ({ children }: { children?: React.ReactNode }) => <li>{children}</li>,
+}
 
 function LessonView({
   step,
@@ -586,23 +440,23 @@ function LessonView({
 }) {
   if (step.status === "locked") {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-8">
-        <div className="h-12 w-12 rounded-full bg-neutral-100 flex items-center justify-center mb-2">
-          <Icon name="IconLock" size={20} className="text-neutral-400" />
-        </div>
-        <p className="text-base-medium text-neutral-900">This step is locked</p>
-        <p className="text-sm text-neutral-500 max-w-xs">
-          Complete the previous steps in this pillar to unlock it.
-        </p>
-      </div>
+      <EmptyState
+        icon="IconLock"
+        title="This step is locked"
+        description="Complete the previous steps in this pillar to unlock it."
+      />
     )
   }
 
-  const paragraphs = step.lesson.split("\n\n")
-
   return (
     <div className="flex-1 overflow-y-auto">
-      <div className="max-w-2xl mx-auto px-6 py-8">
+      <motion.div
+        key={step.id}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={springs.smooth}
+        className="max-w-2xl mx-auto px-6 py-8"
+      >
         {/* Breadcrumb */}
         <p className="text-xs text-neutral-400 mb-1">{pillarTitle}</p>
 
@@ -612,35 +466,16 @@ function LessonView({
         {/* Lesson content — Mande's voice */}
         <div className="flex gap-3 mb-8">
           <Avatar className="h-7 w-7 shrink-0 mt-0.5">
-            <AvatarFallback className="bg-primary-500 text-white text-xs font-semibold">
+            <AvatarFallback variant="primary" className="text-xs font-semibold">
               M
             </AvatarFallback>
           </Avatar>
-          <div className="flex-1 space-y-4 text-sm text-neutral-800 leading-relaxed">
-            {paragraphs.map((para, i) => {
-              // Bold via **text**
-              const parts = para.split(/(\*\*[^*]+\*\*)/g)
-              return (
-                <p key={i}>
-                  {parts.map((part, j) =>
-                    part.startsWith("**") && part.endsWith("**") ? (
-                      <strong key={j} className="font-semibold text-neutral-900">
-                        {part.slice(2, -2)}
-                      </strong>
-                    ) : (
-                      <span key={j}>{part}</span>
-                    )
-                  )}
-                </p>
-              )
-            })}
+          <div className="flex-1 text-sm text-neutral-800 leading-relaxed">
+            <ReactMarkdown components={markdownComponents}>
+              {step.lesson}
+            </ReactMarkdown>
           </div>
         </div>
-
-        {/* Divider */}
-        {step.challenge && (
-          <div className="border-t border-neutral-100" />
-        )}
 
         {/* Challenge */}
         {step.challenge && (
@@ -657,11 +492,12 @@ function LessonView({
             variant="primary"
             icon={<Icon name="IconArrowRight" size={16} />}
             iconPosition="right"
+            className="active:scale-[0.97]"
           >
             Continue
           </Button>
         )}
-      </div>
+      </motion.div>
     </div>
   )
 }
@@ -680,7 +516,7 @@ export default function CareerDiscoveryPage() {
 
   return (
     <div className="flex h-screen bg-white overflow-hidden">
-      <Sidebar
+      <AppSidebar
         activeNav="career"
         isOpen={sidebarOpen}
         onToggle={() => setSidebarOpen((v) => !v)}
@@ -694,8 +530,8 @@ export default function CareerDiscoveryPage() {
             <p className="text-xs text-neutral-400 leading-none">10-day clarity challenge</p>
           </div>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-neutral-500">{overall}% complete</span>
             <Progress value={overall} className="w-28 h-1.5" />
+            <span className="text-xs text-neutral-500 tabular-nums">{overall}%</span>
           </div>
         </header>
 
@@ -712,28 +548,22 @@ export default function CareerDiscoveryPage() {
                     key={pillar.id}
                     onClick={() => {
                       setActivePillarId(pillar.id)
+                      setSubmitted(false)
                       const first = pillar.steps.find((s) => s.status !== "locked")
                       if (first) setActiveStepId(first.id)
                     }}
                     className={cn(
-                      "w-full flex items-center gap-3 px-4 py-3 transition-colors text-left border-l-2",
+                      "w-full flex items-center gap-3 px-4 py-3 transition-colors text-left",
+                      "active:scale-[0.98]",
                       isActive
-                        ? "border-primary-500 bg-white"
-                        : "border-transparent hover:bg-neutral-100"
+                        ? "bg-white"
+                        : "hover:bg-neutral-100"
                     )}
                   >
-                    <span
-                      className={cn(
-                        "h-6 w-6 rounded-full flex items-center justify-center text-xs font-semibold shrink-0",
-                        pct === 100
-                          ? "bg-primary-500 text-white"
-                          : isActive
-                          ? "bg-primary-100 text-primary-700"
-                          : "bg-neutral-200 text-neutral-500"
-                      )}
-                    >
-                      {pct === 100 ? <Icon name="IconCheckmark2" size={12} /> : pillar.number}
-                    </span>
+                    <StepIndicator
+                      status={pct === 100 ? "completed" : isActive ? "current" : "pending"}
+                      number={pillar.number}
+                    />
                     <div className="flex-1 min-w-0">
                       <p
                         className={cn(
@@ -743,8 +573,11 @@ export default function CareerDiscoveryPage() {
                       >
                         {pillar.title}
                       </p>
+                      {isActive && (
+                        <p className="text-xs text-neutral-400 mt-0.5 truncate">{pillar.description}</p>
+                      )}
                       {pct > 0 && pct < 100 && (
-                        <Progress value={pct} className="h-1 mt-1" />
+                        <Progress value={pct} className="h-1 mt-1.5" />
                       )}
                     </div>
                   </button>
@@ -754,7 +587,6 @@ export default function CareerDiscoveryPage() {
 
             {/* Step list */}
             <div className="flex-1 overflow-y-auto p-3">
-              <p className="text-xs text-neutral-400 px-3 mb-2 mt-1">{activePillar.description}</p>
               <StepList
                 pillar={activePillar}
                 activeStepId={activeStepId}
@@ -768,12 +600,15 @@ export default function CareerDiscoveryPage() {
 
           {/* Lesson + challenge */}
           <main className="flex-1 flex overflow-hidden bg-white">
-            <LessonView
-              step={activeStep}
-              pillarTitle={activePillar.title}
-              onChallengeSubmit={() => setSubmitted(true)}
-              submitted={submitted}
-            />
+            <AnimatePresence mode="wait">
+              <LessonView
+                key={activeStep.id}
+                step={activeStep}
+                pillarTitle={activePillar.title}
+                onChallengeSubmit={() => setSubmitted(true)}
+                submitted={submitted}
+              />
+            </AnimatePresence>
           </main>
         </div>
       </div>
