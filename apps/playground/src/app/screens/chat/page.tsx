@@ -2,39 +2,137 @@
 
 import { useState, useRef, useEffect } from "react"
 import ReactMarkdown from "react-markdown"
+import { motion } from "motion/react"
 import {
   Button,
   Icon,
+  Input,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
+  Progress,
+  Textarea,
+  Badge,
+  springs,
+  challengeLabels,
+  challengeColors,
 } from "@mande/ui"
+import type { ChallengeType } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
 import { AppSidebar } from "../../../components/app-sidebar"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
+
+type ChallengeInput = "textarea" | "confirm" | "url" | "short-text" | "list"
+
+type ChallengeData = {
+  type: ChallengeType
+  prompt: string
+  inputType: ChallengeInput
+  placeholder?: string
+  response?: string
+  evaluated?: boolean
+}
 
 type Message = {
   id: string
   role: "user" | "assistant"
   content: string
   timestamp: string
+  challenge?: ChallengeData
+}
+
+type SessionMode = "curriculum" | "open"
+
+type CurriculumProgress = {
+  pillar: string
+  pillarIndex: number
+  totalPillars: number
+  step: string
+  stepIndex: number
+  totalSteps: number
+  percentComplete: number
 }
 
 type ChatSession = {
   id: string
   title: string
+  mode: SessionMode
   messages: Message[]
+  progress?: CurriculumProgress
 }
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
 
 const CHAT_HISTORY: ChatSession[] = [
   {
-    id: "1",
+    id: "curriculum-1",
+    title: "Career Clarity Curriculum",
+    mode: "curriculum",
+    progress: {
+      pillar: "Introduction",
+      pillarIndex: 1,
+      totalPillars: 4,
+      step: "Reflection challenge",
+      stepIndex: 3,
+      totalSteps: 3,
+      percentComplete: 18,
+    },
+    messages: [
+      {
+        id: "c1",
+        role: "assistant",
+        content:
+          "Welcome to your career clarity journey! I'm going to walk you through a structured path that'll help you move from \"I don't know what to do\" to a direction you can actually act on.\n\nLet's start by clearing the air. There are **three myths** that quietly block more career decisions than anything else.",
+        timestamp: "Day 1",
+      },
+      {
+        id: "c2",
+        role: "assistant",
+        content:
+          "**Myth 1: Your career should be connected to your degree.**\nToday's careers don't care about your degree — unless you're in a licensed profession. What matters is having in-demand skills someone is willing to pay for.\n\n**Myth 2: You have to be 100% sure.**\nYou can't think your way to clarity. It comes with motion. The path is never straight, and you can always switch.\n\n**Myth 3: Follow your passion.**\nThere's nothing wrong with doing what you love — but for it to be sustainable, someone has to pay you for it. The focus should be monetising your passion, not just following it.",
+        timestamp: "Day 1",
+      },
+      {
+        id: "c3",
+        role: "user",
+        content: "The degree myth is so real. I studied accounting but I've never wanted to be an accountant. Feels like I wasted those years sometimes.",
+        timestamp: "Day 1",
+      },
+      {
+        id: "c4",
+        role: "assistant",
+        content:
+          "You didn't waste them — you trained a brain that understands systems, attention to detail, and how money flows. Those are transferable skills, not a prison sentence. Some of the best product managers I've seen came from accounting backgrounds because they intuitively understand unit economics.\n\nBut I hear the frustration. That feeling of \"was this all for nothing?\" is exactly what Myth 1 feeds on. The degree opened doors you walked through; the skills you build next will open different ones.\n\nNow, let me show you the three main paths available to you as a graduate.",
+        timestamp: "Day 1",
+      },
+      {
+        id: "c5",
+        role: "assistant",
+        content:
+          "There are three paths:\n\n**9-5 employment** — structure, salary, institutional learning. The trade-off: your ceiling is set by the company.\n\n**Freelancing** — flexibility, direct client relationships. The trade-off: you are your own sales team, accountant, and operations department.\n\n**Entrepreneurship** — highest upside, highest risk. The trade-off: most early income is deferred.\n\nNone of these is the 'right' answer. They depend on your risk tolerance, your finances, and what you want your daily life to look like.",
+        timestamp: "Day 1",
+      },
+      {
+        id: "c6",
+        role: "assistant",
+        content: "",
+        timestamp: "Day 1",
+        challenge: {
+          type: "reflection",
+          prompt: "Reflect on the three graduate options — 9-5, freelancing, and entrepreneurship. Which do you gravitate towards, and why? Think about people you know who fit these categories — what does their daily life look like?",
+          inputType: "textarea",
+          placeholder: "Take your time. There's no right answer — just your honest thinking…",
+        },
+      },
+    ],
+  },
+  {
+    id: "open-1",
     title: "Career switch into product design",
+    mode: "open",
     messages: [
       {
         id: "m1",
@@ -46,7 +144,7 @@ const CHAT_HISTORY: ChatSession[] = [
         id: "m2",
         role: "assistant",
         content:
-          "That's a great move — your engineering background is actually a superpower in product design. You already understand constraints that most designers learn the hard way.\n\nHere's where I'd start:\n\n1. **Build your visual foundation** — Learn the fundamentals: typography, colour, spacing, hierarchy. Refactoring UI by Adam Wathan is the fastest path.\n2. **Get Figma fluent** — It's the industry standard. Most companies won't consider you without it.\n3. **Redesign things you already use** — Pick an app you use daily and redesign one flow. Ship it to a portfolio.\n4. **Lean into your engineering context** — Your ability to design with implementation in mind is rare. Make that your angle.",
+          "That's a great move — your engineering background is actually a superpower in product design. You already understand constraints that most designers learn the hard way.\n\nHere's where I'd start:\n\n1. **Build your visual foundation** — Learn the fundamentals: typography, colour, spacing, hierarchy.\n2. **Get Figma fluent** — It's the industry standard.\n3. **Redesign things you already use** — Pick an app you use daily and redesign one flow.\n4. **Lean into your engineering context** — Your ability to design with implementation in mind is rare.",
         timestamp: "10:03 AM",
       },
       {
@@ -59,14 +157,15 @@ const CHAT_HISTORY: ChatSession[] = [
         id: "m4",
         role: "assistant",
         content:
-          "Realistically, 6–12 months to be competitive for junior/mid design roles — faster if you already have product intuition from engineering.\n\nThe bottleneck isn't learning design; it's building a portfolio that demonstrates taste and process. Most engineers underestimate how much writing and storytelling matters in a design portfolio.",
+          "Realistically, 6–12 months to be competitive for junior/mid design roles — faster if you already have product intuition from engineering.\n\nThe bottleneck isn't learning design; it's building a portfolio that demonstrates taste and process.",
         timestamp: "10:06 AM",
       },
     ],
   },
   {
-    id: "2",
+    id: "open-2",
     title: "Negotiating a senior engineering offer",
+    mode: "open",
     messages: [
       {
         id: "m5",
@@ -78,60 +177,77 @@ const CHAT_HISTORY: ChatSession[] = [
         id: "m6",
         role: "assistant",
         content:
-          "For London, £95k for senior is on the lower end of market rate. Senior roles in London typically range £100k–£140k depending on the company, stack, and domain.\n\nA few questions that affect this:\n- Is this a startup, scale-up, or enterprise?\n- What's the equity situation?\n- What's the total package (pension, bonus, remote flexibility)?\n\nBase salary is only one lever — sometimes a £90k role with strong equity beats a £120k role with none.",
+          "For London, £95k for senior is on the lower end. Senior roles typically range £100k–£140k depending on company, stack, and domain.\n\nBase salary is only one lever — sometimes a £90k role with strong equity beats a £120k role with none.",
         timestamp: "Yesterday",
-      },
-    ],
-  },
-  {
-    id: "3",
-    title: "Preparing for a PM interview",
-    messages: [
-      {
-        id: "m7",
-        role: "user",
-        content: "I have a PM interview at a fintech next week. What should I focus on?",
-        timestamp: "Mon",
-      },
-      {
-        id: "m8",
-        role: "assistant",
-        content:
-          "Fintech PM interviews typically test four things:\n\n1. **Product sense** — How do you think about user problems and prioritisation?\n2. **Metrics** — Can you define success for a feature and diagnose a drop in a KPI?\n3. **Execution** — Working with engineers and designers, managing trade-offs.\n4. **Domain knowledge** — Basic understanding of financial products, regulation awareness (FCA, PSD2, etc.).\n\nFor fintech specifically, be ready for a case on improving onboarding or a metric deep-dive on activation or retention.",
-        timestamp: "Mon",
       },
     ],
   },
 ]
 
+// ─── Markdown components ──────────────────────────────────────────────────────
+
+const mdComponents = {
+  p: ({ children }: { children?: React.ReactNode }) => <p className="mb-2 last:mb-0">{children}</p>,
+  strong: ({ children }: { children?: React.ReactNode }) => <strong className="font-semibold">{children}</strong>,
+  ol: ({ children }: { children?: React.ReactNode }) => <ol className="list-decimal pl-5 mb-2 space-y-0.5">{children}</ol>,
+  ul: ({ children }: { children?: React.ReactNode }) => <ul className="list-disc pl-5 mb-2 space-y-0.5">{children}</ul>,
+  li: ({ children }: { children?: React.ReactNode }) => <li>{children}</li>,
+}
+
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 function ChatNavbar({
   sessions,
-  activeSessionId,
+  activeSession,
   onSessionChange,
 }: {
   sessions: ChatSession[]
-  activeSessionId: string
+  activeSession: ChatSession
   onSessionChange: (id: string) => void
 }) {
-  return (
-    <header className="h-14 flex items-center px-4 bg-white gap-3 shrink-0">
-      <Select value={activeSessionId} onValueChange={onSessionChange}>
-        <SelectTrigger className="w-auto max-w-xs border border-neutral-200 shadow-none bg-transparent px-3 gap-3 font-medium text-neutral-900 focus:ring-0 hover:bg-neutral-50 transition-colors [&>span]:truncate [&>span]:max-w-[28ch]">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent className="border-neutral-200">
-          {sessions.map((s) => (
-            <SelectItem key={s.id} value={s.id}>
-              {s.title}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+  const isCurriculum = activeSession.mode === "curriculum"
 
-      <div className="ml-auto flex items-center gap-2">
-        <Button variant="tertiary" size="icon">
+  return (
+    <header className="h-14 flex items-center px-4 bg-white gap-3 shrink-0 border-b border-neutral-100">
+      <div className="flex items-center gap-3 flex-1 min-w-0">
+        {isCurriculum && (
+          <span className="text-xs font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full shrink-0">
+            Curriculum
+          </span>
+        )}
+        <Select value={activeSession.id} onValueChange={onSessionChange}>
+          <SelectTrigger className="w-auto max-w-xs border border-neutral-200 shadow-none bg-transparent px-3 gap-3 font-medium text-neutral-900 focus:ring-0 hover:bg-neutral-50 transition-colors [&>span]:truncate [&>span]:max-w-[28ch]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="border-neutral-200">
+            {sessions.map((s) => (
+              <SelectItem key={s.id} value={s.id}>
+                <span className="flex items-center gap-2">
+                  {s.mode === "curriculum" && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary-500 shrink-0" />
+                  )}
+                  {s.title}
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      {isCurriculum && activeSession.progress && (
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="text-right">
+            <p className="text-xs text-neutral-500 leading-none">{activeSession.progress.pillar}</p>
+            <p className="text-[10px] text-neutral-400 leading-none mt-0.5">
+              Step {activeSession.progress.stepIndex}/{activeSession.progress.totalSteps}
+            </p>
+          </div>
+          <Progress value={activeSession.progress.percentComplete} className="w-20 h-1.5" />
+        </div>
+      )}
+
+      <div className="flex items-center gap-2 shrink-0">
+        <Button variant="tertiary" size="icon" className="active:scale-[0.95]">
           <Icon name="IconEditSmall1" size={16} />
         </Button>
       </div>
@@ -154,27 +270,117 @@ function MessageBubble({ message }: { message: Message }) {
     )
   }
 
+  // Challenge message — assistant issues a challenge
+  if (message.challenge) {
+    return <ChallengeMessage challenge={message.challenge} />
+  }
+
   return (
     <div className="text-neutral-900 text-sm leading-relaxed">
-      <ReactMarkdown
-        components={{
-          p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-          strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-          ol: ({ children }) => <ol className="list-decimal pl-5 mb-2 space-y-0.5">{children}</ol>,
-          ul: ({ children }) => <ul className="list-disc pl-5 mb-2 space-y-0.5">{children}</ul>,
-          li: ({ children }) => <li>{children}</li>,
-        }}
-      >
+      <ReactMarkdown components={mdComponents}>
         {message.content}
       </ReactMarkdown>
     </div>
   )
 }
 
+function ChallengeMessage({ challenge }: { challenge: ChallengeData }) {
+  const [value, setValue] = useState("")
+  const [submitted, setSubmitted] = useState(!!challenge.response)
+
+  if (submitted || challenge.response) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={springs.snappy}
+        className="rounded-3 border border-green-200 bg-green-50 p-4"
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <span className={cn("text-xs px-2 py-0.5 rounded-1 font-medium", challengeColors[challenge.type])}>
+            {challengeLabels[challenge.type]}
+          </span>
+          <span className="text-xs text-green-700 font-medium">Completed</span>
+        </div>
+        <p className="text-sm text-neutral-700 leading-relaxed">
+          {challenge.response || value}
+        </p>
+      </motion.div>
+    )
+  }
+
+  return (
+    <div className="rounded-3 border border-neutral-200 bg-white p-4">
+      {/* Type badge */}
+      <div className="flex items-center gap-2 mb-3">
+        <span className={cn("text-xs px-2 py-0.5 rounded-1 font-medium", challengeColors[challenge.type])}>
+          {challengeLabels[challenge.type]}
+        </span>
+      </div>
+
+      {/* Prompt */}
+      <p className="text-sm text-neutral-900 leading-relaxed mb-4">{challenge.prompt}</p>
+
+      {/* Input */}
+      {challenge.inputType === "textarea" && (
+        <Textarea
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder={challenge.placeholder}
+          className="min-h-[100px] text-sm resize-none mb-3"
+        />
+      )}
+
+      {challenge.inputType === "confirm" && (
+        <div className="flex gap-3 mb-3">
+          <Button variant="primary" onClick={() => setSubmitted(true)} icon={<Icon name="IconCheckmark2" size={16} />}>
+            Yes, I&apos;m ready
+          </Button>
+          <Button variant="secondary">Not yet</Button>
+        </div>
+      )}
+
+      {challenge.inputType === "url" && (
+        <Input
+          type="url"
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder={challenge.placeholder ?? "https://..."}
+          className="mb-3"
+        />
+      )}
+
+      {challenge.inputType === "list" && (
+        <Textarea
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          placeholder="List each item on a new line…"
+          className="min-h-[80px] text-sm resize-none mb-3"
+        />
+      )}
+
+      {challenge.inputType !== "confirm" && (
+        <Button
+          variant="primary"
+          disabled={!value.trim()}
+          onClick={() => setSubmitted(true)}
+          icon={<Icon name="IconArrowRight" size={16} />}
+          iconPosition="right"
+          className="active:scale-[0.97]"
+        >
+          Submit
+        </Button>
+      )}
+    </div>
+  )
+}
+
 function MessageInput({
   onSend,
+  mode,
 }: {
   onSend: (text: string) => void
+  mode: SessionMode
 }) {
   const [value, setValue] = useState("")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -216,14 +422,14 @@ function MessageInput({
           value={value}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          placeholder="Ask anything about your career…"
+          placeholder={mode === "curriculum" ? "Respond to Mande…" : "Ask anything about your career…"}
           className="w-full min-h-[80px] resize-none rounded-4 border border-neutral-200 bg-white px-4 pt-3 pb-14 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-0 leading-relaxed"
         />
         <Button
           onClick={handleSend}
           disabled={!value.trim()}
           size="icon"
-          className="absolute bottom-4 right-4"
+          className="absolute bottom-4 right-4 active:scale-[0.95]"
         >
           <Icon name="IconArrowUp" size={16} />
         </Button>
@@ -276,7 +482,7 @@ export default function ChatPage() {
       <div className="flex-1 flex flex-col min-w-0">
         <ChatNavbar
           sessions={sessions}
-          activeSessionId={activeSessionId}
+          activeSession={activeSession}
           onSessionChange={setActiveSessionId}
         />
 
@@ -295,7 +501,7 @@ export default function ChatPage() {
           <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent" />
         </div>
 
-        <MessageInput onSend={handleSend} />
+        <MessageInput onSend={handleSend} mode={activeSession.mode} />
       </div>
     </div>
   )
