@@ -285,10 +285,8 @@ function MessageBubble({ message }: { message: Message }) {
 }
 
 function ChallengeMessage({ challenge }: { challenge: ChallengeData }) {
-  const [value, setValue] = useState("")
-  const [submitted, setSubmitted] = useState(!!challenge.response)
-
-  if (submitted || challenge.response) {
+  // Completed challenge — show response in thread
+  if (challenge.response) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 4 }}
@@ -303,74 +301,21 @@ function ChallengeMessage({ challenge }: { challenge: ChallengeData }) {
           <span className="text-xs text-green-700 font-medium">Completed</span>
         </div>
         <p className="text-sm text-neutral-700 leading-relaxed">
-          {challenge.response || value}
+          {challenge.response}
         </p>
       </motion.div>
     )
   }
 
+  // Active challenge — show prompt only (input is at the bottom)
   return (
     <div className="rounded-3 border border-neutral-200 bg-white p-4">
-      {/* Type badge */}
       <div className="flex items-center gap-2 mb-3">
         <span className={cn("text-xs px-2 py-0.5 rounded-1 font-medium", challengeColors[challenge.type])}>
           {challengeLabels[challenge.type]}
         </span>
       </div>
-
-      {/* Prompt */}
-      <p className="text-sm text-neutral-900 leading-relaxed mb-4">{challenge.prompt}</p>
-
-      {/* Input */}
-      {challenge.inputType === "textarea" && (
-        <Textarea
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder={challenge.placeholder}
-          className="min-h-[100px] text-sm resize-none mb-3"
-        />
-      )}
-
-      {challenge.inputType === "confirm" && (
-        <div className="flex gap-3 mb-3">
-          <Button variant="primary" onClick={() => setSubmitted(true)} icon={<Icon name="IconCheckmark2" size={16} />}>
-            Yes, I&apos;m ready
-          </Button>
-          <Button variant="secondary">Not yet</Button>
-        </div>
-      )}
-
-      {challenge.inputType === "url" && (
-        <Input
-          type="url"
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder={challenge.placeholder ?? "https://..."}
-          className="mb-3"
-        />
-      )}
-
-      {challenge.inputType === "list" && (
-        <Textarea
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          placeholder="List each item on a new line…"
-          className="min-h-[80px] text-sm resize-none mb-3"
-        />
-      )}
-
-      {challenge.inputType !== "confirm" && (
-        <Button
-          variant="primary"
-          disabled={!value.trim()}
-          onClick={() => setSubmitted(true)}
-          icon={<Icon name="IconArrowRight" size={16} />}
-          iconPosition="right"
-          className="active:scale-[0.97]"
-        >
-          Submit
-        </Button>
-      )}
+      <p className="text-sm text-neutral-900 leading-relaxed">{challenge.prompt}</p>
     </div>
   )
 }
@@ -378,9 +323,13 @@ function ChallengeMessage({ challenge }: { challenge: ChallengeData }) {
 function MessageInput({
   onSend,
   mode,
+  activeChallenge,
+  onChallengeSubmit,
 }: {
   onSend: (text: string) => void
   mode: SessionMode
+  activeChallenge?: ChallengeData | null
+  onChallengeSubmit?: (response: string) => void
 }) {
   const [value, setValue] = useState("")
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -399,7 +348,11 @@ function MessageInput({
 
   const handleSend = () => {
     if (!value.trim()) return
-    onSend(value.trim())
+    if (activeChallenge && onChallengeSubmit) {
+      onChallengeSubmit(value.trim())
+    } else {
+      onSend(value.trim())
+    }
     setValue("")
     if (textareaRef.current) {
       textareaRef.current.style.height = "auto"
@@ -413,6 +366,78 @@ function MessageInput({
     }
   }
 
+  // Challenge input replaces the message box
+  if (activeChallenge) {
+    return (
+      <div className="px-4 pb-4 bg-white border-t border-neutral-100">
+        <div className="max-w-3xl mx-auto pt-3">
+          {/* Challenge context bar */}
+          <div className="flex items-center gap-2 mb-3">
+            <span className={cn("text-xs px-2 py-0.5 rounded-1 font-medium", challengeColors[activeChallenge.type])}>
+              {challengeLabels[activeChallenge.type]}
+            </span>
+            <span className="text-xs text-neutral-400 truncate">{activeChallenge.prompt.slice(0, 60)}…</span>
+          </div>
+
+          {activeChallenge.inputType === "confirm" ? (
+            <div className="flex gap-3">
+              <Button
+                variant="primary"
+                onClick={() => onChallengeSubmit?.("Confirmed")}
+                icon={<Icon name="IconCheckmark2" size={16} />}
+                className="active:scale-[0.97]"
+              >
+                Yes, I&apos;m ready
+              </Button>
+              <Button variant="secondary" className="active:scale-[0.97]">Not yet</Button>
+            </div>
+          ) : activeChallenge.inputType === "url" ? (
+            <div className="flex gap-3">
+              <Input
+                type="url"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+                placeholder={activeChallenge.placeholder ?? "https://..."}
+                className="flex-1"
+                onKeyDown={handleKeyDown}
+              />
+              <Button
+                variant="primary"
+                disabled={!value.trim()}
+                onClick={handleSend}
+                icon={<Icon name="IconArrowRight" size={16} />}
+                iconPosition="right"
+                className="active:scale-[0.97]"
+              >
+                Submit
+              </Button>
+            </div>
+          ) : (
+            <div className="relative">
+              <Textarea
+                ref={textareaRef as React.RefObject<HTMLTextAreaElement>}
+                value={value}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                placeholder={activeChallenge.placeholder ?? "Your response…"}
+                className="min-h-[100px] text-sm resize-none pr-16"
+              />
+              <Button
+                onClick={handleSend}
+                disabled={!value.trim()}
+                size="icon"
+                className="absolute bottom-3 right-3 active:scale-[0.95]"
+              >
+                <Icon name="IconArrowUp" size={16} />
+              </Button>
+            </div>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Regular message input
   return (
     <div className="px-4 pb-4 bg-white">
       <div className="relative max-w-3xl mx-auto">
@@ -455,6 +480,13 @@ export default function ChatPage() {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [activeSession.messages])
 
+  // Derive active (unanswered) challenge from the last message
+  const lastMsg = activeSession.messages[activeSession.messages.length - 1]
+  const activeChallenge =
+    lastMsg?.role === "assistant" && lastMsg.challenge && !lastMsg.challenge.response
+      ? lastMsg.challenge
+      : null
+
   const handleSend = (text: string) => {
     const newMessage: Message = {
       id: `m${Date.now()}`,
@@ -468,6 +500,22 @@ export default function ChatPage() {
           ? { ...s, messages: [...s.messages, newMessage] }
           : s
       )
+    )
+  }
+
+  const handleChallengeSubmit = (response: string) => {
+    // Mark the challenge as responded and add the user's response to thread
+    setSessions((prev) =>
+      prev.map((s) => {
+        if (s.id !== activeSessionId) return s
+        const updated = s.messages.map((msg) => {
+          if (msg.challenge && !msg.challenge.response && msg === lastMsg) {
+            return { ...msg, challenge: { ...msg.challenge, response } }
+          }
+          return msg
+        })
+        return { ...s, messages: updated }
+      })
     )
   }
 
@@ -498,10 +546,17 @@ export default function ChatPage() {
           </div>
 
           {/* Gradient fade above input */}
-          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent" />
+          {!activeChallenge && (
+            <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent" />
+          )}
         </div>
 
-        <MessageInput onSend={handleSend} mode={activeSession.mode} />
+        <MessageInput
+          onSend={handleSend}
+          mode={activeSession.mode}
+          activeChallenge={activeChallenge}
+          onChallengeSubmit={handleChallengeSubmit}
+        />
       </div>
     </div>
   )
