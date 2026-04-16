@@ -75,6 +75,9 @@ importers:
       agentation:
         specifier: ^3.0.2
         version: 3.0.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      dialkit:
+        specifier: ^1.2.0
+        version: 1.2.0(motion@12.38.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       motion:
         specifier: ^12.38.0
         version: 12.38.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -2930,6 +2933,30 @@ packages:
 
   devtools-protocol@0.0.1581282:
     resolution: {integrity: sha512-nv7iKtNZQshSW2hKzYNr46nM/Cfh5SEvE2oV0/SEGgc9XupIY5ggf84Cz8eJIkBce7S3bmTAauFD6aysMpnqsQ==}
+
+  dialkit@1.2.0:
+    resolution: {integrity: sha512-VRPpFegBQwrXclLFc+qgMchoby+IoJuRjoWjYKSRV2I1cxpvIpAv1WsgO1PiiNhKAGmymKx5ivRBJIZPv1tqGg==}
+    peerDependencies:
+      motion: '>=11.0.0'
+      motion-v: '>=2.0.0'
+      react: '>=18.0.0'
+      react-dom: '>=18.0.0'
+      solid-js: '>=1.6.0'
+      svelte: '>=5.8.0'
+      vue: '>=3.3.0'
+    peerDependenciesMeta:
+      motion-v:
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+      solid-js:
+        optional: true
+      svelte:
+        optional: true
+      vue:
+        optional: true
 
   doctrine@2.1.0:
     resolution: {integrity: sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw==}
@@ -7651,6 +7678,13 @@ snapshots:
       dequal: 2.0.3
 
   devtools-protocol@0.0.1581282: {}
+
+  dialkit@1.2.0(motion@12.38.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3):
+    dependencies:
+      motion: 12.38.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+    optionalDependencies:
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
 
   doctrine@2.1.0:
     dependencies:
