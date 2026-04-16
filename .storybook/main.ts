@@ -33,6 +33,7 @@ const config: StorybookConfig = {
     config.optimizeDeps = {
       ...config.optimizeDeps,
       include: [
+        ...(config.optimizeDeps?.include ?? []),
         "@radix-ui/react-accordion",
         "@radix-ui/react-alert-dialog",
         "@radix-ui/react-aspect-ratio",
