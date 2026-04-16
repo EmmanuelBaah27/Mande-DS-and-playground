@@ -1,14 +1,16 @@
-# Feature: Career Discovery
+# Feature: Career Discovery (PIVOTS)
 
-> The 10-day career clarity challenge that starts every student's Mande journey. Source: `docs/product/Mande Curriculum.txt`, with evaluation logic from `docs/product/Career Clarity Evaluation Engine- Mande AI.txt`.
+> Self-serve career clarity tool — the PIVOTS assessment initiative. **Not the curriculum.** Curriculum delivery (lessons, challenges, evaluation) happens in Chat via Mande's Curriculum Mode. This screen is the independent exploration surface where students map their career profile at their own pace.
 
 ---
 
 ## Purpose
 
-Career Discovery replaces "figure out your career" — vague, infinite, paralysing — with a concrete 10-day path. Three pillars (Intro → Discovery → Finding Clarity → Making the Choice) that move the student from myth-busting to a chosen direction. Every lesson ends in a challenge. Every challenge produces evidence. The student leaves with a bookmarkable career report, a set of researched paths, and at least one informational interview completed.
+Career Discovery is Mande's PIVOTS self-serve tool. PIVOTS maps six factors that shape a student's career clarity: **P**ersonality, **I**nterests, **V**alues, **O**pportunities, **T**hreats, and **S**kills. Students can explore each factor independently — taking assessments, inputting data, and building out their career profile without Mande guiding them through a structured curriculum.
 
-Positioned in-product as "Career Discovery: 100x cheaper than a career coach." The product value prop: structured motion toward clarity without the gatekeeping cost of human coaching.
+The data from PIVOTS feeds into the career report (which lives on Home). The curriculum in Chat may reference PIVOTS results, but the two are separate initiatives.
+
+Positioned in-product as "Career Discovery: 100x cheaper than a career coach."
 
 ---
 

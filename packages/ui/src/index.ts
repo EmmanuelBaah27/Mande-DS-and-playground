@@ -1,6 +1,6 @@
 // ── Primitives ────────────────────────────────────────────────────────────────
 export { Icon } from "./components/ui/icon"
-export type { IconProps, IconSize, IconFill } from "./components/ui/icon"
+export type { IconProps, IconSize, IconFill, IconName } from "./components/ui/icon"
 
 // ── Motion tokens ─────────────────────────────────────────────────────────────
 export { springs, durations, easings } from "./tokens/motion"
