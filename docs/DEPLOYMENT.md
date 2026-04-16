@@ -39,7 +39,7 @@ Update the table below with the URLs and commit. Designers and PMs review on the
 
 | Environment | URL |
 |---|---|
-| Production (main) | _TBD_ |
+| Production (main) | https://mande-playground.vercel.app |
 | Preview (per-PR) | _auto — appears on each PR_ |
 
 ---
