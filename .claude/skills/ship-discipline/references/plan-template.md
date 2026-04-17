@@ -27,6 +27,11 @@ Files expected to be created or changed. Flag anything load-bearing.
 ## Skills to invoke
 Which skills support this work (e.g. `superpowers:executing-plans`, design-eng, domain skills).
 
+## Verification surface
+- **Local (BUILD):** `http://localhost:PORT` — dev server command to run.
+- **Preview (SHIP):** Vercel / Netlify / Chromatic / other URL — how it will be generated and where it will be posted.
+- Multiple layers → list one row per layer (DS Storybook + app preview, etc.).
+
 ## Scope cuts
 Explicitly out of scope for this topic. Things we'd rather do later, or never.
 

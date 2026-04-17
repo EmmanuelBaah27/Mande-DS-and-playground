@@ -40,6 +40,10 @@ Write these at the end of every session and immediately after any context compac
 ## What's next
 -
 
+## URLs used this session
+- **Local:** `http://localhost:PORT`
+- **Preview:** <Vercel / Netlify / Chromatic URL>
+
 ## Skills leaned on
 -
 ```
