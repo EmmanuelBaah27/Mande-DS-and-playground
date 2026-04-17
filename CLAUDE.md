@@ -2,9 +2,11 @@
 
 ## Workflow
 
-Use the `ship-discipline` skill (`.claude/skills/ship-discipline/`) for all build work — new ideas, planning, building, shipping, and session close-out. Don't re-derive the workflow; follow the skill.
+Use the `ship-discipline` skill for all build work — new ideas, planning, building, shipping, and session close-out. Don't re-derive the workflow; follow the skill.
 
 The skill covers: the two loops (Product Discovery / Topic Execution), the five phases (ELICIT → GROUND → PLAN → BUILD → SHIP), branch-by-topic rules, the four session docs, verification-surface rules (local dev URL + Vercel preview), and skill composition.
+
+**Source of truth:** `~/ship-discipline/` (dedicated repo) → symlinked into `~/.claude/skills/ship-discipline/`. A vendored copy exists at `.claude/skills/ship-discipline/` in this repo for visibility, but **do not edit it there** — it drifts. To change the workflow from any project, run `/update-workflow "<what to change>"` and Claude will edit the source repo, commit, and push.
 
 ### Project-specific overrides
 
