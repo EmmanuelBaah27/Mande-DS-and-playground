@@ -4,6 +4,31 @@ Things learned while building the Mande Design System. Captured so they compound
 
 ---
 
+## 2026-04-17 — Session 9: DS-as-source-of-truth, web consolidation
+
+### Process
+
+- **"No parallel forks" is not the same as "no composition helpers."** `AppShell` composes `SidebarProvider` + `Sidebar` + nav + footer using only `@mande/ui` primitives. This is composition, not re-implementation — it's allowed. The deleted `app-sidebar.tsx` was a re-implementation. Distinguishing the two matters: duplication across N screens is worse than a thin helper that wires DS primitives into an app-specific layout.
+- **Audit before writing the plan; the plan is a contract with the audit in it.** Running the grep to find hand-rolled `<input>`/`<select>`/`<button>`/Phosphor imports upfront produced a concrete file table that the plan doc referenced. The plan became executable because the audit was real, not speculative.
+- **Follow-ups go in the plan's audit table, not a new doc.** Seven new DS issues surfaced during the comprehensive audit sweep (Task 8). Instead of spinning up a new plan, they got logged as rows in the existing plan's "Follow-ups surfaced during Task 8" section. One plan per initiative; the plan evolves.
+- **Superpowers plan convention: use it even when the skill isn't loaded.** This session ran without `superpowers:executing-plans` skill loaded (session pre-dated install). Followed the convention manually — plan file in `docs/superpowers/plans/YYYY-MM-DD-<slug>.md`, checkbox tasks, audit table — and it worked. The skill adds structure; it's not the only way to use the pattern.
+
+### Technical
+
+- **`@mande/ui` barrel re-exports force every file to be "use client" if it uses hooks/contexts.** Six DS files (`form`, `calendar`, `chart`, `checkbox`, `input-otp`, `toggle-group`) were missing the directive. Any server component importing `Icon` from the barrel tried to run all six in RSC and crashed. The lesson: **any file in a library meant to be imported from a barrel in Next.js App Router must declare its RSC compatibility explicitly.** Either `"use client"` if it uses hooks, or nothing if it's fully server-safe. Never silent.
+- **`@central-icons-react/all` exports `CentralIcon` (a generic) + runtime name lookup, not individual components.** `Object.keys(require('@central-icons-react/all'))` returns `['CentralIcon', 'default']` — two entries. The 1900+ icon names live in `icons-index.json` and are resolved at runtime by `CentralIcon`'s `name` prop. To check if an icon name exists, walk `icons-index.json`, not `Object.keys(pkg)`.
+- **Sidebar tokens were half-migrated: `--sidebar-*` vars used raw `hsl()` while the rest of the system uses `--color-neutral-*`.** Rewriting the whole block so all sidebar tokens consume Mande neutrals was cleaner than surgically touching the one `--sidebar` bg var. Semi-finished token migrations compound if not completed.
+- **`variant="floating"` on DS Sidebar provides the rounded/shadow/margin treatment the old `app-sidebar.tsx` was hand-rolling.** Discovered by reading the existing Storybook story, not the component file. Stories document intent better than source often does.
+- **Turbopack dev gives incremental typecheck-style errors** — missing `"use client"` surfaces as a runtime 500 with a clear `createContext only works in Client Components` message + source line + import trace. The import trace was the shortest path to finding the culprit (it named the barrel file + the offending import).
+- **`pnpm --filter @mande/playground remove <pkg>` works cleanly across workspaces.** Removed `@phosphor-icons/react` from just the playground without touching `packages/ui` (which still uses it internally for the Button spinner — a logged follow-up).
+
+### Gotchas
+
+- **`ring-offset-background` is in multiple DS files** (Textarea, Card, Button, etc.) despite CLAUDE.md saying it doesn't exist in Mande. Either the token was removed and the classes weren't cleaned up, or the rule was written after the fact. Worth a dedicated audit.
+- **`rounded-lg` (Tailwind default) and `rounded-2` (Mande) both resolve to 8px**, so they render identically. But semantically they're different — `rounded-lg` is a generic Tailwind escape hatch; `rounded-2` is the Mande token. The DS should use `rounded-2` for self-consistency.
+
+---
+
 ## 2026-04-17 — Session 8: Rounds 2/4/5, Chat Curriculum Mode, DialKit
 
 ### Process

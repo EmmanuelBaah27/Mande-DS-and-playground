@@ -4,6 +4,41 @@ Chronological record of all work done on the Mande Design System.
 
 ---
 
+## 2026-04-17 — Session 9: DS MVP plan + Phase 1 (web consolidation)
+
+Established the "DS is single source of truth" contract with Emmanuel, installed superpowers globally, wrote `docs/superpowers/plans/2026-04-17-ds-mvp.md`, and executed all 8 Phase-1 tasks. Branch: `claude/design-system-updates`.
+
+### Setup
+- Installed `superpowers@superpowers-marketplace v5.0.7` globally via `claude plugin install` — available in every project from now on.
+- Synced `pnpm-lock.yaml` (dropped stale `@storybook/instrumenter` + `@storybook/test` entries not declared in any manifest).
+- Wrote the DS MVP plan with file table, audit findings, 8 Phase-1 tasks, 4 Phase-2 tasks.
+
+### Phase 1 execution
+- **Playground index (`/`)** split into Active (Home, Chat, Career discovery) and Inactive (Onboarding, Settings). Added Career discovery card that was missing.
+- **DS Sidebar bg → true white.** Rewrote the whole `--sidebar-*` token block in `packages/ui/src/tokens/globals.css` to consume Mande neutral palette instead of raw `hsl()` values.
+- **Chat screen** migrated to DS Sidebar via new `AppShell` composition helper (`apps/playground/src/components/app-shell.tsx`).
+- **Career-discovery screen** migrated to DS Sidebar via `AppShell`.
+- **Deleted `apps/playground/src/components/app-sidebar.tsx`** — the hand-rolled sidebar fork.
+- **Home screen** Phosphor icons → Central Icons (`IconArrowRight`, `IconStar`, `IconLightning`, `IconShieldCheck`). Feature-card divs → DS `Card`. Removed `@phosphor-icons/react` from `apps/playground/package.json`.
+- **Career-discovery Back-to-PIVOTS links (x3)** → DS `Button variant="tertiary" size="sm"`.
+- **Chat raw `<textarea>`** → DS `Textarea` with className overrides (gap between current and desired DS defaults logged as follow-up).
+- **Comprehensive audit** surfaced 7 remaining DS divergences; all documented in the plan's audit table as follow-ups (DS Button Phosphor import, DS Textarea `ring-offset-background`, Select override promotion, Tag primitive gap, Card shadow default, challenge-bubble variants, sidebar floating QA).
+
+### Pre-existing bugs fixed to unblock verification
+- Added `"use client"` to 6 DS component files that were missing it (`form`, `calendar`, `chart`, `checkbox`, `input-otp`, `toggle-group`). Without this, `@mande/ui`'s barrel re-export caused RSC crashes on any server component importing from it.
+- Fixed TS error in `sidebar.stories.tsx` (added `as const` to `NAV_ITEMS`).
+
+### Verification
+- `pnpm typecheck` — 2/2 packages green.
+- `pnpm dev:playground` running; all six routes (/, /screens/home, /screens/chat, /screens/career-discovery, /screens/onboarding, /screens/settings) serve 200.
+- Visual QA in browser pending — Emmanuel to eyeball and flag aesthetic deltas before Phase 2.
+
+### What's queued
+- Phase 2 (React Native): extract `packages/tokens`, refactor `packages/ui` to consume it, scaffold `packages/ui-native` with NativeWind, optional Expo demo.
+- 7 logged follow-ups from the audit table.
+
+---
+
 ## 2026-04-17 — Session 8: Rounds 2, 4, 5 + chat curriculum mode + DialKit
 
 Catches up docs for the large batch of commits between Session 7 and today. Five workstreams landed in parallel: preview pipelines (Round 2), the career-discovery screen (Round 4, built then rebuilt), motion foundation (Round 5), DialKit integration, and Curriculum Mode in the chat screen.

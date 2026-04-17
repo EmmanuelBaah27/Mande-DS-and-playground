@@ -4,6 +4,46 @@ Key decisions, patterns, and processes for the Mande Design System. Updated as t
 
 ---
 
+## DS as Single Source of Truth (Session 9)
+
+### Contract
+**The playground imports only from `@mande/ui`.** No parallel re-implementations of DS primitives, period. Deleted `apps/playground/src/components/app-sidebar.tsx` — a hand-rolled sidebar that bypassed the DS entirely — as the reference case. Whatever is in the DS is exactly what the playground renders.
+
+### DS is the only place aesthetics get tweaked
+**Why:** If the playground and DS diverge, the playground becomes a second source of truth. Devs end up reading the playground, not Storybook. To prevent drift, every visual/behavioral tweak goes into `packages/ui`; Storybook and playground render the identical component.
+
+### Playground-first iteration is allowed, but must be promoted back
+**Why:** Sometimes it's faster to prototype in the playground. That's fine, *if* the tweak is then promoted into the DS before merge. No lingering divergences. The audit table in each plan tracks promotions owed.
+
+### Composition helpers in the app are allowed; re-implementations are not
+**Why:** An `AppShell` that wires `SidebarProvider` + `Sidebar` + Mande nav items using only `@mande/ui` primitives is composition, not a fork. It doesn't duplicate component logic. A `AppSidebar` that implements its own `<aside>` element, toggle state, and nav styling is a fork and is banned. Distinguishing the two is by construction — every line in a composition helper should either be a DS component or layout/wiring code.
+
+### If the DS is missing something, extend the DS
+**Why:** When the playground needs a prop or variant that doesn't exist, the answer is always "add it to the DS." Never "fork a local copy." The audit table in each plan doc tracks every such DS extension owed.
+
+### Planning: superpowers convention even without the skill
+**Why:** The existing `docs/superpowers/plans/` pattern — plan doc with file table, checkbox tasks, audit table — is useful independent of whether `superpowers:executing-plans` skill is loaded in the session. Kept the pattern.
+
+---
+
+## Cross-Platform DS Strategy (Session 9)
+
+### Target web first, React Native second
+**Why:** RN on top of an inconsistent web DS multiplies the mess. Web consolidation (Phase 1) finishes before Phase 2 starts.
+
+### React Native approach: NativeWind + shared tokens (option C)
+**Why:** Three realistic paths were considered:
+- **(a) Tamagui** — single codebase compiled to web + native. Heaviest migration, tightest coupling, best parity.
+- **(b) Parallel `@mande/ui-native` mirroring API manually.** Most control, most duplication, no shared logic.
+- **(c) NativeWind + shared tokens layer.** Web DS stays as-is. New `packages/tokens` exports pure TS design values (colors, spacing, typography, motion, radii). New `packages/ui-native` mirrors component names/prop APIs using RN + NativeWind, consuming `packages/tokens`.
+
+Chose (c) because it preserves the web DS investment, shares the primary coupling point (tokens), and still allows native-first interaction patterns (sheets, haptics, keyboard handling) rather than web-translated ones. Avoids Tamagui's all-or-nothing migration.
+
+### Native-first interactions stay native; aesthetic stays shared
+**Why:** Where web uses a Radix `Dialog`, RN uses an `ActionSheet`. Where web uses `motion` springs, RN uses `react-native-reanimated`. Those divergences are accepted. What doesn't diverge: colors, spacing, typography, radii, motion curves — the shared tokens.
+
+---
+
 ## Motion & Animation Decisions (Session 8)
 
 ### Motion is a DS primitive, not per-component
