@@ -15,6 +15,35 @@ Do this without being asked. If a context compaction summary appears, treat it a
 
 ---
 
+## Branching workflow
+
+Branch by **topic**, not by session. A topic is a coherent unit of work from the plan (the "What's next" queue in the latest `SESSION_REPORT_0N.md`) that will ship as its own PR.
+
+**Naming:** `claude/<topic-slug>` — short, lowercase, hyphenated, descriptive of the work (e.g. `claude/career-clarity-curriculum`, `claude/ship-previews`, `claude/motion-foundation`).
+
+**When to cut a new branch:**
+- Starting a new topic from the plan
+- Starting an unplanned fix or experiment that will become its own PR
+
+**When to stay on the current branch:**
+- Continuing, polishing, or responding to review on work already in progress
+- Writing the end-of-session docs for the current topic
+
+**Cut procedure:**
+1. `git checkout main && git pull origin main` — catch up
+2. `git checkout -b claude/<topic-slug>` — branch off fresh `main`
+3. Work, commit, push with `git push -u origin claude/<topic-slug>`
+
+**Plan → branch mapping (current queue):**
+- Career clarity curriculum → `claude/career-clarity-curriculum`
+- Ship previews (Pages + Vercel) → `claude/ship-previews`
+- Second product surface (career-discovery polish) → `claude/career-discovery-polish`
+- Motion foundation → `claude/motion-foundation`
+
+One branch → one PR → one coherent change. Don't mix topics in a single branch.
+
+---
+
 ## Project overview
 
 Mande Design System — Turborepo monorepo:
@@ -29,7 +58,8 @@ Mande Design System — Turborepo monorepo:
 Feature-level context lives in separate files — read the relevant one(s) when working on a specific feature:
 - `docs/product/home.md`
 - `docs/product/chat-assistant.md`
-- `docs/product/career-discovery.md`
+- `docs/product/career-discovery.md` — PIVOTS self-serve dashboard
+- `docs/product/career-clarity.md` — 10-day curriculum delivery (distinct from PIVOTS)
 
 When work spans multiple features, read all relevant files. When a new feature or initiative starts, create a new file in `docs/product/` using the same template structure.
 
