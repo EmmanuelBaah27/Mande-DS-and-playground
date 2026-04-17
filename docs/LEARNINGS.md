@@ -4,6 +4,25 @@ Things learned while building the Mande Design System. Captured so they compound
 
 ---
 
+## 2026-04-17 — Session 9: Workflow codification + branch hygiene
+
+### Process
+
+- **Phases are modes, not checklists.** The first pass at a workflow (ELICIT → GROUND → PLAN → BUILD → SHIP) fell apart the moment I turned each phase into a fixed question list. The right framing: each phase has a **goal** (a stance, a mode to be in), and the specific moves per phase come from the topic itself. ELICIT for a new feature looks different from ELICIT for a fix; GROUND for a refactor looks different from GROUND for a brand-new screen. Judgment + the available tools (subagents, skills, grep, small spikes) pick the moves.
+- **Product Discovery and Topic Execution are different loops.** Running ELICIT on career-clarity curriculum surfaced product-level questions (what's the thesis, what does continuity mean, how does the assessment report feed the chat) — not plan-level questions. That meant the topic wasn't *ready* for the Execution loop. A preceding Discovery loop was missing. Each loop has its own cadence, artifacts, and "done when." Topic Execution's first move is now: check that Discovery has happened; kick back if not.
+- **A branch with no PR is invisible work.** Reaffirmed by this session's audit: two branches with real unmerged work had never been PR'd. New rule in `CLAUDE.md`: every branch either has an open PR (draft is fine) or is being abandoned. Nothing else.
+- **Stale local `main` is a silent multiplier for drift.** 34 commits behind at session start. Every branch cut from that `main` would have inherited the gap. First step of the Cut Procedure in `CLAUDE.md` is now non-negotiably `git checkout main && git pull origin main`.
+- **Mid-session topic switches are a branch-split signal.** This session started on `claude/branching-workflow-guide-T4ZKu`, switched intent to career-clarity curriculum, and surfaced the need to codify workflow separately. Result: both topics mixed on one branch until explicit split. New rule: if the work crosses topics mid-session, split branches before committing further.
+
+### Technical
+
+- **Sandbox git cannot delete remote branches.** `git push origin --delete <branch>` returns HTTP 403 here; GitHub MCP exposes no delete-branch tool. Path: user deletes via GitHub UI, or use the "Delete branch" button on a merged PR. Implication: cleanup workflows that require delete steps must hand off to a human action, not automate.
+- **`git merge-tree $(git merge-base A B) A B` is the offline merge-conflict check.** Output lacks `<<<<<<<` / `>>>>>>>` markers → clean merge. Useful as a pre-flight before opening recovery PRs so you don't open conflict bombs.
+- **`git fetch --prune` is the honest-remote-state command.** Plain `git fetch` leaves stale `origin/<branch>` refs locally after the user deletes a branch on GitHub. Always pair with `--prune` in cleanup workflows.
+- **Cherry-picking a commit doesn't isolate the *intent* of the commit — only the diff.** `f499c4f` added both the branching workflow section *and* a product-docs list update in one commit. Cherry-picked onto the workflow branch, it brought both. Had to manually revert the product-docs list part to keep this branch strictly process-focused. Next time: commit with the split in mind up front.
+
+---
+
 ## 2026-04-17 — Session 8: Rounds 2/4/5, Chat Curriculum Mode, DialKit
 
 ### Process

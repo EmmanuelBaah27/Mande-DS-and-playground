@@ -15,32 +15,49 @@ Do this without being asked. If a context compaction summary appears, treat it a
 
 ---
 
-## Branching workflow
+## Working on a topic
 
-Branch by **topic**, not by session. A topic is a coherent unit of work from the plan (the "What's next" queue in the latest `SESSION_REPORT_0N.md`) that will ship as its own PR.
+Work happens in two loops: **Product Discovery** (figures out *what to build and why*) and **Topic Execution** (figures out *how to build it and ships it*). Most sessions touch one or the other; switching loops mid-session is a signal to split the work into separate branches.
 
-**Naming:** `claude/<topic-slug>` — short, lowercase, hyphenated, descriptive of the work (e.g. `claude/career-clarity-curriculum`, `claude/ship-previews`, `claude/motion-foundation`).
+### Product Discovery (feature-level)
 
-**When to cut a new branch:**
-- Starting a new topic from the plan
-- Starting an unplanned fix or experiment that will become its own PR
+Open-ended. Engaged when a topic's direction isn't yet clear enough to plan build work — or when shipping a build reveals product ambiguity that needs resolving.
 
-**When to stay on the current branch:**
-- Continuing, polishing, or responding to review on work already in progress
-- Writing the end-of-session docs for the current topic
+- **Mode.** Ask the questions that surface user intent, product thesis, MVP cut, and continuity with adjacent features. Dig until the *why* is legible. Don't assume.
+- **Output.** Updated `docs/product/*.md`, roadmap/MVP decisions, sometimes rough design direction. No branches cut, no application code written.
+- **Done when.** Topic has a clear thesis, an MVP scope cut, and a concrete user moment. Ready to enter Topic Execution.
 
-**Cut procedure:**
-1. `git checkout main && git pull origin main` — catch up
-2. `git checkout -b claude/<topic-slug>` — branch off fresh `main`
-3. Work, commit, push with `git push -u origin claude/<topic-slug>`
+### Topic Execution (branch-level)
 
-**Plan → branch mapping (current queue):**
-- Career clarity curriculum → `claude/career-clarity-curriculum`
+Structured. One branch → one PR → one coherent change. Five phases, each a **mode** (a goal, a stance), not a checklist. Pick the moves that serve each phase's goal for the specific topic.
+
+1. **ELICIT.** Confirm the topic has been product-discovered. If not, kick back to Discovery. If yes, ask only what shapes *this specific plan* — dependencies, edge cases, scope cuts, definition of done.
+2. **GROUND.** Find the gap between your model and reality. Read the feature doc, audit existing code, check what's already shipped, verify assumptions with small spikes. Surface anything that would change the plan.
+3. **PLAN.** Write it down in `docs/superpowers/plans/<YYYY-MM-DD>-<slug>.md` using the existing format (goal, files, tasks with `- [ ]` checkboxes, scope cuts, open questions, done criteria). **User reviews before any code.**
+4. **BUILD.** Execute the plan task-by-task (use `superpowers:executing-plans` or `superpowers:subagent-driven-development` when helpful). Tick checkboxes. Surface deviations immediately — don't silently drift from the plan.
+5. **SHIP.** Verify the plan's done criteria actually hold. Update session docs. Commit, push, open PR.
+
+### Branch rules
+
+- **Branch by topic, not session.** A topic is a coherent unit of work that ships as one PR. Sessions can span multiple topics (rare); topics often span multiple sessions.
+- **Naming:** `claude/<topic-slug>` — short, lowercase, hyphenated, descriptive.
+- **Cut procedure:**
+  1. `git checkout main && git pull origin main` — catch up
+  2. `git checkout -b claude/<topic-slug>` — branch off fresh `main`
+  3. Work, commit, push with `git push -u origin claude/<topic-slug>`
+- **Cut a new branch when:** starting a new topic from the roadmap, starting an unplanned-but-shippable fix, or when a session crosses into a different topic mid-flow.
+- **Stay on the current branch when:** continuing, polishing, or responding to review on work in progress, or writing end-of-session docs for the current topic.
+- **Every branch has an open PR (draft is fine) or is being abandoned.** A branch with no PR is invisible work.
+- **After merge:** delete the branch (local + remote).
+
+### Plan → branch mapping (current queue)
+
+- Career clarity curriculum → `claude/career-clarity-curriculum` (pending Product Discovery)
 - Ship previews (Pages + Vercel) → `claude/ship-previews`
-- Second product surface (career-discovery polish) → `claude/career-discovery-polish`
+- Career discovery polish → `claude/career-discovery-polish`
 - Motion foundation → `claude/motion-foundation`
 
-One branch → one PR → one coherent change. Don't mix topics in a single branch.
+New branches cut as new topics emerge from Discovery.
 
 ---
 
@@ -58,8 +75,7 @@ Mande Design System — Turborepo monorepo:
 Feature-level context lives in separate files — read the relevant one(s) when working on a specific feature:
 - `docs/product/home.md`
 - `docs/product/chat-assistant.md`
-- `docs/product/career-discovery.md` — PIVOTS self-serve dashboard
-- `docs/product/career-clarity.md` — 10-day curriculum delivery (distinct from PIVOTS)
+- `docs/product/career-discovery.md`
 
 When work spans multiple features, read all relevant files. When a new feature or initiative starts, create a new file in `docs/product/` using the same template structure.
 
