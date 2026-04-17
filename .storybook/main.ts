@@ -29,6 +29,27 @@ const config: StorybookConfig = {
       "@": path.resolve(__dirname, "../packages/ui/src"),
     };
 
+    // Serving Storybook through a reverse proxy (Claude Code cloud,
+    // Codespaces, ngrok, etc.) requires binding all interfaces,
+    // accepting arbitrary forwarder hostnames, and pointing the HMR
+    // client at the user-facing origin instead of the container's
+    // internal port. Without this, the preview iframe emits absolute
+    // URLs against localhost:6006 which don't resolve in the user's
+    // browser, surfacing as "Failed to fetch dynamically imported
+    // module" errors.
+    config.server = {
+      ...config.server,
+      host: true,
+      allowedHosts: true,
+      hmr: {
+        ...(typeof config.server?.hmr === "object" ? config.server.hmr : {}),
+        protocol: "wss",
+        clientPort: 443,
+      },
+    };
+
+    config.cacheDir = path.resolve(__dirname, "../node_modules/.cache/sb-vite");
+
     config.optimizeDeps = {
       ...config.optimizeDeps,
       include: [
