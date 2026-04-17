@@ -4,6 +4,43 @@ Chronological record of all work done on the Mande Design System.
 
 ---
 
+## 2026-04-17 — Session 9: Workflow codification + branch hygiene
+
+Process session. Two branches came out of it:
+- `claude/workflow-codification` (this one) — branching + two-loop workflow in `CLAUDE.md`.
+- `claude/career-clarity-product-discovery` (sibling) — product doc split + home.md updates from the assessment/chat context shared in-session.
+
+### What was done (this branch)
+
+**Branch hygiene + recovery (before branch split)**
+- Audited: local `main` was 34 commits behind `origin/main`; six `claude/*` branches on remote.
+- Caught two stale-looking branches with real unmerged work: `claude/review-progress-UPGDr` (Session 8 docs, +250 lines) and `claude/setup-storybook-7jTQP` (5 Storybook fixes including Sidebar crash). Verified clean-merge via `git merge-tree`; opened PRs **#10** and **#11**; user merged both.
+- Deleted 6 stale remote branches via the GitHub UI (sandbox `git push --delete` returns HTTP 403; GitHub MCP doesn't expose a delete-branch tool).
+
+**Branching workflow — first pass** (`c85d752`, cherry-picked from the original career-clarity-curriculum branch)
+- Added a "Branching workflow" section to `CLAUDE.md`: branch by topic not session, `claude/<topic-slug>` naming, cut procedure, plan→branch mapping.
+
+**Two-loop workflow — expansion** (new on this branch)
+- Replaced "Branching workflow" with a broader "Working on a topic" section.
+- Introduced **Product Discovery** (feature-level, open-ended, produces product docs) vs **Topic Execution** (branch-level, structured five-phase loop).
+- Five phases reframed as **modes** (ELICIT / GROUND / PLAN / BUILD / SHIP) — goals not checklists. Moves per phase come from the specific topic.
+- Codified: plans go to `docs/superpowers/plans/<YYYY-MM-DD>-<slug>.md`; user reviews before code; every branch has an open PR or is abandoned; branches deleted after merge.
+- Triggered by running ELICIT on career-clarity curriculum and realising the questions surfaced were *product* questions, not *plan* questions — meaning the 5-phase loop alone was insufficient; a preceding Discovery loop was missing.
+
+### Verified
+
+- `CLAUDE.md` carries the new "Working on a topic" section between "After every session" and "Project overview".
+- Branch split executed: workflow work isolated on this branch; product-discovery work lives on sibling branch.
+- PRs #10 and #11 merged into `main` earlier in the session.
+
+### Known, unfixed
+
+- `claude/career-clarity-curriculum` (the mixed-topic branch that kicked this off) needs retiring after both spawned branches merge.
+- No PR yet for either new branch at time of Session 9 docs write.
+- GitHub Pages still not enabled (carried from Session 8).
+
+---
+
 ## 2026-04-17 — Session 8: Rounds 2, 4, 5 + chat curriculum mode + DialKit
 
 Catches up docs for the large batch of commits between Session 7 and today. Five workstreams landed in parallel: preview pipelines (Round 2), the career-discovery screen (Round 4, built then rebuilt), motion foundation (Round 5), DialKit integration, and Curriculum Mode in the chat screen.

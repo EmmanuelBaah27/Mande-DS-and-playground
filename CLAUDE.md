@@ -15,6 +15,52 @@ Do this without being asked. If a context compaction summary appears, treat it a
 
 ---
 
+## Working on a topic
+
+Work happens in two loops: **Product Discovery** (figures out *what to build and why*) and **Topic Execution** (figures out *how to build it and ships it*). Most sessions touch one or the other; switching loops mid-session is a signal to split the work into separate branches.
+
+### Product Discovery (feature-level)
+
+Open-ended. Engaged when a topic's direction isn't yet clear enough to plan build work — or when shipping a build reveals product ambiguity that needs resolving.
+
+- **Mode.** Ask the questions that surface user intent, product thesis, MVP cut, and continuity with adjacent features. Dig until the *why* is legible. Don't assume.
+- **Output.** Updated `docs/product/*.md`, roadmap/MVP decisions, sometimes rough design direction. No branches cut, no application code written.
+- **Done when.** Topic has a clear thesis, an MVP scope cut, and a concrete user moment. Ready to enter Topic Execution.
+
+### Topic Execution (branch-level)
+
+Structured. One branch → one PR → one coherent change. Five phases, each a **mode** (a goal, a stance), not a checklist. Pick the moves that serve each phase's goal for the specific topic.
+
+1. **ELICIT.** Confirm the topic has been product-discovered. If not, kick back to Discovery. If yes, ask only what shapes *this specific plan* — dependencies, edge cases, scope cuts, definition of done.
+2. **GROUND.** Find the gap between your model and reality. Read the feature doc, audit existing code, check what's already shipped, verify assumptions with small spikes. Surface anything that would change the plan.
+3. **PLAN.** Write it down in `docs/superpowers/plans/<YYYY-MM-DD>-<slug>.md` using the existing format (goal, files, tasks with `- [ ]` checkboxes, scope cuts, open questions, done criteria). **User reviews before any code.**
+4. **BUILD.** Execute the plan task-by-task (use `superpowers:executing-plans` or `superpowers:subagent-driven-development` when helpful). Tick checkboxes. Surface deviations immediately — don't silently drift from the plan.
+5. **SHIP.** Verify the plan's done criteria actually hold. Update session docs. Commit, push, open PR.
+
+### Branch rules
+
+- **Branch by topic, not session.** A topic is a coherent unit of work that ships as one PR. Sessions can span multiple topics (rare); topics often span multiple sessions.
+- **Naming:** `claude/<topic-slug>` — short, lowercase, hyphenated, descriptive.
+- **Cut procedure:**
+  1. `git checkout main && git pull origin main` — catch up
+  2. `git checkout -b claude/<topic-slug>` — branch off fresh `main`
+  3. Work, commit, push with `git push -u origin claude/<topic-slug>`
+- **Cut a new branch when:** starting a new topic from the roadmap, starting an unplanned-but-shippable fix, or when a session crosses into a different topic mid-flow.
+- **Stay on the current branch when:** continuing, polishing, or responding to review on work in progress, or writing end-of-session docs for the current topic.
+- **Every branch has an open PR (draft is fine) or is being abandoned.** A branch with no PR is invisible work.
+- **After merge:** delete the branch (local + remote).
+
+### Plan → branch mapping (current queue)
+
+- Career clarity curriculum → `claude/career-clarity-curriculum` (pending Product Discovery)
+- Ship previews (Pages + Vercel) → `claude/ship-previews`
+- Career discovery polish → `claude/career-discovery-polish`
+- Motion foundation → `claude/motion-foundation`
+
+New branches cut as new topics emerge from Discovery.
+
+---
+
 ## Project overview
 
 Mande Design System — Turborepo monorepo:

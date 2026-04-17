@@ -4,6 +4,34 @@ Key decisions, patterns, and processes for the Mande Design System. Updated as t
 
 ---
 
+## Workflow Decisions (Session 9)
+
+### Work happens in two loops: Product Discovery and Topic Execution
+**Why:** Running a single 5-phase execution loop on every ask conflated *what to build* with *how to build it*. When we ran ELICIT on career-clarity curriculum, the questions that surfaced were product questions (thesis, continuity, MVP), not plan questions. That meant the topic wasn't Execution-ready yet — it needed Discovery first. Two loops, not one.
+**Mechanism (codified in `CLAUDE.md` "Working on a topic"):**
+- **Product Discovery:** open-ended, no branches, no code. Outputs: product docs + roadmap/MVP decisions. Done when thesis + MVP + user moment are clear.
+- **Topic Execution:** branch-level. Five phases (ELICIT → GROUND → PLAN → BUILD → SHIP) as **modes** (goals, not checklists). First move of ELICIT: confirm the topic is product-discovered; kick back if not.
+
+### Phases are modes, not checklists
+**Why:** A phase is a *goal* (a stance to be in). The moves within the phase come from the specific topic. ELICIT for a new feature surfaces different questions from ELICIT for a bug fix. Fixed question lists fail; judgment + available tools (subagents, grep, spikes) picks the right moves.
+**Implication:** When running a phase, start from its goal, not from a template. If the phase's output doesn't serve the goal, change moves — don't run more of the template.
+
+### Plans live in `docs/superpowers/plans/<YYYY-MM-DD>-<slug>.md`
+**Why:** The existing `docs/superpowers/plans/` format (one example: `2026-04-09-chat-ui-polish.md`) is designed for `superpowers:executing-plans` / `superpowers:subagent-driven-development`. Reuse it — don't invent a second plan format. User reviews the plan before any code; deviations during BUILD are surfaced immediately, not silently absorbed.
+
+### Every branch has an open PR (draft is fine) or is being abandoned
+**Why:** Two branches in this session's audit carried real, mergeable work that was effectively lost from `main` because no PR ever got opened. A branch with no PR is invisible work.
+**Rule:** When work starts on a branch, open a draft PR early. When work is abandoned, write the reason in the last commit message and retire the branch.
+
+### Mid-session topic switch = branch split
+**Why:** This session mixed branching-workflow codification, product-doc split, and session-docs work on one branch (`claude/career-clarity-curriculum`). Had to retroactively split into two branches. Cheaper to split at the moment of topic-switch.
+**Rule:** If the work you're about to commit belongs to a different topic than the branch's stated purpose, cut a new branch first.
+
+### Cut procedure starts with `git pull origin main`
+**Why:** Stale local `main` (34 commits behind at session start) would have propagated drift to every new branch cut from it. The first step of the Cut Procedure in `CLAUDE.md` is non-negotiable.
+
+---
+
 ## Motion & Animation Decisions (Session 8)
 
 ### Motion is a DS primitive, not per-component
