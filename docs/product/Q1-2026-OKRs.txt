@@ -1,0 +1,120 @@
+# OKRs
+
+**OKRs for Q1 2026**
+
+**Validate curriculum delivery infrastructure and test path to monetization**
+
+* Launch AI-powered workflow (chat experience) for delivery of career clarity curriculum to be enrolled by at least 100 students (25 get it for free; 75+ available to use pay-for-me or pay out of pocket); target 70%+ course completion rate by Q2  
+* Implement payment integrations and lean Pay-for-me feature with a fixed fee (target $15 \- $20)  for career clarity curriculum; achieve 90% Pay-for-me activation rate for paying learners. (Non-pilot free learners)  
+  * No. of paying learners  
+* Implement lean version of sponsor portal and achieve 80% signup rate by sponsors
+
+**Launch mobile app and a strong notifications system to drive retention** 
+
+* Implement lean mobile app and achieve a 70% download rate among signed-up users for our lean mobile app  
+* Deliver career clarity curriculum and test out notifications; Target WAU \= 50% (Login, lean dashboard, Chat UI. New account user to be redirected to online diagnostic with a routing back into the app after signup)
+
+**Build socials and funnel students into the WhatsApp community** 
+
+* Grow our total social media following by 60%—Instagram: 130 to 500 followers, Twitter: 1,400 to 2,000, LinkedIn: 501 to 750  
+* Grow signups to 200+ students with 50% in their 2nd/3rd year and 80%+ funneled to WhatsApp.  
+* Improve the fraction of scholarship students from \~4% to 50% of signups  
+* Maintain at least 50% engagement rate within the WhatsApp community (Engagement \= Polls/Posts; latter is preferred)
+
+# Task breakdown 
+
+**Validate curriculum delivery infrastructure and test path to monetization**
+
+* Launch AI-powered workflow for delivery of career clarity curriculum to be enrolled by at least 100 students (25 get it for free; 75+ available to use pay-for-me); target 70%+ completion rate by Q2  
+  - [ ] Complete career clarity curriculum, taking into consideration all practical exercises as evaluation levers  
+  - [ ] Define skills to be evaluated for and tracked for M\&E and reporting purposes  
+  - [ ] Craft prompts for all agentic work: Curriculum delivery and learner evaluation, Career exploration tests and results collection, Career path report, Skills extraction.  
+  - [ ] Implement, test and deploy agentic workflows to ensure autonomous curriculum delivery and learner evaluation  
+  - [ ] Track token consumption to evaluate baseline costs to inform pricing and determined when to introduce payments  
+  - [ ] Design and implement career report  
+* Implement payment integrations and lean Pay-for-me feature with a fixed fee (target $15 \- $20)  for career clarity curriculum; achieve 90% Pay-for-me activation rate for paying learners.  
+  - [ ] Register business  
+  - [ ] Get Paystack account to initiate payment integrations  
+  - [ ] Implement basic pricing to break even or make at least 50% profit  
+  - [ ] Design and implement in-app PFM experience and at what point the link gets introduced (Depends on token consumption analysis)  
+  - [ ] Design and implement custom landing page for sponsors when they click the PFM link  
+  - [ ] Implement payment integration with sponsor signup embedded in the flow (Accept single, fixed-fee payments for now)    
+  - [ ] Make PFM links trackable to measure CTR and conversions for optimization  
+  - [ ] Implement basic wallet feature to track payments from sponsors  
+* Implement lean version of sponsor portal and achieve 80% signup rate by sponsors  
+  - [ ] Design and implement the baseline report for sponsors while accounting for one sponsor to many students relationships
+
+**Establish a strong notifications system to drive retention** 
+
+* Achieve a 70% download rate among signed up users for the mobile app  
+  - [ ] Tie career guidance to mobile app and use that to drive downloads. User journey: Take career check \> Sign up \> Join community and/or Download app \> First chat  
+  - [ ] Run email and community activations to drive downloads  
+* Implement lean mobile app to deliver career clarity curriculum and test out notifications; Target WAU \= 50% (Login, lean dashboard, Chat UI. New account user to be redirected to online diagnostic with a routing back into the app after signup)  
+  - [ ] Design and implement lean mobile experience. Login, diagnostics dashboard, Chat UI with agentic workflows. Sign up/Begin your journey to be redirected to online diagnostic with a routing back into the app after signup  
+  - [ ] Implement PFM experience in mobile app  
+  - [ ] Engineer chat experience to check for WhatsApp number availability and push user to join the community if they have no WhatsApp number registered  
+  - [ ] Implement One Signal to deploy notifications to specific segments of users to drive retention
+
+**Build socials and funnel students into the WhatsApp community** 
+
+* Grow our socials by 160%—Instagram: 130 to 500 followers, Twitter: 1,400 to 2,000, LinkedIn: 501 to 750  
+* Grow WhatsApp community to 200+ students with 50% in their 2nd/1st year (time-till-graduation \= 2-3 years)  
+* Reach out to individuals, organisations, scholarship schemes directly on LinkedInLinkedn  
+* Improve percentage of scholarship students from \~4% to 50%  
+* Maintain at least 50% engagement rate by members within the WhatsApp community (Engagement \= Polls/Posts; latter is preferred)
+
+# Assumption tracking 
+
+During the meeting, several key assumptions were identified as the foundation for the Q1 2026 OKRs. These assumptions are critical to track because they will determine whether the strategy is validated or needs to be disproved.
+
+Below are the refined assumptions, organized under their respective OKRs and key results:
+
+**OKR 1: Validate curriculum delivery infrastructure and test path to monetization**
+
+**Key Result:** Launch AI-powered workflow for curriculum delivery (100 students); target 70%+ completion rate.
+
+* Engagement Model: A chat-based interface is more effective than a static UI for delivering curriculum to students.  
+* Behavioral Triggers: Using "Duolingo-like" principles (notifications that trigger user re-engagement) will prevent users from skipping steps and drive higher completion rates than self-navigation.
+
+**Key Result:** Implement payment integrations and "Pay-for-me" feature; achieve 90% activation rate.
+
+* Payment Preference: Students generally prefer not to pay for services themselves, creating a need for third-party payment options.  
+* Distribution Nodes: Students can act as distribution nodes for revenue by sharing payment links with their personal networks.  
+* Activation vs. Payment: A high (90%) activation rate is realistic because students will prioritize seeking external funding over paying out of pocket.  
+* However, it is also assumed that students who do not expect anyone to pay for them may fail to activate the feature entirely  
+* Price Sensitivity: A fixed fee of $15–$20, based on estimated token usage, is a viable market rate for the career clarity curriculum. We will review when we discover more
+
+**Key Result:** Implement lean version of sponsor portal; achieve 80% signup rate.
+
+* Investor Mindset: Providing visibility into student progress will shift the sponsor's mindset from "donation" to "investment"  
+* Retention of Sponsors: Access to real-time milestones through a portal will encourage repeat sponsorships  
+* It is noted that for individual sponsors (like family members), repeat behavior is contingent on them having other relatives in similar student scenarios.
+
+**OKR 2: Launch mobile app and a strong notifications system to drive retention**
+
+**Key Result:** Achieve a 70% download rate among signed-up users.
+
+* App Superiority: Mobile app notifications are significantly more effective for driving retention than community-based engagement (WhatsApp) or emails.  
+* Mandatory Transition: Forcing users to download the app to access the curriculum from the web portal is an effective way to drive adoption, despite the risk of user churn.
+
+**Key Result:** Test out notifications; target 50% Weekly Active Users (WAU).
+
+* Personalization over Generics: Personalized, targeted notifications (e.g., reminding a user exactly where they left off in a chat) are required to drive engagement, as generic calendar invites or group messages often fail (Mande Journal experience).  
+* Engineering Prioritization: If engineering time is constrained, focusing exclusively on the mobile app's chat interface is a better investment than maintaining a web-based chat.
+
+**OKR 3: Build socials and funnel students into the WhatsApp community**
+
+**Key Result:** Grow signups to 200+ students (50% in 2nd/3rd year).
+
+* The "Sweet Spot": Second and third-year students are the ideal target demographic because they are actively exploring careers, whereas first-years are focused on grades and fourth-years are in an "accelerated" panic for immediate jobs.
+
+**Key Result:** Improve the fraction of scholarship students to 50% of signups.
+
+* B2B Strategy Validation: Intentionally recruiting scholarship students provides the necessary data and metrics to fortify a B2B strategy with scholarship schemes and foundations.
+
+**Key Result:** Maintain at least 50% engagement rate within the WhatsApp community.
+
+* Engagement Definition: Surface-level interactions, such as responding to polls or simply saying "hi," are valid indicators of initial community health and participation. Tracking engagement here is aimed at precision and not accuracy
+
+**Analogy for Understanding:**  
+Think of these assumptions as the scaffolding for a new building. The OKRs are the floor plans, but the scaffolding (assumptions) is what holds everything in place while the structure is being built. If one piece of scaffolding proves weak—such as students not wanting to use the "Pay-for-me" link—the team must adjust the support structure to ensure the whole building doesn't lean in the wrong direction.

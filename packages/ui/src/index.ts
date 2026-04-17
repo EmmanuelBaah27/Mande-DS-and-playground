@@ -1,6 +1,13 @@
 // ── Primitives ────────────────────────────────────────────────────────────────
 export { Icon } from "./components/ui/icon"
-export type { IconProps, IconSize, IconFill } from "./components/ui/icon"
+export type { IconProps, IconSize, IconFill, IconName } from "./components/ui/icon"
+
+// ── Motion tokens ─────────────────────────────────────────────────────────────
+export { springs, durations, easings } from "./tokens/motion"
+export type { SpringName, DurationName, EasingName } from "./tokens/motion"
+
+export { challengeLabels, challengeColors } from "./tokens/challenges"
+export type { ChallengeType } from "./tokens/challenges"
 
 // ── Form ──────────────────────────────────────────────────────────────────────
 export { Button, buttonVariants } from "./components/ui/button"
@@ -57,6 +64,12 @@ export {
 // ── Display ───────────────────────────────────────────────────────────────────
 export { Badge, badgeVariants } from "./components/ui/badge"
 export type { BadgeProps } from "./components/ui/badge"
+
+export { StepIndicator } from "./components/ui/step-indicator"
+export type { StepIndicatorProps, StepIndicatorStatus, StepIndicatorSize } from "./components/ui/step-indicator"
+
+export { EmptyState } from "./components/ui/empty-state"
+export type { EmptyStateProps } from "./components/ui/empty-state"
 
 export { Chip, chipVariants } from "./components/ui/chip"
 export type { ChipProps } from "./components/ui/chip"

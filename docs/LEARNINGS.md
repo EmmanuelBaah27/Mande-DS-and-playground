@@ -4,6 +4,40 @@ Things learned while building the Mande Design System. Captured so they compound
 
 ---
 
+## 2026-04-17 — Session 8: Rounds 2/4/5, Chat Curriculum Mode, DialKit
+
+### Process
+
+- **Re-read the feature doc *before* starting a screen, not during polish.** The first career-discovery build was a curriculum-delivery UI; re-reading `docs/product/career-discovery.md` during polish surfaced that curriculum belongs in Chat, and career-discovery is PIVOTS. The polish work informed Chat's Curriculum Mode (so not wasted) but the screen had to be rebuilt. Product docs are cheap to re-read; screens are expensive to redo.
+- **Polish passes are where DS components get born.** The Round 4 polish on career-discovery produced `StepIndicator`, `EmptyState`, and `tokens/challenges.ts` — none of which were needed in isolation, but all of which fell out of the attempt to make the screen feel right. Design-systems work is often downstream of screens-work, not upstream.
+- **When you pull a wiring but aren't ready to ship, hide the surface — don't rip the wiring.** DialKit landed across four commits (install, client wrapper, production flag, useDialKit on chat) and then got hidden via `DialKitProvider` returning `null`. All the plumbing stays. Flipping it on when design is ready is one line. Deleting-and-re-adding would lose that work.
+
+### Technical
+
+- **`tw-animate-css` is an implicit shadcn dependency.** Eleven overlay components reference `animate-in`, `fade-in-0`, `zoom-in-95`, `slide-from-*` utilities — Tailwind doesn't ship these. Without the plugin they silently do nothing (Radix's default open/close behaviours mask the absence). Importing the plugin from `globals.css` fixed 11 components at once.
+- **Motion in Next.js App Router requires explicit client boundaries.** `DialRoot` didn't hydrate on initial install; wrapping in a `"use client"` component fixed it. Any interactive library that mounts DOM effects needs this — RSC won't hydrate it.
+- **DialKit auto-hides in production.** It's a dev tunability tool by default. Pass `productionEnabled` on deployed previews or the panel won't appear. Easy to miss because local dev just works.
+- **Bespoke markdown parsers are a local maximum.** The first career-discovery build rolled `\n\n` split + `**bold**` regex. ReactMarkdown's bundle cost is worth it given prose grows — swap early, not late. The custom parser handled exactly the cases the first test fixture had and nothing else.
+- **Motion tokens belong in CSS vars *and* TS.** `globals.css` exposes `--duration-*` and `--ease-*` for Tailwind / arbitrary CSS consumers. `tokens/motion.ts` exposes typed spring presets + duration numbers + easing tuples for the `motion` library's `Transition` type. Two surfaces, same values. Components pick the surface that fits.
+- **One input surface at a time on chat.** When a challenge is active, the regular message box swaps out for the challenge-specific input (textarea / confirm / URL). Two input surfaces (one embedded in the thread, one in the input bar) creates decision paralysis and visual conflict with the fade gradient. The one-question-at-a-time design principle applies to input affordances, not just the prose.
+
+---
+
+## 2026-04-15 — Session 7: Product context extraction
+
+### Process
+
+- **Raw source + distilled summary beats either alone.** Keeping the user-uploaded `.txt` files in `docs/product/` alongside the distilled `.md` files gives us two layers: the ground-truth artefacts (full curriculum, full system prompt, raw OKRs) and the scannable summaries (4 populated template files). Future sessions can rely on the summaries; edge cases can pull the full sources.
+- **The scaffolded product-docs pattern pays off when the team actually uploads context.** The Session 5 scaffolding (empty `OVERVIEW.md` + per-feature templates) sat empty for 2 sessions. Once the user had a pattern to pour content into, extraction took one session — far faster than writing from scratch or interviewing to derive it.
+- **"Delete from global directory" needs a preservation pass first.** The user's instruction would have dropped `Q1 2026 OKRs.txt` (root-only, no `docs/product/` copy). Flagging this and moving before deleting avoided silent data loss. Default: before any bulk delete, diff the target against what exists elsewhere and flag singletons.
+
+### Technical
+
+- **`git merge` across two long-lived streams that touched disjoint file sets is boring-safe.** Feature branch added hardening commits; `main` received product context uploads. Merge resolved via `ort` strategy with zero conflicts. Worth remembering that not every merge is a conflict festival — when scopes are disjoint, it's a non-event.
+- **`git mv` across a branch boundary triggers rename detection even if files are structurally in two places.** Git saw `Mande Positioining.txt` (root) → `docs/product/Mande Positioning.txt` as a "rename" because the root copy was deleted and the docs-folder copy with the typo was deleted — net effect looked like a cross-directory rename with typo fix. The content hash is what drives rename detection, not the path semantics.
+
+---
+
 ## 2026-04-03 — Session 1: Monorepo Setup
 
 ### Technical
@@ -184,6 +218,29 @@ Must prepend this to every pnpm/node command in Bash tool calls.
 - **`neverBuiltDependencies` vs `onlyBuiltDependencies`** — pnpm 10.33 rejects having both in the same workspace config (`ERR_PNPM_CONFIG_CONFLICT_BUILT_DEPENDENCIES`). Use **`ignoredBuiltDependencies`** for packages that must never run lifecycle scripts alongside an `onlyBuiltDependencies` allowlist.
 - **`CENTRAL_LICENSE_KEY` belongs in the environment** — not in `.npmrc`. npm/pnpm config files are not automatically exposed as `process.env` to dependency `preinstall` scripts.
 - **Lockfile “not compatible with current pnpm”** — install with the `packageManager` version (Corepack or `npx pnpm@<version>`) so the lockfile and script policies match.
+
+---
+
+## 2026-04-15 — Session 6: Harden & pin
+
+### Technical
+
+- **Turbo 2.9.3 without `--filter='*'` picks up only root-adjacent packages.** A task like `typecheck` that isn't chained via `dependsOn` to a task that crosses workspaces will silently only run in one package. Fix: root script passes `--filter='*'` to enumerate all workspaces and run the task wherever it's defined.
+
+- **`pnpm build-storybook` triggers pnpm's exec-first behaviour at the workspace root.** Because pnpm treats dash-separated names as potential binaries, it looks for an executable first. Also `pnpm run build-storybook` fails because pnpm doesn't default to the root workspace. Correct form from anywhere: `pnpm -w run build-storybook`.
+
+- **`react-resizable-panels` v4 no longer emits `data-panel-group-direction` on DOM.** v3's `<PanelGroup>` rendered that data-attr; v4's `<Group>` uses inline `style={{ flexDirection: ... }}`. Any shadcn-style CSS selector like `data-[panel-group-direction=vertical]:flex-col` is dead in v4. Must be rewritten using class-based conditionals or the v4 `aria-orientation` attribute on Separator.
+
+- **Icon `name: string` vs `CentralIconName` union.** Narrowing the wrapper's `name` prop to the full 1,906-icon union gives IntelliSense and catches typos, but cascades: any caller using a locally-defined string array must be `as const` for TS to keep the literals narrow. Pattern:
+  ```ts
+  const NAV_ITEMS = [{ id: "home", icon: "IconHome" }, ...] as const
+  ```
+
+- **`DateRange` from `react-day-picker` is required for range calendar stories.** Structural `{from: Date; to?: Date}` types don't satisfy `OnSelectHandler<DateRange | undefined>` because `DateRange.from` is `Date | undefined` — the library treats an empty range as `{from: undefined}`.
+
+- **Storybook caret-version drift is the one ecosystem worth pinning.** Session 2 showed an addon/core split breaking `Meta` exports. Caret versions keep it technically possible to drift. Pin `storybook` + every `@storybook/*` to the same exact version. Let other infra (turbo/vite/tailwind/typescript) float unless they've already burned us.
+
+- **Deploy workflow pnpm/Node pins must match `packageManager`.** Existing `deploy-storybook.yml` was on pnpm 9 + Node 20 while the project is pnpm 10.33.0 + Node 22. `pnpm install --frozen-lockfile` would fail on lockfile version mismatch the first time GH Pages is enabled. Pin the workflow to match `packageManager` in root `package.json`.
 
 ---
 
