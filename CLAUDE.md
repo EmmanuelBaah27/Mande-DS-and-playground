@@ -15,6 +15,41 @@ Do this without being asked. If a context compaction summary appears, treat it a
 
 ---
 
+## Preview workflow — always provide a way to see the work
+
+Every session that changes the playground or DS **must** surface a working preview URL so Emmanuel can check what was built. There are two surfaces:
+
+### 1. Local dev server (in-session)
+
+When you start work that affects the playground:
+
+- Start `pnpm dev:playground` in the background (via `Bash` with `run_in_background: true`).
+- Tell Emmanuel the port (default 3000; use `--port N` to pick another) and that the forwarded URL is available in his Claude Code web UI's ports/preview panel. **Do not** print `http://localhost:PORT` alone — it isn't reachable from his browser in the cloud container.
+- If `pnpm typecheck` is green and the dev server returns 200 for the affected routes, explicitly list the routes in the final summary.
+- If a dev server is already running on an unexpected port, don't fight it — report the port and use it.
+
+### 2. Vercel preview (post-push)
+
+Every push to every branch triggers a Vercel preview (per `docs/DEPLOYMENT.md`).
+
+- After every `git push`, invoke `/preview` (or call the steps inline) to fetch the latest Vercel preview URL from GitHub deployment statuses via the GitHub MCP.
+- Report the URL in the chat + include it in `docs/SESSION_REPORT_0N.md`.
+- If Vercel hasn't finished building yet, say so and check again before ending the session.
+- If Vercel reports a build failure, fix it before marking the session "done." A green typecheck isn't enough — the preview must actually deploy.
+- If the branch doesn't have a PR open, that's fine — Vercel deploys branch pushes too. Only suggest opening a PR if Emmanuel asks or if a reviewer needs to be added.
+
+### End-of-session summary must include both
+
+Every final response for a session that changed code in `apps/playground` or `packages/ui` includes:
+
+- **Local preview**: port number (with note about the UI ports panel)
+- **Vercel preview**: full preview URL for the latest commit
+- **Routes**: explicit list of changed/relevant routes to visit
+
+If either URL is unavailable, explain why and what needs to happen to make it available. Never let a session end with "I can't give you a link."
+
+---
+
 ## Project overview
 
 Mande Design System — Turborepo monorepo:

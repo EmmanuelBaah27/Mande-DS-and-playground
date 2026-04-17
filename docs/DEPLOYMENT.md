@@ -40,6 +40,35 @@ Update the table below with the URLs and commit. Designers and PMs review on the
 | Environment | URL |
 |---|---|
 | Production (main) | https://mande-playground.vercel.app |
+| Preview (per-branch) | `https://mande-playground-git-<branch-slug>.vercel.app` — see below |
+
+### Preview URL pattern
+
+Vercel builds a preview for every branch on every push (the `ignoreCommand` in `vercel.json` skips builds when the commit doesn't touch the playground graph, so docs-only commits don't deploy).
+
+**URL format:** `https://mande-playground-git-<branch-slug>.vercel.app/`
+
+- `<branch-slug>` is the branch name with `/` → `-` (e.g. `claude/design-system-updates` → `claude-design-system-updates`).
+- The URL is stable across pushes to the same branch — each new push replaces the deployment at that URL.
+
+**Deployment protection is enabled** at the project level. Unauthenticated requests to preview (or production) URLs return `403`. To view a preview:
+
+1. Be signed in to Vercel with the account that owns `mande-playground` (or request access from `EmmanuelBaah27`).
+2. Open the preview URL — it'll authenticate and render.
+
+If the URL is 403 when you're logged in, the build is either still running, has failed, or the branch hasn't been pushed yet.
+
+### Finding the live URL quickly (`/preview` slash command)
+
+Run `/preview` in the Claude Code session (see `.claude/commands/preview.md`). It:
+
+1. Reports the local dev server port.
+2. Predicts the Vercel preview URL for the current branch.
+3. Looks up deployment status via GitHub MCP if available.
+
+| Environment | URL |
+|---|---|
+| Production (main) | https://mande-playground.vercel.app |
 | Preview (per-PR) | _auto — appears on each PR_ |
 
 ---
