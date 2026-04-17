@@ -4,7 +4,7 @@ Things learned while building the Mande Design System. Captured so they compound
 
 ---
 
-## 2026-04-17 — Session 9: Workflow codification + branch hygiene
+## 2026-04-17 — Session 9: Codify how we work
 
 ### Process
 
