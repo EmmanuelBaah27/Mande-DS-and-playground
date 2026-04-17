@@ -61,7 +61,11 @@ Update:
 
 | Environment | URL |
 |---|---|
-| Storybook | _TBD_ |
+| Storybook | https://emmanuelbaah27.github.io/Mande-DS-and-playground/ |
+
+### Why GH Pages hosts Storybook, not the playground
+
+The playground is served by Vercel (above). GH Pages is reserved for the Storybook component catalog — it answers a different question (*"what components exist and how do I use them?"*) for a different audience (engineers consuming the DS, designers doing component audits). Don't add a second workflow that deploys the Next.js app to Pages; it'll fight `deploy-storybook.yml` for the `github-pages` environment.
 
 ---
 
