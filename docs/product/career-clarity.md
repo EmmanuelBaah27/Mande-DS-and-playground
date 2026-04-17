@@ -8,9 +8,29 @@
 
 Career Clarity is the structured, paced journey that takes a student from "I don't know what to do" to a chosen path. It's organised as four pillars (Introduction → Discovering Your Options → Finding Clarity → Making the Choice), delivered lesson-by-lesson in Chat's Curriculum Mode. Every lesson culminates in a challenge; every challenge produces an artifact the student can return to.
 
+**The curriculum is the answer to the home readiness report.** Students arrive in chat *from* the home report (see `home.md`) — they've just seen their estimate ("2 yrs 10 mo"), their seven category scores, and their weakest areas. The curriculum has to feel like the explicit path to closing those gaps. Continuity is the load-bearing principle: **the chat picks up from the report, not from a generic Day 1.** Mande's opening references the student's weakest category and ties it to the Intro pillar.
+
 The curriculum is the *how you get there*. PIVOTS is the *framework taught inside it* (the six factors that shape clarity). The Career Discovery dashboard is the *self-serve surface* where the same PIVOTS data lives, editable on the student's own time. Curriculum produces the initial PIVOTS data; Discovery lets students revisit and refine it.
 
 Positioned behind the Q1 2026 bet: a chat-based, Duolingo-style curriculum delivery beats static content, and Pay-for-me unlocks the market that "pay yourself" does not.
+
+---
+
+## Continuity: home report → curriculum
+
+The home readiness report surfaces seven categories (see `home.md`). The curriculum's four pillars each address a subset of them. Rough mapping (to be refined during build):
+
+| Report category | Primary curriculum pillar |
+|---|---|
+| Career clarity | Introduction (myths, options, reflection) |
+| Practical skills and experience | Discovering Your Options (skills audit, work preference) |
+| Job search skills | Finding Clarity (JDs, cold outreach, informational interviews) |
+| Initiative and proactiveness | Across pillars (Research/Action challenges) |
+| Visibility and social capital | Finding Clarity (LinkedIn, Boolean search, outreach) |
+| Opportunity openness | Discovering Your Options (values, opportunities assessment) |
+| Location and access | Discovering Your Options (opportunities/threats assessment) |
+
+The curriculum runs linearly (Intro → Discovery → Finding Clarity → Making the Choice) but the **weakest report category becomes the lens** through which Mande frames Day 1. If "Career clarity" is weakest, Mande leads with the myth-busting content. If "Visibility and social capital" is weakest, Mande foreshadows that pillar three will dig deep there and the intro sets the stage. The curriculum content doesn't re-order; the framing does.
 
 ---
 

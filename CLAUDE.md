@@ -73,9 +73,10 @@ Mande Design System — Turborepo monorepo:
 **Always read `docs/product/OVERVIEW.md` at the start of every session.**
 
 Feature-level context lives in separate files — read the relevant one(s) when working on a specific feature:
-- `docs/product/home.md`
-- `docs/product/chat-assistant.md`
-- `docs/product/career-discovery.md`
+- `docs/product/home.md` — readiness report + chat entry (live iOS app)
+- `docs/product/chat-assistant.md` — chat delivery mechanics
+- `docs/product/career-discovery.md` — PIVOTS self-serve dashboard
+- `docs/product/career-clarity.md` — 10-day curriculum delivered via chat (distinct from PIVOTS)
 
 When work spans multiple features, read all relevant files. When a new feature or initiative starts, create a new file in `docs/product/` using the same template structure.
 
