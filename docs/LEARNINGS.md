@@ -4,6 +4,25 @@ Things learned while building the Mande Design System. Captured so they compound
 
 ---
 
+## 2026-04-17 — Session 8: Rounds 2/4/5, Chat Curriculum Mode, DialKit
+
+### Process
+
+- **Re-read the feature doc *before* starting a screen, not during polish.** The first career-discovery build was a curriculum-delivery UI; re-reading `docs/product/career-discovery.md` during polish surfaced that curriculum belongs in Chat, and career-discovery is PIVOTS. The polish work informed Chat's Curriculum Mode (so not wasted) but the screen had to be rebuilt. Product docs are cheap to re-read; screens are expensive to redo.
+- **Polish passes are where DS components get born.** The Round 4 polish on career-discovery produced `StepIndicator`, `EmptyState`, and `tokens/challenges.ts` — none of which were needed in isolation, but all of which fell out of the attempt to make the screen feel right. Design-systems work is often downstream of screens-work, not upstream.
+- **When you pull a wiring but aren't ready to ship, hide the surface — don't rip the wiring.** DialKit landed across four commits (install, client wrapper, production flag, useDialKit on chat) and then got hidden via `DialKitProvider` returning `null`. All the plumbing stays. Flipping it on when design is ready is one line. Deleting-and-re-adding would lose that work.
+
+### Technical
+
+- **`tw-animate-css` is an implicit shadcn dependency.** Eleven overlay components reference `animate-in`, `fade-in-0`, `zoom-in-95`, `slide-from-*` utilities — Tailwind doesn't ship these. Without the plugin they silently do nothing (Radix's default open/close behaviours mask the absence). Importing the plugin from `globals.css` fixed 11 components at once.
+- **Motion in Next.js App Router requires explicit client boundaries.** `DialRoot` didn't hydrate on initial install; wrapping in a `"use client"` component fixed it. Any interactive library that mounts DOM effects needs this — RSC won't hydrate it.
+- **DialKit auto-hides in production.** It's a dev tunability tool by default. Pass `productionEnabled` on deployed previews or the panel won't appear. Easy to miss because local dev just works.
+- **Bespoke markdown parsers are a local maximum.** The first career-discovery build rolled `\n\n` split + `**bold**` regex. ReactMarkdown's bundle cost is worth it given prose grows — swap early, not late. The custom parser handled exactly the cases the first test fixture had and nothing else.
+- **Motion tokens belong in CSS vars *and* TS.** `globals.css` exposes `--duration-*` and `--ease-*` for Tailwind / arbitrary CSS consumers. `tokens/motion.ts` exposes typed spring presets + duration numbers + easing tuples for the `motion` library's `Transition` type. Two surfaces, same values. Components pick the surface that fits.
+- **One input surface at a time on chat.** When a challenge is active, the regular message box swaps out for the challenge-specific input (textarea / confirm / URL). Two input surfaces (one embedded in the thread, one in the input bar) creates decision paralysis and visual conflict with the fade gradient. The one-question-at-a-time design principle applies to input affordances, not just the prose.
+
+---
+
 ## 2026-04-15 — Session 7: Product context extraction
 
 ### Process

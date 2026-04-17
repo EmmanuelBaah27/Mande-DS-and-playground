@@ -4,6 +4,67 @@ Chronological record of all work done on the Mande Design System.
 
 ---
 
+## 2026-04-17 — Session 8: Rounds 2, 4, 5 + chat curriculum mode + DialKit
+
+Catches up docs for the large batch of commits between Session 7 and today. Five workstreams landed in parallel: preview pipelines (Round 2), the career-discovery screen (Round 4, built then rebuilt), motion foundation (Round 5), DialKit integration, and Curriculum Mode in the chat screen.
+
+### What was done
+
+**Round 2 — Previews (partially done)**
+- `0a19d78` **Vercel monorepo config** — added `apps/playground/vercel.json` with `buildCommand`/`installCommand` that run Turborepo from the repo root, plus `ignoreCommand: npx turbo-ignore @mande/playground` so commits outside the playground graph don't trigger builds.
+- `a4a1678` Captured the live production URL (`https://mande-playground.vercel.app`) in `docs/DEPLOYMENT.md`.
+- `81d4d0c` (via Vercel CVE bot) patched React Server Components CVEs — bumped `next`, `react-server-dom-webpack`, `react-server-dom-parcel`, `react-server-dom-turbopack` to fixed versions.
+- **Still TBD:** GitHub Pages enabled + Storybook URL captured in `DEPLOYMENT.md`.
+
+**Round 4 — Career Discovery screen (built twice)**
+- `656c2bd` initial build: two-panel **curriculum-delivery** UI (pillar nav + lesson view + inline challenge block, 5 input types). Reused chat sidebar pattern.
+- `7ee0919` added `12px` to `IconSize`; used in tight indicator circles.
+- `e3e1b1a` `StepIndicator` component (WIP, not yet wired).
+- `290d29d` Round 4 polish pass — new DS components (`StepIndicator`, `EmptyState`, `tokens/challenges.ts`), motion (stagger, spring on challenge-complete, `active:scale-[0.98]` on pressables), hierarchy cleanup (StepIndicator replaces inline circles, EmptyState for locked view, `AvatarFallback variant="primary"` for Mande avatar, ReactMarkdown replaces custom prose splitter). Extracted shared `AppSidebar` into `apps/playground/src/components/app-sidebar.tsx`; both chat + career-discovery now consume it.
+- `5ec4b93` **rebuilt as PIVOTS self-serve dashboard.** Caught the misplacement: curriculum delivery belongs in Chat (Curriculum Mode), not career-discovery. Replaced the curriculum UI with a 6-card PIVOTS grid (Personality, Interests, Values, Opportunities, Threats, Skills) with three card states (completed / in-progress / not-started). Factor detail view adapts to state. Updated `docs/product/career-discovery.md` to clarify PIVOTS ≠ curriculum. Exported `IconName` type from `@mande/ui`.
+
+**Round 5 — Motion foundation**
+- `f9031c2` installed `motion` v12 + `tw-animate-css`.
+- `c5bf64b` promoted motion to first-class DS tokens:
+  - `tokens/globals.css` imports `tw-animate-css` (fixes 11 shadcn overlay components that referenced its utilities with no plugin installed) and exposes motion CSS vars: durations (`--duration-instant|fast|base|moderate|slow`) + easings (`--ease-out|in-out|in|spring`).
+  - `tokens/motion.ts` — typed spring presets (`snappy`, `smooth`, `gentle`, `bouncy`, `crisp`) + duration numbers + easing tuples for the `motion` `Transition` type.
+  - `stories/Motion.stories.tsx` — Foundations story with interactive spring/duration/easing demos and "when to use what" doc.
+  - `dialog.tsx` — applied new tokens, dropped incoherent `slide-from-left-1/2 + top-[48%]` cruft (now `fade + zoom-in-95`).
+  - `CLAUDE.md` — documented motion standards.
+
+**Curriculum Mode in the chat screen**
+- `0d8b6b8` added Curriculum Mode alongside Open Mode. Curriculum sessions show a progress bar in the navbar, deliver lessons as messages, and issue challenges inline in the thread with type badges. Open Mode is unchanged. Mock data covers the full flow: lesson → off-topic student question → Mande's acknowledge-answer-refocus → next lesson → Reflection challenge. Session selector shows a green dot for curriculum sessions. Input placeholder adapts per mode.
+- `bed618c` challenge input **replaces** the message box when a challenge is active (per-type affordance: textarea vs confirm buttons vs URL input); challenge prompt card stays in thread read-only; gradient fade above input hidden to avoid visual conflict.
+
+**DialKit integration (install → wire → hide)**
+- `dd9472e` installed DialKit + motion in playground; added `DialRoot` to root layout.
+- `176f662` wrapped `DialRoot` in a `"use client"` component so it hydrates under App Router.
+- `c753fd6` passed `productionEnabled` so it appears on deployed previews.
+- `2bb641f` wired `useDialKit` on the chat screen — tweakable layout, user-bubble, assistant, typography, navbar params.
+- `085a5c8` **hidden for now** — `DialKitProvider` returns `null` until ready.
+
+**Tooling**
+- `9153c6a` added `emil-design-eng` skill project-wide (`.claude/skills/emil-design-eng`) + documented usage in `CLAUDE.md`.
+
+**Playground index polish**
+- `547ac49` index polish: 32px top padding, 8px title→subtitle gap, 14px subtitle, contextual icons (Home/Chat/Onboarding/Settings) 12px above card titles, 16px grid gap, inline "Add a new screen" hint.
+
+### Verified
+
+- `mande-playground.vercel.app` is live (URL captured in `DEPLOYMENT.md`).
+- Career-discovery renders the PIVOTS dashboard at `/screens/career-discovery`; all three card states visible with mock data.
+- Motion Foundations story runs in Storybook; spring/duration/easing demos animate against the new tokens.
+- Curriculum Mode chat flow renders end-to-end from mock data; challenge input swap triggers correctly on the active Reflection challenge.
+- DialKit provider currently returns `null` — no surface in the UI (intentional).
+
+### Known, unfixed
+
+- GitHub Pages not yet enabled → no live Storybook URL. Requires repo admin.
+- DialKit wiring is dormant behind the `null` return; when re-enabled it's already plumbed through chat + production builds.
+- `resizable.tsx` v4 data-attr selectors still stale (carried from Session 6).
+
+---
+
 ## 2026-04-15 — Session 7: Product context extraction (Round 3)
 
 ### What was done

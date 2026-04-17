@@ -4,6 +4,48 @@ Key decisions, patterns, and processes for the Mande Design System. Updated as t
 
 ---
 
+## Motion & Animation Decisions (Session 8)
+
+### Motion is a DS primitive, not per-component
+**Why:** Scattering `transition-all duration-300 ease-in-out` across components creates visual incoherence — every component decides its own timing. Centralising in tokens gives a coherent motion system: components compose from 5 durations + 4 easings + 5 spring presets, not from arbitrary values.
+**Mechanism:** `packages/ui/src/tokens/globals.css` exposes CSS custom props (`--duration-*`, `--ease-*`). `packages/ui/src/tokens/motion.ts` exposes typed spring/duration/easing for the `motion` library's `Transition` type. Components consume whichever surface fits.
+
+### Springs default for interaction; durations default for reveal/conceal
+**Why:** Springs feel responsive because they track momentum; durations feel deliberate because they declare a beginning and end. Mapping interaction → spring and reveal/conceal → duration keeps the motion language consistent.
+**Defaults:** `snappy` for small, responsive moves; `smooth` for layout; `gentle` for decorative; `bouncy` for confirmation; `crisp` for fast acknowledgement. `--duration-base` + `--ease-out` for most fades/slides.
+
+### `tw-animate-css` imported from `globals.css` (not per-component)
+**Why:** 11 shadcn overlay components reference its utilities. Importing once at the token layer both fixes the implicit gap and keeps the motion tokens consistent with data-state overlays.
+
+---
+
+## Screen Architecture Decisions (Session 8)
+
+### Curriculum delivery lives in Chat, not in a dedicated screen
+**Why:** Curriculum is conversational — Mande's voice, one question at a time, inline challenges — not a two-panel reader. Building it as a dedicated screen the first time produced a wrong-feeling UX. Rebuilding as PIVOTS (for `/screens/career-discovery`) + Curriculum Mode (in chat) matched the product model.
+**Files:** `apps/playground/src/app/screens/chat/page.tsx` (Curriculum Mode), `apps/playground/src/app/screens/career-discovery/page.tsx` (PIVOTS dashboard), `docs/product/career-discovery.md` (clarifies the split).
+
+### Shared `AppSidebar` over inline duplicates
+**Why:** Both chat and career-discovery needed the same collapsible nav with motion tokens applied. Extracting once in `apps/playground/src/components/app-sidebar.tsx` keeps divergence at the composition layer, not the primitive.
+
+### DialKit wired-but-hidden
+**Why:** DialKit landed fully plumbed (install, client wrapper, production flag, chat `useDialKit`) before the design surface was ready. Rather than ripping the wiring, `DialKitProvider` returns `null`. Re-enabling is a one-line change when design is ready.
+
+### Polish passes produce DS components
+**Why:** `StepIndicator`, `EmptyState`, and `tokens/challenges.ts` were all born during the Round 4 polish on career-discovery — not designed up front. DS work is often downstream of screen work. Default: polish screens first, extract patterns to the DS when they recur or stabilise.
+
+### One input surface at a time on chat
+**Why:** When a challenge is active, the regular message box swaps to the challenge-specific input (textarea / confirm / URL). Two input surfaces violate the one-question-at-a-time principle and conflict visually with the fade gradient.
+
+---
+
+## Deployment Decisions (Session 8)
+
+### Vercel builds the playground via Turborepo from the repo root
+**Why:** Monorepo → Vercel default of "install at root, build at `Root Directory`" would miss `packages/ui` changes. `apps/playground/vercel.json` overrides with `cd ../.. && pnpm turbo run build --filter=@mande/playground` and `cd ../.. && pnpm install --frozen-lockfile`. `ignoreCommand: npx turbo-ignore @mande/playground` skips builds when commits don't touch the playground's dependency graph.
+
+---
+
 ## Product Context Decisions (Session 7)
 
 ### Source `.txt` files stay in `docs/product/` alongside distilled `.md` files
