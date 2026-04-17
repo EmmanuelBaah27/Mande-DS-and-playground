@@ -1,112 +1,93 @@
-# Feature: Career Discovery (PIVOTS)
+# Feature: Career Discovery (PIVOTS Dashboard)
 
-> Self-serve career clarity tool — the PIVOTS assessment initiative. **Not the curriculum.** Curriculum delivery (lessons, challenges, evaluation) happens in Chat via Mande's Curriculum Mode. This screen is the independent exploration surface where students map their career profile at their own pace.
+> Self-serve dashboard where students explore and edit their PIVOTS career profile at their own pace. **Not the curriculum** — the curriculum is delivered conversationally in Chat (see `career-clarity.md`). This screen is the persistent surface that holds the data the curriculum produces and lets students refine it independently. Source: `docs/product/Mande Positioning.txt`, `docs/product/Career Clarity Evaluation Engine- Mande AI.txt`.
 
 ---
 
 ## Purpose
 
-Career Discovery is Mande's PIVOTS self-serve tool. PIVOTS maps six factors that shape a student's career clarity: **P**ersonality, **I**nterests, **V**alues, **O**pportunities, **T**hreats, and **S**kills. Students can explore each factor independently — taking assessments, inputting data, and building out their career profile without Mande guiding them through a structured curriculum.
+Career Discovery is Mande's PIVOTS self-serve tool. PIVOTS maps six factors that shape a student's career clarity: **P**ersonality, **I**nterests, **V**alues, **O**pportunities, **T**hreats, and **S**kills. Students can open the dashboard at any time, complete or redo individual factor assessments, and see their career report update.
 
-The data from PIVOTS feeds into the career report (which lives on Home). The curriculum in Chat may reference PIVOTS results, but the two are separate initiatives.
+The data model is shared with the Career Clarity curriculum (`career-clarity.md`): assessments completed inside the curriculum populate the same factors. The dashboard is the *self-serve view* of that data — non-linear, untimed, no rubrics, no Mande pacing.
 
-Positioned in-product as "Career Discovery: 100x cheaper than a career coach."
+Positioned in-product as: **"Career Discovery — 100x cheaper than a career coach."**
 
 ---
 
 ## User goals in this feature
 
-1. **Bust the myths** blocking career decisions (your career ≠ your degree; you don't need to be 100% sure; "follow your passion" is incomplete).
-2. **Discover personal fit** across work preferences, personality, interests, values, constraints, and skills.
-3. **Read a personalised career report** and bookmark paths worth exploring.
-4. **Talk to real professionals** in chosen paths via informational interviews — not theorise in isolation.
-5. **Choose a path** with confidence, knowing the choice isn't terminal.
+1. **See the PIVOTS profile at a glance** — which factors are complete, which are empty, what the data says.
+2. **Complete or redo any individual factor** without going through curriculum pacing — pick a factor, take the assessment, save.
+3. **Read the personalised career report** generated from PIVOTS data, and bookmark paths worth exploring.
+4. **Update factor data over time** as circumstances change (new constraints, new skills, new opportunities) and see the report shift.
 
 ---
 
 ## Core flows
 
-### The curriculum arc
+### Land on the dashboard
 
-**Introduction**
-- 3 career myths — degree ≠ career; clarity doesn't precede motion; passion needs monetisation.
-- Options as a graduate: 9-5, freelancing, entrepreneurship — definition, pros/cons, side-by-side.
-- **Task:** Reflection — which option resonates and why.
+- Top-level view of the six PIVOTS factors as cards. Each card shows: factor name, brief description, completion status, last updated.
+- Career report tile (or link to Home where the report lives) — visible only when enough factors are complete to generate one.
+- Positioning headline ("100x cheaper than a career coach") for first-time visitors; collapses to a quieter state on return.
 
-**Discovering Your Options**
-- PIVOTS factor model — the framework for finding clarity.
-- Accept the 10-day self-discovery challenge.
-- **Tasks (Embedded + External Assessment):**
-  - Work preference test → Focuser / Relator / Integrator / Operator
-  - MBTI (personality)
-  - Holland test (interests)
-  - Preferred + disliked industries
-  - Hobbies + obsessions (self-reported interests)
-  - Values test (non-negotiables + constraints)
-  - Opportunities/threats assessment (geography, work type, risk tolerance, learning/financial openness)
-  - Skills audit (resume/portfolio/LinkedIn parse + certifications + coursework)
+### Complete or update a single factor
 
-**Finding Clarity**
-- **Task:** Read career report, bookmark paths of interest.
-- CIA strategy — **C**uriosity, **I**nsights gathering, **A**gency.
-- How to read job descriptions; what keywords mean.
-- **Task (Research/Action):** Read JDs for paths of interest.
-- Informational interviews — what they are, before/during/after, managing expectations.
-- Finding people: LinkedIn, Boolean search, email finders (hunter.io, skrapp.io, mailscraper.io).
-- **Tasks (Research/Action):**
-  - Set up LinkedIn, share profile link, connect with Career Wheel team
-  - Find 3 professionals for one chosen path via Boolean search (AI-assisted explanation)
-  - Find contact channels (email, phone, Twitter, communities)
-- **Tasks (Craft):**
-  - Cold message — first one AI-assisted, next two unassisted but AI-evaluated
-- **Task (Research/Action):** Set up Snov.io, install extension, send emails.
-- **Task (Craft + Research):** Follow-up emails if no response.
-- **Task (Craft):** Informational interview agenda, book time.
-- **Tasks (Reflection + Craft):** Share specific notes and action points from interview; thank-you email.
-- Repeat the playbook for other career paths.
+- Tap a factor card → factor detail view → run that factor's assessment.
+- Assessment input types vary by factor:
+  - **Personality** — MBTI (external test, structured return)
+  - **Interests** — Holland test (external) + self-reported industries / hobbies / obsessions
+  - **Values** — values test (embedded), non-negotiables + constraints
+  - **Opportunities** — geography (up to 5 countries), work type, learning openness, financial willingness
+  - **Threats** — career risk tolerance (1–5), constraints
+  - **Skills** — resume / portfolio / LinkedIn upload + parse, certifications, coursework
+- Save → factor card updates → if all factors complete, career report regenerates.
 
-**Making the Choice**
-- Calling the shots — knowing you can switch.
-- **Task (Reflection):** Choose a path.
-- Acing the journey — distant mentor, community, learning plan, accountability.
+### Read the career report
+
+- Career report lives on Home (see `home.md`), generated from completed PIVOTS data.
+- Discovery dashboard links into it; from the report students can bookmark paths and return to refine factor inputs.
+- Partial PIVOTS → partial report with a clear "complete X to unlock Y" state, never a broken view.
 
 ---
 
 ## Key UI decisions
 
-- **Challenges are first-class objects**, not free-text prompts. Every challenge carries metadata (type, preceded-by lesson, sequencing) and a challenge experience spec (exact AI prompt, input type) that drives rendering and evaluation.
-- **Input types vary per challenge** — free text, short confirmation, link, list, document paste, selection from prior artifacts. UI adapts per type.
-- **Rubrics are challenge-type-specific.** Craft challenges get the most rigorous rubric; Self-report is completion-only; Reflection weighs depth + specificity + personal grounding.
-- **Sequencing is enforced.** Students cannot skip a section, even if they claim they know it. Mande acknowledges, explains why, continues.
-- **Each challenge produces a stored artifact** — the cold message draft, the interview notes, the career report — all retrievable later from journal or application prep features.
-- **AI-assisted → AI-evaluated progression.** First attempt at a craft task is scaffolded. Subsequent attempts are independent but evaluated. Builds autonomy.
+- **Factor-card grid is the primary affordance.** Cards make the six factors feel parallel and pickable in any order. No enforced sequence.
+- **Completion is per-factor, visible per-card.** Students see what's done and what's left without scrolling. No global progress bar — that belongs to the curriculum, not here.
+- **Same data model as curriculum.** A PIVOTS assessment completed in chat appears as completed here and vice versa. No duplicate work.
+- **No challenge rubrics, no evaluation.** Self-serve means self-paced; there's no Mande grading the inputs. Quality is the student's call.
+- **External assessments handled with care.** MBTI / Holland take students out of the app — the return path needs to preserve where they were, not dump them at root.
+- **Empty state matters.** A first-time visitor needs to understand PIVOTS in 10 seconds and want to start one factor. Don't lead with the report tile when the report can't be generated yet.
+- **No dark mode yet** (project-wide deferral).
 
 ---
 
 ## Edge cases & constraints
 
-- **Assessment tools are external** (MBTI, Holland) — need a reliable structured return mechanism, not just "paste your result."
-- **Career report depends on all assessments being complete** — partial completion requires a graceful "come back when you've finished X" state, not a broken report.
-- **Students send real emails to real professionals** — quality matters. A bad cold message reflects on Mande. Rubric needs to block low-quality sends, not just rate them.
-- **Locally resonant examples** — industries, companies, figures drawn from the student's geography (GH/NG first). No Silicon Valley defaults.
-- **Students pushing to skip** → acknowledge confidence, explain the section's purpose, continue.
-- **Students resisting curriculum altogether** → offer Open Mode switch with explicit consent.
+- **Partial PIVOTS** → partial career report with a graceful "finish X to unlock Y" state, never a broken render.
+- **Redoing a completed assessment** → previous answer is overwritten; report regenerates; student is told what changed downstream.
+- **External assessment return mechanism unreliable** → student returns to the app without their result. Provide a manual paste/upload fallback rather than blocking.
+- **Student arrives via curriculum** with PIVOTS pre-filled — the dashboard should feel like *their* data, not a generic empty form.
+- **Student arrives without curriculum** → can complete PIVOTS standalone. The "you might also like the 10-day challenge" nudge belongs here, not buried.
+- **Locally resonant examples** in factor descriptions (industries, role names) — GH/NG defaults, not Silicon Valley.
 
 ---
 
 ## Open questions
 
-- Does the career report live in chat, or is it a dedicated screen that chat links to?
-- How is a bookmarked path represented — a list, a kanban of "exploring/interviewing/chose," or a simple tag?
-- When a student completes one path's research loop, how do we invite them to repeat for the next without it feeling like rerun?
-- Failure modes: what happens if a student's 3 cold emails get zero responses? Is there a fallback curriculum branch?
+- Does the career report live on Home, on Discovery, or both with one-way sync?
+- Bookmarked paths from the report — list, kanban (`exploring / interviewing / chose`), or simple tag?
+- How aggressively do we nudge students to revisit factors over time (yearly check-in? life-event triggered?)?
+- Sponsor view (Pay-for-me) on Discovery: do sponsors see PIVOTS completion percentages, or only curriculum milestones?
+- For a student who completed PIVOTS through Discovery alone, do we still recommend the curriculum, or trust the self-serve path?
 
 ---
 
 ## What success looks like
 
-- 70%+ of enrolled students complete the curriculum (Q1 2026 OKR).
-- Students finish with a chosen path *and* evidence they can defend it to themselves (reflection artifact quality).
-- At least one informational interview happens per student.
-- Students articulate PIVOTS factors in their own words, not by recitation.
-- Career report is bookmarked and referenced outside the curriculum chat (signals it has ongoing utility).
+- Students who complete the curriculum continue to update PIVOTS in Discovery months later (signals ongoing utility, not one-time task).
+- 80%+ of curriculum-completers have a fully populated PIVOTS profile within 14 days of finishing.
+- Students who arrive via Discovery alone (no curriculum) can complete a meaningful chunk (≥4 factors) without dropping off.
+- Career report is opened from the Discovery surface at least monthly per active student.
+- Self-serve completion path proves Discovery has standalone value — not just curriculum's data store.
