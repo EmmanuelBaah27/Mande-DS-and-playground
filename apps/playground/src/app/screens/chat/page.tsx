@@ -21,7 +21,7 @@ import {
 } from "@mande/ui"
 import type { ChallengeType } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
-import { AppSidebar } from "../../../components/app-sidebar"
+import { AppShell } from "../../../components/app-shell"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -441,14 +441,14 @@ function MessageInput({
   return (
     <div className="px-4 pb-4 bg-white">
       <div className="relative max-w-3xl mx-auto">
-        <textarea
+        <Textarea
           ref={textareaRef}
           rows={2}
           value={value}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder={mode === "curriculum" ? "Respond to Mande…" : "Ask anything about your career…"}
-          className="w-full min-h-[80px] resize-none rounded-4 border border-neutral-200 bg-white px-4 pt-3 pb-14 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-0 leading-relaxed"
+          className="min-h-[80px] resize-none rounded-4 border-neutral-200 px-4 pt-3 pb-14 leading-relaxed focus-visible:ring-primary-300 focus-visible:ring-offset-0"
         />
         <Button
           onClick={handleSend}
@@ -471,7 +471,6 @@ function MessageInput({
 export default function ChatPage() {
   const [sessions, setSessions] = useState<ChatSession[]>(CHAT_HISTORY)
   const [activeSessionId, setActiveSessionId] = useState(CHAT_HISTORY[0].id)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
@@ -520,14 +519,8 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden">
-      <AppSidebar
-        activeNav="chat"
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen((v) => !v)}
-      />
-
-      <div className="flex-1 flex flex-col min-w-0">
+    <AppShell>
+      <div className="flex h-screen flex-col bg-white overflow-hidden">
         <ChatNavbar
           sessions={sessions}
           activeSession={activeSession}
@@ -558,6 +551,6 @@ export default function ChatPage() {
           onChallengeSubmit={handleChallengeSubmit}
         />
       </div>
-    </div>
+    </AppShell>
   )
 }

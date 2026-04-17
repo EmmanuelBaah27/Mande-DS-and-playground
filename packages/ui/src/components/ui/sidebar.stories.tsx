@@ -28,7 +28,7 @@ const NAV_ITEMS = [
   { id: "home", label: "Home", icon: "IconHome" },
   { id: "chat", label: "Chat assistant", icon: "IconBubbleSparkle" },
   { id: "career", label: "Career discovery", icon: "IconCompassRound" },
-]
+] as const
 
 export const Default: Story = {
   render: () => {

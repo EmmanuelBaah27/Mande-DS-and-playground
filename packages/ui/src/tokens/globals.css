@@ -425,14 +425,14 @@
   --semantic-focus-ring: var(--color-neutral-500);
   --semantic-disabled-bg: var(--color-neutral-200);
   --semantic-disabled-text: var(--color-neutral-400);
-  --sidebar: hsl(0 0% 98%);
-  --sidebar-foreground: hsl(240 5.3% 26.1%);
-  --sidebar-primary: hsl(240 5.9% 10%);
-  --sidebar-primary-foreground: hsl(0 0% 98%);
-  --sidebar-accent: hsl(240 4.8% 95.9%);
-  --sidebar-accent-foreground: hsl(240 5.9% 10%);
-  --sidebar-border: hsl(220 13% 91%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar: var(--color-neutral-white);
+  --sidebar-foreground: var(--color-neutral-700);
+  --sidebar-primary: var(--color-neutral-900);
+  --sidebar-primary-foreground: var(--color-neutral-white);
+  --sidebar-accent: var(--color-neutral-100);
+  --sidebar-accent-foreground: var(--color-neutral-900);
+  --sidebar-border: var(--color-neutral-200);
+  --sidebar-ring: var(--color-neutral-500);
 }
 
 /* --------------------------------------------------------

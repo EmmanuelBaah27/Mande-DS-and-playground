@@ -69,9 +69,6 @@ importers:
       '@mande/ui':
         specifier: workspace:*
         version: link:../../packages/ui
-      '@phosphor-icons/react':
-        specifier: ^2.1.10
-        version: 2.1.10(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       agentation:
         specifier: ^3.0.2
         version: 3.0.2(react-dom@19.2.3(react@19.2.3))(react@19.2.3)

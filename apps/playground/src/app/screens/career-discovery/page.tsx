@@ -12,7 +12,7 @@ import {
 } from "@mande/ui"
 import type { IconName } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
-import { AppSidebar } from "../../../components/app-sidebar"
+import { AppShell } from "../../../components/app-shell"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -239,13 +239,16 @@ function FactorDetail({
         className="flex-1 flex flex-col"
       >
         <div className="p-6 border-b border-neutral-100">
-          <button
+          <Button
+            variant="tertiary"
+            size="sm"
             onClick={onBack}
-            className="flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900 transition-colors mb-4 active:scale-[0.98]"
+            icon={<Icon name="IconChevronLeft" size={16} />}
+            iconPosition="left"
+            className="mb-4 -ml-2"
           >
-            <Icon name="IconChevronLeft" size={16} />
             Back to PIVOTS
-          </button>
+          </Button>
           <div className="flex items-center gap-3">
             <div className={cn("h-10 w-10 rounded-2 flex items-center justify-center text-lg font-bold", factor.bgColor, factor.color)}>
               {factor.initial}
@@ -280,13 +283,16 @@ function FactorDetail({
         className="flex-1 flex flex-col"
       >
         <div className="p-6 border-b border-neutral-100">
-          <button
+          <Button
+            variant="tertiary"
+            size="sm"
             onClick={onBack}
-            className="flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900 transition-colors mb-4 active:scale-[0.98]"
+            icon={<Icon name="IconChevronLeft" size={16} />}
+            iconPosition="left"
+            className="mb-4 -ml-2"
           >
-            <Icon name="IconChevronLeft" size={16} />
             Back to PIVOTS
-          </button>
+          </Button>
           <div className="flex items-center gap-3 mb-4">
             <div className={cn("h-10 w-10 rounded-2 flex items-center justify-center text-lg font-bold", factor.bgColor, factor.color)}>
               {factor.initial}
@@ -330,13 +336,16 @@ function FactorDetail({
       className="flex-1 flex flex-col overflow-y-auto"
     >
       <div className="p-6 border-b border-neutral-100">
-        <button
+        <Button
+          variant="tertiary"
+          size="sm"
           onClick={onBack}
-          className="flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900 transition-colors mb-4 active:scale-[0.98]"
+          icon={<Icon name="IconChevronLeft" size={16} />}
+          iconPosition="left"
+          className="mb-4 -ml-2"
         >
-          <Icon name="IconChevronLeft" size={16} />
           Back to PIVOTS
-        </button>
+        </Button>
         <div className="flex items-center gap-3">
           <div className={cn("h-10 w-10 rounded-2 flex items-center justify-center text-lg font-bold", factor.bgColor, factor.color)}>
             {factor.initial}
@@ -384,7 +393,6 @@ const gridVariants = {
 }
 
 export default function CareerDiscoveryPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
   const [selectedFactorId, setSelectedFactorId] = useState<string | null>(null)
 
   const selectedFactor = selectedFactorId
@@ -395,14 +403,8 @@ export default function CareerDiscoveryPage() {
   const overall = overallProgress(FACTORS)
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden">
-      <AppSidebar
-        activeNav="career"
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen((v) => !v)}
-      />
-
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <AppShell>
+      <div className="flex h-screen flex-col bg-white overflow-hidden">
         {/* Header */}
         <header className="h-14 flex items-center px-6 bg-white border-b border-neutral-100 shrink-0 gap-4">
           <div className="flex flex-col gap-0.5 flex-1 min-w-0">
@@ -459,6 +461,6 @@ export default function CareerDiscoveryPage() {
           </div>
         )}
       </div>
-    </div>
+    </AppShell>
   )
 }

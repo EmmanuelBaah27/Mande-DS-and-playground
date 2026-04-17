@@ -1,7 +1,34 @@
 "use client";
 
-import { Button, Chip } from "@mande/ui";
-import { ArrowRight, Star, Lightning, ShieldCheck } from "@phosphor-icons/react";
+import { Button, Card, Chip, Icon } from "@mande/ui";
+import type { IconName } from "@mande/ui";
+
+type Feature = {
+  icon: IconName;
+  title: string;
+  description: string;
+};
+
+const features: Feature[] = [
+  {
+    icon: "IconStar",
+    title: "Consistent",
+    description:
+      "Every component follows the same design tokens and patterns.",
+  },
+  {
+    icon: "IconLightning",
+    title: "Fast",
+    description:
+      "Pre-built components so you can prototype in minutes, not hours.",
+  },
+  {
+    icon: "IconShieldCheck",
+    title: "Accessible",
+    description:
+      "Built with accessibility in mind — focus states, ARIA, and keyboard nav.",
+  },
+];
 
 export default function HomeScreen() {
   return (
@@ -21,7 +48,7 @@ export default function HomeScreen() {
           sacrificing quality.
         </p>
         <div className="flex justify-center gap-md">
-          <Button icon={<ArrowRight />} iconPosition="right">
+          <Button icon={<Icon name="IconArrowRight" size={20} />} iconPosition="right">
             Get started
           </Button>
           <Button variant="secondary">Learn more</Button>
@@ -30,38 +57,18 @@ export default function HomeScreen() {
 
       {/* Features */}
       <section className="grid grid-cols-1 md:grid-cols-3 gap-xl">
-        {[
-          {
-            icon: <Star size={24} />,
-            title: "Consistent",
-            description:
-              "Every component follows the same design tokens and patterns.",
-          },
-          {
-            icon: <Lightning size={24} />,
-            title: "Fast",
-            description:
-              "Pre-built components so you can prototype in minutes, not hours.",
-          },
-          {
-            icon: <ShieldCheck size={24} />,
-            title: "Accessible",
-            description:
-              "Built with accessibility in mind — focus states, ARIA, and keyboard nav.",
-          },
-        ].map((feature) => (
-          <div
-            key={feature.title}
-            className="p-xl rounded-lg border border-neutral-200 bg-neutral-white"
-          >
-            <div className="mb-md text-primary-600">{feature.icon}</div>
+        {features.map((feature) => (
+          <Card key={feature.title} className="p-xl">
+            <div className="mb-md text-primary-600">
+              <Icon name={feature.icon} size={24} />
+            </div>
             <h3 className="text-lg-semibold text-neutral-900 mb-xs">
               {feature.title}
             </h3>
             <p className="text-base-regular text-neutral-500">
               {feature.description}
             </p>
-          </div>
+          </Card>
         ))}
       </section>
     </div>
