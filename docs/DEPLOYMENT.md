@@ -79,22 +79,23 @@ Run `/preview` in the Claude Code session (see `.claude/commands/preview.md`). I
 
 ### URLs
 
+**Project ID (app hash):** `69e3e810e67ca05798b485a2`
+
 | Environment | URL |
 |---|---|
-| Latest main | `https://main--<project-id>.chromatic.com` — permanent, auto-updates on push to `main` |
-| Per-branch preview | `https://<branch-slug>--<project-id>.chromatic.com` — per push |
-| Per-build permalink | Printed in the Chromatic GitHub Action log + PR check output |
+| First published build | https://69e3e810e67ca05798b485a2-cykqsxwytt.chromatic.com (Session 9, commit `b201edd`) |
+| Project dashboard | https://www.chromatic.com/library?appId=69e3e810e67ca05798b485a2 |
+| Per-build permalink | Printed in the Chromatic GitHub Action log + PR check output. Format: `https://69e3e810e67ca05798b485a2-<unique-slug>.chromatic.com` |
+| Branch preview | Same pattern — latest build on each branch is published; pick the most recent from the project dashboard. |
 
-Replace `<project-id>` with the actual Chromatic project ID after one-time setup.
+Each push produces a new URL with a new `<unique-slug>`. The dashboard is the stable entry point; individual build URLs are shareable permalinks. For the always-current "latest on main" URL convention, Chromatic's paid tier offers a permalink; on the free tier, grab the latest build URL from the dashboard.
 
-### One-time setup (repo admin)
+### One-time setup — **DONE** (Session 9)
 
-1. Sign in to [chromatic.com](https://www.chromatic.com) with the GitHub account that owns the repo.
-2. Create a new project → link to `EmmanuelBaah27/Mande-DS-and-playground`.
-3. Copy the **Project Token** shown during onboarding.
-4. In the repo: **Settings → Secrets and variables → Actions → New repository secret**. Name: `CHROMATIC_PROJECT_TOKEN`. Value: the token from step 3.
-5. Push any commit. `.github/workflows/chromatic.yml` runs and produces the first build — Chromatic uses that as the visual baseline.
-6. Once the project is live, update the table above with the actual `<project-id>`.
+- [x] Chromatic project created and linked to `EmmanuelBaah27/Mande-DS-and-playground`.
+- [x] `CHROMATIC_PROJECT_TOKEN` added as a GitHub repo secret.
+- [x] First build published (commit `b201edd`) — baseline captured.
+- [x] Workflow `.github/workflows/chromatic.yml` runs on every push.
 
 ### What's already wired in the repo
 
