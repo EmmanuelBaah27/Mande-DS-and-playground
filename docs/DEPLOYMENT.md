@@ -73,9 +73,50 @@ Run `/preview` in the Claude Code session (see `.claude/commands/preview.md`). I
 
 ---
 
-## Storybook — GitHub Pages
+## Storybook — Chromatic (canonical)
 
-Storybook deploys to GitHub Pages on push to `main`. The workflow (`.github/workflows/deploy-storybook.yml`) was pinned in Session 6 to pnpm 10.33 / Node 22.
+**Chromatic is the canonical Storybook hosting** for this project. Every push to every branch publishes to Chromatic; every commit gets a unique Storybook URL; `main` is always at the permanent URL. Visual regression is captured on every build. It's also the URL you share with designers and reviewers — not `localhost:6006`, and not the Vercel preview.
+
+### URLs
+
+| Environment | URL |
+|---|---|
+| Latest main | `https://main--<project-id>.chromatic.com` — permanent, auto-updates on push to `main` |
+| Per-branch preview | `https://<branch-slug>--<project-id>.chromatic.com` — per push |
+| Per-build permalink | Printed in the Chromatic GitHub Action log + PR check output |
+
+Replace `<project-id>` with the actual Chromatic project ID after one-time setup.
+
+### One-time setup (repo admin)
+
+1. Sign in to [chromatic.com](https://www.chromatic.com) with the GitHub account that owns the repo.
+2. Create a new project → link to `EmmanuelBaah27/Mande-DS-and-playground`.
+3. Copy the **Project Token** shown during onboarding.
+4. In the repo: **Settings → Secrets and variables → Actions → New repository secret**. Name: `CHROMATIC_PROJECT_TOKEN`. Value: the token from step 3.
+5. Push any commit. `.github/workflows/chromatic.yml` runs and produces the first build — Chromatic uses that as the visual baseline.
+6. Once the project is live, update the table above with the actual `<project-id>`.
+
+### What's already wired in the repo
+
+- **Workflow**: `.github/workflows/chromatic.yml` — runs on every push on every branch (ignores `gh-pages`). Concurrency cancels in-flight builds for the same branch. Uses `chromaui/action@v11` + `NODE_OPTIONS` bumped to 4 GB.
+- **Script**: `pnpm chromatic` — runs the Chromatic CLI locally with `--exit-zero-on-changes` (visual diffs are captured but don't fail the command).
+- **Build command**: `build-storybook` at the root. Chromatic uses that.
+
+### Why `exit-zero-on-changes` (non-gating)
+
+The DS is in heavy flux. Every deliberate visual change would otherwise block every PR pending manual approval. Instead: diffs are captured, reviewers eyeball them on Chromatic, and approval is an explicit action — not a CI gate. Flip this to gating (`--require-approval`) once the DS surface stabilizes.
+
+### Local and fallback viewing
+
+| Surface | How |
+|---|---|
+| Local dev (iteration, HMR) | `pnpm dev:storybook` — port 6006. Works in the cloud container with the Vite proxy config in `.storybook/main.ts`. |
+| Static fallback | `pnpm build-storybook && pnpm storybook:static` — built output served on 6006. Use this when the dev server is unreliable or when you need a frozen snapshot during a session. |
+| Shared / reviewer-facing | **Chromatic URL only**. Never share a localhost port or static build URL. |
+
+### Legacy: Storybook — GitHub Pages
+
+Storybook used to deploy to GitHub Pages on push to `main`. The workflow (`.github/workflows/deploy-storybook.yml`) is still in the repo but superseded by Chromatic. Keep it running for now; remove once Chromatic is proven stable.
 
 ### One-time setup (repo admin)
 

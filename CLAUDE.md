@@ -28,7 +28,7 @@ When you start work that affects the playground:
 - If `pnpm typecheck` is green and the dev server returns 200 for the affected routes, explicitly list the routes in the final summary.
 - If a dev server is already running on an unexpected port, don't fight it — report the port and use it.
 
-### 2. Vercel preview (post-push)
+### 2. Vercel preview (post-push) — for the playground
 
 Every push to every branch triggers a Vercel preview (per `docs/DEPLOYMENT.md`).
 
@@ -38,15 +38,25 @@ Every push to every branch triggers a Vercel preview (per `docs/DEPLOYMENT.md`).
 - If Vercel reports a build failure, fix it before marking the session "done." A green typecheck isn't enough — the preview must actually deploy.
 - If the branch doesn't have a PR open, that's fine — Vercel deploys branch pushes too. Only suggest opening a PR if Emmanuel asks or if a reviewer needs to be added.
 
-### End-of-session summary must include both
+### 3. Chromatic (post-push) — for the Design System
+
+Every push publishes Storybook to Chromatic (per `docs/DEPLOYMENT.md`).
+
+- Chromatic is the **canonical** shareable Storybook URL. Never share `localhost:6006` or a static build — always share the Chromatic URL.
+- After every push to a branch with DS changes, report the Chromatic build URL from the `.github/workflows/chromatic.yml` run (find it via the GitHub MCP commit checks).
+- If Chromatic hasn't set up yet (no `CHROMATIC_PROJECT_TOKEN` secret), say so explicitly and point Emmanuel to `docs/DEPLOYMENT.md` setup steps.
+- If visual diffs are captured, summarize them for Emmanuel rather than just linking.
+
+### End-of-session summary must include all three
 
 Every final response for a session that changed code in `apps/playground` or `packages/ui` includes:
 
 - **Local preview**: port number (with note about the UI ports panel)
-- **Vercel preview**: full preview URL for the latest commit
+- **Vercel preview**: full preview URL for the latest commit (playground changes)
+- **Chromatic URL**: full Storybook build URL for the latest commit (DS changes)
 - **Routes**: explicit list of changed/relevant routes to visit
 
-If either URL is unavailable, explain why and what needs to happen to make it available. Never let a session end with "I can't give you a link."
+If any URL is unavailable, explain why and what needs to happen to make it available. Never let a session end with "I can't give you a link."
 
 ---
 
