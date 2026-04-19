@@ -298,8 +298,7 @@ export {
 } from "./components/ui/command"
 
 // ── Feedback ──────────────────────────────────────────────────────────────────
-export { Alert, AlertTitle, AlertDescription, AlertClose } from "./components/ui/alert"
-export type { AlertProps } from "./components/ui/alert"
+export { Alert, AlertTitle, AlertDescription } from "./components/ui/alert"
 
 export { Toaster } from "./components/ui/sonner"
 
