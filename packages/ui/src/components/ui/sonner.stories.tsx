@@ -37,20 +37,6 @@ export const Default: Story = {
   ),
 }
 
-export const WithTitle: Story = {
-  render: () => (
-    <Demo
-      label="Show toast with title"
-      onClick={() =>
-        toast.info("You can add components to your app using the CLI.", {
-          description: undefined,
-          // sonner shows the first arg as title; pass description via opts
-        })
-      }
-    />
-  ),
-}
-
 export const TitleAndDescription: Story = {
   render: () => (
     <Demo
@@ -58,7 +44,6 @@ export const TitleAndDescription: Story = {
       onClick={() =>
         toast("New features available", {
           description: "Check the changelog for everything that shipped this release.",
-          icon: undefined,
         })
       }
     />
