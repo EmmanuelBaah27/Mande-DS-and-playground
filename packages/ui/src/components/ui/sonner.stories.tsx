@@ -158,3 +158,43 @@ export const Stacked: Story = {
     )
   },
 }
+
+/**
+ * Dark-mode variant — puts `.dark` on `document.documentElement` so the
+ * Sonner portal (rendered into `document.body`, outside this story's DOM)
+ * inherits the class and picks up semantic dark tokens. Mirrors Figma
+ * `Toast / Dark` row.
+ */
+export const DarkMode: Story = {
+  render: () => {
+    const fireAll = () => {
+      toast.info("Toast information goes here", { duration: Infinity })
+      toast.success("Changes saved", { description: "Profile updated.", duration: Infinity })
+      toast.warning("Storage almost full", { description: "Used 90% of 5 GB.", duration: Infinity })
+      toast.error("Payment failed", { description: "Card was declined.", duration: Infinity })
+      return "dark"
+    }
+    useEffect(() => {
+      document.documentElement.classList.add("dark")
+      fireAll()
+      return () => {
+        toast.dismiss()
+        document.documentElement.classList.remove("dark")
+      }
+    }, [])
+
+    return (
+      <div className="flex min-h-[480px] w-full flex-col items-center justify-end gap-4 rounded-3 bg-neutral-900 p-6">
+        <Toaster position="top-center" closeButton expand />
+        <Button
+          onClick={() => {
+            toast.dismiss()
+            setTimeout(fireAll, 100)
+          }}
+        >
+          Fire 4 toasts
+        </Button>
+      </div>
+    )
+  },
+}

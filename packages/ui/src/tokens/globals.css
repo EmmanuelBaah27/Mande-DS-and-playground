@@ -283,6 +283,25 @@
 }
 
 /* --------------------------------------------------------
+   STATUS COLOR UTILITIES
+   Kept outside @theme inline so var() references stay live
+   and pick up the .dark overrides at runtime.
+   -------------------------------------------------------- */
+@theme {
+  --color-info: var(--semantic-info-text);
+  --color-info-subtle: var(--semantic-info-bg-subtle);
+  --color-info-border: var(--semantic-info-border);
+
+  --color-success: var(--semantic-success-text);
+  --color-success-subtle: var(--semantic-success-bg-subtle);
+  --color-success-border: var(--semantic-success-border);
+
+  --color-warning: var(--semantic-warning-text);
+  --color-warning-subtle: var(--semantic-warning-bg-subtle);
+  --color-warning-border: var(--semantic-warning-border);
+}
+
+/* --------------------------------------------------------
    SEMANTIC UTILITY COLORS (shadcn-compatible)
    @theme inline keeps var() references live so dark mode
    switching works at runtime. Generates TW utilities like
@@ -322,9 +341,11 @@
   --color-destructive-hover: var(--semantic-danger-bg-hover);
   --color-subtle: var(--semantic-neutral-bg-subtle);
   --color-inverted-foreground: var(--semantic-neutral-text-inverted);
+
   --color-danger: var(--semantic-danger-text);
   --color-danger-border: var(--semantic-danger-border);
   --color-danger-subtle: var(--semantic-danger-bg-subtle);
+
   --color-accent-subtle: var(--semantic-accent-bg-subtle);
   --color-accent-border: var(--semantic-accent-border);
   --color-border-subtle: var(--semantic-neutral-border-subtle);
@@ -377,26 +398,26 @@
   --semantic-success-bg: var(--color-green-500);
   --semantic-success-bg-subtle: var(--color-green-50);
   --semantic-success-border: var(--color-green-300);
-  --semantic-success-text: var(--color-green-700);
+  --semantic-success-text: var(--color-green-500);
   --semantic-success-text-on-bg: var(--color-neutral-white);
 
-  --semantic-warning-bg: var(--color-yellow-500);
-  --semantic-warning-bg-subtle: var(--color-yellow-50);
-  --semantic-warning-border: var(--color-yellow-300);
-  --semantic-warning-text: var(--color-yellow-800);
-  --semantic-warning-text-on-bg: var(--color-neutral-900);
+  --semantic-warning-bg: var(--color-orange-500);
+  --semantic-warning-bg-subtle: var(--color-orange-50);
+  --semantic-warning-border: var(--color-orange-300);
+  --semantic-warning-text: var(--color-orange-500);
+  --semantic-warning-text-on-bg: var(--color-neutral-white);
 
   --semantic-danger-bg: var(--color-red-500);
   --semantic-danger-bg-subtle: var(--color-red-50);
   --semantic-danger-bg-hover: var(--color-red-600);
   --semantic-danger-border: var(--color-red-300);
-  --semantic-danger-text: var(--color-red-600);
+  --semantic-danger-text: var(--color-red-500);
   --semantic-danger-text-on-bg: var(--color-neutral-white);
 
-  --semantic-info-bg: var(--color-blue-600);
+  --semantic-info-bg: var(--color-blue-500);
   --semantic-info-bg-subtle: var(--color-blue-50);
   --semantic-info-border: var(--color-blue-300);
-  --semantic-info-text: var(--color-blue-700);
+  --semantic-info-text: var(--color-blue-500);
   --semantic-info-text-on-bg: var(--color-neutral-white);
 
   --semantic-accent-bg: var(--color-teal-500);
@@ -463,11 +484,13 @@
   --semantic-success-text: var(--color-green-400);
   --semantic-success-text-on-bg: var(--color-neutral-white);
 
-  --semantic-warning-bg: var(--color-yellow-500);
-  --semantic-warning-bg-subtle: var(--color-yellow-900);
-  --semantic-warning-border: var(--color-yellow-700);
-  --semantic-warning-text: var(--color-yellow-400);
-  --semantic-warning-text-on-bg: var(--color-neutral-900);
+  /* Dark: all status -text tokens use /400 per Figma */
+
+  --semantic-warning-bg: var(--color-orange-500);
+  --semantic-warning-bg-subtle: var(--color-orange-900);
+  --semantic-warning-border: var(--color-orange-700);
+  --semantic-warning-text: var(--color-orange-400);
+  --semantic-warning-text-on-bg: var(--color-neutral-white);
 
   --semantic-danger-bg: var(--color-red-500);
   --semantic-danger-bg-subtle: var(--color-red-900);
@@ -613,6 +636,19 @@
     opacity var(--duration-base) var(--ease-out),
     height var(--duration-base) var(--ease-out),
     box-shadow var(--duration-fast) var(--ease-out) !important;
+}
+
+/* Status icon tints. Put in @layer utilities so the !important here
+   competes with Tailwind's own utility-layer !importants on the same
+   element (the icon also carries `!text-neutral-500` as its fallback).
+   Written as direct descendant rules (not Tailwind group variants)
+   because Tailwind v4 wraps group variants in :where() which zeroes
+   specificity, making them lose to the base !text-* utility. */
+@layer utilities {
+  [data-sonner-toast][data-type="info"] [data-icon] { color: var(--semantic-info-text) !important; }
+  [data-sonner-toast][data-type="success"] [data-icon] { color: var(--semantic-success-text) !important; }
+  [data-sonner-toast][data-type="warning"] [data-icon] { color: var(--semantic-warning-text) !important; }
+  [data-sonner-toast][data-type="error"] [data-icon] { color: var(--semantic-danger-text) !important; }
 }
 
 @layer base {

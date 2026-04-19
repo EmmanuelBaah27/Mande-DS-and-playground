@@ -135,9 +135,21 @@ Every time, before writing or editing component code, **audit the design system 
 
 The rule: **don't maintain what's there, don't extend beyond the DS**. Match the Figma to the existing tokens, exactly. If something doesn't fit, that's a token or design conversation — flag it, don't paper over it.
 
+## Tokens — two-layer system
+
+**Components reference semantic aliases, never primitives directly.** This is how the system stays retargetable — change the palette once (e.g. warning yellow → orange) and every component follows without edits.
+
+1. **Primitives** (`tokens/globals.css` `@theme static`) — raw palette values: `--color-red-500`, `--color-orange-500`, etc. Don't reach for these in component code unless the design calls for a specific shade that isn't aliased (rare).
+2. **Semantic aliases** (`tokens/globals.css` `:root` + `.dark`) — purpose-named: `--semantic-warning-bg`, `--semantic-success-text`, etc. Swap palettes here and all consumers retarget automatically.
+3. **Tailwind utilities** (`tokens/globals.css` `@theme inline`) — expose aliases as classes: `text-warning`, `bg-success-subtle`, `border-info-border`, etc. This is what components use.
+
+Available status utilities: `text-info` / `text-success` / `text-warning` / `text-danger` (all resolve to the 500 shade in light, 400 in dark); `-subtle` for the 50-shade background; `-border` for the 300-shade border; `-text` for 700-shade darker text on colored bg.
+
+When a design introduces a status color you don't have a utility for, add the alias + utility first, then use it — don't hardcode the raw palette in the component.
+
 ## Standards
 
-- **Icons**: `@central-icons-react/all` via `<Icon>` wrapper in `packages/ui/src/components/ui/icon.tsx`. Stroke scales with size (`12→1, 16→1.25, 20→1.5, 24→2, 32→2`); join round; radius 2; outlined by default. Zero Lucide. Sizes: `12 | 16 | 20 | 24 | 32`.
+- **Icons**: `@central-icons-react/all` via `<Icon>` wrapper in `packages/ui/src/components/ui/icon.tsx`. Stroke scales with size (`12→1, 16→1.25, 20→1.5, 24→2, 32→2`); join round; radius 2; outlined by default. **Default size is 20px** unless Figma specifies otherwise or the component has a strong reason to deviate. Zero Lucide. Sizes: `12 | 16 | 20 | 24 | 32`.
 - **Radius**: `rounded-1` = 4px, `rounded-2` = 8px, `rounded-3` = 12px
 - **Motion**: `motion` library (v12) for custom animation, `tw-animate-css` for Radix data-state overlays. Springs in `tokens/motion.ts` (`snappy`, `smooth`, `gentle`, `bouncy`, `crisp`). CSS durations/easings via `var(--duration-base)`, `var(--ease-out)`, etc. Default to springs; default to ease-out for duration-based work.
 - **No ring-offset-background** — token doesn't exist in Mande
