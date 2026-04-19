@@ -17,15 +17,21 @@ Do this without being asked. If a context compaction summary appears, treat it a
 
 ## Push cadence
 
-Push automatically when all three are true:
+**Local-first, push after.** Default flow:
 
-1. Code compiles / typechecks cleanly (no TS errors in changed files)
-2. The change is a coherent unit — a complete fix, feature, or polish step, not a mid-edit
-3. You're about to hand control back to the user (end of turn)
+1. Make the change (code + commit).
+2. Hand back to the user — don't push yet.
+3. User reviews in their running Storybook / app.
+4. Push only when the user confirms ("looks good", "push it", "ship") or when explicitly asked.
 
-Don't push mid-edit, don't push broken code, and don't batch unrelated changes into one commit. Separate coherent changes → separate commits → all pushed at end of turn.
+Commits can pile up locally between pushes — that's fine. Each commit should still be a coherent unit (not mid-edit), so the history stays clean when we do push.
 
-One commit per logical change is better than one commit per turn — split when a turn spans multiple distinct concerns.
+Exceptions that do push automatically:
+- End-of-session docs commit (see "After every session" above)
+- User says "push" or asks for a preview URL
+- Any cross-device checkpoint the user requests
+
+Never push broken code, never skip hooks, never batch unrelated changes.
 
 ---
 
