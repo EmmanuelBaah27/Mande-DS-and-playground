@@ -117,7 +117,7 @@ The rule: **don't maintain what's there, don't extend beyond the DS**. Match the
 
 ## Standards
 
-- **Icons**: `@central-icons-react/all` via `<Icon>` wrapper in `packages/ui/src/components/ui/icon.tsx`. Stroke 2, join round, radius 2, outlined. Zero Lucide. Sizes: `12 | 16 | 20 | 24 | 32`.
+- **Icons**: `@central-icons-react/all` via `<Icon>` wrapper in `packages/ui/src/components/ui/icon.tsx`. Stroke scales with size (`12→1, 16→1.25, 20→1.5, 24→2, 32→2`); join round; radius 2; outlined by default. Zero Lucide. Sizes: `12 | 16 | 20 | 24 | 32`.
 - **Radius**: `rounded-1` = 4px, `rounded-2` = 8px, `rounded-3` = 12px
 - **Motion**: `motion` library (v12) for custom animation, `tw-animate-css` for Radix data-state overlays. Springs in `tokens/motion.ts` (`snappy`, `smooth`, `gentle`, `bouncy`, `crisp`). CSS durations/easings via `var(--duration-base)`, `var(--ease-out)`, etc. Default to springs; default to ease-out for duration-based work.
 - **No ring-offset-background** — token doesn't exist in Mande

@@ -16,8 +16,20 @@ export interface IconProps {
 }
 
 /**
+ * Stroke scales down below 24px so smaller glyphs don't look chunky;
+ * at 24px and above the stroke stays at 2px (the optical baseline).
+ */
+const STROKE_BY_SIZE: Record<IconSize, string> = {
+  12: "1",
+  16: "1.25",
+  20: "1.5",
+  24: "2",
+  32: "2",
+}
+
+/**
  * Mande icon wrapper — locked to project standards:
- *   stroke 2 · join round · radius 2
+ *   stroke scales with size · join round · radius 2
  *   sizes: 12 | 16 | 20 | 24 | 32
  *   fill:  filled | outlined
  */
@@ -27,7 +39,7 @@ const Icon = ({ name, size = 20, fill = "outlined", className }: IconProps) => (
       name={name}
       size={size}
       fill={fill}
-      stroke="2"
+      stroke={STROKE_BY_SIZE[size]}
       join="round"
       radius="2"
     />
