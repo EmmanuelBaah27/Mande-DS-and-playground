@@ -5,28 +5,41 @@ import * as AvatarPrimitive from "@radix-ui/react-avatar"
 
 import { cn } from "@/lib/utils"
 
-export type AvatarVariant = "primary" | "blue" | "green" | "blush" | "orange"
+export type AvatarSize = 16 | 20 | 24 | 28 | 32
 
-const variantClasses: Record<AvatarVariant, string> = {
-  primary: "bg-primary-200 text-primary-900",
-  blue: "bg-blue-200 text-blue-900",
-  green: "bg-green-200 text-green-900",
-  blush: "bg-blush-200 text-blush-900",
-  orange: "bg-orange-200 text-orange-900",
+const AvatarContext = React.createContext<{ size: AvatarSize }>({ size: 32 })
+
+const sizeClasses: Record<AvatarSize, string> = {
+  16: "size-4",
+  20: "size-5",
+  24: "size-6",
+  28: "size-7",
+  32: "size-8",
+}
+
+const fallbackTextClasses: Record<AvatarSize, string> = {
+  16: "text-[10px] font-semibold",
+  20: "text-small-semibold",
+  24: "text-small-semibold",
+  28: "text-base-semibold",
+  32: "text-lg-semibold",
 }
 
 const Avatar = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <AvatarPrimitive.Root
-    ref={ref}
-    className={cn(
-      "relative flex h-10 w-10 shrink-0 overflow-hidden rounded-full",
-      className
-    )}
-    {...props}
-  />
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Root> & { size?: AvatarSize }
+>(({ className, size = 32, ...props }, ref) => (
+  <AvatarContext.Provider value={{ size }}>
+    <AvatarPrimitive.Root
+      ref={ref}
+      className={cn(
+        "relative flex shrink-0 overflow-hidden rounded-full",
+        sizeClasses[size],
+        className
+      )}
+      {...props}
+    />
+  </AvatarContext.Provider>
 ))
 Avatar.displayName = AvatarPrimitive.Root.displayName
 
@@ -44,18 +57,21 @@ AvatarImage.displayName = AvatarPrimitive.Image.displayName
 
 const AvatarFallback = React.forwardRef<
   React.ElementRef<typeof AvatarPrimitive.Fallback>,
-  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback> & { variant?: AvatarVariant }
->(({ className, variant, ...props }, ref) => (
-  <AvatarPrimitive.Fallback
-    ref={ref}
-    className={cn(
-      "flex h-full w-full items-center justify-center rounded-full bg-muted",
-      variant && variantClasses[variant],
-      className
-    )}
-    {...props}
-  />
-))
+  React.ComponentPropsWithoutRef<typeof AvatarPrimitive.Fallback>
+>(({ className, ...props }, ref) => {
+  const { size } = React.useContext(AvatarContext)
+  return (
+    <AvatarPrimitive.Fallback
+      ref={ref}
+      className={cn(
+        "flex h-full w-full items-center justify-center rounded-full bg-neutral-200 text-neutral-700",
+        fallbackTextClasses[size],
+        className
+      )}
+      {...props}
+    />
+  )
+})
 AvatarFallback.displayName = AvatarPrimitive.Fallback.displayName
 
 export { Avatar, AvatarImage, AvatarFallback }

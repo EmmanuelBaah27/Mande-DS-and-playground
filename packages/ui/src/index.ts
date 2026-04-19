@@ -75,7 +75,7 @@ export { Chip, chipVariants } from "./components/ui/chip"
 export type { ChipProps } from "./components/ui/chip"
 
 export { Avatar, AvatarImage, AvatarFallback } from "./components/ui/avatar"
-export type { AvatarVariant } from "./components/ui/avatar"
+export type { AvatarSize } from "./components/ui/avatar"
 
 export {
   Card,
@@ -298,7 +298,7 @@ export {
 } from "./components/ui/command"
 
 // ── Feedback ──────────────────────────────────────────────────────────────────
-export { Alert, AlertTitle, AlertDescription } from "./components/ui/alert"
+export { Alert, AlertTitle, AlertDescription, AlertAction } from "./components/ui/alert"
 
 export { Toaster } from "./components/ui/sonner"
 

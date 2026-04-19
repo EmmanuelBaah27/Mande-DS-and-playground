@@ -94,7 +94,7 @@ export function AppSidebar({
           )}
         >
           <Avatar className="h-7 w-7 shrink-0">
-            <AvatarFallback variant="primary" className="text-xs font-medium">
+            <AvatarFallback className="text-xs font-medium">
               EB
             </AvatarFallback>
           </Avatar>
