@@ -13,7 +13,7 @@ const VARIANT_ICONS = {
 } as const
 
 const alertVariants = cva(
-  "relative flex w-full items-start gap-4 rounded-3 p-4",
+  "relative flex w-full items-start gap-4 rounded-3 p-3",
   {
     variants: {
       variant: {
@@ -60,22 +60,24 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
         className={cn(alertVariants({ variant, type }), className)}
         {...props}
       >
-        {icon && (
-          <Icon
-            name={iconConfig.name}
-            size={20}
-            className={cn("shrink-0", iconConfig.className)}
-          />
-        )}
-        <div className="flex min-w-0 flex-1 flex-col gap-1">
-          {children}
+        <div className="flex min-w-0 flex-1 items-start gap-2">
+          {icon && (
+            <Icon
+              name={iconConfig.name}
+              size={20}
+              className={cn("shrink-0", iconConfig.className)}
+            />
+          )}
+          <div className="flex min-w-0 flex-1 flex-col">
+            {children}
+          </div>
         </div>
         {onClose && (
           <button
             type="button"
             onClick={onClose}
             aria-label="Dismiss"
-            className="shrink-0 inline-flex items-center justify-center rounded-1 bg-transparent p-0 text-neutral-500 transition-[color] duration-[var(--duration-instant)] hover:text-neutral-900"
+            className="shrink-0 rounded-1 border-0 bg-transparent p-0 text-neutral-400 transition-[color] duration-[var(--duration-instant)] hover:text-neutral-700 active:scale-95"
           >
             <Icon name="IconCrossLarge" size={16} />
           </button>
