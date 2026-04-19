@@ -32,6 +32,10 @@ const config: StorybookConfig = {
 
     config.optimizeDeps = {
       ...config.optimizeDeps,
+      // Force re-bundle on every dev start. Trades ~3s cold-start for
+      // immunity from "Failed to fetch dynamically imported module"
+      // errors that appear when main.ts or deps change between runs.
+      force: true,
       include: [
         ...(config.optimizeDeps?.include ?? []),
         "@radix-ui/react-accordion",

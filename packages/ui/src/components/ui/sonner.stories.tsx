@@ -124,3 +124,37 @@ export const Loading: Story = {
     />
   ),
 }
+
+/**
+ * Fires four toasts in quick succession — exercises Sonner's stacked motion
+ * (which we sped up to 200ms / ease-out so it doesn't feel slow when stacked).
+ */
+export const Stacked: Story = {
+  render: () => {
+    const fireAll = () => {
+      toast.info("Toast information goes here", { duration: Infinity })
+      toast.success("Changes saved", { description: "Profile updated.", duration: Infinity })
+      toast.warning("Storage almost full", { description: "Used 90% of 5 GB.", duration: Infinity })
+      toast.error("Payment failed", { description: "Card was declined.", duration: Infinity })
+      return "stacked"
+    }
+    useEffect(() => {
+      fireAll()
+      return () => toast.dismiss()
+    }, [])
+
+    return (
+      <div className="flex min-h-[420px] flex-col items-center justify-end gap-4">
+        <Toaster position="top-center" closeButton expand />
+        <Button
+          onClick={() => {
+            toast.dismiss()
+            setTimeout(fireAll, 100)
+          }}
+        >
+          Fire 4 toasts
+        </Button>
+      </div>
+    )
+  },
+}

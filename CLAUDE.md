@@ -104,6 +104,17 @@ The `emil-design-eng` skill is installed project-wide (`.claude/skills/emil-desi
 
 Invoke it via `/emil-design-eng` or reference it explicitly when working on design system polish tasks.
 
+## Before building or polishing any component
+
+Every time, before writing or editing component code, **audit the design system first** for the complementary version of every element, asset, and property in the design:
+
+1. **Icons** — open the relevant Figma node, read the component description (e.g. `system / close_medium` → `IconCrossMedium`). Look up the exact name in `@central-icons-react/all` (use `packages/ui/src/stories/icon-categories.js` as the index). Match the size token from Figma (`size-5` = 20px, etc.). Never substitute a "close enough" icon — if Figma specs `close_medium`, use `IconCrossMedium`, not `IconCrossSmall` or `IconX`.
+2. **Tokens** — every color, spacing, radius, shadow, font-size, line-height, letter-spacing, and motion duration in the Figma must map to an existing Mande token (`--color-*`, `--radius-*`, `--shadow-*`, `text-base-medium`, `--duration-*`, etc.). If a token doesn't exist, surface it as an open question — **don't invent values, don't extend the system unilaterally**.
+3. **Properties** — Figma component variants (`state`, `mode`, `size`, etc.) map to existing Mande prop conventions. Do not add variants that the design didn't spec, and do not silently keep variants from the previous shadcn import that the new design doesn't cover.
+4. **Existing implementations** — when modifying a component that already exists, check what's already there (`packages/ui/src/components/ui/`, the `index.ts` exports, story files) and what consumes it. Polish the existing surface to match Figma rather than building parallel APIs.
+
+The rule: **don't maintain what's there, don't extend beyond the DS**. Match the Figma to the existing tokens, exactly. If something doesn't fit, that's a token or design conversation — flag it, don't paper over it.
+
 ## Standards
 
 - **Icons**: `@central-icons-react/all` via `<Icon>` wrapper in `packages/ui/src/components/ui/icon.tsx`. Stroke 2, join round, radius 2, outlined. Zero Lucide. Sizes: `12 | 16 | 20 | 24 | 32`.

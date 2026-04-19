@@ -31,12 +31,14 @@ const Toaster = ({ ...props }: ToasterProps) => {
         warning: <Icon name="IconExclamationTriangle" size={20} />,
         error: <Icon name="IconCircleX" size={20} />,
         loading: <Icon name="IconLoadingCircle" size={20} className="animate-spin" />,
-        close: <Icon name="IconCrossSmall" size={16} />,
+        close: <Icon name="IconCrossMedium" size={20} />,
       }}
       toastOptions={{
         classNames: {
-          // Sonner adds these to the toast <li> directly, so no group: prefix
+          // group/toast lets descendants react to data-type via group-data-[type=...]/toast
           toast: [
+            "group/toast",
+            "!font-sans",
             "!items-start !gap-2",
             "!rounded-3 !border !border-neutral-a8 !bg-neutral-white !text-foreground",
             "!shadow-md !px-2.5 !py-2",
@@ -47,10 +49,10 @@ const Toaster = ({ ...props }: ToasterProps) => {
           icon: [
             "!flex !shrink-0 !items-center",
             "!m-0 !size-5 !text-neutral-500",
-            "group-[.toast-success]:!text-green-700",
-            "group-[.toast-warning]:!text-yellow-800",
-            "group-[.toast-error]:!text-danger",
-            "group-[.toast-info]:!text-blue-700",
+            "group-data-[type=success]/toast:!text-green-700",
+            "group-data-[type=warning]/toast:!text-yellow-800",
+            "group-data-[type=error]/toast:!text-danger",
+            "group-data-[type=info]/toast:!text-blue-700",
           ].join(" "),
           closeButton: [
             // kill absolute + floating circle chrome; sit inline on the right

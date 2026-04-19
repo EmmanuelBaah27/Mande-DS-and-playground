@@ -599,6 +599,22 @@
   .text-small-semibold { font-size: var(--font-size-small-semibold); line-height: var(--line-height-small-semibold); font-weight: var(--font-weight-small-semibold); letter-spacing: var(--letter-spacing-small-semibold); }
 }
 
+/* --------------------------------------------------------
+   SONNER TOAST OVERRIDES
+   Sonner ships its own font + 400ms transitions; align them
+   to the design system (Inter + 200ms ease-out).
+   -------------------------------------------------------- */
+[data-sonner-toaster] {
+  font-family: var(--font-sans);
+}
+[data-sonner-toast] {
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    opacity var(--duration-base) var(--ease-out),
+    height var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out) !important;
+}
+
 @layer base {
   body {
     font-family: "Inter", system-ui, sans-serif;
