@@ -11,7 +11,7 @@ type ToasterProps = React.ComponentProps<typeof Sonner>
  * Mande Toaster — styled to Figma `Toast / Light / Neutral`:
  * white surface, 12px radius, 8% neutral border, `shadow-md`,
  * 20px leading icon (via the Mande `Icon` wrapper), compact
- * 14/20 body copy, trailing close affordance.
+ * 14/20 body copy, trailing inline close button on the right.
  */
 const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = "system" } = useTheme()
@@ -20,6 +20,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
+      style={
+        {
+          "--width": "320px",
+        } as React.CSSProperties
+      }
       icons={{
         info: <Icon name="IconCircleInfo" size={20} />,
         success: <Icon name="IconCheckCircle2" size={20} />,
@@ -30,41 +35,35 @@ const Toaster = ({ ...props }: ToasterProps) => {
       }}
       toastOptions={{
         classNames: {
+          // Sonner adds these to the toast <li> directly, so no group: prefix
           toast: [
-            "group toast",
-            "group-[.toaster]:flex group-[.toaster]:items-start group-[.toaster]:gap-2",
-            "group-[.toaster]:rounded-3 group-[.toaster]:border group-[.toaster]:border-neutral-a8",
-            "group-[.toaster]:bg-neutral-white group-[.toaster]:text-foreground",
-            "group-[.toaster]:shadow-md",
-            "group-[.toaster]:px-2.5 group-[.toaster]:py-2",
-            "group-[.toaster]:w-auto group-[.toaster]:max-w-[320px]",
+            "!items-start !gap-2",
+            "!rounded-3 !border !border-neutral-a8 !bg-neutral-white !text-foreground",
+            "!shadow-md !px-2.5 !py-2",
           ].join(" "),
           content: "flex min-w-0 flex-1 flex-col",
-          title: "text-base-medium text-foreground",
-          description:
-            "group-[.toast]:text-base-regular group-[.toast]:text-foreground",
+          title: "!text-base-medium !text-foreground",
+          description: "!text-base-regular !text-foreground",
           icon: [
-            "group-[.toast]:flex group-[.toast]:shrink-0 group-[.toast]:items-center",
-            "group-[.toast]:m-0 group-[.toast]:text-neutral-500",
-            "group-[.toast-success]:text-green-700",
-            "group-[.toast-warning]:text-yellow-800",
-            "group-[.toast-error]:text-danger",
-            "group-[.toast-info]:text-blue-700",
+            "!flex !shrink-0 !items-center",
+            "!m-0 !size-5 !text-neutral-500",
+            "group-[.toast-success]:!text-green-700",
+            "group-[.toast-warning]:!text-yellow-800",
+            "group-[.toast-error]:!text-danger",
+            "group-[.toast-info]:!text-blue-700",
           ].join(" "),
           closeButton: [
-            "group-[.toast]:static group-[.toast]:ml-0.5 group-[.toast]:size-5 group-[.toast]:shrink-0",
-            "group-[.toast]:rounded-1 group-[.toast]:border-0",
-            "group-[.toast]:bg-transparent group-[.toast]:text-neutral-500",
-            "group-[.toast]:transition-[background-color,transform,color]",
-            "group-[.toast]:duration-[var(--duration-fast)] group-[.toast]:ease-[var(--ease-out)]",
-            "group-[.toast]:hover:bg-neutral-a8 group-[.toast]:hover:text-foreground",
-            "group-[.toast]:active:scale-95",
-            "group-[.toast]:focus-visible:outline-none group-[.toast]:focus-visible:ring-2 group-[.toast]:focus-visible:ring-ring",
+            // kill absolute + floating circle chrome; sit inline on the right
+            "!static !order-last !size-5 !shrink-0",
+            "!translate-x-0 !translate-y-0 !ml-auto",
+            "!rounded-1 !border-0 !bg-transparent !text-neutral-500 !p-0",
+            "transition-[background-color,transform,color] duration-[var(--duration-fast)] ease-[var(--ease-out)]",
+            "hover:!bg-neutral-a8 hover:!text-foreground",
+            "active:scale-95",
+            "focus-visible:!shadow-none focus-visible:ring-2 focus-visible:ring-ring",
           ].join(" "),
-          actionButton:
-            "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
-          cancelButton:
-            "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+          actionButton: "bg-primary text-primary-foreground",
+          cancelButton: "bg-muted text-muted-foreground",
         },
       }}
       {...props}
