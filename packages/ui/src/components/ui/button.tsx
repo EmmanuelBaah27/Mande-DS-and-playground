@@ -18,34 +18,32 @@ const buttonVariants = cva(
       variant: {
         primary: [
           "bg-primary text-primary-foreground",
-          "hover:bg-primary-hover focus:bg-primary-hover",
+          "hover:bg-primary-hover",
           "disabled:bg-disabled disabled:text-disabled-foreground",
         ],
         secondary: [
           "bg-background text-foreground border border-border",
-          "hover:bg-subtle hover:border-border focus:bg-subtle focus:ring-ring",
+          "hover:bg-subtle hover:border-border",
           "disabled:bg-background disabled:border-border-subtle disabled:text-disabled-foreground",
         ],
         tertiary: [
           "bg-transparent text-foreground",
-          "hover:bg-muted focus:bg-muted",
+          "hover:bg-muted",
           "disabled:text-disabled-foreground",
         ],
         destructive: [
           "bg-destructive text-destructive-foreground",
-          "hover:bg-destructive-hover focus:bg-destructive-hover focus:ring-ring",
+          "hover:bg-destructive-hover",
           "disabled:bg-disabled disabled:text-disabled-foreground",
         ],
         "secondary-destructive": [
           "bg-background text-danger border border-danger-border",
           "hover:bg-danger-subtle hover:text-danger hover:border-danger-border",
-          "focus:bg-danger-subtle focus:text-danger focus:ring-ring",
           "disabled:bg-background disabled:border-border-subtle disabled:text-disabled-foreground",
         ],
         "tertiary-destructive": [
           "bg-transparent text-danger",
           "hover:bg-danger-subtle hover:text-danger",
-          "focus:bg-transparent focus:text-danger focus:ring-ring",
           "disabled:text-disabled-foreground",
         ],
       },
