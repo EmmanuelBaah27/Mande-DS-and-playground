@@ -49,15 +49,15 @@ const Toaster = ({ ...props }: ToasterProps) => {
           icon: [
             "!flex !shrink-0 !items-center",
             "!m-0 !size-5 !text-neutral-500",
-            "group-data-[type=success]/toast:!text-green-700",
-            "group-data-[type=warning]/toast:!text-yellow-800",
-            "group-data-[type=error]/toast:!text-danger",
-            "group-data-[type=info]/toast:!text-blue-700",
+            "group-data-[type=success]/toast:!text-green-500",
+            "group-data-[type=warning]/toast:!text-yellow-500",
+            "group-data-[type=error]/toast:!text-red-500",
+            "group-data-[type=info]/toast:!text-blue-500",
           ].join(" "),
           closeButton: [
             // kill absolute + floating circle chrome; sit inline on the right
             "!static !order-last !size-5 !shrink-0",
-            "!translate-x-0 !translate-y-0 !ml-auto",
+            "!transform-none !ml-auto",
             "!rounded-1 !border-0 !bg-transparent !text-neutral-500 !p-0",
             "transition-[background-color,transform,color] duration-[var(--duration-fast)] ease-[var(--ease-out)]",
             "hover:!bg-neutral-a8 hover:!text-foreground",
