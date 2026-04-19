@@ -8,7 +8,7 @@ const VARIANT_ICONS = {
   neutral: { name: "IconCircleInfo",      className: "text-neutral-500" },
   info:    { name: "IconCircleInfo",      className: "text-blue-500"    },
   success: { name: "IconCheckmark2Small", className: "text-green-500"   },
-  warning: { name: "IconWarningSign",     className: "text-yellow-500"  },
+  warning: { name: "IconWarningSign",     className: "text-orange-500"  },
   error:   { name: "IconWarningSign",     className: "text-red-500"     },
 } as const
 
@@ -29,11 +29,11 @@ const alertVariants = cva(
       },
     },
     compoundVariants: [
-      { variant: "neutral", type: "background", class: "bg-neutral-50"  },
-      { variant: "info",    type: "background", class: "bg-blue-50"     },
-      { variant: "success", type: "background", class: "bg-green-50"    },
-      { variant: "warning", type: "background", class: "bg-yellow-50"   },
-      { variant: "error",   type: "background", class: "bg-red-50"      },
+      { variant: "neutral", type: "background", class: "bg-neutral-100"  },
+      { variant: "info",    type: "background", class: "bg-blue-100"     },
+      { variant: "success", type: "background", class: "bg-green-100"    },
+      { variant: "warning", type: "background", class: "bg-orange-100"   },
+      { variant: "error",   type: "background", class: "bg-red-100"      },
     ],
     defaultVariants: {
       variant: "neutral",
