@@ -57,7 +57,6 @@ const config: StorybookConfig = {
         "@radix-ui/react-slot",
         "@radix-ui/react-switch",
         "@radix-ui/react-tabs",
-        "@radix-ui/react-toast",
         "@radix-ui/react-toggle",
         "@radix-ui/react-toggle-group",
         "@radix-ui/react-tooltip",
