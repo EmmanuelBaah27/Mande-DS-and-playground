@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import type { Meta, StoryObj } from "@storybook/react"
 import { toast } from "sonner"
 
@@ -12,38 +13,61 @@ const meta: Meta<typeof Toaster> = {
     docs: {
       description: {
         component:
-          "Sonner-powered toast matching Figma `Toast / Light / Neutral`: white surface, 12px radius, 8% neutral border, `shadow-md`, 20px leading icon (Mande `Icon`), compact 14/20 body copy, close affordance. Call `toast()` or `toast.success()` etc. — place `<Toaster closeButton />` once at the app root.",
+          "Sonner-powered toast matching Figma `Toast / Light / Neutral`: white surface, 12px radius, 8% neutral border, `shadow-md`, 20px leading icon (Mande `Icon`), compact 14/20 body copy, close affordance. Call `toast()` / `toast.success()` etc. — place `<Toaster closeButton />` once at the app root.",
       },
     },
+    chromatic: { delay: 400 },
   },
   tags: ["autodocs"],
 }
 export default meta
 type Story = StoryObj<typeof Toaster>
 
-const Demo = ({ label, onClick }: { label: string; onClick: () => void }) => (
-  <>
-    <Toaster position="top-center" closeButton />
-    <Button onClick={onClick}>{label}</Button>
-  </>
-)
+/**
+ * Auto-fires a single toast on mount (duration: Infinity) so Chromatic can
+ * snapshot it, and exposes a button to re-fire for manual testing.
+ */
+const ToastScene = ({
+  label,
+  fire,
+}: {
+  label: string
+  fire: () => string | number
+}) => {
+  useEffect(() => {
+    const id = fire()
+    return () => toast.dismiss(id)
+    // fire is a stable closure per story render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return (
+    <div className="flex min-h-[220px] flex-col items-center justify-end gap-4">
+      <Toaster position="top-center" closeButton />
+      <Button onClick={fire}>{label}</Button>
+    </div>
+  )
+}
 
 export const Default: Story = {
   render: () => (
-    <Demo
+    <ToastScene
       label="Show toast"
-      onClick={() => toast.info("Toast information goes here")}
+      fire={() =>
+        toast.info("Toast information goes here", { duration: Infinity })
+      }
     />
   ),
 }
 
 export const TitleAndDescription: Story = {
   render: () => (
-    <Demo
+    <ToastScene
       label="Show detailed toast"
-      onClick={() =>
+      fire={() =>
         toast("New features available", {
           description: "Check the changelog for everything that shipped this release.",
+          duration: Infinity,
         })
       }
     />
@@ -52,11 +76,12 @@ export const TitleAndDescription: Story = {
 
 export const Success: Story = {
   render: () => (
-    <Demo
+    <ToastScene
       label="Trigger success"
-      onClick={() =>
+      fire={() =>
         toast.success("Changes saved", {
           description: "Your profile has been updated successfully.",
+          duration: Infinity,
         })
       }
     />
@@ -65,11 +90,12 @@ export const Success: Story = {
 
 export const Warning: Story = {
   render: () => (
-    <Demo
+    <ToastScene
       label="Trigger warning"
-      onClick={() =>
+      fire={() =>
         toast.warning("Storage almost full", {
           description: "You've used 90% of your 5 GB storage limit.",
+          duration: Infinity,
         })
       }
     />
@@ -78,11 +104,12 @@ export const Warning: Story = {
 
 export const Error: Story = {
   render: () => (
-    <Demo
+    <ToastScene
       label="Trigger error"
-      onClick={() =>
+      fire={() =>
         toast.error("Payment failed", {
           description: "Your card was declined. Please update your payment method.",
+          duration: Infinity,
         })
       }
     />
@@ -91,9 +118,9 @@ export const Error: Story = {
 
 export const Loading: Story = {
   render: () => (
-    <Demo
+    <ToastScene
       label="Trigger loading"
-      onClick={() => toast.loading("Uploading your changes…")}
+      fire={() => toast.loading("Uploading your changes…", { duration: Infinity })}
     />
   ),
 }
