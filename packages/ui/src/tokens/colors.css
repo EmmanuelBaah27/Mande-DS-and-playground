@@ -71,63 +71,65 @@
 
   /* --------------------------------------------------------
      BLUSH — Seed: #D07BAD
-     tints.dev distribution
+     Hand-tuned chroma taper, peak at 500.
      -------------------------------------------------------- */
-  --color-blush-50: oklch(96.6% 0.011 339);       /* #F9F1F6 */
-  --color-blush-100: oklch(93.4% 0.020 346);      /* #F4E4EC */
-  --color-blush-200: oklch(87.6% 0.041 346);      /* #EBCCDC */
-  --color-blush-300: oklch(80.9% 0.067 344);      /* #E1B0CB */
-  --color-blush-400: oklch(75.4% 0.090 345);      /* #D998BC */
+  --color-blush-50: oklch(96.6% 0.012 339);       /* #FAF1F6 */
+  --color-blush-100: oklch(93.4% 0.027 346);      /* #F8E2ED */
+  --color-blush-200: oklch(87.6% 0.049 346);      /* #EFCADD */
+  --color-blush-300: oklch(80.9% 0.071 344);      /* #E3AFCC */
+  --color-blush-400: oklch(75.4% 0.095 345);      /* #DB97BD */
   --color-blush-500: oklch(69.0% 0.122 345);      /* #D07BAD */
-  --color-blush-600: oklch(58.6% 0.131 345);      /* #B1598E */
-  --color-blush-700: oklch(47.0% 0.106 344);      /* #834069 */
-  --color-blush-800: oklch(36.4% 0.081 345);      /* #5B2B48 */
-  --color-blush-900: oklch(24.7% 0.055 345);      /* #331527 */
+  --color-blush-600: oklch(58.6% 0.104 345);      /* #A7628A */
+  --color-blush-700: oklch(47.0% 0.083 344);      /* #7B4766 */
+  --color-blush-800: oklch(36.4% 0.063 345);      /* #563046 */
+  --color-blush-900: oklch(24.7% 0.046 345);      /* #301726 */
 
   /* --------------------------------------------------------
-     ORANGE — Seed: #EA580C (user-specified)
-     tints.dev distribution
+     ORANGE — Seed: #EA580C
+     Hand-tuned chroma taper, peak at 500.
      -------------------------------------------------------- */
-  --color-orange-50: oklch(96.6% 0.016 27);       /* #FFF0EE */
-  --color-orange-100: oklch(92.7% 0.037 28);      /* #FFDED9 */
-  --color-orange-200: oklch(86.1% 0.073 29);      /* #FEC0B6 */
-  --color-orange-300: oklch(78.8% 0.122 32);      /* #FE9C88 */
-  --color-orange-400: oklch(71.7% 0.178 38);      /* #FE744A */
-  --color-orange-500: oklch(64.6% 0.194 41);      /* #EA580C */
-  --color-orange-600: oklch(54.4% 0.164 41);      /* #BA4407 */
-  --color-orange-700: oklch(44.6% 0.134 41);      /* #8E3204 */
-  --color-orange-800: oklch(34.7% 0.104 41);      /* #642102 */
-  --color-orange-900: oklch(24.1% 0.072 41);      /* #3A1001 */
+  --color-orange-50: oklch(96.6% 0.019 27);       /* #FFEFED */
+  --color-orange-100: oklch(92.7% 0.043 28);      /* #FFDDD7 */
+  --color-orange-200: oklch(86.1% 0.078 29);      /* #FFBFB4 */
+  --color-orange-300: oklch(78.8% 0.113 32);      /* #FA9E8C */
+  --color-orange-400: oklch(71.7% 0.151 38);      /* #F27E5A */
+  --color-orange-500: oklch(64.6% 0.194 41);      /* #EA580E */
+  --color-orange-600: oklch(54.4% 0.165 41);      /* #BB4405 */
+  --color-orange-700: oklch(44.6% 0.132 41);      /* #8D3308 */
+  --color-orange-800: oklch(34.7% 0.101 41);      /* #632205 */
+  --color-orange-900: oklch(24.1% 0.074 41);      /* #3B0F00 */
 
   /* --------------------------------------------------------
      BLUE — Seed: #3B82F6
-     Tailwind blue palette (well-tested gamut)
+     Hand-tuned chroma taper, peak at 500. Prior Tailwind-style
+     distribution pushed chroma highest at 600-700 (0.215-0.217)
+     above the seed; rebalanced for consistency across palettes.
      -------------------------------------------------------- */
-  --color-blue-50: oklch(97.0% 0.014 255);        /* #EFF6FF */
-  --color-blue-100: oklch(93.2% 0.032 256);       /* #DBEAFE */
-  --color-blue-200: oklch(88.2% 0.057 254);       /* #BFDBFE */
-  --color-blue-300: oklch(80.9% 0.096 252);       /* #93C5FD */
-  --color-blue-400: oklch(71.4% 0.143 255);       /* #60A5FA */
-  --color-blue-500: oklch(62.3% 0.188 260);       /* #3B82F6 */
-  --color-blue-600: oklch(54.6% 0.215 263);       /* #2563EB */
-  --color-blue-700: oklch(48.8% 0.217 264);       /* #1D4ED8 */
-  --color-blue-800: oklch(42.4% 0.181 266);       /* #1E40AF */
-  --color-blue-900: oklch(37.9% 0.138 266);       /* #1E3A8A */
+  --color-blue-50: oklch(97.0% 0.019 255);        /* #EDF6FF */
+  --color-blue-100: oklch(93.2% 0.041 256);       /* #D7EAFF */
+  --color-blue-200: oklch(88.2% 0.075 254);       /* #B6DCFF */
+  --color-blue-300: oklch(80.9% 0.109 252);       /* #8CC5FF */
+  --color-blue-400: oklch(71.4% 0.147 255);       /* #5FA5FC */
+  --color-blue-500: oklch(62.3% 0.188 260);       /* #3C82F6 */
+  --color-blue-600: oklch(54.6% 0.160 263);       /* #3C6BCC */
+  --color-blue-700: oklch(48.8% 0.128 264);       /* #3A5CA8 */
+  --color-blue-800: oklch(42.4% 0.098 266);       /* #354B84 */
+  --color-blue-900: oklch(37.9% 0.071 266);       /* #304168 */
 
   /* --------------------------------------------------------
      RED — Seed: #B81416
-     tints.dev distribution
+     Hand-tuned chroma taper, peak at 500.
      -------------------------------------------------------- */
-  --color-red-50: oklch(97.1% 0.013 17);          /* #FEF2F2 */
-  --color-red-100: oklch(93.6% 0.031 18);         /* #FEE2E2 */
-  --color-red-200: oklch(88.5% 0.059 18);         /* #FECACA */
-  --color-red-300: oklch(80.8% 0.103 20);         /* #FCA5A5 */
-  --color-red-400: oklch(71.1% 0.166 22);         /* #F87171 */
-  --color-red-500: oklch(49.9% 0.194 28);         /* #B81416 */
+  --color-red-50: oklch(97.1% 0.019 17);          /* #FFF1F1 */
+  --color-red-100: oklch(93.6% 0.043 18);         /* #FFDFDF */
+  --color-red-200: oklch(88.5% 0.078 18);         /* #FFC5C6 */
+  --color-red-300: oklch(80.8% 0.113 20);         /* #FFA2A2 */
+  --color-red-400: oklch(71.1% 0.151 22);         /* #F17776 */
+  --color-red-500: oklch(49.9% 0.194 28);         /* #B81415 */
   --color-red-600: oklch(42.5% 0.165 28);         /* #940E0F */
-  --color-red-700: oklch(35.2% 0.137 28);         /* #720809 */
-  --color-red-800: oklch(28.9% 0.112 28);         /* #560505 */
-  --color-red-900: oklch(21.7% 0.084 28);         /* #380202 */
+  --color-red-700: oklch(35.2% 0.132 28);         /* #700E0C */
+  --color-red-800: oklch(28.9% 0.101 28);         /* #520D0A */
+  --color-red-900: oklch(21.7% 0.074 28);         /* #350605 */
 
   /* --------------------------------------------------------
      GREEN — Seed: #227D3C
@@ -150,16 +152,19 @@
 
   /* --------------------------------------------------------
      YELLOW — Seed: #EAB308
-     Tailwind yellow palette (well-tested gamut)
+     Hand-tuned chroma taper, peak at 500. Prior Tailwind
+     distribution peaked at 300-400 (C 0.166-0.173) above the
+     seed, producing saturated mid-tones where pale tints were
+     expected. Rebalanced for consistency across palettes.
      -------------------------------------------------------- */
-  --color-yellow-50: oklch(98.7% 0.026 102);      /* #FEFCE8 */
-  --color-yellow-100: oklch(97.3% 0.069 103);     /* #FEF9C3 */
-  --color-yellow-200: oklch(94.5% 0.124 102);     /* #FEF08A */
-  --color-yellow-300: oklch(90.5% 0.166 98);      /* #FDE047 */
-  --color-yellow-400: oklch(86.1% 0.173 92);      /* #FACC15 */
-  --color-yellow-500: oklch(79.5% 0.162 86);      /* #EAB308 */
-  --color-yellow-600: oklch(68.1% 0.142 76);      /* #CA8A04 */
-  --color-yellow-700: oklch(55.4% 0.121 66);      /* #A16207 */
-  --color-yellow-800: oklch(47.6% 0.103 62);      /* #854D0E */
-  --color-yellow-900: oklch(42.1% 0.090 58);      /* #713F12 */
+  --color-yellow-50: oklch(98.7% 0.016 102);      /* #FDFBEF */
+  --color-yellow-100: oklch(97.3% 0.036 103);     /* #FAF8DC */
+  --color-yellow-200: oklch(94.5% 0.065 102);     /* #F5EFBD */
+  --color-yellow-300: oklch(90.5% 0.094 98);      /* #F0E198 */
+  --color-yellow-400: oklch(86.1% 0.126 92);      /* #EFCF69 */
+  --color-yellow-500: oklch(79.5% 0.162 86);      /* #EAB305 */
+  --color-yellow-600: oklch(68.1% 0.138 76);      /* #C98B16 */
+  --color-yellow-700: oklch(55.4% 0.110 66);      /* #9E641E */
+  --color-yellow-800: oklch(47.6% 0.084 62);      /* #7E5126 */
+  --color-yellow-900: oklch(42.1% 0.062 58);      /* #67452A */
 }
