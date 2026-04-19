@@ -12,25 +12,28 @@
   --color-*: initial;
 
   /* --------------------------------------------------------
-     GREY (Pure Neutral)
-     Figma hand-tuned — HSL 0 0 X, no hue tint
+     GREY (Cool neutral)
+     Subtle blue-cool tint — small chroma at hue ~254 for a
+     cool, modern-grey feel (Tailwind slate / GitHub gray).
+     Chroma ramps up slightly at darker shades to maintain
+     the cool character as lightness drops.
      -------------------------------------------------------- */
-  --color-neutral-white: oklch(100.0% 0 0);          /* #FFFFFF */
-  --color-neutral-50: oklch(98.5% 0 0);              /* #FAFAFA */
-  --color-neutral-100: oklch(97.0% 0 0);             /* #F5F5F5 */
-  --color-neutral-200: oklch(93.1% 0 0);             /* #E8E8E8 */
-  --color-neutral-300: oklch(90.1% 0 0);             /* #DEDEDE */
-  --color-neutral-400: oklch(69.3% 0 0);             /* #9C9C9C */
-  --color-neutral-500: oklch(49.3% 0 0);             /* #616161 */
-  --color-neutral-600: oklch(43.9% 0 0);             /* #525252 */
-  --color-neutral-700: oklch(36.0% 0 0);             /* #3D3D3D */
-  --color-neutral-800: oklch(28.1% 0 0);             /* #292929 */
-  --color-neutral-900: oklch(19.1% 0 0);             /* #141414 */
+  --color-neutral-white: oklch(100.0% 0 0);            /* #FFFFFF */
+  --color-neutral-50: oklch(98.5% 0.005 252);          /* #F8FAFD */
+  --color-neutral-100: oklch(97.0% 0.007 252);         /* #F2F5FA */
+  --color-neutral-200: oklch(93.1% 0.009 252);         /* #E4E9EE */
+  --color-neutral-300: oklch(90.1% 0.011 254);         /* #D9DFE6 */
+  --color-neutral-400: oklch(69.3% 0.014 256);         /* #979DA5 */
+  --color-neutral-500: oklch(49.3% 0.016 258);         /* #5C626B */
+  --color-neutral-600: oklch(43.9% 0.017 258);         /* #4D535C */
+  --color-neutral-700: oklch(36.0% 0.019 258);         /* #373E47 */
+  --color-neutral-800: oklch(28.1% 0.021 256);         /* #222A34 */
+  --color-neutral-900: oklch(19.1% 0.022 254);         /* #0D151E */
 
-  /* Transparent neutrals — palette black at opacity */
-  --color-neutral-100-alpha: oklch(19.1% 0 0 / 5%);
-  --color-neutral-200-alpha: oklch(19.1% 0 0 / 8%);
-  --color-neutral-300-alpha: oklch(19.1% 0 0 / 12%);
+  /* Transparent neutrals — new cool-dark at opacity */
+  --color-neutral-100-alpha: oklch(19.1% 0.022 254 / 5%);
+  --color-neutral-200-alpha: oklch(19.1% 0.022 254 / 8%);
+  --color-neutral-300-alpha: oklch(19.1% 0.022 254 / 12%);
 
   /* --------------------------------------------------------
      LIME — Seed: #C4E03E
@@ -49,18 +52,22 @@
 
   /* --------------------------------------------------------
      TEAL — Seed: #026A72
-     tints.dev distribution, teal-900 chroma clamped for gamut
+     Hand-tuned chroma taper. Chroma peaks at 500 (the seed)
+     and tapers smoothly toward both ends. Prior tints.dev
+     distribution pushed chroma to ~0.13 at the 100–200 range
+     which clipped the sRGB gamut and rendered as saturated
+     cyan for what should be pale tints.
      -------------------------------------------------------- */
-  --color-teal-50: oklch(94.2% 0.056 207);        /* #C1F7FF */
-  --color-teal-100: oklch(88.3% 0.124 205);       /* #60F0FF */
-  --color-teal-200: oklch(78.0% 0.132 204);       /* #09CFDE */
-  --color-teal-300: oklch(67.6% 0.115 204);       /* #06ABB8 */
-  --color-teal-400: oklch(57.5% 0.097 204);       /* #038993 */
+  --color-teal-50: oklch(94.2% 0.020 205);        /* #DDF0F2 */
+  --color-teal-100: oklch(88.3% 0.035 205);       /* #BFE0E3 */
+  --color-teal-200: oklch(78.0% 0.050 204);       /* #92C1C6 */
+  --color-teal-300: oklch(67.6% 0.065 204);       /* #65A3A9 */
+  --color-teal-400: oklch(57.5% 0.075 204);       /* #3A868D */
   --color-teal-500: oklch(47.8% 0.081 204);       /* #026A72 */
-  --color-teal-600: oklch(40.6% 0.069 203);       /* #01545A */
-  --color-teal-700: oklch(33.9% 0.057 204);       /* #014045 */
+  --color-teal-600: oklch(40.6% 0.069 203);       /* #00545A */
+  --color-teal-700: oklch(33.9% 0.057 204);       /* #024045 */
   --color-teal-800: oklch(27.1% 0.046 204);       /* #002D31 */
-  --color-teal-900: oklch(20.3% 0.031 205);       /* #001B1D */
+  --color-teal-900: oklch(20.3% 0.031 205);       /* #031B1D */
 
   /* --------------------------------------------------------
      BLUSH — Seed: #D07BAD
@@ -124,13 +131,17 @@
 
   /* --------------------------------------------------------
      GREEN — Seed: #227D3C
-     Gamut-safe, manually crafted (88% of max chroma)
+     Hand-tuned chroma taper. Chroma peaks at 500 (the seed)
+     and tapers smoothly toward both ends. Prior distribution
+     pushed chroma to ~0.21 at 200 (above sRGB gamut at that
+     lightness), rendering as fluorescent green for a shade
+     that should feel pale and restful.
      -------------------------------------------------------- */
-  --color-green-50: oklch(96.0% 0.059 149);       /* #D7FEDD */
-  --color-green-100: oklch(92.0% 0.125 149);      /* #A8FCB7 */
-  --color-green-200: oklch(84.0% 0.209 149);      /* #49EE79 */
-  --color-green-300: oklch(74.0% 0.184 149);      /* #3CC966 */
-  --color-green-400: oklch(64.0% 0.159 149);      /* #30A652 */
+  --color-green-50: oklch(96.0% 0.018 149);       /* #EAF5EB */
+  --color-green-100: oklch(91.0% 0.040 149);      /* #D0E9D3 */
+  --color-green-200: oklch(83.0% 0.070 149);      /* #A8D5AF */
+  --color-green-300: oklch(72.0% 0.100 149);      /* #77B682 */
+  --color-green-400: oklch(62.0% 0.120 149);      /* #4C9A5D */
   --color-green-500: oklch(52.0% 0.129 149);      /* #227D3C */
   --color-green-600: oklch(43.0% 0.107 149);      /* #185F2D */
   --color-green-700: oklch(35.0% 0.087 149);      /* #0F461F */
