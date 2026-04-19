@@ -1,46 +1,77 @@
+"use client"
+
 import * as React from "react"
-import { cva, type VariantProps } from "class-variance-authority"
+import { AnimatePresence, motion } from "motion/react"
 
 import { cn } from "@/lib/utils"
+import { springs, durations, easings } from "@/tokens/motion"
+import { Icon, type IconName } from "./icon"
 
-const alertVariants = cva(
-  "relative w-full rounded-2 border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground",
-  {
-    variants: {
-      variant: {
-        default: "bg-background text-foreground",
-        info: "border-accent-border bg-accent-subtle text-foreground [&>svg]:text-accent-border",
-        success: "border-green-200 bg-green-50 text-foreground [&>svg]:text-green-600",
-        warning: "border-yellow-200 bg-yellow-50 text-foreground [&>svg]:text-yellow-700",
-        destructive: "border-danger-border bg-danger-subtle text-foreground [&>svg]:text-danger",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-    },
+interface AlertProps
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onAnimationStart" | "onDragStart" | "onDragEnd" | "onDrag"> {
+  /** Icon to render at the start of the alert. Pass an IconName or a node. */
+  icon?: IconName | React.ReactNode
+  /** Show a trailing dismiss button. Fires `onDismiss`. */
+  dismissible?: boolean
+  /** Callback invoked when the dismiss button is pressed. */
+  onDismiss?: () => void
+  /** Controls mount/unmount with motion. Defaults to `true`. */
+  open?: boolean
+}
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
+  (
+    { className, icon, dismissible, onDismiss, open = true, children, ...props },
+    ref
+  ) => {
+    const leading =
+      typeof icon === "string" ? (
+        <span className="flex shrink-0 items-center text-neutral-500">
+          <Icon name={icon as IconName} size={20} />
+        </span>
+      ) : icon ? (
+        <span className="flex shrink-0 items-center text-neutral-500">{icon}</span>
+      ) : null
+
+    return (
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            ref={ref}
+            role="alert"
+            aria-live="polite"
+            className={cn(
+              "flex w-full max-w-[320px] items-start gap-2 rounded-3 border border-neutral-a8 bg-neutral-white px-2.5 py-2 text-foreground shadow-md",
+              className
+            )}
+            initial={{ opacity: 0, y: -6, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{
+              opacity: 0,
+              scale: 0.98,
+              transition: { duration: durations.fast / 1000, ease: easings.out },
+            }}
+            transition={springs.smooth}
+            {...props}
+          >
+            {leading}
+            <div className="flex min-w-0 flex-1 flex-col">{children}</div>
+            {dismissible && <AlertClose onClick={onDismiss} />}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    )
   }
 )
-
-const Alert = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
->(({ className, variant, ...props }, ref) => (
-  <div
-    ref={ref}
-    role="alert"
-    className={cn(alertVariants({ variant }), className)}
-    {...props}
-  />
-))
 Alert.displayName = "Alert"
 
 const AlertTitle = React.forwardRef<
   HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
+  React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <h5
+  <p
     ref={ref}
-    className={cn("mb-1 font-medium leading-none tracking-tight", className)}
+    className={cn("text-base-medium text-foreground", className)}
     {...props}
   />
 ))
@@ -50,12 +81,36 @@ const AlertDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <div
+  <p
     ref={ref}
-    className={cn("text-sm [&_p]:leading-relaxed", className)}
+    className={cn("text-base-regular text-foreground", className)}
     {...props}
   />
 ))
 AlertDescription.displayName = "AlertDescription"
 
-export { Alert, AlertTitle, AlertDescription }
+const AlertClose = React.forwardRef<
+  HTMLButtonElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement>
+>(({ className, ...props }, ref) => (
+  <button
+    ref={ref}
+    type="button"
+    aria-label="Dismiss"
+    className={cn(
+      "-my-0.5 -mr-0.5 ml-0.5 flex size-6 shrink-0 items-center justify-center rounded-1 text-neutral-500",
+      "transition-[background-color,transform,color] duration-[var(--duration-fast)] ease-[var(--ease-out)]",
+      "hover:bg-neutral-a8 hover:text-foreground",
+      "active:scale-95",
+      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+      className
+    )}
+    {...props}
+  >
+    <Icon name="IconCrossSmall" size={16} />
+  </button>
+))
+AlertClose.displayName = "AlertClose"
+
+export { Alert, AlertTitle, AlertDescription, AlertClose }
+export type { AlertProps }
