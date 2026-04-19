@@ -21,7 +21,7 @@ export interface IconProps {
  */
 const STROKE_BY_SIZE: Record<IconSize, "1" | "1.5" | "2"> = {
   12: "1",
-  16: "1",
+  16: "1.5",
   20: "1.5",
   24: "2",
   32: "2",
