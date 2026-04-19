@@ -19,9 +19,9 @@ export interface IconProps {
  * Stroke scales down below 24px so smaller glyphs don't look chunky;
  * at 24px and above the stroke stays at 2px (the optical baseline).
  */
-const STROKE_BY_SIZE: Record<IconSize, string> = {
+const STROKE_BY_SIZE: Record<IconSize, "1" | "1.5" | "2"> = {
   12: "1",
-  16: "1.25",
+  16: "1",
   20: "1.5",
   24: "2",
   32: "2",
