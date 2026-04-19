@@ -29,11 +29,11 @@ const alertVariants = cva(
       },
     },
     compoundVariants: [
-      { variant: "neutral", type: "background", class: "bg-neutral-100"  },
-      { variant: "info",    type: "background", class: "bg-blue-100"     },
-      { variant: "success", type: "background", class: "bg-green-100"    },
-      { variant: "warning", type: "background", class: "bg-yellow-100"   },
-      { variant: "error",   type: "background", class: "bg-red-100"      },
+      { variant: "neutral", type: "background", class: "bg-neutral-50"  },
+      { variant: "info",    type: "background", class: "bg-blue-50"     },
+      { variant: "success", type: "background", class: "bg-green-50"    },
+      { variant: "warning", type: "background", class: "bg-yellow-50"   },
+      { variant: "error",   type: "background", class: "bg-red-50"      },
     ],
     defaultVariants: {
       variant: "neutral",
