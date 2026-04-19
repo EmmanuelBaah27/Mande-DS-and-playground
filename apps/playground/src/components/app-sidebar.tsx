@@ -93,8 +93,8 @@ export function AppSidebar({
             !isOpen && "justify-center px-0"
           )}
         >
-          <Avatar className="h-7 w-7 shrink-0">
-            <AvatarFallback className="text-xs font-medium">
+          <Avatar size={28} className="shrink-0">
+            <AvatarFallback>
               EB
             </AvatarFallback>
           </Avatar>

@@ -66,8 +66,8 @@ export const Default: Story = {
           </SidebarContent>
           <SidebarFooter className="border-t border-neutral-200 p-3">
             <SidebarMenuButton className="gap-3">
-              <Avatar className="h-7 w-7 shrink-0">
-                <AvatarFallback className="text-xs font-medium">
+              <Avatar size={28} className="shrink-0">
+                <AvatarFallback>
                   EB
                 </AvatarFallback>
               </Avatar>
@@ -127,8 +127,8 @@ export const Collapsed: Story = {
           </SidebarContent>
           <SidebarFooter className="border-t border-neutral-200 p-3">
             <SidebarMenuButton tooltip="Emmanuel Baah">
-              <Avatar className="h-7 w-7 shrink-0">
-                <AvatarFallback className="text-xs font-medium">
+              <Avatar size={28} className="shrink-0">
+                <AvatarFallback>
                   EB
                 </AvatarFallback>
               </Avatar>
