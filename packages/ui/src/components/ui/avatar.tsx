@@ -18,11 +18,11 @@ const sizeClasses: Record<AvatarSize, string> = {
 }
 
 const fallbackTextClasses: Record<AvatarSize, string> = {
-  16: "text-[10px] font-semibold",
-  20: "text-small-semibold",
-  24: "text-small-semibold",
-  28: "text-base-semibold",
-  32: "text-lg-semibold",
+  16: "text-[10px] font-medium",
+  20: "text-[10px] font-medium",
+  24: "text-small-medium",
+  28: "text-small-medium",
+  32: "text-base-medium",
 }
 
 const Avatar = React.forwardRef<
