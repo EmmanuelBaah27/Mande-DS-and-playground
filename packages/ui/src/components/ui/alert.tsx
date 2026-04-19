@@ -2,45 +2,97 @@ import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
+import { Icon } from "./icon"
+
+const VARIANT_ICONS = {
+  neutral: { name: "IconCircleInfo",      className: "text-neutral-500" },
+  info:    { name: "IconCircleInfo",      className: "text-blue-500"    },
+  success: { name: "IconCheckmark2Small", className: "text-green-500"   },
+  warning: { name: "IconWarningSign",     className: "text-orange-500"  },
+  error:   { name: "IconWarningSign",     className: "text-red-500"     },
+} as const
 
 const alertVariants = cva(
-  "relative w-full rounded-2 border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground",
+  "relative flex w-full items-start gap-4 rounded-3 p-4",
   {
     variants: {
       variant: {
-        default: "bg-background text-foreground",
-        info: "border-accent-border bg-accent-subtle text-foreground [&>svg]:text-accent-border",
-        success: "border-green-200 bg-green-50 text-foreground [&>svg]:text-green-600",
-        warning: "border-yellow-200 bg-yellow-50 text-foreground [&>svg]:text-yellow-700",
-        destructive: "border-danger-border bg-danger-subtle text-foreground [&>svg]:text-danger",
+        neutral: "",
+        info:    "",
+        success: "",
+        warning: "",
+        error:   "",
+      },
+      type: {
+        background: "",
+        outline: "bg-neutral-white border border-neutral-200",
       },
     },
+    compoundVariants: [
+      { variant: "neutral", type: "background", class: "bg-neutral-100"  },
+      { variant: "info",    type: "background", class: "bg-blue-100"     },
+      { variant: "success", type: "background", class: "bg-green-100"    },
+      { variant: "warning", type: "background", class: "bg-orange-100"   },
+      { variant: "error",   type: "background", class: "bg-red-100"      },
+    ],
     defaultVariants: {
-      variant: "default",
+      variant: "neutral",
+      type: "background",
     },
   }
 )
 
-const Alert = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof alertVariants>
->(({ className, variant, ...props }, ref) => (
-  <div
-    ref={ref}
-    role="alert"
-    className={cn(alertVariants({ variant }), className)}
-    {...props}
-  />
-))
+export interface AlertProps
+  extends React.HTMLAttributes<HTMLDivElement>,
+    VariantProps<typeof alertVariants> {
+  icon?: boolean
+  onClose?: () => void
+}
+
+const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
+  ({ className, variant = "neutral", type = "background", icon = false, onClose, children, ...props }, ref) => {
+    const iconConfig = VARIANT_ICONS[variant ?? "neutral"]
+
+    return (
+      <div
+        ref={ref}
+        role="alert"
+        className={cn(alertVariants({ variant, type }), className)}
+        {...props}
+      >
+        {icon && (
+          <Icon
+            name={iconConfig.name}
+            size={20}
+            className={cn("shrink-0", iconConfig.className)}
+          />
+        )}
+        <div className="flex min-w-0 flex-1 flex-col gap-1">
+          {children}
+        </div>
+        {onClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Dismiss"
+            className="shrink-0 inline-flex items-center justify-center rounded-1 bg-transparent p-0 text-neutral-500 transition-[color] duration-[var(--duration-instant)] hover:text-neutral-900"
+          >
+            <Icon name="IconCrossLarge" size={16} />
+          </button>
+        )}
+      </div>
+    )
+  }
+)
 Alert.displayName = "Alert"
 
 const AlertTitle = React.forwardRef<
   HTMLParagraphElement,
-  React.HTMLAttributes<HTMLHeadingElement>
+  React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <h5
+  <p
     ref={ref}
-    className={cn("mb-1 font-medium leading-none tracking-tight", className)}
+    className={cn("text-base-medium text-neutral-900", className)}
     {...props}
   />
 ))
@@ -50,12 +102,24 @@ const AlertDescription = React.forwardRef<
   HTMLParagraphElement,
   React.HTMLAttributes<HTMLParagraphElement>
 >(({ className, ...props }, ref) => (
-  <div
+  <p
     ref={ref}
-    className={cn("text-sm [&_p]:leading-relaxed", className)}
+    className={cn("text-base-regular text-neutral-800", className)}
     {...props}
   />
 ))
 AlertDescription.displayName = "AlertDescription"
 
-export { Alert, AlertTitle, AlertDescription }
+const AlertAction = React.forwardRef<
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, ...props }, ref) => (
+  <p
+    ref={ref}
+    className={cn("text-base-medium text-neutral-900", className)}
+    {...props}
+  />
+))
+AlertAction.displayName = "AlertAction"
+
+export { Alert, AlertTitle, AlertDescription, AlertAction }

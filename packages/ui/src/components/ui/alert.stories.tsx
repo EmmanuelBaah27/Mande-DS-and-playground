@@ -1,61 +1,158 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { Alert, AlertTitle, AlertDescription } from "./alert"
-import { Icon } from "./icon"
+import { Alert, AlertTitle, AlertDescription, AlertAction } from "./alert"
 
 const meta: Meta<typeof Alert> = {
   title: "Components/Feedback/Alert",
   component: Alert,
   parameters: { layout: "centered" },
   tags: ["autodocs"],
+  argTypes: {
+    variant: {
+      control: "select",
+      options: ["neutral", "info", "success", "warning", "error"],
+    },
+    type: {
+      control: "radio",
+      options: ["background", "outline"],
+    },
+    icon: { control: "boolean" },
+  },
 }
 export default meta
 type Story = StoryObj<typeof Alert>
 
+// ─── Full-featured reference ────────────────────────────────────────────────
+
 export const Default: Story = {
-  render: () => (
-    <Alert className="w-96">
-      <AlertTitle>Heads up</AlertTitle>
-      <AlertDescription>You can add components to your app using the CLI.</AlertDescription>
+  args: { variant: "neutral", type: "background", icon: true },
+  render: (args) => (
+    <Alert {...args} className="w-[448px]" onClose={() => {}}>
+      <AlertTitle>Alert title</AlertTitle>
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
+      <AlertAction>Action link</AlertAction>
     </Alert>
   ),
 }
 
-export const Info: Story = {
+// ─── Background variants ─────────────────────────────────────────────────────
+
+export const BackgroundNeutral: Story = {
   render: () => (
-    <Alert variant="info" className="w-96">
-      <Icon name="IconCircleInfo" size={16} />
-      <AlertTitle>New features available</AlertTitle>
-      <AlertDescription>Check the changelog for everything that's new this release.</AlertDescription>
+    <Alert variant="neutral" type="background" icon className="w-[448px]" onClose={() => {}}>
+      <AlertTitle>Alert title</AlertTitle>
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
+      <AlertAction>Action link</AlertAction>
     </Alert>
   ),
 }
 
-export const Success: Story = {
+export const BackgroundInfo: Story = {
   render: () => (
-    <Alert variant="success" className="w-96">
-      <Icon name="IconCheckmark2" size={16} />
-      <AlertTitle>Changes saved</AlertTitle>
-      <AlertDescription>Your profile has been updated successfully.</AlertDescription>
+    <Alert variant="info" type="background" icon className="w-[448px]" onClose={() => {}}>
+      <AlertTitle>Alert title</AlertTitle>
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
+      <AlertAction>Action link</AlertAction>
     </Alert>
   ),
 }
 
-export const Warning: Story = {
+export const BackgroundSuccess: Story = {
   render: () => (
-    <Alert variant="warning" className="w-96">
-      <Icon name="IconWarningSign" size={16} />
-      <AlertTitle>Storage almost full</AlertTitle>
-      <AlertDescription>You've used 90% of your 5 GB storage limit.</AlertDescription>
+    <Alert variant="success" type="background" icon className="w-[448px]" onClose={() => {}}>
+      <AlertTitle>Alert title</AlertTitle>
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
+      <AlertAction>Action link</AlertAction>
     </Alert>
   ),
 }
 
-export const Destructive: Story = {
+export const BackgroundWarning: Story = {
   render: () => (
-    <Alert variant="destructive" className="w-96">
-      <Icon name="IconCrossMedium" size={16} />
-      <AlertTitle>Payment failed</AlertTitle>
-      <AlertDescription>Your card was declined. Please update your payment method.</AlertDescription>
+    <Alert variant="warning" type="background" icon className="w-[448px]" onClose={() => {}}>
+      <AlertTitle>Alert title</AlertTitle>
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
+      <AlertAction>Action link</AlertAction>
+    </Alert>
+  ),
+}
+
+export const BackgroundError: Story = {
+  render: () => (
+    <Alert variant="error" type="background" icon className="w-[448px]" onClose={() => {}}>
+      <AlertTitle>Alert title</AlertTitle>
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
+      <AlertAction>Action link</AlertAction>
+    </Alert>
+  ),
+}
+
+// ─── Outline variants ────────────────────────────────────────────────────────
+
+export const OutlineNeutral: Story = {
+  render: () => (
+    <Alert variant="neutral" type="outline" icon className="w-[448px]" onClose={() => {}}>
+      <AlertTitle>Alert title</AlertTitle>
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
+      <AlertAction>Action link</AlertAction>
+    </Alert>
+  ),
+}
+
+export const OutlineInfo: Story = {
+  render: () => (
+    <Alert variant="info" type="outline" icon className="w-[448px]" onClose={() => {}}>
+      <AlertTitle>Alert title</AlertTitle>
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
+      <AlertAction>Action link</AlertAction>
+    </Alert>
+  ),
+}
+
+export const OutlineSuccess: Story = {
+  render: () => (
+    <Alert variant="success" type="outline" icon className="w-[448px]" onClose={() => {}}>
+      <AlertTitle>Alert title</AlertTitle>
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
+      <AlertAction>Action link</AlertAction>
+    </Alert>
+  ),
+}
+
+export const OutlineWarning: Story = {
+  render: () => (
+    <Alert variant="warning" type="outline" icon className="w-[448px]" onClose={() => {}}>
+      <AlertTitle>Alert title</AlertTitle>
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
+      <AlertAction>Action link</AlertAction>
+    </Alert>
+  ),
+}
+
+export const OutlineError: Story = {
+  render: () => (
+    <Alert variant="error" type="outline" icon className="w-[448px]" onClose={() => {}}>
+      <AlertTitle>Alert title</AlertTitle>
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
+      <AlertAction>Action link</AlertAction>
+    </Alert>
+  ),
+}
+
+// ─── Minimal ─────────────────────────────────────────────────────────────────
+
+export const DescriptionOnly: Story = {
+  render: () => (
+    <Alert variant="info" type="background" className="w-[448px]">
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
+    </Alert>
+  ),
+}
+
+export const NoIcon: Story = {
+  render: () => (
+    <Alert variant="warning" type="background" className="w-[448px]" onClose={() => {}}>
+      <AlertTitle>Alert title</AlertTitle>
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
     </Alert>
   ),
 }
