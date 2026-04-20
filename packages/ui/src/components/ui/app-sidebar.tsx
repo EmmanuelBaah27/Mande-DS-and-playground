@@ -68,7 +68,7 @@ export function SideNavItem({ label, icon, selected = false, onClick, className 
         "group flex items-center gap-2 px-2 py-1.5 rounded-2 w-full text-left relative overflow-hidden",
         // Explicit properties: background-color for hover, transform for active press
         "[transition:background-color_150ms_ease,transform_75ms_ease-out]",
-        "active:scale-[0.98]",
+        "active:scale-[0.99]",
         selected
           ? "bg-muted text-foreground"
           : "bg-background text-muted-foreground hover:bg-subtle",
@@ -168,7 +168,7 @@ export function AccountSelector({ name, initials, selected = false, onClick, cla
       className={cn(
         "inline-flex items-center gap-2 p-1 rounded-2 text-left",
         "[transition:background-color_150ms_ease,transform_75ms_ease-out]",
-        "active:scale-[0.98]",
+        "active:scale-[0.99]",
         selected ? "bg-muted" : "hover:bg-subtle",
         className
       )}
@@ -240,7 +240,7 @@ export function AppSidebar({
           type="button"
           onClick={onCollapse}
           aria-label="Collapse sidebar"
-          className="flex items-center justify-center p-1 rounded-2 text-muted-foreground hover:bg-subtle shrink-0 [transition:background-color_150ms_ease,transform_75ms_ease-out] active:scale-[0.98]"
+          className="flex items-center justify-center p-1 rounded-2 text-muted-foreground hover:bg-subtle shrink-0 [transition:background-color_150ms_ease,transform_75ms_ease-out] active:scale-[0.99]"
         >
           <Icon name="IconSidebarSimpleLeftWide" size={20} fill="filled" />
         </button>
