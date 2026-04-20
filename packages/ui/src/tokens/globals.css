@@ -13,16 +13,16 @@
      Light end (50–300) tapers from pure to subtle cool tint;
      mid/dark (500–900) carry a consistent cool blue-grey hue
      -------------------------------------------------------- */
-  --color-neutral-white: oklch(100.0% 0 0);            /* #FFFFFF */
-  --color-neutral-50:  oklch(98.3% 0 0);               /* #FAFAFA */
-  --color-neutral-100: oklch(96.5% 0 0);               /* #F5F5F5 */
-  --color-neutral-200: oklch(92.5% 0 0);               /* #E8E8E8 */
+  --color-neutral-white: oklch(100.0% 0 0);
+  --color-neutral-50:   oklch(98.3%  0 0);
+  --color-neutral-100:  oklch(96.5%  0 0);
+  --color-neutral-200:  oklch(92.5%  0 0);
   --color-neutral-300: oklch(88.7% 0.005 252);         /* lighter shade — blue reduced ~17% */
-  --color-neutral-400: oklch(60.0% 0.011 254);         /* lighter shade — blue reduced ~15% */
-  --color-neutral-500: oklch(43.5% 0.012 255);         /* blue reduced ~8% */
-  --color-neutral-600: oklch(40.0% 0.010 255);         /* blue reduced ~9% */
-  --color-neutral-700: oklch(28.0% 0.009 255);         /* blue reduced ~10% */
-  --color-neutral-800: oklch(20.0% 0.004 255);         /* blue reduced ~20% */
+  --color-neutral-400: oklch(63.0% 0.011 254);
+  --color-neutral-500: oklch(50.0% 0.012 255);
+  --color-neutral-600: oklch(40.0% 0.010 255);
+  --color-neutral-700: oklch(30.0% 0.009 255);
+  --color-neutral-800: oklch(21.0% 0.004 255);
   --color-neutral-900: oklch(12.5% 0 0);               /* #171717 */
 
   /* Transparent neutrals — neutral-900 (#171717) at opacity; a{n} = alpha at n% */
@@ -664,8 +664,20 @@
 }
 
 @layer base {
+  html {
+    /* Cascade smoothing to all descendants (including Storybook iframes) */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
     font-family: "Inter", system-ui, sans-serif;
+    /* Optical sizing — engages the opsz axis on Inter variable font so stroke
+       contrast adapts per font-size. Prevents medium weight from reading heavy
+       at small sizes by letting the font's own optical adjustments apply. */
+    font-optical-sizing: auto;
+    /* Prevent browser from synthesising bold/italic — variable font handles it */
+    font-synthesis: none;
     /* Inter character variants — matches Figma configuration */
     font-feature-settings:
       "cv01" 1,   /* Alternate one           */
@@ -677,7 +689,6 @@
       "cv07" 1,   /* Alternate German ß      */
       "cv08" 1,   /* Upper-case I with serif */
       "cv09" 1;   /* Flat-top three          */
-    /* Rendering — eliminates subpixel colour fringing */
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

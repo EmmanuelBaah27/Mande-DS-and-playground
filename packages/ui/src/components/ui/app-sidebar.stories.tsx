@@ -21,9 +21,9 @@ type Story = StoryObj<typeof AppSidebar>
 
 const NAV_ITEMS = [
   { id: "home", label: "Home", icon: <Icon name="IconHomeLine" size={20} /> },
-  { id: "chats", label: "Chats", icon: <Icon name="IconBubblePlus" size={20} /> },
-  { id: "my-day", label: "My day", icon: <Icon name="IconPencilLine" size={20} /> },
-  { id: "career-discovery", label: "Career discovery", icon: <Icon name="IconCompassRound" size={20} /> },
+  { id: "chats", label: "Chats", icon: <Icon name="IconBubbleSparkle" size={20} /> },
+  { id: "my-day", label: "My day", icon: <Icon name="IconTextEdit" size={20} /> },
+  { id: "career-discovery", label: "Career discovery", icon: <Icon name="IconLocation" size={20} /> },
 ]
 
 const CHAT_GROUPS = [
@@ -123,7 +123,7 @@ export const NavItemStates: Story = {
       />
       <SideNavItem
         label="Chats"
-        icon={<Icon name="IconBubblePlus" size={20} />}
+        icon={<Icon name="IconBubbleSparkle" size={20} />}
         selected
       />
       <SideNavItem
