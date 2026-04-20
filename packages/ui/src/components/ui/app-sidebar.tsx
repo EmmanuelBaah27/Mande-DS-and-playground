@@ -91,13 +91,16 @@ export function SideNavItem({
       >
         {label}
       </span>
-      {/* Fader: visible in default, hidden on hover, absent when selected */}
-      {!selected && (
-        <span
-          aria-hidden
-          className="pointer-events-none absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-background to-transparent transition-opacity group-hover:opacity-0"
-        />
-      )}
+      {/* Fader: always present, color tracks the background of each state */}
+      <span
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute right-0 inset-y-0 w-8 bg-gradient-to-l to-transparent",
+          selected
+            ? "from-muted"
+            : "from-background group-hover:from-muted/60"
+        )}
+      />
     </button>
   )
 }
@@ -275,7 +278,7 @@ export function AppSidebar({
       </div>
 
       {/* Bottom — announcement slot + account */}
-      <div className="shrink-0 px-3 py-2.5 flex flex-col gap-2">
+      <div className="shrink-0 px-3 py-2.5 flex flex-col gap-2 items-start">
         {announcementCard}
         {user && (
           <AccountSelector name={user.name} initials={user.initials} />
