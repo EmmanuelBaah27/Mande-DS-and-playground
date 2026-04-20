@@ -19,11 +19,11 @@ type ToasterProps = React.ComponentProps<typeof Sonner>
  * `tokens/globals.css` without touching components.
  */
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
+  useTheme()
 
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme="light"
       className="toaster group"
       closeButton
       style={
