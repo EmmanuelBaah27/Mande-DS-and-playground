@@ -78,7 +78,7 @@ export function SideNavItem({
         "group flex items-center gap-2 px-2 py-1.5 rounded-2 w-full text-left relative overflow-hidden transition-colors",
         selected
           ? "bg-muted text-foreground"
-          : "bg-background text-muted-foreground hover:bg-muted/60",
+          : "bg-background text-muted-foreground hover:bg-subtle",
         className
       )}
     >
@@ -98,7 +98,7 @@ export function SideNavItem({
           "pointer-events-none absolute right-0 inset-y-0 w-8 bg-gradient-to-l to-transparent",
           selected
             ? "from-muted"
-            : "from-background group-hover:from-muted/60"
+            : "from-background group-hover:from-subtle"
         )}
       />
     </button>
