@@ -25,18 +25,28 @@ const Toaster = ({ ...props }: ToasterProps) => {
     <Sonner
       theme={theme as ToasterProps["theme"]}
       className="toaster group"
+      closeButton
       style={
         {
           "--width": "320px",
         } as React.CSSProperties
       }
       icons={{
+<<<<<<< HEAD
         info: <Icon name="IconCircleInfo" />,
         success: <Icon name="IconCheckmark2" />,
         warning: <Icon name="IconExclamationTriangle" />,
         error: <Icon name="IconCircleX" />,
         loading: <Icon name="IconLoadingCircle" className="animate-spin" />,
         close: <Icon name="IconCrossMedium" />,
+=======
+        info: <Icon name="IconCircleInfo" size={20} />,
+        success: <Icon name="IconCheckCircle2" size={20} />,
+        warning: <Icon name="IconExclamationTriangle" size={20} />,
+        error: <Icon name="IconCircleX" size={20} />,
+        loading: <Icon name="IconLoadingCircle" size={20} className="animate-spin" />,
+        close: <Icon name="IconCrossMedium" size={16} className="text-neutral-500" />,
+>>>>>>> 05c79df (Fix close buttons on Alert and Toast)
       }}
       toastOptions={{
         classNames: {
@@ -60,6 +70,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "!m-0 !size-5 !text-neutral-500 dark:!text-neutral-400",
           ].join(" "),
           closeButton: [
+<<<<<<< HEAD
             "!static !order-last !size-5 !shrink-0",
             "!transform-none !ml-auto",
             "!rounded-1 !border-0 !bg-transparent",
@@ -67,6 +78,14 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "transition-[background-color,transform,color] duration-[var(--duration-fast)] ease-[var(--ease-out)]",
             "hover:!bg-neutral-a8 hover:!text-foreground",
             "dark:hover:!bg-neutral-700 dark:hover:!text-foreground",
+=======
+            // kill absolute + floating circle chrome; sit inline on the right
+            "!static !order-last !size-5 !shrink-0 !inline-flex !items-center !justify-center",
+            "!transform-none !ml-auto",
+            "!rounded-1 !border-0 !bg-transparent !text-neutral-500 !p-0",
+            "transition-[background-color,transform,color] duration-[var(--duration-instant)] ease-[cubic-bezier(0.2,1,0.4,1)]",
+            "hover:!bg-neutral-50 hover:!text-foreground",
+>>>>>>> 05c79df (Fix close buttons on Alert and Toast)
             "active:scale-95",
             "focus-visible:!shadow-none focus-visible:ring-2 focus-visible:ring-ring",
           ].join(" "),

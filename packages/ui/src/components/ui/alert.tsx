@@ -77,9 +77,9 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(
             type="button"
             onClick={onClose}
             aria-label="Dismiss"
-            className="shrink-0 rounded-1 border-0 bg-transparent p-0 text-neutral-400 transition-[color] duration-[var(--duration-instant)] hover:text-neutral-700 active:scale-95"
+            className="flex shrink-0 cursor-pointer items-center justify-center border-0 bg-transparent p-0 text-neutral-500 transition-[color] duration-[var(--duration-instant)] hover:text-neutral-900 active:scale-95"
           >
-            <Icon name="IconCrossLarge" size={16} />
+            <Icon name="IconCrossMedium" size={16} />
           </button>
         )}
       </div>
