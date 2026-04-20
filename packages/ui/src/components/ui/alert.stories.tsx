@@ -138,12 +138,32 @@ export const OutlineError: Story = {
   ),
 }
 
-// ─── Minimal ─────────────────────────────────────────────────────────────────
+// ─── Optional combinations ───────────────────────────────────────────────────
 
-export const DescriptionOnly: Story = {
+export const NotDismissable: Story = {
   render: () => (
-    <Alert variant="info" type="background" className="w-[448px]">
+    <Alert variant="info" type="background" icon className="w-[448px]">
+      <AlertTitle>Alert title</AlertTitle>
       <AlertDescription>Alert information, task information goes here.</AlertDescription>
+      <AlertAction>Action link</AlertAction>
+    </Alert>
+  ),
+}
+
+export const WithoutTitle: Story = {
+  render: () => (
+    <Alert variant="info" type="background" icon className="w-[448px]" onClose={() => {}}>
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
+      <AlertAction>Action link</AlertAction>
+    </Alert>
+  ),
+}
+
+export const WithoutTitleNotDismissable: Story = {
+  render: () => (
+    <Alert variant="success" type="background" icon className="w-[448px]">
+      <AlertDescription>Alert information, task information goes here.</AlertDescription>
+      <AlertAction>Action link</AlertAction>
     </Alert>
   ),
 }

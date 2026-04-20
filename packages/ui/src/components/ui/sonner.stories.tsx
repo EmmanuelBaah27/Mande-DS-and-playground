@@ -116,6 +116,26 @@ export const Error: Story = {
   ),
 }
 
+export const NotDismissable: Story = {
+  render: () => (
+    <ToastScene
+      label="Show toast"
+      fire={() =>
+        toast.info("Toast information goes here", { duration: Infinity, closeButton: false })
+      }
+    />
+  ),
+}
+
+export const MessageOnly: Story = {
+  render: () => (
+    <ToastScene
+      label="Show toast"
+      fire={() => toast("Changes saved", { duration: Infinity })}
+    />
+  ),
+}
+
 export const Loading: Story = {
   render: () => (
     <ToastScene
