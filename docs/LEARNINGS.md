@@ -4,6 +4,26 @@ Things learned while building the Mande Design System. Captured so they compound
 
 ---
 
+## 2026-04-19 — Session 10: Toast polish + colour palette vibrancy
+
+### Process
+
+- **Always follow the import chain before editing any CSS/token file.** Two token files exist: `colors.css` (raw OKLCH palette definitions, `@theme` block) and `globals.css` (semantic tokens + utility classes + the `@theme static` palette, imported by Storybook's `preview.css`). Storybook loads **only** `globals.css`. Every colour edit went into `colors.css` first and had zero visible effect. Lesson: read `preview.css` → trace every `@import` → confirm the file is actually loaded before editing. Saved as project memory.
+
+- **Dial-back rounds are faster than getting chroma right in one pass.** Two user passes to reduce lime, one for orange. Working iteratively (start a little hot, reduce on feedback) is quicker than trying to land the perfect value first — OKLCH chroma is hard to judge without rendering.
+
+### Technical
+
+- **`currentColor` in SVG resolves from the nearest ancestor's CSS `color` property.** Sonner applies a `color:` style to `[data-close-button]` in its dark-mode stylesheet, which overrode the Tailwind `text-neutral-500` class on the button wrapper. Fix: add `className="text-neutral-500"` directly on the `<Icon>` element (which renders a `<span>` containing the SVG). The span is the closest ancestor to the SVG — its `color` property wins over any distant ancestor's override.
+
+- **OKLCH hue drift in light shades.** Light shades of chromatic palettes drift toward adjacent hue families unless explicitly anchored. Orange's 50–200 range was drifting toward red (41° hue); red's 50–300 range was drifting toward pink. Fix: anchor each light shade's hue at a warmer value (orange → ~70–61°, red → 33°) and let it flow toward the seed hue across the ramp. The seed hue is the "correct" hue for the 500; light shades need their own hue trajectory.
+
+- **Lime is a high-lightness primary.** Unlike blue or teal, lime 500 is `oklch(89% ...)` — near-white lightness. Standard ramp logic (500 = midpoint, dark shades below, light shades above) works but needs the primary's chroma set first, then light shades stepped down in both lightness and chroma. The 400 (hover state) sits at 90.5% L — barely above 500 in lightness, differentiated mainly by chroma/hue.
+
+- **`colors.css` is never imported — it is dead code in Storybook.** The file exists, has valid `@theme` OKLCH values, and looks authoritative. It is never referenced by `globals.css` or `preview.css`. Any changes to it are invisible to Storybook and the playground. Treat it as stale until explicitly wired in.
+
+---
+
 ## 2026-04-17 — Session 9: Codify how we work
 
 ### Process

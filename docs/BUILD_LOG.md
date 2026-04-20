@@ -4,6 +4,38 @@ Chronological record of all work done on the Mande Design System.
 
 ---
 
+## 2026-04-19 — Session 10: Toast polish + colour palette vibrancy + mande-component skill
+
+### What was done
+
+**Toast close button refinements (`packages/ui/src/components/ui/sonner.tsx`)**
+- Reduced close icon from 20px → 16px (`IconCrossMedium size={16}`), kept 20px container so it aligns with status icons
+- Hover background changed from `neutral-a8` → `neutral-50` (opaque, matches design)
+- Animation changed to `duration-[var(--duration-instant)]` + `ease-[cubic-bezier(0.2,1,0.4,1)]` — faster, lighter feel
+- Added `!inline-flex !items-center !justify-center` to close button for proper icon centering
+- Fixed invisible X icon by adding `className="text-neutral-500"` directly on the `<Icon>` component (Sonner's dark-mode CSS was overriding the button-level colour class via `currentColor` chain)
+
+**Colour palette vibrancy (`packages/ui/src/tokens/globals.css`)**
+- Applied +20% chroma multiplier across all chromatic palettes: lime, teal, blush, orange, blue, red, green, yellow
+- Blue 600–700 and green-200 chroma capped at gamut limits
+- **Lime**: rebuilt ramp around vibrant CTA primary at `oklch(89.0% 0.205 119)` with hue drift 122°→118°; light shades dialled back after two user passes
+- **Orange**: light shades re-anchored at warmer hue (70–61°) to fix red drift in light range; dark shades flow into seed at 41°
+- **Red**: light shades anchored at 33°, flowing to seed at 28°; chroma boosted for mid-range visibility; prevents pink drift
+
+**Component build protocol**
+- Created `docs/figma-to-code-prompt.md` — paste template for Figma-to-code sessions
+- Created `.claude/skills/mande-component/SKILL.md` — invokable as `/mande-component`; enforces token map before code, surfaces gaps, hard-rules on no hardcoding / no invented tokens / no Lucide
+
+### Verified
+- Toast close button renders correctly with neutral-500 colour, 16px icon centered in 20px slot
+- Palette changes visible in Storybook Foundations/Colors story
+- `/mande-component` skill loads and follows Step 1 → 2 → 3 protocol
+
+### Known, unfixed
+- `packages/ui/src/tokens/colors.css` has stale edits from earlier in session (it is never imported; changes there have no effect — to be cleaned up or deleted)
+
+---
+
 ## 2026-04-17 — Session 9: Codify how we work
 
 Process session. Two branches came out of it:

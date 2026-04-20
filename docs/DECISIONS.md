@@ -4,6 +4,21 @@ Key decisions, patterns, and processes for the Mande Design System. Updated as t
 
 ---
 
+## Token & Component-Build Decisions (Session 10)
+
+### `globals.css` is the single authoritative token source
+**Why:** Two CSS files look like token sources: `colors.css` (raw OKLCH palette) and `globals.css` (full `@theme static` block + semantic aliases). Storybook's `preview.css` imports only `globals.css`. All changes must go there; `colors.css` is never loaded at runtime and is effectively dead code unless explicitly wired in.
+**Implication:** Before editing any colour token, `grep` for the variable name in `globals.css` first. If it's not there, it's not live.
+
+### `/mande-component` skill enforces token-map-before-code on every component build
+**Why:** Without a gate, it's easy to pick the first plausible Tailwind class and move on — then discover mid-build that a colour, radius, or icon doesn't exist in the DS. The skill forces: (1) read `globals.css`, (2) build the property-to-token table, (3) surface gaps, (4) wait for confirmation, *then* write code. Eliminates a whole class of invented-token bugs.
+**Mechanism:** `.claude/skills/mande-component/SKILL.md`, invokable as `/mande-component`.
+
+### Colour chroma: dial hot then reduce on user feedback — don't try to land perfectly in one pass
+**Why:** OKLCH chroma is hard to judge without seeing rendered output. Lime and orange both needed two rounds of reduction after the initial +20% boost. Iterating (start bold, back off on request) is faster than agonising over the initial number.
+
+---
+
 ## Workflow Decisions (Session 9)
 
 ### Work happens in two loops: Product Discovery and Topic Execution
