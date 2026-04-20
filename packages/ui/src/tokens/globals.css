@@ -17,12 +17,12 @@
   --color-neutral-50:  oklch(98.3% 0 0);               /* #FAFAFA */
   --color-neutral-100: oklch(96.5% 0 0);               /* #F5F5F5 */
   --color-neutral-200: oklch(92.5% 0 0);               /* #E8E8E8 */
-  --color-neutral-300: oklch(88.7% 0.006 252);         /* #DADDE2 */
-  --color-neutral-400: oklch(60.0% 0.013 254);         /* ~#8A8F9A — AA-large text (≈3.2:1 on white) */
-  --color-neutral-500: oklch(43.5% 0.013 255);         /* #5E636E — AA text, Figma "default" (6:1 on white) */
-  --color-neutral-600: oklch(40.0% 0.011 255);         /* #565A61 */
-  --color-neutral-700: oklch(28.0% 0.010 255);         /* #393C41 */
-  --color-neutral-800: oklch(20.0% 0.005 255);         /* #27282B */
+  --color-neutral-300: oklch(88.7% 0.005 252);         /* lighter shade — blue reduced ~17% */
+  --color-neutral-400: oklch(60.0% 0.011 254);         /* lighter shade — blue reduced ~15% */
+  --color-neutral-500: oklch(43.5% 0.012 255);         /* blue reduced ~8% */
+  --color-neutral-600: oklch(40.0% 0.010 255);         /* blue reduced ~9% */
+  --color-neutral-700: oklch(28.0% 0.009 255);         /* blue reduced ~10% */
+  --color-neutral-800: oklch(20.0% 0.004 255);         /* blue reduced ~20% */
   --color-neutral-900: oklch(12.5% 0 0);               /* #171717 */
 
   /* Transparent neutrals — neutral-900 (#171717) at opacity; a{n} = alpha at n% */
