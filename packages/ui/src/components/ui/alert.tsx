@@ -113,12 +113,17 @@ const AlertDescription = React.forwardRef<
 AlertDescription.displayName = "AlertDescription"
 
 const AlertAction = React.forwardRef<
-  HTMLParagraphElement,
-  React.HTMLAttributes<HTMLParagraphElement>
+  HTMLAnchorElement,
+  React.AnchorHTMLAttributes<HTMLAnchorElement>
 >(({ className, ...props }, ref) => (
-  <p
+  <a
     ref={ref}
-    className={cn("text-base-medium text-neutral-900", className)}
+    className={cn(
+      "inline-flex w-fit rounded-1 text-base-medium text-neutral-900 no-underline",
+      "transition-[background-color] duration-[var(--duration-instant)] ease-out",
+      "hover:bg-neutral-a4",
+      className
+    )}
     {...props}
   />
 ))
