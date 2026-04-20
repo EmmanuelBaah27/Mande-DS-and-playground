@@ -13,7 +13,7 @@ type Story = StoryObj<typeof Avatar>
 
 export const WithImage: Story = {
   render: () => (
-    <Avatar>
+    <Avatar size={32}>
       <AvatarImage src="https://github.com/shadcn.png" alt="User" />
       <AvatarFallback>EB</AvatarFallback>
     </Avatar>
@@ -22,7 +22,7 @@ export const WithImage: Story = {
 
 export const Fallback: Story = {
   render: () => (
-    <Avatar>
+    <Avatar size={32}>
       <AvatarFallback>EB</AvatarFallback>
     </Avatar>
   ),
@@ -34,9 +34,16 @@ export const Sizes: Story = {
   render: () => (
     <div className="flex items-end gap-4">
       {sizes.map((size) => (
-        <Avatar key={size} size={size}>
-          <AvatarFallback>EB</AvatarFallback>
-        </Avatar>
+        <div key={size} className="flex flex-col items-center gap-2">
+          <Avatar size={size}>
+            <AvatarImage src="https://github.com/shadcn.png" alt="User" />
+            <AvatarFallback>EB</AvatarFallback>
+          </Avatar>
+          <Avatar size={size}>
+            <AvatarFallback>EB</AvatarFallback>
+          </Avatar>
+          <span className="text-[10px] text-neutral-400">{size}px</span>
+        </div>
       ))}
     </div>
   ),
