@@ -119,7 +119,7 @@ const AlertAction = React.forwardRef<
   <a
     ref={ref}
     className={cn(
-      "inline-flex w-fit rounded-1 text-base-medium text-neutral-900 no-underline",
+      "inline-flex w-fit cursor-pointer rounded-1 px-[2px] -mx-[2px] text-base-medium text-neutral-900 no-underline",
       "transition-[background-color] duration-[var(--duration-instant)] ease-out",
       "hover:bg-neutral-a4",
       className
