@@ -163,7 +163,7 @@ export function AccountSelector({
       onClick={onClick}
       className={cn(
         "inline-flex items-center gap-2 p-1 rounded-2 text-left transition-colors",
-        selected ? "bg-muted" : "hover:bg-muted",
+        selected ? "bg-muted" : "hover:bg-subtle",
         className
       )}
     >
