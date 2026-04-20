@@ -8,8 +8,8 @@ const VARIANT_ICONS = {
   neutral: { name: "IconCircleInfo",      className: "text-neutral-500" },
   info:    { name: "IconCircleInfo",      className: "text-blue-500"    },
   success: { name: "IconCheckmark2Small", className: "text-green-500"   },
-  warning: { name: "IconWarningSign",     className: "text-orange-500"  },
-  error:   { name: "IconWarningSign",     className: "text-red-500"     },
+  warning: { name: "IconExclamationTriangle",    className: "text-orange-500"  },
+  error:   { name: "IconExclamationCircleBold", className: "text-red-500"     },
 } as const
 
 const alertVariants = cva(
