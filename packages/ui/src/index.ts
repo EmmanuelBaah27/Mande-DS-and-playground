@@ -111,6 +111,21 @@ export { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLe
 export type { ChartConfig } from "./components/ui/chart"
 
 // ── Navigation ────────────────────────────────────────────────────────────────
+export {
+  AppSidebar,
+  SideNavItem,
+  SectionTitle,
+  AccountSelector,
+} from "./components/ui/app-sidebar"
+export type {
+  AppSidebarProps,
+  SideNavItemProps,
+  SectionTitleProps,
+  AccountSelectorProps,
+  NavItem,
+  ChatGroup,
+} from "./components/ui/app-sidebar"
+
 export { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/tabs"
 
 export {
