@@ -36,7 +36,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         success: <Icon name="IconCheckCircle2" size={20} />,
         warning: <Icon name="IconExclamationTriangle" size={20} />,
         error: <Icon name="IconCircleX" size={20} />,
-        loading: <Icon name="IconLoadingCircle" size={20} className="animate-spin" />,
+        loading: <Icon name="IconLoadingCircle" size={20} className="animate-spin will-change-transform" />,
         close: <Icon name="IconCrossMedium" size={16} className="text-neutral-500" />,
       }}
       toastOptions={{
@@ -51,7 +51,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "!shadow-md !px-2.5 !py-2",
           ].join(" "),
           content: "flex min-w-0 flex-1 flex-col",
-          title: "!text-base-medium !text-foreground",
+          title: "!text-base-regular !text-foreground",
           description: "!text-base-regular !text-foreground",
           // Status icon tints live in globals.css (direct selectors beat
           // Tailwind's :where()-wrapped group variants). This class set
