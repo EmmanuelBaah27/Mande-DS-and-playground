@@ -116,7 +116,7 @@ export function SectionTitle({ label, defaultOpen = true, children }: SectionTit
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex self-start max-w-full items-center gap-0.5 px-2 py-0.5 select-none text-left rounded-1 hover:bg-subtle [transition:background-color_150ms_ease]"
+        className="inline-flex self-start max-w-full items-center gap-0.5 pl-2 pr-1 py-0.5 select-none text-left rounded-1 hover:bg-subtle [transition:background-color_150ms_ease]"
       >
         <span className="text-small-regular text-muted-foreground whitespace-nowrap overflow-hidden min-w-0">{label}</span>
         <motion.span
