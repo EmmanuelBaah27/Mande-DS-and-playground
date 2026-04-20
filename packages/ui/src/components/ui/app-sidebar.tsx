@@ -116,13 +116,9 @@ export function SectionTitle({ label, defaultOpen = true, children }: SectionTit
         type="button"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex self-start max-w-full items-center gap-0.5 px-2 py-0.5 select-none text-left rounded-1 hover:bg-subtle [transition:background-color_150ms_ease] group"
+        className="inline-flex self-start max-w-full items-center gap-0.5 px-2 py-0.5 select-none text-left rounded-1 hover:bg-subtle [transition:background-color_150ms_ease]"
       >
-        <span className="relative overflow-hidden min-w-0">
-          <span className="text-small-regular text-muted-foreground whitespace-nowrap block">{label}</span>
-          <span aria-hidden className="pointer-events-none absolute right-0 inset-y-0 w-6 bg-gradient-to-l from-background to-transparent" />
-          <span aria-hidden className="pointer-events-none absolute right-0 inset-y-0 w-6 bg-gradient-to-l from-subtle to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150" />
-        </span>
+        <span className="text-small-regular text-muted-foreground whitespace-nowrap overflow-hidden min-w-0">{label}</span>
         <motion.span
           animate={{ rotate: open ? 0 : -90 }}
           transition={reduceMotion ? { duration: 0 } : springs.crisp}
