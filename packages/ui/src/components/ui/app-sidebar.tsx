@@ -1,14 +1,12 @@
 "use client"
 
 import * as React from "react"
-import { motion } from "motion/react"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { Icon } from "@/components/ui/icon"
 import { cn } from "@/lib/utils"
 import { springs } from "@/tokens/motion"
 
 // ─── Mande logo ───────────────────────────────────────────────────────────────
-// Full lockup SVG (icon mark + wordmark). Override via the `logo` prop.
 
 function MandeLogoDefault() {
   return (
@@ -55,27 +53,22 @@ function MandeLogoDefault() {
 
 export type SideNavItemProps = {
   label: string
-  /** Pass an <Icon> element. Omit for chat-list rows (text-only). */
   icon?: React.ReactNode
   selected?: boolean
   onClick?: () => void
   className?: string
 }
 
-export function SideNavItem({
-  label,
-  icon,
-  selected = false,
-  onClick,
-  className,
-}: SideNavItemProps) {
+export function SideNavItem({ label, icon, selected = false, onClick, className }: SideNavItemProps) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(
-        // group enables fader to respond to hover state
-        "group flex items-center gap-2 px-2 py-1.5 rounded-2 w-full text-left relative overflow-hidden transition-colors",
+        "group flex items-center gap-2 px-2 py-1.5 rounded-2 w-full text-left relative overflow-hidden",
+        // Explicit properties: background-color for hover, transform for active press
+        "[transition:background-color_150ms_ease,transform_75ms_ease-out]",
+        "active:scale-[0.97]",
         selected
           ? "bg-muted text-foreground"
           : "bg-background text-muted-foreground hover:bg-subtle",
@@ -83,24 +76,24 @@ export function SideNavItem({
       )}
     >
       {icon}
-      <span
-        className={cn(
-          "whitespace-nowrap min-w-0",
-          selected ? "text-base-medium" : "text-base-regular"
-        )}
-      >
+      <span className={cn("whitespace-nowrap min-w-0", selected ? "text-base-medium" : "text-base-regular")}>
         {label}
       </span>
-      {/* Fader: always present, color tracks the background of each state */}
+      {/* Base fader — always visible, matches the resting bg */}
       <span
         aria-hidden
         className={cn(
           "pointer-events-none absolute right-0 inset-y-0 w-8 bg-gradient-to-l to-transparent",
-          selected
-            ? "from-muted"
-            : "from-background group-hover:from-subtle"
+          selected ? "from-muted" : "from-background"
         )}
       />
+      {/* Hover fader — fades in via opacity so the gradient color crossfades smoothly */}
+      {!selected && (
+        <span
+          aria-hidden
+          className="pointer-events-none absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-subtle to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150"
+        />
+      )}
     </button>
   )
 }
@@ -115,28 +108,45 @@ export type SectionTitleProps = {
 
 export function SectionTitle({ label, defaultOpen = true, children }: SectionTitleProps) {
   const [open, setOpen] = React.useState(defaultOpen)
+  const reduceMotion = useReducedMotion()
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen} className="flex flex-col gap-0.5">
-      <CollapsibleTrigger asChild>
-        <button
-          type="button"
-          className="flex items-center gap-0.5 px-2 py-0.5 select-none w-full text-left"
+    <div className="flex flex-col gap-0.5">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((v) => !v)}
+        className="flex items-center gap-0.5 px-2 py-0.5 select-none w-full text-left rounded-1 hover:bg-subtle [transition:background-color_150ms_ease]"
+      >
+        <span className="text-small-regular text-muted-foreground whitespace-nowrap">{label}</span>
+        <motion.span
+          animate={{ rotate: open ? 0 : -90 }}
+          transition={reduceMotion ? { duration: 0 } : springs.crisp}
+          className="inline-flex text-muted-foreground"
         >
-          <span className="text-small-regular text-muted-foreground whitespace-nowrap">{label}</span>
-          <motion.span
-            animate={{ rotate: open ? 0 : -90 }}
-            transition={springs.snappy}
-            className="inline-flex text-muted-foreground"
+          <Icon name="IconChevronDownSmall" size={16} />
+        </motion.span>
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="content"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={
+              reduceMotion
+                ? { duration: 0 }
+                : { duration: 0.2, ease: [0.16, 1, 0.3, 1] }
+            }
+            className="overflow-hidden"
           >
-            <Icon name="IconChevronDownSmall" size={16} />
-          </motion.span>
-        </button>
-      </CollapsibleTrigger>
-      <CollapsibleContent>
-        <div className="flex flex-col gap-0.5">{children}</div>
-      </CollapsibleContent>
-    </Collapsible>
+            <div className="flex flex-col gap-0.5">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   )
 }
 
@@ -150,24 +160,19 @@ export type AccountSelectorProps = {
   className?: string
 }
 
-export function AccountSelector({
-  name,
-  initials,
-  selected = false,
-  onClick,
-  className,
-}: AccountSelectorProps) {
+export function AccountSelector({ name, initials, selected = false, onClick, className }: AccountSelectorProps) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(
-        "inline-flex items-center gap-2 p-1 rounded-2 text-left transition-colors",
+        "inline-flex items-center gap-2 p-1 rounded-2 text-left",
+        "[transition:background-color_150ms_ease,transform_75ms_ease-out]",
+        "active:scale-[0.97]",
         selected ? "bg-muted" : "hover:bg-subtle",
         className
       )}
     >
-      {/* Avatar */}
       <div
         className="size-5 rounded-full bg-neutral-200 flex items-center justify-center shrink-0 overflow-hidden border border-neutral-200"
         style={{ borderWidth: "0.5px" }}
@@ -176,7 +181,6 @@ export function AccountSelector({
           {initials.slice(0, 2)}
         </span>
       </div>
-      {/* Name + chevron — gap-0.5 pulls caret 2px closer */}
       <div className="flex items-center gap-0.5">
         <span className="text-base-medium text-muted-foreground whitespace-nowrap">{name}</span>
         <Icon name="IconChevronDownSmall" size={16} className="text-muted-foreground" />
@@ -203,10 +207,8 @@ export type AppSidebarProps = {
   onNavigate?: (id: string) => void
   navItems?: NavItem[]
   chatGroups?: ChatGroup[]
-  /** Rendered above AccountSelector — slot for AnnouncementCard once built. */
   announcementCard?: React.ReactNode
   user?: { name: string; initials: string }
-  /** Override the default Mande logo lockup. */
   logo?: React.ReactNode
   onCollapse?: () => void
   className?: string
@@ -234,12 +236,11 @@ export function AppSidebar({
       {/* Header */}
       <div className="flex items-center justify-between pl-4 pr-3 py-3 shrink-0">
         {logo ?? <MandeLogoDefault />}
-        {/* Collapse button — 28×28 uniform tap target (4px padding + 20px icon) */}
         <button
           type="button"
           onClick={onCollapse}
           aria-label="Collapse sidebar"
-          className="flex items-center justify-center p-1 rounded-2 text-muted-foreground hover:bg-muted transition-colors shrink-0"
+          className="flex items-center justify-center p-1 rounded-2 text-muted-foreground hover:bg-subtle shrink-0 [transition:background-color_150ms_ease,transform_75ms_ease-out] active:scale-[0.97]"
         >
           <Icon name="IconSidebarSimpleLeftWide" size={20} fill="filled" />
         </button>
@@ -247,7 +248,6 @@ export function AppSidebar({
 
       {/* Scrollable nav area */}
       <div className="flex-1 flex flex-col gap-6 p-2 overflow-y-auto min-h-0">
-        {/* Primary nav */}
         {navItems.length > 0 && (
           <div className="flex flex-col gap-0.5">
             {navItems.map((item) => (
@@ -262,7 +262,6 @@ export function AppSidebar({
           </div>
         )}
 
-        {/* Chat groups — each is a collapsible SectionTitle */}
         {chatGroups.map((group) => (
           <SectionTitle key={group.label} label={group.label}>
             {group.items.map((item) => (
@@ -277,12 +276,10 @@ export function AppSidebar({
         ))}
       </div>
 
-      {/* Bottom — announcement slot + account */}
+      {/* Bottom */}
       <div className="shrink-0 px-3 py-2.5 flex flex-col gap-2 items-start">
         {announcementCard}
-        {user && (
-          <AccountSelector name={user.name} initials={user.initials} />
-        )}
+        {user && <AccountSelector name={user.name} initials={user.initials} />}
       </div>
     </div>
   )
