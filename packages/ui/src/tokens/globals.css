@@ -648,10 +648,19 @@
    because Tailwind v4 wraps group variants in :where() which zeroes
    specificity, making them lose to the base !text-* utility. */
 @layer utilities {
-  [data-sonner-toast][data-type="info"] [data-icon] { color: var(--semantic-info-text) !important; }
-  [data-sonner-toast][data-type="success"] [data-icon] { color: var(--semantic-success-text) !important; }
-  [data-sonner-toast][data-type="warning"] [data-icon] { color: var(--semantic-warning-text) !important; }
-  [data-sonner-toast][data-type="error"] [data-icon] { color: var(--semantic-danger-text) !important; }
+  /* Icon tints: use primitive 500s directly — toast is always light-themed,
+     so semantic tokens (which switch to 400 in dark mode via .dark on <html>)
+     would give the wrong shade when OS is in dark mode. */
+  [data-sonner-toast][data-type="info"] [data-icon]    { color: var(--color-blue-500) !important; }
+  [data-sonner-toast][data-type="success"] [data-icon] { color: var(--color-green-500) !important; }
+  [data-sonner-toast][data-type="warning"] [data-icon] { color: var(--color-orange-500) !important; }
+  [data-sonner-toast][data-type="error"] [data-icon]   { color: var(--color-red-500) !important; }
+
+  /* Title weight: regular for message-only/loading, medium when a description
+     is also present. !text-base-regular in JSX classNames doesn't reliably
+     add !important on custom @layer utilities classes in Tailwind v4. */
+  [data-sonner-toast] [data-title]                          { font-weight: var(--font-weight-base-regular) !important; }
+  [data-sonner-toast]:has([data-description]) [data-title]  { font-weight: var(--font-weight-base-medium) !important; }
 }
 
 @layer base {

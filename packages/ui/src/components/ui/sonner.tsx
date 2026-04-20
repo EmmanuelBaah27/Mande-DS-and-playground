@@ -37,7 +37,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
             "!shadow-md !px-2.5 !py-2",
           ].join(" "),
           content: "flex min-w-0 flex-1 flex-col",
-          title: "!text-base-regular !text-neutral-900",
+          title: "!text-base-medium !text-neutral-900",
           description: "!text-base-regular !text-neutral-900",
           icon: [
             "!flex !shrink-0 !items-center",
