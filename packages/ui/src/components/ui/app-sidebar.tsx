@@ -61,14 +61,14 @@ export type SideNavItemProps = {
 
 export function SideNavItem({ label, icon, selected = false, onClick, className }: SideNavItemProps) {
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
+      whileTap={{ scale: 0.99 }}
+      transition={{ type: "spring", stiffness: 180, damping: 18 }}
       className={cn(
         "group flex items-center gap-2 px-2 py-1.5 rounded-2 w-full text-left relative overflow-hidden",
-        // Explicit properties: background-color for hover, transform for active press
-        "[transition:background-color_150ms_ease,transform_200ms_ease-in-out]",
-        "active:scale-[0.99]",
+        "[transition:background-color_150ms_ease]",
         selected
           ? "bg-muted text-foreground"
           : "bg-background text-muted-foreground hover:bg-subtle",
@@ -94,7 +94,7 @@ export function SideNavItem({ label, icon, selected = false, onClick, className 
           className="pointer-events-none absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-subtle to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150"
         />
       )}
-    </button>
+    </motion.button>
   )
 }
 
@@ -162,13 +162,14 @@ export type AccountSelectorProps = {
 
 export function AccountSelector({ name, initials, selected = false, onClick, className }: AccountSelectorProps) {
   return (
-    <button
+    <motion.button
       type="button"
       onClick={onClick}
+      whileTap={{ scale: 0.99 }}
+      transition={{ type: "spring", stiffness: 180, damping: 18 }}
       className={cn(
         "inline-flex items-center gap-2 p-1 rounded-2 text-left",
-        "[transition:background-color_150ms_ease,transform_200ms_ease-in-out]",
-        "active:scale-[0.99]",
+        "[transition:background-color_150ms_ease]",
         selected ? "bg-muted" : "hover:bg-subtle",
         className
       )}
@@ -185,7 +186,7 @@ export function AccountSelector({ name, initials, selected = false, onClick, cla
         <span className="text-base-medium text-muted-foreground whitespace-nowrap">{name}</span>
         <Icon name="IconChevronDownSmall" size={16} className="text-muted-foreground" />
       </div>
-    </button>
+    </motion.button>
   )
 }
 
@@ -236,14 +237,16 @@ export function AppSidebar({
       {/* Header */}
       <div className="flex items-center justify-between pl-4 pr-3 py-3 shrink-0">
         {logo ?? <MandeLogoDefault />}
-        <button
+        <motion.button
           type="button"
           onClick={onCollapse}
           aria-label="Collapse sidebar"
-          className="flex items-center justify-center p-1 rounded-2 text-muted-foreground hover:bg-subtle shrink-0 [transition:background-color_150ms_ease,transform_200ms_ease-in-out] active:scale-[0.99]"
+          whileTap={{ scale: 0.99 }}
+          transition={{ type: "spring", stiffness: 180, damping: 18 }}
+          className="flex items-center justify-center p-1 rounded-2 text-muted-foreground hover:bg-subtle shrink-0 [transition:background-color_150ms_ease]"
         >
           <Icon name="IconSidebarSimpleLeftWide" size={20} fill="filled" />
-        </button>
+        </motion.button>
       </div>
 
       {/* Scrollable nav area */}
