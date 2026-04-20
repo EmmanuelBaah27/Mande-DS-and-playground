@@ -4,6 +4,46 @@ Chronological record of all work done on the Mande Design System.
 
 ---
 
+## 2026-04-19 — Session 11: Alert component redesign
+
+### What was done
+
+**Alert component redesign (`packages/ui/src/components/ui/alert.tsx`)**
+- Full rewrite to match Figma: 5 variants (neutral/info/success/warning/error) × 2 types (background/outline)
+- Layout: outer `flex gap-4 p-3`, left wrapper `flex-1 flex gap-2` (icon + text), close button pinned right
+- `AlertAction` changed to `<a>` element; uses `-mx-1 px-1` negative margin trick for 4px hover padding without text displacement
+- Close button: `size-5 rounded-1`, `neutral-a4` hover, `duration-instant` (100ms)
+- Exported `AlertAction` from `packages/ui/src/index.ts`
+- Added optional state stories: `NotDismissable`, `WithoutTitle`, `WithoutTitleNotDismissable`, `NoIcon`
+- Added Toast optional state stories: `NotDismissable`, `MessageOnly`
+- Routed variant colours through semantic aliases (`text-info`, `bg-info-subtle`, etc.)
+
+**Icon stroke fix (`packages/ui/src/components/ui/icon.tsx`)**
+- `STROKE_BY_SIZE[16]` was `"1.25"` (invalid value) → changed to `"1.5"`
+- Pure-stroke icons at 16px (e.g. `IconCrossMedium`) were completely invisible; cursor change was the only symptom
+
+**Sonner close button fix (`packages/ui/src/components/ui/sonner.tsx`)**
+- Added `closeButton` prop to `<Sonner>` — required to render close buttons; was absent despite full `classNames.closeButton` styling
+- Hardened light theme: stripped all `dark:` variants, forced `theme="light"`, used static light token classes
+- Re-applied `text-base-regular` title + `will-change-transform` spinner after orphaned commit on detached HEAD
+
+**Orange palette hue shift (`packages/ui/src/tokens/globals.css`)**
+- Shifted all orange hues +20° towards yellow (light end ~68–70°, seed ~61°)
+- Separates `orange-100` from `red-100` which were optically identical before the fix
+
+**Token resolution skill update**
+- Updated `.claude/skills/mande-component/SKILL.md` and `docs/figma-to-code-prompt.md` with explicit 3-step resolution process: raw value → grep globals.css → token name only
+
+### Verified
+- All 5 × 2 Alert variants render correctly with icons, colours, close button, action link
+- Toast close buttons render and dismiss; no dark-mode colour bleed
+- `IconCrossMedium` at 16px visible in both Alert and Toast close buttons
+
+### Known, unfixed
+- No PR open for `claude/build-alert-component-G5FDo` — ~18 commits ahead of main
+
+---
+
 ## 2026-04-19 — Session 10: Toast polish + colour palette vibrancy + mande-component skill
 
 ### What was done

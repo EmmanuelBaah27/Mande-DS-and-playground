@@ -4,6 +4,19 @@ Key decisions, patterns, and processes for the Mande Design System. Updated as t
 
 ---
 
+## Component Architecture Decisions (Session 11)
+
+### `AlertAction` is an `<a>` element, not a `<button>`
+**Why:** Alert actions are always navigation or external links. `<button>` semantics are for side-effects without navigation. This also avoids the "button inside a form" accessibility trap.
+
+### Semantic colour aliases in variant components
+**Why:** Using `text-info` / `bg-info-subtle` instead of direct palette shades (`text-blue-500` / `bg-blue-100`) makes Alert forward-compatible with palette rebasing. When a palette shifts hue, the semantic alias stays stable and component code needs no changes. Applied to `VARIANT_ICONS` className and compound variant backgrounds.
+
+### Orange palette anchored at ~61–70° hue range
+**Why:** At lightness ~92%, orange (41°) and red (28°) were visually identical in alert backgrounds. Shifted orange +20° towards yellow (light shades ~68–70°, seed ~61°) to create a minimum ~30° hue separation. This is now the canonical orange hue definition — any future chroma tweaks must preserve these hue values.
+
+---
+
 ## Token & Component-Build Decisions (Session 10)
 
 ### `globals.css` is the single authoritative token source

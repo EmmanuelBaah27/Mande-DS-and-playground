@@ -4,6 +4,26 @@ Things learned while building the Mande Design System. Captured so they compound
 
 ---
 
+## 2026-04-19 — Session 11: Alert component redesign
+
+### Technical
+
+- **Invalid SVG stroke values are silently invisible, not an error.** `@central-icons-react` only accepts `"1" | "1.5" | "2"` as stroke width. Passing `"1.25"` produces no TypeScript error but renders pure-stroke icons (like X/cross shapes) with a zero-width stroke — completely invisible. The only symptom is the cursor changing on hover. Always verify stroke values against the valid union type.
+
+- **Sonner requires `closeButton` prop to render close buttons at all.** The `classNames.closeButton` styling option in `toastOptions` has no effect until the `closeButton` prop is added to the `<Sonner>` element. Styling a ghost element produced no visible button even though the DOM element existed.
+
+- **Negative margin trick for inline hover targets.** To add horizontal padding to an inline element (like an action link inside a stacked text column) without displacing the text: `px-1 -mx-1`. The negative margin cancels the padding's effect on layout; the padding only expands the hover/focus background. Effective for any `bg-*` hover state inside a text column.
+
+- **Detached HEAD orphan commits.** When git operations leave HEAD detached (e.g. during rebase or cherry-pick), a new commit lands off all branches and becomes unreachable after checkout. Identify via `git log --oneline` showing a commit hash not on any branch. Recovery: note what changed, re-apply on the correct branch tip as a new commit.
+
+- **Orange palette hue proximity to red.** At lightness ~92%, orange (41°) and red (28°) produce nearly identical visible tones. +20° shift to orange (now ~61°) provides enough separation. Rule of thumb: backgrounds using adjacent chromatic palettes need at least 30° of hue separation to be visually distinct at high lightness.
+
+### Process
+
+- **Semantic colour aliases in component code are worth the indirection.** Using `text-info` / `bg-info-subtle` instead of `text-blue-500` / `bg-blue-100` lets the palette be re-anchored without touching component files. Especially valuable for alert/badge/chip components that are colour-variant-heavy.
+
+---
+
 ## 2026-04-19 — Session 10: Toast polish + colour palette vibrancy
 
 ### Process
