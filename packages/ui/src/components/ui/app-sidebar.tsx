@@ -238,6 +238,7 @@ function CurriculumSection({
               <Icon
                 name={isActive ? "IconCircleDashed" : "IconLock"}
                 size={20}
+                className={isActive ? "text-orange-500" : undefined}
               />
             }
             selected={isActive && activeItem === pillar.id}
