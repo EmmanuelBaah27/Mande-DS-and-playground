@@ -139,7 +139,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           />
         ) : resolvedIconPosition === "left" && icon ? (
           <>
-            <span className={cn("shrink-0 [&>svg]:shrink-0", size === "sm" ? "[&>svg]:size-4" : "[&>svg]:size-5")}>
+            <span className={cn("inline-flex items-center shrink-0 [&>svg]:shrink-0", size === "sm" ? "[&>svg]:size-4" : "[&>svg]:size-5")}>
               {icon}
             </span>
             {children}
@@ -147,7 +147,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ) : resolvedIconPosition === "right" && icon ? (
           <>
             {children}
-            <span className={cn("shrink-0 [&>svg]:shrink-0", size === "sm" ? "[&>svg]:size-4" : "[&>svg]:size-5")}>
+            <span className={cn("inline-flex items-center shrink-0 [&>svg]:shrink-0", size === "sm" ? "[&>svg]:size-4" : "[&>svg]:size-5")}>
               {icon}
             </span>
           </>

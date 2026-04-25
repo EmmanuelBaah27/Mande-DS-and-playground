@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useLayoutEffect } from "react"
 import ReactMarkdown from "react-markdown"
 import { motion } from "motion/react"
 import {
@@ -33,17 +33,44 @@ const mdComponents = {
   li: ({ children }: { children?: React.ReactNode }) => <li>{children}</li>,
 }
 
+// ─── UserBubble ───────────────────────────────────────────────────────────────
+
+function UserBubble({ content }: { content: string }) {
+  const [expanded, setExpanded] = useState(false)
+  const [overflows, setOverflows] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    setOverflows(el.scrollHeight > el.clientHeight)
+  }, [content])
+
+  return (
+    <div className="flex justify-end">
+      <div
+        ref={ref}
+        onClick={overflows && !expanded ? () => setExpanded(true) : undefined}
+        className={cn(
+          "relative max-w-[72%] px-4 py-3 rounded-4 text-base-regular leading-relaxed bg-neutral-200 text-neutral-700",
+          !expanded && "line-clamp-5",
+          overflows && !expanded && "cursor-pointer"
+        )}
+      >
+        {content}
+        {overflows && !expanded && (
+          <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-neutral-200 to-transparent rounded-b-4 pointer-events-none" />
+        )}
+      </div>
+    </div>
+  )
+}
+
 // ─── MessageBubble ────────────────────────────────────────────────────────────
 
 function MessageBubble({ message }: { message: Message }) {
   if (message.role === "user") {
-    return (
-      <div className="flex justify-end">
-        <div className="max-w-[72%] px-4 py-3 rounded-3 rounded-tr-1 text-sm leading-relaxed bg-neutral-100 text-neutral-900">
-          {message.content}
-        </div>
-      </div>
-    )
+    return <UserBubble content={message.content} />
   }
 
   if (message.challenge) {
@@ -51,7 +78,7 @@ function MessageBubble({ message }: { message: Message }) {
   }
 
   return (
-    <div className="text-neutral-900 text-sm leading-relaxed">
+    <div className="text-neutral-900 text-base-regular leading-relaxed">
       <ReactMarkdown components={mdComponents}>{message.content}</ReactMarkdown>
     </div>
   )
@@ -91,6 +118,39 @@ function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
   )
 }
 
+// ─── AttachmentPreview ────────────────────────────────────────────────────────
+
+function AttachmentPreview({ file, onDismiss }: { file: File; onDismiss: () => void }) {
+  const isImage = file.type.startsWith("image/")
+  const [preview, setPreview] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (!isImage) return
+    const url = URL.createObjectURL(file)
+    setPreview(url)
+    return () => URL.revokeObjectURL(url)
+  }, [file, isImage])
+
+  return (
+    <div className="relative size-12 rounded-2 overflow-hidden border border-neutral-200 bg-neutral-100 shrink-0">
+      {isImage && preview ? (
+        <img src={preview} alt={file.name} className="size-full object-cover" />
+      ) : (
+        <div className="size-full flex items-center justify-center">
+          <Icon name="IconFileText" size={20} className="text-neutral-400" />
+        </div>
+      )}
+      <button
+        type="button"
+        onClick={onDismiss}
+        className="absolute top-0.5 right-0.5 size-4 flex items-center justify-center rounded-full bg-neutral-900/60 text-white hover:bg-neutral-900/80 transition-colors"
+      >
+        <Icon name="IconCrossMedium" size={12} />
+      </button>
+    </div>
+  )
+}
+
 // ─── MessageInput ─────────────────────────────────────────────────────────────
 
 function MessageInput({
@@ -105,7 +165,9 @@ function MessageInput({
   onChallengeSubmit?: (response: string) => void
 }) {
   const [value, setValue] = useState("")
+  const [attachments, setAttachments] = useState<File[]>([])
   const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const resize = () => {
     const el = textareaRef.current
@@ -120,13 +182,14 @@ function MessageInput({
   }
 
   const handleSend = () => {
-    if (!value.trim()) return
+    if (!value.trim() && attachments.length === 0) return
     if (activeChallenge && onChallengeSubmit) {
       onChallengeSubmit(value.trim())
     } else {
       onSend(value.trim())
     }
     setValue("")
+    setAttachments([])
     if (textareaRef.current) textareaRef.current.style.height = "auto"
   }
 
@@ -135,6 +198,12 @@ function MessageInput({
       e.preventDefault()
       handleSend()
     }
+  }
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? [])
+    setAttachments((prev) => [...prev, ...files])
+    e.target.value = ""
   }
 
   if (activeChallenge) {
@@ -212,28 +281,60 @@ function MessageInput({
 
   return (
     <div className="px-4 pb-4 bg-neutral-50">
-      <div className="relative max-w-3xl mx-auto">
-        <Textarea
-          ref={textareaRef as React.RefObject<HTMLTextAreaElement>}
-          rows={1}
-          value={value}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          placeholder={mode === "curriculum" ? "Respond to Mande…" : "Ask anything about your career…"}
-          className="min-h-0 resize-none rounded-4 border-neutral-200 bg-white px-4 pt-3 pb-14 leading-relaxed overflow-hidden"
+      <div className="max-w-3xl mx-auto">
+        <div className="flex flex-col gap-3 bg-white border border-neutral-300 rounded-4 px-4 py-3 hover:border-neutral-400 focus-within:border-neutral-400 transition-colors">
+          {attachments.length > 0 && (
+            <div className="flex flex-wrap gap-2 pt-1">
+              {attachments.map((file, i) => (
+                <AttachmentPreview
+                  key={i}
+                  file={file}
+                  onDismiss={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
+                />
+              ))}
+            </div>
+          )}
+          <div className="flex items-center gap-3">
+            <textarea
+              ref={textareaRef}
+              rows={1}
+              value={value}
+              onChange={handleChange}
+              onKeyDown={handleKeyDown}
+              placeholder={mode === "curriculum" ? "Respond to Mande…" : "Ask anything about your career…"}
+              className="flex-1 resize-none bg-transparent text-sm text-neutral-900 placeholder:text-neutral-400 outline-none leading-relaxed min-h-0"
+            />
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="size-5 flex items-center justify-center text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-1 transition-colors"
+              >
+                <Icon name="IconPaperclip2" size={16} />
+              </button>
+              <Button
+                onClick={handleSend}
+                disabled={!value.trim() && attachments.length === 0}
+                size="icon"
+                className="active:scale-[0.95]"
+              >
+                <Icon name="IconArrowUp" size={16} stroke="2" />
+              </Button>
+            </div>
+          </div>
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
+          multiple
+          onChange={handleFileChange}
+          className="hidden"
         />
-        <Button
-          onClick={handleSend}
-          disabled={!value.trim()}
-          size="icon"
-          className="absolute bottom-4 right-4 active:scale-[0.95]"
-        >
-          <Icon name="IconArrowUp" size={16} />
-        </Button>
+        <p className="text-center text-xs text-neutral-400 mt-1">
+          Mande is AI and can make mistakes. Please double-check responses.
+        </p>
       </div>
-      <p className="text-center text-xs text-neutral-400 mt-2">
-        Mande is AI and can make mistakes. Please double-check responses.
-      </p>
     </div>
   )
 }
@@ -287,9 +388,9 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   }
 
   return (
-    <>
-      <div className="relative flex-1 overflow-y-auto flex flex-col">
-        <div className="flex-1 py-6 px-4">
+    <div className="flex-1 flex flex-col min-h-0">
+      <div className="relative flex-1 overflow-y-auto min-h-0">
+        <div className="py-6 px-4">
           <div className="max-w-3xl mx-auto flex flex-col gap-6">
             {activeSession.messages.map((msg) => (
               <MessageBubble key={msg.id} message={msg} />
@@ -298,15 +399,17 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
           </div>
         </div>
         {!activeChallenge && (
-          <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-neutral-50 to-transparent" />
+          <div className="pointer-events-none sticky bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-neutral-50 to-transparent" />
         )}
       </div>
-      <MessageInput
-        onSend={handleSend}
-        mode={activeSession.mode}
-        activeChallenge={activeChallenge}
-        onChallengeSubmit={handleChallengeSubmit}
-      />
-    </>
+      <div className="shrink-0">
+        <MessageInput
+          onSend={handleSend}
+          mode={activeSession.mode}
+          activeChallenge={activeChallenge}
+          onChallengeSubmit={handleChallengeSubmit}
+        />
+      </div>
+    </div>
   )
 }

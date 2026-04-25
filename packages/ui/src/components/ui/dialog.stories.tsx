@@ -7,6 +7,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
+  DialogClose,
 } from "./dialog"
 import { Button } from "./button"
 import { Input } from "./input"
@@ -25,18 +26,19 @@ export const Default: Story = {
   render: () => (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="secondary">Open Dialog</Button>
+        <Button variant="secondary">Open dialog</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Are you sure?</DialogTitle>
           <DialogDescription>
-            This action cannot be undone. This will permanently delete your
-            account and remove your data from our servers.
+            This action cannot be undone. Please confirm you want to proceed.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
-          <Button variant="secondary">Cancel</Button>
+          <DialogClose asChild>
+            <Button variant="secondary">Cancel</Button>
+          </DialogClose>
           <Button variant="destructive">Delete</Button>
         </DialogFooter>
       </DialogContent>
@@ -48,26 +50,29 @@ export const WithForm: Story = {
   render: () => (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Edit Profile</Button>
+        <Button>Edit profile</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Profile</DialogTitle>
+          <DialogTitle>Edit profile</DialogTitle>
           <DialogDescription>
             Make changes to your profile here. Click save when you're done.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid gap-2">
-            <label htmlFor="name" className="text-sm font-medium">Name</label>
-            <Input id="name" defaultValue="Emmanuel Baah" />
+            <label className="text-base-regular text-neutral-500">Name</label>
+            <Input defaultValue="Emmanuel Baah" />
           </div>
           <div className="grid gap-2">
-            <label htmlFor="email" className="text-sm font-medium">Email</label>
-            <Input id="email" defaultValue="hello@mande.com" type="email" />
+            <label className="text-base-regular text-neutral-500">Email</label>
+            <Input defaultValue="hello@mande.com" type="email" />
           </div>
         </div>
         <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="secondary">Cancel</Button>
+          </DialogClose>
           <Button>Save changes</Button>
         </DialogFooter>
       </DialogContent>

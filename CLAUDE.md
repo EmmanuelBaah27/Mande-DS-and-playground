@@ -1,5 +1,9 @@
 # Claude Instructions — Mande DS
 
+## Context sourcing
+
+Whenever you fetch context from a file, doc, or external source to answer a question or make a decision, state it succinctly in one line before responding — e.g. "From `docs/product/career-clarity.md`:" or "From `packages/ui/src/tokens/globals.css`:".
+
 ## After every session / after context compaction
 
 Update the following docs **before** ending the session or immediately after a context summary appears:

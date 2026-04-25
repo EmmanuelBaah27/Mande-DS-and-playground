@@ -225,7 +225,7 @@ function CurriculumSection({
     <div className="flex flex-col gap-0.5">
       <div className="flex items-center justify-between px-2 py-0.5">
         <span className="text-small-regular text-muted-foreground">{label}</span>
-        <Badge color="warning" size="sm">{progress}</Badge>
+        <Badge color="warning" size="sm" showIcon={false}>{progress}</Badge>
       </div>
       {pillars.map((pillar) => {
         const isActive = pillar.state === "active"
@@ -260,6 +260,7 @@ export type AppSidebarProps = {
   user?: { name: string; initials: string }
   logo?: React.ReactNode
   onCollapse?: () => void
+  hideHeader?: boolean
   className?: string
 }
 
@@ -273,6 +274,7 @@ export function AppSidebar({
   user,
   logo,
   onCollapse,
+  hideHeader = false,
   className,
 }: AppSidebarProps) {
   return (
@@ -284,17 +286,19 @@ export function AppSidebar({
       style={{ borderWidth: "0.5px" }}
     >
       {/* Header */}
-      <div className="flex items-center justify-between pl-4 pr-3 py-3 shrink-0">
-        {logo ?? <MandeLogoDefault />}
-        <button
-          type="button"
-          onClick={onCollapse}
-          aria-label="Collapse sidebar"
-          className="flex items-center justify-center p-1 rounded-2 text-muted-foreground hover:bg-subtle shrink-0 [transition:background-color_var(--duration-moderate)_var(--ease-out)]"
-        >
-          <Icon name="IconSidebarSimpleLeftWide" size={20} fill="filled" />
-        </button>
-      </div>
+      {!hideHeader && (
+        <div className="flex items-center justify-between pl-4 pr-3 py-3 shrink-0">
+          {logo ?? <MandeLogoDefault />}
+          <button
+            type="button"
+            onClick={onCollapse}
+            aria-label="Collapse sidebar"
+            className="flex items-center justify-center p-1 rounded-2 text-muted-foreground hover:bg-subtle shrink-0 [transition:background-color_var(--duration-moderate)_var(--ease-out)]"
+          >
+            <Icon name="IconSidebarSimpleLeftWide" size={20} fill="outlined" />
+          </button>
+        </div>
+      )}
 
       {/* Scrollable nav area */}
       <div className="flex-1 flex flex-col gap-6 p-2 overflow-y-auto min-h-0">

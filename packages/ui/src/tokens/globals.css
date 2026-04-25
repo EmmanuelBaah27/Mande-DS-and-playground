@@ -10,25 +10,25 @@
 @theme static {
   /* --------------------------------------------------------
      NEUTRAL — synced from Figma Primitives / Color / Grey
-     Light end (50–300) tapers from pure to subtle cool tint;
-     mid/dark (500–900) carry a consistent cool blue-grey hue
+     Light (50–400): pure neutral, no tint — clean backgrounds/borders
+     Dark (500–900): cool blue-black (hue 255) — refined text/surfaces
      -------------------------------------------------------- */
   --color-neutral-white: oklch(100.0% 0 0);
-  --color-neutral-50:   oklch(98.3%  0 0);
-  --color-neutral-100:  oklch(96.5%  0 0);
-  --color-neutral-200:  oklch(92.5%  0 0);
-  --color-neutral-300: oklch(88.7% 0.005 252);         /* lighter shade — blue reduced ~17% */
-  --color-neutral-400: oklch(63.0% 0.011 254);
-  --color-neutral-500: oklch(50.0% 0.012 255);
-  --color-neutral-600: oklch(40.0% 0.010 255);
-  --color-neutral-700: oklch(30.0% 0.009 255);
-  --color-neutral-800: oklch(21.0% 0.004 255);
-  --color-neutral-900: oklch(12.5% 0 0);               /* #171717 */
+  --color-neutral-50:   oklch(98.3%  0    0);
+  --color-neutral-100:  oklch(96.5%  0    0);
+  --color-neutral-200:  oklch(92.5%  0    0);
+  --color-neutral-300:  oklch(88.7%  0    0);
+  --color-neutral-400:  oklch(63.0%  0    0);
+  --color-neutral-500:  oklch(50.0%  0.012 255);
+  --color-neutral-600:  oklch(40.0%  0.010 255);
+  --color-neutral-700:  oklch(30.0%  0.008 255);
+  --color-neutral-800:  oklch(21.0%  0.005 255);
+  --color-neutral-900:  oklch(12.5%  0.003 255);
 
-  /* Transparent neutrals — neutral-900 (#171717) at opacity; a{n} = alpha at n% */
-  --color-neutral-a4:  oklch(12.5% 0 0 / 4%);
-  --color-neutral-a8:  oklch(12.5% 0 0 / 8%);
-  --color-neutral-a16: oklch(12.5% 0 0 / 16%);
+  /* Transparent neutrals — neutral-900 at opacity; a{n} = alpha at n% */
+  --color-neutral-a4:  oklch(12.5% 0.003 255 / 4%);
+  --color-neutral-a8:  oklch(12.5% 0.003 255 / 8%);
+  --color-neutral-a16: oklch(12.5% 0.003 255 / 16%);
 
   /* --------------------------------------------------------
      LIME — Primary: oklch(89% 0.252 119) — vivid CTA lime
@@ -86,9 +86,9 @@
   --color-orange-400: oklch(71.7% 0.192 62);
   --color-orange-500: oklch(64.6% 0.210 61);
   --color-orange-600: oklch(54.4% 0.177 61);
-  --color-orange-700: oklch(44.6% 0.145 61);
-  --color-orange-800: oklch(34.7% 0.112 61);
-  --color-orange-900: oklch(24.1% 0.077 61);
+  --color-orange-700: oklch(47.0% 0.150 61);
+  --color-orange-800: oklch(39.0% 0.118 61);
+  --color-orange-900: oklch(30.5% 0.084 61);
 
   /* --------------------------------------------------------
      BLUE — Seed: #3B82F6 (+20% chroma, 600-700 capped at 0.240)
@@ -143,10 +143,10 @@
   --color-yellow-300: oklch(90.5% 0.199 98);
   --color-yellow-400: oklch(86.1% 0.208 92);
   --color-yellow-500: oklch(79.5% 0.194 86);
-  --color-yellow-600: oklch(68.1% 0.170 76);
-  --color-yellow-700: oklch(55.4% 0.145 66);
-  --color-yellow-800: oklch(47.6% 0.124 62);
-  --color-yellow-900: oklch(42.1% 0.108 58);
+  --color-yellow-600: oklch(68.1% 0.170 90);
+  --color-yellow-700: oklch(55.4% 0.150 86);
+  --color-yellow-800: oklch(47.6% 0.128 83);
+  --color-yellow-900: oklch(42.1% 0.112 80);
 
   /* --------------------------------------------------------
      TYPOGRAPHY

@@ -13,6 +13,7 @@ export interface BadgeProps {
   appearance?: BadgeAppearance
   size?: BadgeSize
   iconFill?: "outlined" | "filled"
+  showIcon?: boolean
   onDismiss?: () => void
   className?: string
   children: React.ReactNode
@@ -31,44 +32,44 @@ const ICON_BY_COLOR: Record<BadgeColor, IconName> = {
 
 const COLOR_STYLES: Record<BadgeColor, Record<BadgeAppearance, string>> = {
   neutral: {
-    subtle:  "bg-neutral-100 text-neutral-600 hover:bg-neutral-200",
-    muted:   "bg-neutral-200 text-neutral-700 hover:bg-neutral-300",
-    outline: "bg-background border border-neutral-300 text-foreground hover:bg-neutral-50",
+    subtle:  "bg-neutral-100 text-neutral-700",
+    muted:   "bg-neutral-200 text-neutral-700",
+    outline: "bg-background border border-neutral-300 text-neutral-700",
   },
   yellow: {
-    subtle:  "bg-yellow-50 text-yellow-900 hover:bg-yellow-100",
-    muted:   "bg-yellow-100 text-yellow-800 hover:bg-yellow-200",
-    outline: "bg-background border border-neutral-300 text-yellow-900 hover:bg-yellow-50",
+    subtle:  "bg-yellow-50 text-yellow-700",
+    muted:   "bg-yellow-100 text-yellow-700",
+    outline: "bg-background border border-neutral-300 text-yellow-700",
   },
   orange: {
-    subtle:  "bg-orange-50 text-orange-600 hover:bg-orange-100",
-    muted:   "bg-orange-100 text-orange-700 hover:bg-orange-200",
-    outline: "bg-background border border-neutral-300 text-orange-700 hover:bg-orange-50",
+    subtle:  "bg-orange-50 text-orange-700",
+    muted:   "bg-orange-100 text-orange-700",
+    outline: "bg-background border border-neutral-300 text-orange-700",
   },
   warning: {
-    subtle:  "bg-warning-subtle text-warning hover:bg-orange-100",
-    muted:   "bg-orange-100 text-orange-700 hover:bg-orange-200",
-    outline: "bg-background border border-neutral-300 text-warning hover:bg-warning-subtle",
+    subtle:  "bg-warning-subtle text-orange-700",
+    muted:   "bg-orange-100 text-orange-700",
+    outline: "bg-background border border-neutral-300 text-orange-700",
   },
   success: {
-    subtle:  "bg-success-subtle text-success hover:bg-green-100",
-    muted:   "bg-green-100 text-green-700 hover:bg-green-200",
-    outline: "bg-background border border-neutral-300 text-success hover:bg-success-subtle",
+    subtle:  "bg-success-subtle text-green-700",
+    muted:   "bg-green-100 text-green-700",
+    outline: "bg-background border border-neutral-300 text-green-700",
   },
   info: {
-    subtle:  "bg-info-subtle text-blue-800 hover:bg-blue-100",
-    muted:   "bg-blue-100 text-blue-700 hover:bg-blue-200",
-    outline: "bg-background border border-neutral-300 text-blue-800 hover:bg-info-subtle",
+    subtle:  "bg-info-subtle text-blue-700",
+    muted:   "bg-blue-100 text-blue-700",
+    outline: "bg-background border border-neutral-300 text-blue-700",
   },
   danger: {
-    subtle:  "bg-danger-subtle text-red-800 hover:bg-red-100",
-    muted:   "bg-red-100 text-red-700 hover:bg-red-200",
-    outline: "bg-background border border-neutral-300 text-red-800 hover:bg-danger-subtle",
+    subtle:  "bg-danger-subtle text-red-700",
+    muted:   "bg-red-100 text-red-700",
+    outline: "bg-background border border-neutral-300 text-red-700",
   },
   accent: {
-    subtle:  "bg-accent-subtle text-teal-800 hover:bg-teal-100",
-    muted:   "bg-teal-100 text-teal-700 hover:bg-teal-200",
-    outline: "bg-background border border-neutral-300 text-teal-800 hover:bg-accent-subtle",
+    subtle:  "bg-accent-subtle text-teal-700",
+    muted:   "bg-teal-100 text-teal-700",
+    outline: "bg-background border border-neutral-300 text-teal-700",
   },
 }
 
@@ -76,7 +77,8 @@ function Badge({
   color = "neutral",
   appearance = "subtle",
   size = "default",
-  iconFill = "outlined",
+  iconFill = "filled",
+  showIcon = true,
   onDismiss,
   className,
   children,
@@ -91,8 +93,8 @@ function Badge({
         className,
       )}
     >
-      <Icon name={ICON_BY_COLOR[color]} size={iconSize} fill={iconFill} />
-      <span>{children}</span>
+      {showIcon && <Icon name={ICON_BY_COLOR[color]} size={iconSize} fill={iconFill} />}
+      <span className="text-small-regular">{children}</span>
       {onDismiss && (
         <button
           type="button"
