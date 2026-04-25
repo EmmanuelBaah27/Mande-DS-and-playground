@@ -1,7 +1,7 @@
 # Spec: Chat as Main Page
 
 **Date:** 2026-04-25
-**Branch:** `claude/build-alert-component-G5FDo` → new branch `claude/chat-main-page`
+**Branch:** `claude/chat-main-page`
 **Status:** Ready for implementation
 
 ---
@@ -17,89 +17,103 @@ Dissolve the playground index and make the chat interface the primary surface. T
 Full viewport flex row. Two columns in normal document flow — sidebar is not absolutely positioned, so chat content never flows under it.
 
 ```
-[8px gap — body bg neutral-50]
+[8px padding — body bg neutral-50]
 ┌──────────────┐  ┌─────────────────────────────┐
 │  Sidebar     │  │  Chat area                  │
-│  220px       │  │  flex-1                     │
+│  ~240px      │  │  flex-1                     │
 │  elevated    │  │  bg-neutral-50              │
 │  rounded-3   │  │  navbar + thread + input    │
 └──────────────┘  └─────────────────────────────┘
-[8px gap]
+[8px padding]
 ```
 
 **Outer wrapper:** `flex h-screen gap-2 p-2 bg-neutral-50`
 
-**Sidebar:** `h-full w-[220px] shrink-0 rounded-3 border border-neutral-200 shadow-sm bg-background flex flex-col overflow-hidden`
-- Elevation via `shadow-sm`, not absolute positioning
-- Sits in normal flow; chat area fills remaining space
+**Sidebar:** `h-full w-[240px] shrink-0 rounded-3 border border-neutral-200 shadow-sm bg-background flex flex-col overflow-hidden`
+- Elevation via `shadow-sm`, in normal document flow
+- Chat area fills remaining space with `flex-1 min-w-0`
 
 **Chat area:** `flex-1 flex flex-col min-w-0 bg-neutral-50`
-- Plain neutral-50 background, no border
 
 ---
 
 ## Sidebar
 
 ### Header
-- Mande logo on the left — navigates to `/dashboard`
-- Collapse button on the right (`IconSidebarSimpleLeftWide`)
+- Mande logo on the left — navigates to `/dashboard` (hidden playground screen index)
+- Search icon button on the right
+- Collapse/sidebar icon button on the right
 
-### Nav
-- Single nav item: **Home** → `/overview` (placeholder page, to be built)
+### Top nav items
+Three items, always visible above the sections:
+1. **New chat** — `IconPlus` or similar. Creates a new open session and loads the welcome state in the main area
+2. **Overview** — grid icon. Navigates to `/overview` (placeholder)
+3. **Curriculum** — book icon. Scrolls the sidebar to the curriculum section or navigates to `/curriculum` (placeholder)
 
-### Tab toggle — Chats | Curriculum
-Controls the scrollable content area below the nav item.
+### Career clarity section
+Section label: **Career clarity** with a progress badge (e.g. `1/3` in danger/red pill).
 
-**Chats tab (default):**
-- `+ New chat` button at top — starts a blank open session, switches main area to welcome/new-chat state
-- Sessions grouped by **Today**, **Yesterday**, **Older** — each group is a collapsible `SectionTitle`
-- Active session highlighted
+Curriculum modules listed as nav items with state icons:
+- **In progress** — dashed circle icon
+- **Locked** — lock icon
+- **Completed** — solid check circle icon (implied)
 
-**Curriculum tab:**
-- 7 modules listed in order, each a `SideNavItem`:
-  1. Career clarity
-  2. Practical skills and experience
-  3. Job search skills
-  4. Initiative and proactiveness
-  5. Visibility and social capital
-  6. Opportunity openness
-  7. Location and access
-- Active module highlighted (driven by what's loaded in the main area)
+Modules (mock data, in order):
+1. Discovering your options — in progress
+2. Finding clarity — locked
+3. Making a choice — locked
 
-### Active tab behaviour
-Active tab is derived from the current session type — not manually toggled:
-- Open session loaded → Chats tab shown, session highlighted
-- Curriculum module loaded → Curriculum tab shown, module highlighted
-- User can tap the other tab to browse, but active highlight stays driven by main area state
+### Chats section
+Section label: **Chats** with a collapse chevron.
+
+Flat list of open session titles, no date grouping. Sessions truncate with a fader on overflow. Active session highlighted.
 
 ### Footer
-Account selector — always visible at the bottom.
+Account selector — always visible at the bottom. Shows avatar initial + name + chevron.
 
 ---
 
-## Chat area navbar
+## Main area — Welcome / New chat state (default)
 
+Shown on load and whenever New Chat is triggered.
+
+### Layout
+Centred column, vertically centred in the available space above the input.
+
+### Content
+- **Mande icon** — green circle (`bg-primary-500` or `bg-[#C6EB52]`?) with the Mande star/sparkle SVG inside, ~40px
+- **"Welcome back, [name]"** — large bold heading
+- **"Pick up where you left off"** — regular body text, muted colour
+- **Resume card** — rounded card showing the most recent curriculum module:
+  - Module name (e.g. "Discovering your options")
+  - Pillar + step count (e.g. "Career clarity · 1/3")
+  - Dashed-circle progress icon on the left
+  - Chevron right on the right
+  - Clicking loads that curriculum module session
+
+### Input
+The standard message input is present and active at the bottom — same as the chat state. Placeholder: "What's on your mind?" Sending a message starts a new open session.
+
+---
+
+## Main area — Active chat state
+
+Loaded when a session or curriculum module is selected from the sidebar.
+
+### Navbar
 - **Session title** — `text-base-regular text-neutral-500`, left-aligned
-- **Hover affordance** — title sits in a container with `px-2 py-1 rounded-1 hover:bg-neutral-100 transition-colors` to signal it is clickable
-- **Inline edit** — clicking the title turns it into a plain text input, same size/style. Saves on blur or Enter.
-- No session switcher dropdown — session switching happens entirely via the sidebar.
+- **Hover affordance** — title wrapped in `px-2 py-1 rounded-1 hover:bg-neutral-100 transition-colors` to signal editability
+- **Inline edit** — clicking turns the title into a plain text input. Saves on blur or Enter.
+- No session switcher dropdown.
 
----
-
-## Default state — Welcome back / New chat
-
-The root page defaults to a welcome-back screen when no session is selected or when New Chat is triggered. This screen:
-- Is the entry point on every app load
-- Serves as a segue into the most recent conversation
-- **Design TBD** — being designed separately; implementation will slot in once the design lands
-
-Placeholder: render an empty main area with a centred prompt for now.
+### Thread + input
+Unchanged from the current `/screens/chat` implementation — message bubbles, challenge cards, challenge input variants, scroll behaviour.
 
 ---
 
 ## Dashboard (hidden)
 
-The current playground index (`app/page.tsx`) moves to `app/dashboard/page.tsx`. It is not listed in any nav — accessible only via the Mande logo link in the sidebar. The `/` route is now the chat interface.
+Current playground index (`app/page.tsx`) moves to `app/dashboard/page.tsx`. Accessible only via the Mande logo link. Not listed in any nav.
 
 ---
 
@@ -107,24 +121,25 @@ The current playground index (`app/page.tsx`) moves to `app/dashboard/page.tsx`.
 
 | File | Change |
 |------|--------|
-| `apps/playground/src/app/page.tsx` | Replaced with chat interface |
+| `apps/playground/src/app/page.tsx` | Replaced — becomes chat + welcome state |
 | `apps/playground/src/app/dashboard/page.tsx` | New — playground index moved here |
-| `apps/playground/src/app/overview/page.tsx` | New — placeholder for Home nav item |
-| `apps/playground/src/app/layout.tsx` | Body bg set to `neutral-50` if not already |
-| `apps/playground/src/components/app-sidebar.tsx` | Rebuilt with DS AppSidebar + tab toggle |
+| `apps/playground/src/app/overview/page.tsx` | New — placeholder for Overview nav item |
+| `apps/playground/src/components/app-sidebar.tsx` | Rebuilt to match Figma sidebar design |
+| `apps/playground/src/app/screens/chat/page.tsx` | Source of chat mechanics — logic lifted into root page |
 
 ---
 
 ## Done criteria
 
-- `/` loads the chat interface with floating sidebar
-- Sidebar is in normal document flow; chat fills remaining space
-- Sidebar shows Chats tab by default with New Chat button and mock session groups
-- Curriculum tab shows 7 modules in order
-- Active tab switches automatically based on loaded session type
+- `/` loads the welcome state with floating sidebar in normal document flow
+- Sidebar shows logo, search, collapse; top nav (New chat, Overview, Curriculum); Career clarity section with module progress states; Chats section (flat list); account selector
+- Clicking New Chat reloads the welcome state
+- Clicking a chat session loads it in the main area
+- Clicking a curriculum module loads it in the main area
+- Active nav item / session / module highlighted in sidebar
+- Welcome state shows Mande icon, personalised greeting, resume card pointing to most recent curriculum module
 - Session title in navbar has hover affordance and is editable inline
+- Chat area and body background is `bg-neutral-50`
+- Sidebar is elevated (`shadow-sm`), rounded, in normal flow
 - Mande logo navigates to `/dashboard`
-- Home nav item navigates to `/overview`
-- Chat mechanics (messages, challenges, input) unchanged from current `/screens/chat`
-- Body and chat area background is `bg-neutral-50`
-- Welcome-back default state has a placeholder (real design to follow)
+- Chat mechanics (messages, challenges, input) unchanged
