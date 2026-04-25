@@ -4,6 +4,14 @@ Things learned while building the Mande Design System. Captured so they compound
 
 ---
 
+## 2026-04-25 — Session 12: Chat as main page
+
+- **DS AppSidebar has no `isOpen` prop.** The collapse button calls `onCollapse` callback, but the component doesn't manage its own collapsed state — that must be handled externally if needed. Don't pass `isOpen` — it doesn't exist on the props type.
+- **`ChatGroup.items` only has `{ id, label }` — no icon slot.** Progress/lock icons on curriculum modules (dashed circle, lock) can't be rendered through the current DS `chatGroups` API. Needs a DS extension if required.
+- **Figma MCP tool has per-seat rate limits.** The View seat on Professional plan has a cap on tool calls. When rate-limited, ask the user to share a screenshot instead.
+
+---
+
 ## 2026-04-19 — Session 11: Alert component redesign
 
 ### Technical

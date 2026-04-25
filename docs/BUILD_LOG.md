@@ -4,6 +4,27 @@ Chronological record of all work done on the Mande Design System.
 
 ---
 
+## 2026-04-25 — Session 12: Chat as main page — brainstorm + design + plan
+
+### What was done
+
+**Product Discovery & Design (no code written)**
+- Dissolved the playground index concept; designed the chat interface as the root page
+- Specced the DS `AppSidebar` wiring with nav items (New chat, Overview, Curriculum), Career clarity curriculum modules section, and Chats section
+- Reviewed Figma welcome/new-chat state: Mande icon, "Welcome back" greeting, resume card for most recent curriculum module, message input
+- Aligned on: sidebar in normal document flow (not absolute), `bg-neutral-50` chat area, session title editable inline in navbar, Mande logo linking to hidden `/dashboard`
+- Established rule: always use DS components (`packages/ui`) before building locally
+
+### Files changed
+- `docs/superpowers/specs/2026-04-25-chat-as-main-page.md` — created + revised twice
+- `docs/superpowers/plans/2026-04-25-chat-main-page.md` — 8-task implementation plan with full code
+
+### Verified
+- Plan builds on existing DS `AppSidebar` (already exported from `@mande/ui`)
+- No code changes yet — implementation begins next session
+
+---
+
 ## 2026-04-19 — Session 11: Alert component redesign
 
 ### What was done

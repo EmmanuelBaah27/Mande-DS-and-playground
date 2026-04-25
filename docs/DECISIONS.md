@@ -4,6 +4,19 @@ Key decisions, patterns, and processes for the Mande Design System. Updated as t
 
 ---
 
+## Chat as Main Page (Session 12)
+
+### Always use DS components before building locally
+Reach for `packages/ui` components first. If the DS component covers the need (even partially), wire it — don't rebuild locally in the consuming app.
+
+### Sidebar layout: stacked sections, not a tab toggle
+Curriculum modules and chat history co-exist in the sidebar as stacked collapsible sections (Career clarity → Chats). No tab toggle needed.
+
+### Welcome state as the default root view
+Loading `/` shows the welcome-back screen (Mande icon, personalised greeting, resume card) rather than an open chat thread. Sending from the welcome state creates a new open session.
+
+---
+
 ## Component Architecture Decisions (Session 11)
 
 ### `AlertAction` is an `<a>` element, not a `<button>`
