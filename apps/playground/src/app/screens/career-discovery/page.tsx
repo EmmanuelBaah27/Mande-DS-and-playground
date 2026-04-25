@@ -12,7 +12,6 @@ import {
 } from "@mande/ui"
 import type { IconName } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
-import { AppSidebar } from "../../../components/app-sidebar"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -384,7 +383,6 @@ const gridVariants = {
 }
 
 export default function CareerDiscoveryPage() {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
   const [selectedFactorId, setSelectedFactorId] = useState<string | null>(null)
 
   const selectedFactor = selectedFactorId
@@ -395,13 +393,7 @@ export default function CareerDiscoveryPage() {
   const overall = overallProgress(FACTORS)
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden">
-      <AppSidebar
-        activeNav="career"
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen((v) => !v)}
-      />
-
+    <div className="flex h-screen bg-neutral-50 overflow-hidden">
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
         <header className="h-14 flex items-center px-6 bg-white border-b border-neutral-100 shrink-0 gap-4">

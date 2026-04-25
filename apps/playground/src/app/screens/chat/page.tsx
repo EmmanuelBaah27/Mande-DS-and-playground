@@ -21,7 +21,6 @@ import {
 } from "@mande/ui"
 import type { ChallengeType } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
-import { AppSidebar } from "../../../components/app-sidebar"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -471,7 +470,6 @@ function MessageInput({
 export default function ChatPage() {
   const [sessions, setSessions] = useState<ChatSession[]>(CHAT_HISTORY)
   const [activeSessionId, setActiveSessionId] = useState(CHAT_HISTORY[0].id)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
@@ -520,13 +518,7 @@ export default function ChatPage() {
   }
 
   return (
-    <div className="flex h-screen bg-white overflow-hidden">
-      <AppSidebar
-        activeNav="chat"
-        isOpen={sidebarOpen}
-        onToggle={() => setSidebarOpen((v) => !v)}
-      />
-
+    <div className="flex h-screen bg-neutral-50 overflow-hidden">
       <div className="flex-1 flex flex-col min-w-0">
         <ChatNavbar
           sessions={sessions}
