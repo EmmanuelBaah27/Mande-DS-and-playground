@@ -213,14 +213,14 @@ function MessageInput({
   return (
     <div className="px-4 pb-4 bg-neutral-50">
       <div className="relative max-w-3xl mx-auto">
-        <textarea
-          ref={textareaRef}
-          rows={2}
+        <Textarea
+          ref={textareaRef as React.RefObject<HTMLTextAreaElement>}
+          rows={1}
           value={value}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder={mode === "curriculum" ? "Respond to Mande…" : "Ask anything about your career…"}
-          className="w-full min-h-[80px] resize-none rounded-4 border border-neutral-200 bg-white px-4 pt-3 pb-14 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-0 leading-relaxed"
+          className="min-h-0 resize-none rounded-4 border-neutral-200 bg-white px-4 pt-3 pb-14 leading-relaxed overflow-hidden"
         />
         <Button
           onClick={handleSend}

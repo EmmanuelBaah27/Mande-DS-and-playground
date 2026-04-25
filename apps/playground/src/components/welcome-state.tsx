@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { Button, Icon } from "@mande/ui"
+import { Button, Icon, Textarea } from "@mande/ui"
 import type { ChatSession } from "./chat-data"
 
 function MandeIcon() {
@@ -46,6 +46,7 @@ export function WelcomeState({
     if (!value.trim()) return
     onStartNewChat(value.trim())
     setValue("")
+    if (textareaRef.current) textareaRef.current.style.height = "auto"
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -56,9 +57,10 @@ export function WelcomeState({
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-0">
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
-        <div className="w-full max-w-xl flex flex-col items-center gap-4 text-center">
+    <div className="relative flex-1 flex flex-col overflow-y-auto min-h-0">
+      {/* Scrollable content — pb-48 keeps content above the sticky bar */}
+      <div className="px-4 pt-16 pb-48">
+        <div className="max-w-3xl mx-auto flex flex-col gap-4">
           <MandeIcon />
           <div className="flex flex-col gap-1">
             <h1 className="text-H2 text-neutral-900">Welcome back, {userName}</h1>
@@ -68,9 +70,9 @@ export function WelcomeState({
           {resumeSession && (
             <button
               onClick={() => onResumeSession(resumeSession.id)}
-              className="w-full flex items-center gap-3 px-4 py-3.5 rounded-3 border border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm transition-all text-left"
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-4 border border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm transition-all text-left"
             >
-              <div className="shrink-0 text-primary-500">
+              <div className="shrink-0 text-orange-500">
                 <Icon name="IconCircleDashed" size={20} />
               </div>
               <div className="flex-1 min-w-0">
@@ -81,22 +83,23 @@ export function WelcomeState({
                     : "Open chat"}
                 </p>
               </div>
-              <Icon name="IconChevronRight" size={20} className="text-neutral-400 shrink-0" />
+              <Icon name="IconChevronRight" size={16} className="text-neutral-400 shrink-0" />
             </button>
           )}
         </div>
       </div>
 
-      <div className="px-4 pb-4 bg-neutral-50">
+      {/* Message bar — sticky at bottom, content scrolls beneath it */}
+      <div className="sticky bottom-0 px-4 pb-4 bg-neutral-50">
         <div className="relative max-w-3xl mx-auto">
-          <textarea
+          <Textarea
             ref={textareaRef}
-            rows={2}
+            rows={1}
             value={value}
             onChange={(e) => { setValue(e.target.value); resize() }}
             onKeyDown={handleKeyDown}
             placeholder="What's on your mind?"
-            className="w-full min-h-[80px] resize-none rounded-4 border border-neutral-200 bg-white px-4 pt-3 pb-14 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-0 leading-relaxed"
+            className="min-h-0 resize-none rounded-4 border-neutral-200 bg-white px-4 pt-3 pb-14 leading-relaxed overflow-hidden"
           />
           <Button
             onClick={handleSend}

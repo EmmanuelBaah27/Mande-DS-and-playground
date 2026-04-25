@@ -3,6 +3,7 @@
 import * as React from "react"
 import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { Icon } from "@/components/ui/icon"
+import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 import { springs } from "@/tokens/motion"
 
@@ -61,14 +62,12 @@ export type SideNavItemProps = {
 
 export function SideNavItem({ label, icon, selected = false, onClick, className }: SideNavItemProps) {
   return (
-    <motion.button
+    <button
       type="button"
       onClick={onClick}
-      whileTap={{ scale: 0.99 }}
-      transition={{ type: "spring", stiffness: 180, damping: 18 }}
       className={cn(
         "group flex items-center gap-2 px-2 py-1.5 rounded-2 w-full text-left relative overflow-hidden",
-        "[transition:background-color_150ms_ease]",
+        "[transition:background-color_var(--duration-moderate)_var(--ease-out),color_var(--duration-moderate)_var(--ease-out)]",
         selected
           ? "bg-muted text-foreground"
           : "bg-background text-muted-foreground hover:bg-subtle",
@@ -94,7 +93,7 @@ export function SideNavItem({ label, icon, selected = false, onClick, className 
           className="pointer-events-none absolute right-0 inset-y-0 w-8 bg-gradient-to-l from-subtle to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150"
         />
       )}
-    </motion.button>
+    </button>
   )
 }
 
@@ -162,14 +161,12 @@ export type AccountSelectorProps = {
 
 export function AccountSelector({ name, initials, selected = false, onClick, className }: AccountSelectorProps) {
   return (
-    <motion.button
+    <button
       type="button"
       onClick={onClick}
-      whileTap={{ scale: 0.99 }}
-      transition={{ type: "spring", stiffness: 180, damping: 18 }}
       className={cn(
         "inline-flex items-center gap-2 p-1 rounded-2 text-left",
-        "[transition:background-color_150ms_ease]",
+        "[transition:background-color_var(--duration-moderate)_var(--ease-out)]",
         selected ? "bg-muted" : "hover:bg-subtle",
         className
       )}
@@ -186,7 +183,7 @@ export function AccountSelector({ name, initials, selected = false, onClick, cla
         <span className="text-base-medium text-muted-foreground whitespace-nowrap">{name}</span>
         <Icon name="IconChevronDownSmall" size={16} className="text-muted-foreground" />
       </div>
-    </motion.button>
+    </button>
   )
 }
 
@@ -203,10 +200,61 @@ export type ChatGroup = {
   items: Array<{ id: string; label: string }>
 }
 
+export type PillarState = "active" | "locked" | "completed"
+
+export type PillarItem = {
+  id: string
+  label: string
+  state: PillarState
+}
+
+export type CurriculumSectionConfig = {
+  label: string
+  progress: string
+  pillars: PillarItem[]
+}
+
+function CurriculumSection({
+  label,
+  progress,
+  pillars,
+  activeItem,
+  onNavigate,
+}: CurriculumSectionConfig & { activeItem?: string; onNavigate?: (id: string) => void }) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <div className="flex items-center justify-between px-2 py-0.5">
+        <span className="text-small-regular text-muted-foreground">{label}</span>
+        <Badge color="warning" size="sm">{progress}</Badge>
+      </div>
+      {pillars.map((pillar) => {
+        const isActive = pillar.state === "active"
+        const isLocked = pillar.state === "locked"
+        return (
+          <SideNavItem
+            key={pillar.id}
+            label={pillar.label}
+            icon={
+              <Icon
+                name={isActive ? "IconCircleDashed" : "IconLock"}
+                size={20}
+              />
+            }
+            selected={isActive && activeItem === pillar.id}
+            onClick={isLocked ? undefined : () => onNavigate?.(pillar.id)}
+            className={isLocked ? "text-neutral-400 pointer-events-none" : undefined}
+          />
+        )
+      })}
+    </div>
+  )
+}
+
 export type AppSidebarProps = {
   activeItem?: string
   onNavigate?: (id: string) => void
   navItems?: NavItem[]
+  curriculumSection?: CurriculumSectionConfig
   chatGroups?: ChatGroup[]
   announcementCard?: React.ReactNode
   user?: { name: string; initials: string }
@@ -219,6 +267,7 @@ export function AppSidebar({
   activeItem,
   onNavigate,
   navItems = [],
+  curriculumSection,
   chatGroups = [],
   announcementCard,
   user,
@@ -229,7 +278,7 @@ export function AppSidebar({
   return (
     <div
       className={cn(
-        "flex flex-col w-[220px] h-full bg-background rounded-3 overflow-hidden border border-neutral-200",
+        "flex flex-col w-64 h-full bg-background rounded-3 overflow-hidden border border-neutral-200",
         className
       )}
       style={{ borderWidth: "0.5px" }}
@@ -237,16 +286,14 @@ export function AppSidebar({
       {/* Header */}
       <div className="flex items-center justify-between pl-4 pr-3 py-3 shrink-0">
         {logo ?? <MandeLogoDefault />}
-        <motion.button
+        <button
           type="button"
           onClick={onCollapse}
           aria-label="Collapse sidebar"
-          whileTap={{ scale: 0.99 }}
-          transition={{ type: "spring", stiffness: 180, damping: 18 }}
-          className="flex items-center justify-center p-1 rounded-2 text-muted-foreground hover:bg-subtle shrink-0 [transition:background-color_150ms_ease]"
+          className="flex items-center justify-center p-1 rounded-2 text-muted-foreground hover:bg-subtle shrink-0 [transition:background-color_var(--duration-moderate)_var(--ease-out)]"
         >
           <Icon name="IconSidebarSimpleLeftWide" size={20} fill="filled" />
-        </motion.button>
+        </button>
       </div>
 
       {/* Scrollable nav area */}
@@ -263,6 +310,14 @@ export function AppSidebar({
               />
             ))}
           </div>
+        )}
+
+        {curriculumSection && (
+          <CurriculumSection
+            {...curriculumSection}
+            activeItem={activeItem}
+            onNavigate={onNavigate}
+          />
         )}
 
         {chatGroups.map((group) => (
