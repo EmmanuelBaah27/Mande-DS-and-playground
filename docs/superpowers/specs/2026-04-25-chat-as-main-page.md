@@ -39,37 +39,25 @@ Full viewport flex row. Two columns in normal document flow — sidebar is not a
 
 ## Sidebar
 
-### Header
-- Mande logo on the left — navigates to `/dashboard` (hidden playground screen index)
-- Search icon button on the right
-- Collapse/sidebar icon button on the right
+Use the DS `AppSidebar` component from `packages/ui/src/components/ui/app-sidebar.tsx` wired with props. No local rebuild.
 
-### Top nav items
-Three items, always visible above the sections:
-1. **New chat** — `IconPlus` or similar. Creates a new open session and loads the welcome state in the main area
-2. **Overview** — grid icon. Navigates to `/overview` (placeholder)
-3. **Curriculum** — book icon. Scrolls the sidebar to the curriculum section or navigates to `/curriculum` (placeholder)
+**Props mapping:**
 
-### Career clarity section
-Section label: **Career clarity** with a progress badge (e.g. `1/3` in danger/red pill).
+- `logo` — Mande logo, links to `/dashboard`
+- `navItems` — three items:
+  1. New chat (`IconPlus`) — triggers welcome state in main area
+  2. Overview (grid icon) — navigates to `/overview` (placeholder)
+  3. Curriculum (book icon) — navigates to `/curriculum` (placeholder)
+- `chatGroups` — two groups:
+  1. **Career clarity** — modules as `SideNavItem`s with progress/lock icons:
+     - Discovering your options — in progress (dashed circle icon)
+     - Finding clarity — locked (lock icon)
+     - Making a choice — locked (lock icon)
+  2. **Chats** — flat list of open session titles; sessions truncate with fader on overflow
+- `user` — `{ name: "Angela", initials: "A" }`
+- `onCollapse` — wired to sidebar open/close state
 
-Curriculum modules listed as nav items with state icons:
-- **In progress** — dashed circle icon
-- **Locked** — lock icon
-- **Completed** — solid check circle icon (implied)
-
-Modules (mock data, in order):
-1. Discovering your options — in progress
-2. Finding clarity — locked
-3. Making a choice — locked
-
-### Chats section
-Section label: **Chats** with a collapse chevron.
-
-Flat list of open session titles, no date grouping. Sessions truncate with a fader on overflow. Active session highlighted.
-
-### Footer
-Account selector — always visible at the bottom. Shows avatar initial + name + chevron.
+Active item is derived from what is loaded in the main area and passed as `activeItem`.
 
 ---
 
@@ -98,7 +86,7 @@ The standard message input is present and active at the bottom — same as the c
 
 ## Main area — Active chat state
 
-Loaded when a session or curriculum module is selected from the sidebar.
+Loaded when a chat session or curriculum module is selected from the sidebar. Both use the existing chat thread implementation from `/screens/chat` — curriculum modules load it in `curriculum` mode, open sessions load it in `open` mode.
 
 ### Navbar
 - **Session title** — `text-base-regular text-neutral-500`, left-aligned
