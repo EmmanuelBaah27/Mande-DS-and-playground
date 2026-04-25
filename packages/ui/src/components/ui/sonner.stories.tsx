@@ -27,7 +27,9 @@ function makeToastScene(label: string, fire: () => string | number) {
   return function ToastScene() {
     useEffect(() => {
       const id = fire()
-      return () => toast.dismiss(id)
+      return () => {
+        toast.dismiss(id)
+      }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     return (
@@ -109,8 +111,10 @@ export const Stacked: Story = {
     }
     useEffect(() => {
       fireAll()
-      return () => toast.dismiss()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+      return () => {
+        toast.dismiss()
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
     return (
       <div className="flex min-h-[420px] flex-col items-center justify-end gap-4">

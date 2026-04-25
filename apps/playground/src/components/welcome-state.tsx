@@ -123,7 +123,7 @@ export function WelcomeState({
       {/* Message bar — outside scroll area, always pinned at bottom */}
       <div className="px-4 pb-4 bg-neutral-50 shrink-0">
         <div className="max-w-3xl mx-auto">
-          <div className="flex flex-col gap-3 bg-white border border-neutral-300 rounded-4 px-4 py-3 hover:border-neutral-400 focus-within:border-neutral-400 transition-colors">
+          <div className="flex flex-col gap-3 bg-white border border-neutral-300 rounded-4 px-4 py-2 hover:border-neutral-400 focus-within:border-neutral-400 transition-colors">
             {attachments.length > 0 && (
               <div className="flex flex-wrap gap-2 pt-1">
                 {attachments.map((file, i) => (
@@ -135,7 +135,7 @@ export function WelcomeState({
                 ))}
               </div>
             )}
-            <div className="flex items-center gap-3">
+            <div className="flex items-end gap-3">
               <textarea
                 ref={textareaRef}
                 rows={1}
@@ -143,9 +143,9 @@ export function WelcomeState({
                 onChange={(e) => { setValue(e.target.value); resize() }}
                 onKeyDown={handleKeyDown}
                 placeholder="What's on your mind?"
-                className="flex-1 resize-none bg-transparent text-sm text-neutral-900 placeholder:text-neutral-400 outline-none leading-relaxed min-h-0"
+                className="flex-1 resize-none bg-transparent text-sm text-neutral-900 placeholder:text-neutral-400 outline-none leading-6 min-h-6 py-1"
               />
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2 shrink-0 self-end">
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}

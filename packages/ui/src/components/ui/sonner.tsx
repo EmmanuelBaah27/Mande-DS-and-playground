@@ -1,6 +1,7 @@
 "use client"
 
 import { Toaster as Sonner } from "sonner"
+import { CircleNotchIcon } from "@phosphor-icons/react"
 
 import { Icon } from "./icon"
 
@@ -22,7 +23,14 @@ const Toaster = ({ ...props }: ToasterProps) => {
         success: <Icon name="IconCheckCircle2" size={20} />,
         warning: <Icon name="IconExclamationTriangle" size={20} />,
         error: <Icon name="IconCircleX" size={20} />,
-        loading: <Icon name="IconLoadingCircle" size={20} className="animate-spin will-change-transform" />,
+        loading: (
+          <CircleNotchIcon
+            size={20}
+            weight="regular"
+            aria-hidden
+            className="animate-spin shrink-0 text-neutral-500"
+          />
+        ),
         close: <Icon name="IconCrossMedium" size={16} className="text-neutral-500" />,
       }}
       toastOptions={{
