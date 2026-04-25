@@ -3,24 +3,7 @@
 import { useState, useRef } from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import {
-  Icon,
-  Avatar,
-  AvatarFallback,
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarProvider,
-  SidebarSeparator,
-} from "@mande/ui"
+import { Icon, AppSidebar } from "@mande/ui"
 import { ChatThread } from "../components/chat-thread"
 import { WelcomeState } from "../components/welcome-state"
 import { INITIAL_SESSIONS, CURRICULUM_MODULES } from "../components/chat-data"
@@ -84,10 +67,20 @@ function ChatNavbar({
 type View = "welcome" | "thread"
 
 const NAV_ITEMS = [
-  { id: "new-chat", label: "New chat", icon: "IconPlusMedium" as const },
-  { id: "overview", label: "Overview", icon: "IconComponents" as const },
-  { id: "curriculum", label: "Curriculum", icon: "IconBook" as const },
+  { id: "new-chat", label: "New chat", icon: <Icon name="IconBubbleSparkle" size={20} /> },
+  { id: "overview", label: "Overview", icon: <Icon name="IconSquareGridCircle" size={20} /> },
+  { id: "curriculum", label: "Curriculum", icon: <Icon name="IconNewspaper1" size={20} /> },
 ]
+
+const CURRICULUM_SECTION = {
+  label: "Career clarity",
+  progress: "1 of 3",
+  pillars: CURRICULUM_MODULES.map((m, i) => ({
+    id: m.id,
+    label: m.label,
+    state: (i === 0 ? "active" : "locked") as "active" | "locked" | "completed",
+  })),
+}
 
 export default function ChatPage() {
   const router = useRouter()
@@ -98,6 +91,10 @@ export default function ChatPage() {
   const activeSession = sessions.find((s) => s.id === activeSessionId) ?? null
   const activeItem = view === "welcome" ? "new-chat" : (activeSessionId ?? undefined)
   const openSessions = sessions.filter((s) => s.mode === "open")
+
+  const chatGroups = openSessions.length > 0
+    ? [{ label: "Chats", items: openSessions.map((s) => ({ id: s.id, label: s.title })) }]
+    : []
 
   const handleNavigate = (id: string) => {
     if (id === "new-chat") {
@@ -146,129 +143,45 @@ export default function ChatPage() {
   }
 
   return (
-    <SidebarProvider>
-      <div className="flex h-screen w-full overflow-hidden bg-neutral-100">
-        {/* Sidebar with 8px floating margin */}
-        <div className="p-2 shrink-0">
-          <Sidebar
-            variant="floating"
-            collapsible="none"
-            className="h-[calc(100vh-16px)] rounded-3"
-          >
-            <SidebarHeader className="px-4 py-3">
-              <Link href="/dashboard" className="hover:opacity-80 transition-opacity">
-                <img src="/logo.svg" alt="Mande" width={80} height={20} />
-              </Link>
-            </SidebarHeader>
+    <div className="flex h-screen gap-2 p-2 bg-neutral-100 overflow-hidden">
+      <AppSidebar
+        logo={
+          <Link href="/dashboard" className="hover:opacity-80 transition-opacity">
+            <img src="/logo.svg" alt="Mande" width={80} height={20} />
+          </Link>
+        }
+        navItems={NAV_ITEMS}
+        curriculumSection={CURRICULUM_SECTION}
+        chatGroups={chatGroups}
+        activeItem={activeItem}
+        onNavigate={handleNavigate}
+        user={{ name: "Angela", initials: "A" }}
+        onCollapse={() => {}}
+      />
 
-            <SidebarContent>
-              {/* Top nav */}
-              <SidebarGroup>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    {NAV_ITEMS.map((item) => (
-                      <SidebarMenuItem key={item.id}>
-                        <SidebarMenuButton
-                          isActive={activeItem === item.id}
-                          onClick={() => handleNavigate(item.id)}
-                          tooltip={item.label}
-                        >
-                          <Icon name={item.icon} size={16} />
-                          <span>{item.label}</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))}
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-neutral-50 rounded-3 shadow-sm">
+        {view === "thread" && activeSession && (
+          <ChatNavbar
+            title={activeSession.title}
+            onTitleChange={handleTitleChange}
+          />
+        )}
 
-              <SidebarSeparator />
-
-              {/* Career clarity */}
-              <SidebarGroup>
-                <SidebarGroupLabel>Career clarity</SidebarGroupLabel>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    {CURRICULUM_MODULES.map((module) => (
-                      <SidebarMenuItem key={module.id}>
-                        <SidebarMenuButton
-                          isActive={activeItem === module.id}
-                          onClick={() => handleNavigate(module.id)}
-                          tooltip={module.label}
-                        >
-                          <span>{module.label}</span>
-                        </SidebarMenuButton>
-                      </SidebarMenuItem>
-                    ))}
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
-
-              {/* Open chats */}
-              {openSessions.length > 0 && (
-                <>
-                  <SidebarSeparator />
-                  <SidebarGroup>
-                    <SidebarGroupLabel>Chats</SidebarGroupLabel>
-                    <SidebarGroupContent>
-                      <SidebarMenu>
-                        {openSessions.map((session) => (
-                          <SidebarMenuItem key={session.id}>
-                            <SidebarMenuButton
-                              isActive={activeItem === session.id}
-                              onClick={() => handleNavigate(session.id)}
-                              tooltip={session.title}
-                            >
-                              <span className="truncate">{session.title}</span>
-                            </SidebarMenuButton>
-                          </SidebarMenuItem>
-                        ))}
-                      </SidebarMenu>
-                    </SidebarGroupContent>
-                  </SidebarGroup>
-                </>
-              )}
-            </SidebarContent>
-
-            <SidebarFooter className="border-t border-neutral-100 p-3">
-              <SidebarMenuButton className="gap-3">
-                <Avatar className="h-7 w-7 shrink-0">
-                  <AvatarFallback className="text-xs font-medium bg-primary-100 text-primary-700">
-                    A
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-xs-medium text-neutral-900 flex-1 truncate">Angela</span>
-                <Icon name="IconArrowTopBottom" size={16} className="text-neutral-400" />
-              </SidebarMenuButton>
-            </SidebarFooter>
-          </Sidebar>
-        </div>
-
-        {/* Main content */}
-        <SidebarInset className="flex-1 flex flex-col min-w-0 overflow-hidden bg-neutral-50 rounded-3 my-2 mr-2 shadow-sm">
-          {view === "thread" && activeSession && (
-            <ChatNavbar
-              title={activeSession.title}
-              onTitleChange={handleTitleChange}
-            />
-          )}
-
-          {view === "welcome" || !activeSession ? (
-            <WelcomeState
-              userName="Angela"
-              resumeSession={sessions.find((s) => s.mode === "curriculum")}
-              onResumeSession={handleResumeSession}
-              onStartNewChat={handleStartNewChat}
-            />
-          ) : (
-            <ChatThread
-              sessions={sessions}
-              activeSessionId={activeSessionId!}
-              onSessionsChange={setSessions}
-            />
-          )}
-        </SidebarInset>
+        {view === "welcome" || !activeSession ? (
+          <WelcomeState
+            userName="Angela"
+            resumeSession={sessions.find((s) => s.mode === "curriculum")}
+            onResumeSession={handleResumeSession}
+            onStartNewChat={handleStartNewChat}
+          />
+        ) : (
+          <ChatThread
+            sessions={sessions}
+            activeSessionId={activeSessionId!}
+            onSessionsChange={setSessions}
+          />
+        )}
       </div>
-    </SidebarProvider>
+    </div>
   )
 }
