@@ -13,8 +13,11 @@ import {
   challengeColors,
 } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
+import { evaluateChallengeSubmission } from "../lib/challenges/evaluate"
+import { validateSubmissionPayload } from "../lib/challenges/schema"
 import {
   createChallengeData,
+  type ChallengeSubmission,
   selectChallengeState,
   type ChatSession,
   type ChallengeData,
@@ -95,8 +98,9 @@ function MessageBubble({ message }: { message: Message }) {
 
 function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
   const challengeState = selectChallengeState(challenge)
+  const evaluation = challenge.evaluation
 
-  if (challengeState.isCompleted) {
+  if (evaluation?.status === "pass" || challengeState.isCompleted) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 4 }}
@@ -111,6 +115,34 @@ function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
           <span className="text-xs text-green-700 font-medium">Completed</span>
         </div>
         <p className="text-sm text-neutral-700 leading-relaxed">{challengeState.displayResponse}</p>
+      </motion.div>
+    )
+  }
+
+  if (evaluation?.status === "blocked" || evaluation?.status === "revise") {
+    const isBlocked = evaluation.status === "blocked"
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 4 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={springs.snappy}
+        className={cn(
+          "rounded-3 p-4",
+          isBlocked ? "border border-danger-border bg-danger-subtle" : "border border-warning-border bg-warning-subtle"
+        )}
+      >
+        <div className="flex items-center gap-2 mb-2">
+          <span className={cn("text-xs px-2 py-0.5 rounded-1 font-medium", challengeColors[challenge.type])}>
+            {challengeLabels[challenge.type]}
+          </span>
+          <span className={cn("text-xs font-medium", isBlocked ? "text-danger" : "text-warning")}>
+            {isBlocked ? "Rewrite required" : "Revision needed"}
+          </span>
+        </div>
+        {challengeState.displayResponse && (
+          <p className="text-sm text-neutral-700 leading-relaxed mb-2">{challengeState.displayResponse}</p>
+        )}
+        <p className="text-sm text-neutral-700 leading-relaxed">{evaluation.feedback}</p>
       </motion.div>
     )
   }
@@ -167,11 +199,13 @@ function MessageInput({
   mode,
   activeChallenge,
   onChallengeSubmit,
+  challengeError,
 }: {
   onSend: (text: string) => void
   mode: SessionMode
   activeChallenge?: ChallengeData | null
   onChallengeSubmit?: (response: string) => void
+  challengeError?: string | null
 }) {
   const [value, setValue] = useState("")
   const [attachments, setAttachments] = useState<File[]>([])
@@ -227,6 +261,9 @@ function MessageInput({
               {activeChallenge.prompt.slice(0, 60)}…
             </span>
           </div>
+          {challengeError && (
+            <p className="text-xs text-danger mb-2">{challengeError}</p>
+          )}
 
           {activeChallenge.inputType === "confirm" ? (
             <div className="flex gap-3">
@@ -358,6 +395,7 @@ export type ChatThreadProps = {
 
 export function ChatThread({ sessions, activeSessionId, onSessionsChange }: ChatThreadProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
+  const [challengeError, setChallengeError] = useState<string | null>(null)
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
 
   useEffect(() => {
@@ -368,6 +406,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   const activeChallenge =
     lastMsg?.role === "assistant" &&
     lastMsg.challenge &&
+    lastMsg.challenge.evaluation?.status !== "pass" &&
     !selectChallengeState(lastMsg.challenge).isCompleted
       ? lastMsg.challenge
       : null
@@ -385,6 +424,76 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   }
 
   const handleChallengeSubmit = (response: string) => {
+    if (!activeChallenge) return
+
+    const attemptNumber = (activeChallenge.attempts?.length ?? 0) + 1
+    const submittedAt = new Date().toISOString()
+    const baseFields = {
+      challengeId: activeChallenge.challengeId,
+      lessonId: activeChallenge.lessonId,
+      studentId: "playground-student",
+      attemptNumber,
+      submittedAt,
+    }
+
+    const submission: ChallengeSubmission =
+      activeChallenge.responseType === "reflection"
+        ? {
+            ...baseFields,
+            responseType: "reflection",
+            content: { prompt: activeChallenge.prompt, responseText: response },
+          }
+        : activeChallenge.responseType === "structured_list"
+          ? {
+              ...baseFields,
+              responseType: "structured_list",
+              content: {
+                items: response
+                  .split("\n")
+                  .map((line) => line.trim())
+                  .filter(Boolean)
+                  .map((value, index) => ({ label: `Item ${index + 1}`, value })),
+              },
+            }
+          : activeChallenge.responseType === "resource_link"
+            ? {
+                ...baseFields,
+                responseType: "resource_link",
+                content: { url: response.trim(), evidenceNote: "Submitted from chat input." },
+              }
+            : activeChallenge.responseType === "outreach_draft"
+              ? {
+                  ...baseFields,
+                  responseType: "outreach_draft",
+                  content: {
+                    channel: "linkedin",
+                    targetRoleOrPersona: "Target professional",
+                    messageDraft: response,
+                    personalizationSignals: response.includes("\n") ? response.split("\n").filter(Boolean) : [],
+                  },
+                }
+              : {
+                  ...baseFields,
+                  responseType: "interview_notes",
+                  content: {
+                    interviewTarget: "Interview contact",
+                    notes: response,
+                    keyInsights: response.split("\n").filter(Boolean).slice(0, 2),
+                    actionPoints: response.split("\n").filter(Boolean).slice(2, 4),
+                  },
+                }
+
+    const validation = validateSubmissionPayload(submission.responseType, submission.content)
+    if (!validation.ok) {
+      setChallengeError(validation.errors[0] ?? "Invalid submission payload.")
+      return
+    }
+    const evaluation = evaluateChallengeSubmission({
+      responseType: submission.responseType,
+      content: submission.content,
+    })
+
+    setChallengeError(null)
     onSessionsChange(sessions.map((s) => {
       if (s.id !== activeSessionId) return s
       return {
@@ -395,6 +504,9 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
                 ...msg,
                 challenge: createChallengeData({
                   ...msg.challenge,
+                  submission,
+                  attempts: [...(msg.challenge.attempts ?? []), submission],
+                  evaluation,
                   response,
                 }),
               }
@@ -425,6 +537,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
           mode={activeSession.mode}
           activeChallenge={activeChallenge}
           onChallengeSubmit={handleChallengeSubmit}
+          challengeError={challengeError}
         />
       </div>
     </div>
