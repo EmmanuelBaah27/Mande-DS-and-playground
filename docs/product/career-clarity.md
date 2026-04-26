@@ -102,6 +102,7 @@ The curriculum runs linearly (Intro → Discovery → Finding Clarity → Making
 - **Each challenge produces a stored artifact** — the cold message draft, the interview notes, the career report — all retrievable later from journal or application prep features.
 - **AI-assisted → AI-evaluated progression.** First attempt at a craft task is scaffolded. Subsequent attempts are independent but evaluated. Builds autonomy.
 - **Curriculum writes to PIVOTS data.** Assessments completed in-curriculum populate the PIVOTS factors used by the Discovery dashboard and career report. No duplicate data entry.
+- **Implementation note (Curriculum Mode artifact engine).** Challenge submissions use a hybrid response schema with one shared core and five typed payloads (`reflection`, `structured_list`, `resource_link`, `outreach_draft`, `interview_notes`). Each attempt is validated and evaluated into rubric statuses: `pass` (advance), `revise` (iterate with feedback), or `blocked` (rewrite required before progressing).
 
 ---
 
