@@ -41,47 +41,59 @@ Never push broken code, never skip hooks, never batch unrelated changes.
 
 ## Working on a topic
 
-Work happens in two loops: **Product Discovery** (figures out *what to build and why*) and **Topic Execution** (figures out *how to build it and ships it*). Most sessions touch one or the other; switching loops mid-session is a signal to split the work into separate branches.
+Three phases, in order. Every phase has a required superpowers skill — invoke it before doing anything else in that phase.
 
-### Product Discovery (feature-level)
+### 1. Brainstorm
 
-Open-ended. Engaged when a topic's direction isn't yet clear enough to plan build work — or when shipping a build reveals product ambiguity that needs resolving.
+**Skill: `superpowers:brainstorming`** — invoke before any creative or feature work.
 
-- **Mode.** Ask the questions that surface user intent, product thesis, MVP cut, and continuity with adjacent features. Dig until the *why* is legible. Don't assume.
-- **Output.** Updated `docs/product/*.md`, roadmap/MVP decisions, sometimes rough design direction. No branches cut, no application code written.
-- **Done when.** Topic has a clear thesis, an MVP scope cut, and a concrete user moment. Ready to enter Topic Execution.
+- Run `superpowers:brainstorming` to surface intent, scope, constraints, and the concrete user moment.
+- Pull context from `docs/product/*.md`, Figma, or screenshots the user shares.
+- Output: agreed direction + a written plan in `docs/superpowers/plans/<YYYY-MM-DD>-<slug>.md` using `superpowers:writing-plans`. User reviews the plan before any code.
+- Done when direction is agreed and you know which files you're touching.
 
-### Topic Execution (branch-level)
+### 2. Build
 
-Structured. One branch → one PR → one coherent change. Five phases, each a **mode** (a goal, a stance), not a checklist. Pick the moves that serve each phase's goal for the specific topic.
+**Skills: `superpowers:test-driven-development` · `superpowers:executing-plans` · `superpowers:systematic-debugging` · `superpowers:verification-before-completion`**
 
-1. **ELICIT.** Confirm the topic has been product-discovered. If not, kick back to Discovery. If yes, ask only what shapes *this specific plan* — dependencies, edge cases, scope cuts, definition of done.
-2. **GROUND.** Find the gap between your model and reality. Read the feature doc, audit existing code, check what's already shipped, verify assumptions with small spikes. Surface anything that would change the plan.
-3. **PLAN.** Write it down in `docs/superpowers/plans/<YYYY-MM-DD>-<slug>.md` using the existing format (goal, files, tasks with `- [ ]` checkboxes, scope cuts, open questions, done criteria). **User reviews before any code.**
-4. **BUILD.** Execute the plan task-by-task (use `superpowers:executing-plans` or `superpowers:subagent-driven-development` when helpful). Tick checkboxes. Surface deviations immediately — don't silently drift from the plan.
-5. **SHIP.** Verify the plan's done criteria actually hold. Update session docs. Commit, push, open PR.
+- Cut a branch (`claude/<topic-slug>` off fresh `main`). Use `superpowers:using-git-worktrees` when isolation is needed.
+- Execute the plan task-by-task using `superpowers:executing-plans` (or `superpowers:subagent-driven-development` for independent parallel tasks, `superpowers:dispatching-parallel-agents` for genuinely parallelisable work).
+- Before writing implementation code for any feature or fix, use `superpowers:test-driven-development`.
+- When a bug or test failure appears, use `superpowers:systematic-debugging` before proposing a fix.
+- **Before claiming anything is done**, use `superpowers:verification-before-completion`. Run the build, typecheck, and any tests. Evidence before assertions.
+- Work in `apps/playground/` first. The playground is where you prove the pattern.
+- Start the dev server and check the golden path visually before declaring done.
+- Commit coherent units. Push after user confirms ("looks good", "push it", "ship").
+- Use `superpowers:finishing-a-development-branch` when implementation is complete and you're deciding how to integrate.
+
+### 3. Update DS
+
+**Skills: `build-component` · `superpowers:requesting-code-review`**
+
+- Promote what validated in the playground into `packages/ui`.
+- Use `build-component` when writing or editing any DS component — it enforces token mapping before code.
+- Token gaps found during build → add alias + utility to `tokens/globals.css` before using.
+- Update or add Storybook stories for every changed or new DS component.
+- Run `pnpm build` in `packages/ui` to verify exports.
+- Use `superpowers:requesting-code-review` before merging DS changes. Use `superpowers:receiving-code-review` when acting on feedback.
+- DS updates can be on the same branch or a follow-up branch — keep it coherent.
 
 ### Branch rules
 
-- **Branch by topic, not session.** A topic is a coherent unit of work that ships as one PR. Sessions can span multiple topics (rare); topics often span multiple sessions.
+- **Branch by topic, not session.** A topic is a coherent unit of work that ships as one PR.
 - **Naming:** `claude/<topic-slug>` — short, lowercase, hyphenated, descriptive.
 - **Cut procedure:**
   1. `git checkout main && git pull origin main` — catch up
   2. `git checkout -b claude/<topic-slug>` — branch off fresh `main`
   3. Work, commit, push with `git push -u origin claude/<topic-slug>`
-- **Cut a new branch when:** starting a new topic from the roadmap, starting an unplanned-but-shippable fix, or when a session crosses into a different topic mid-flow.
+- **Cut a new branch when:** starting a new topic, starting an unplanned-but-shippable fix, or when a session crosses into a different topic mid-flow.
 - **Stay on the current branch when:** continuing, polishing, or responding to review on work in progress, or writing end-of-session docs for the current topic.
 - **Every branch has an open PR (draft is fine) or is being abandoned.** A branch with no PR is invisible work.
 - **After merge:** delete the branch (local + remote).
 
-### Plan → branch mapping (current queue)
+### Current branch
 
-- Career clarity curriculum → `claude/career-clarity-curriculum` (pending Product Discovery)
-- Ship previews (Pages + Vercel) → `claude/ship-previews`
-- Career discovery polish → `claude/career-discovery-polish`
-- Motion foundation → `claude/motion-foundation`
-
-New branches cut as new topics emerge from Discovery.
+- `build-foundation` — challenge artifact engine (complete); uncommitted DS changes to `app-sidebar`, `badge`, `globals.css` pending review.
 
 ---
 
@@ -118,45 +130,9 @@ Known breaking changes already encountered:
 - `react-resizable-panels` v4: `PanelGroup`→`Group`, `PanelResizeHandle`→`Separator`
 - `calendar.tsx` `String.raw` template literals: not supported by Storybook's Babel docgen parser — use regular escaped strings instead
 
-## Design engineering skill
+## Component and DS work
 
-The `emil-design-eng` skill is installed project-wide (`.claude/skills/emil-design-eng`). Use it when:
-- Reviewing or polishing component design, spacing, typography, or interaction details in `packages/ui/`
-- Deciding on animation behaviour, easing curves, or motion timing
-- Auditing playground screens for the invisible details that compound into feel
-- Any question of taste — when something works but doesn't feel right yet
+- **`build-component`** — invoke before writing or editing any DS component. Covers token mapping, icon lookup, gap surfacing, and all hard rules. Single source of truth for component protocol.
+- **`emil-design-eng`** — invoke for design polish, animation decisions, spacing/typography taste, and any "works but doesn't feel right" question.
 
-Invoke it via `/emil-design-eng` or reference it explicitly when working on design system polish tasks.
-
-## Before building or polishing any component
-
-Every time, before writing or editing component code, **audit the design system first** for the complementary version of every element, asset, and property in the design:
-
-1. **Icons** — open the relevant Figma node, read the component description (e.g. `system / close_medium` → `IconCrossMedium`). Look up the exact name in `@central-icons-react/all` (use `packages/ui/src/stories/icon-categories.js` as the index). Match the size token from Figma (`size-5` = 20px, etc.). Never substitute a "close enough" icon — if Figma specs `close_medium`, use `IconCrossMedium`, not `IconCrossSmall` or `IconX`.
-2. **Tokens** — every color, spacing, radius, shadow, font-size, line-height, letter-spacing, and motion duration in the Figma must map to an existing Mande token (`--color-*`, `--radius-*`, `--shadow-*`, `text-base-medium`, `--duration-*`, etc.). If a token doesn't exist, surface it as an open question — **don't invent values, don't extend the system unilaterally**.
-3. **Properties** — Figma component variants (`state`, `mode`, `size`, etc.) map to existing Mande prop conventions. Do not add variants that the design didn't spec, and do not silently keep variants from the previous shadcn import that the new design doesn't cover.
-4. **Existing implementations** — when modifying a component that already exists, check what's already there (`packages/ui/src/components/ui/`, the `index.ts` exports, story files) and what consumes it. Polish the existing surface to match Figma rather than building parallel APIs.
-
-The rule: **don't maintain what's there, don't extend beyond the DS**. Match the Figma to the existing tokens, exactly. If something doesn't fit, that's a token or design conversation — flag it, don't paper over it.
-
-## Tokens — two-layer system
-
-**Components reference semantic aliases, never primitives directly.** This is how the system stays retargetable — change the palette once (e.g. warning yellow → orange) and every component follows without edits.
-
-1. **Primitives** (`tokens/globals.css` `@theme static`) — raw palette values: `--color-red-500`, `--color-orange-500`, etc. Don't reach for these in component code unless the design calls for a specific shade that isn't aliased (rare).
-2. **Semantic aliases** (`tokens/globals.css` `:root` + `.dark`) — purpose-named: `--semantic-warning-bg`, `--semantic-success-text`, etc. Swap palettes here and all consumers retarget automatically.
-3. **Tailwind utilities** (`tokens/globals.css` `@theme inline`) — expose aliases as classes: `text-warning`, `bg-success-subtle`, `border-info-border`, etc. This is what components use.
-
-Available status utilities: `text-info` / `text-success` / `text-warning` / `text-danger` (all resolve to the 500 shade in light, 400 in dark); `-subtle` for the 50-shade background; `-border` for the 300-shade border; `-text` for 700-shade darker text on colored bg.
-
-When a design introduces a status color you don't have a utility for, add the alias + utility first, then use it — don't hardcode the raw palette in the component.
-
-## Standards
-
-- **Icons**: `@central-icons-react/all` via `<Icon>` wrapper in `packages/ui/src/components/ui/icon.tsx`. Stroke scales with size (`12→1, 16→1.25, 20→1.5, 24→2, 32→2`); join round; radius 2; outlined by default. **Default size is 20px** unless Figma specifies otherwise or the component has a strong reason to deviate. Zero Lucide. Sizes: `12 | 16 | 20 | 24 | 32`.
-- **Radius**: `rounded-1` = 4px, `rounded-2` = 8px, `rounded-3` = 12px
-- **Motion**: `motion` library (v12) for custom animation, `tw-animate-css` for Radix data-state overlays. Springs in `tokens/motion.ts` (`snappy`, `smooth`, `gentle`, `bouncy`, `crisp`). CSS durations/easings via `var(--duration-base)`, `var(--ease-out)`, etc. Default to springs; default to ease-out for duration-based work.
-- **No ring-offset-background** — token doesn't exist in Mande
-- **No dark mode yet** — deferred
-- **Stories**: grouped as `Components/{Form|Display|Navigation|Overlays|Feedback|Layout}/{Name}`; foundation stories under `Foundations/{Name}`
-- **pnpm in Bash**: prefix with `export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" &&`
+**pnpm in Bash**: prefix with `export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" &&`

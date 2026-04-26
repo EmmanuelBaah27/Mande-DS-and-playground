@@ -1,5 +1,5 @@
 ---
-name: mande-component
+name: build-component
 description: Use when building or editing any component in the Mande Design System — enforces token mapping before code, surfaces gaps, never invents values.
 ---
 
@@ -32,21 +32,47 @@ Figma-generated code outputs raw values (`#fadcdb`, `oklch(93.6% 0.058 32)`, `12
 | Motion | `--duration-*`, `--ease-*`, springs | `var(--duration-fast)` → not `150ms` |
 | Icon | Match Figma description → `icon-categories.js` name | `<Icon name="IconCrossMedium" size={16} />` |
 
-## Step 3 — Surface gaps before proceeding
+## Step 3 — Check existing implementations
+
+When modifying a component that already exists:
+- Check what's in `packages/ui/src/components/ui/`, the `index.ts` exports, and story files
+- Check what consumes it before changing the API
+- Polish the existing surface to match Figma rather than building a parallel API
+- Figma component variants (`state`, `mode`, `size`, etc.) map to existing Mande prop conventions — don't add variants the design didn't spec, don't silently keep shadcn variants the new design doesn't cover
+
+## Step 4 — Surface gaps before writing code
 
 Flag anything that doesn't resolve to a named token. **Do not invent. Do not approximate.**
 
 Present the full mapping table + all open questions. Wait for confirmation before writing code.
 
+---
+
+## Token system
+
+**Components reference semantic aliases, never primitives directly.** Change the palette once and every component follows.
+
+1. **Primitives** (`globals.css` `@theme static`) — raw palette values: `--color-red-500`, `--color-orange-500`. Don't use these in component code unless the design calls for a specific shade with no alias.
+2. **Semantic aliases** (`globals.css` `:root`) — purpose-named: `--semantic-warning-bg`, `--semantic-success-text`. This is where palette swaps happen.
+3. **Tailwind utilities** (`globals.css` `@theme inline`) — what components actually use: `text-warning`, `bg-success-subtle`, `border-info-border`.
+
+Status utilities: `text-info` / `text-success` / `text-warning` / `text-danger` (500 shade); `-subtle` for 50-shade bg; `-border` for 300-shade border; `-text` for 700-shade text on coloured bg.
+
+When a design introduces a status colour with no utility, add the alias + utility to `globals.css` first, then use it.
+
+---
+
 ## Hard rules
 
 - **No raw values in code** — if Figma gave you a hex, oklch, or arbitrary px, you haven't finished the lookup yet
 - **No invented tokens** — if it's not in `globals.css`, flag it as a gap
-- **Always use the DS token name** — `bg-red-100`, `rounded-3`, `text-base-medium`, `var(--duration-instant)`
-- **Icons** — only `@central-icons-react/all` via `<Icon name="..." size={12|16|20|24|32} />`. Zero Lucide. Wrapper handles stroke weight — never pass stroke color
+- **Icons** — only `@central-icons-react/all` via `<Icon name="..." size={12|16|20|24|32} />`. Default size 20px. Stroke scales with size (`12→1, 16→1.25, 20→1.5, 24→2, 32→2`); join round; radius 2; outlined by default. Zero Lucide. Never pass stroke colour — the wrapper handles it
 - **No `ring-offset-background`** — token doesn't exist
-- **No dark mode** — deferred; don't add dark variants
-- **Stories** — group as `Components/{Form|Display|Navigation|Overlays|Feedback|Layout}/{Name}`
+- **No dark mode** — deferred; don't add `dark:` variants
+- **Motion** — `motion` library (v12) for custom animation, `tw-animate-css` for Radix `data-state` overlays. Springs in `tokens/motion.ts` (`snappy`, `smooth`, `gentle`, `bouncy`, `crisp`). Default to springs; default to ease-out for duration-based work
+- **Stories** — group as `Components/{Form|Display|Navigation|Overlays|Feedback|Layout}/{Name}`; foundation stories under `Foundations/{Name}`
+
+---
 
 ## Token quick-ref
 
