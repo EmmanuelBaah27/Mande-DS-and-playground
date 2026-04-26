@@ -1,5 +1,7 @@
 import type { ChallengeEvaluation, ChallengeResponseType } from "../../components/chat-data"
+// @ts-expect-error TS5097: explicit .ts import needed for node --test ESM resolution
 import { validateSubmissionPayload } from "./schema.ts"
+// @ts-expect-error TS5097: explicit .ts import needed for node --test ESM resolution
 import { RUBRICS, resolveRubricStatus } from "./rubrics.ts"
 
 export function evaluateChallengeSubmission(args: {
