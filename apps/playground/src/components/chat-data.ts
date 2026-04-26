@@ -2,13 +2,89 @@ import type { ChallengeType } from "@mande/ui"
 
 export type ChallengeInput = "textarea" | "confirm" | "url" | "short-text" | "list"
 
+export type ChallengeResponseType =
+  | "reflection"
+  | "structured_list"
+  | "resource_link"
+  | "outreach_draft"
+  | "interview_notes"
+
+export type ChallengeEvaluationStatus = "pass" | "revise" | "blocked"
+
+export type ChallengeResponseCore = {
+  challengeId: string
+  lessonId: string
+  responseType: ChallengeResponseType
+  studentId: string
+  attemptNumber: number
+  submittedAt: string
+  selfConfidence?: 1 | 2 | 3 | 4 | 5
+  artifactRefs?: string[]
+}
+
+export type ReflectionContent = { prompt: string; responseText: string }
+
+export type StructuredListContent = { items: Array<{ label: string; value: string }> }
+
+export type ResourceLinkContent = { url: string; label?: string; evidenceNote: string }
+
+export type OutreachDraftContent = {
+  channel: "linkedin" | "email" | "other"
+  targetRoleOrPersona: string
+  messageDraft: string
+  personalizationSignals: string[]
+}
+
+export type InterviewNotesContent = {
+  interviewTarget: string
+  date?: string
+  notes: string
+  keyInsights: string[]
+  actionPoints: string[]
+}
+
+export type ChallengeSubmission =
+  | (ChallengeResponseCore & {
+      responseType: "reflection"
+      content: ReflectionContent
+    })
+  | (ChallengeResponseCore & {
+      responseType: "structured_list"
+      content: StructuredListContent
+    })
+  | (ChallengeResponseCore & {
+      responseType: "resource_link"
+      content: ResourceLinkContent
+    })
+  | (ChallengeResponseCore & {
+      responseType: "outreach_draft"
+      content: OutreachDraftContent
+    })
+  | (ChallengeResponseCore & {
+      responseType: "interview_notes"
+      content: InterviewNotesContent
+    })
+
+export type ChallengeEvaluation = {
+  status: ChallengeEvaluationStatus
+  rubricScores: Record<string, number>
+  feedback: string
+  nextAction: string
+}
+
 export type ChallengeData = {
+  challengeId: string
+  lessonId: string
+  responseType: ChallengeResponseType
   type: ChallengeType
   prompt: string
   inputType: ChallengeInput
   placeholder?: string
   response?: string
   evaluated?: boolean
+  submission?: ChallengeSubmission
+  attempts?: ChallengeSubmission[]
+  evaluation?: ChallengeEvaluation
 }
 
 export type Message = {
@@ -94,6 +170,9 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         content: "",
         timestamp: "Day 1",
         challenge: {
+          challengeId: "discovering-options-reflection-1",
+          lessonId: "discovering-your-options-day-1",
+          responseType: "reflection",
           type: "reflection",
           prompt: "Reflect on the three graduate options — 9-5, freelancing, and entrepreneurship. Which do you gravitate towards, and why? Think about people you know who fit these categories — what does their daily life look like?",
           inputType: "textarea",
