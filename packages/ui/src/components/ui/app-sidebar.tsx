@@ -225,7 +225,13 @@ function CurriculumSection({
     <div className="flex flex-col gap-0.5">
       <div className="flex items-center justify-between px-2 py-0.5">
         <span className="text-small-regular text-muted-foreground">{label}</span>
-        <Badge color="warning" size="sm" showIcon={false}>{progress}</Badge>
+        <Badge
+          color="warning"
+          size="sm"
+          showIcon={false}
+        >
+          {progress}
+        </Badge>
       </div>
       {pillars.map((pillar) => {
         const isActive = pillar.state === "active"
