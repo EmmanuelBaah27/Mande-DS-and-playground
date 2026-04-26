@@ -13,7 +13,14 @@ import {
   challengeColors,
 } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
-import type { ChatSession, ChallengeData, SessionMode, Message } from "./chat-data"
+import {
+  createChallengeData,
+  selectChallengeState,
+  type ChatSession,
+  type ChallengeData,
+  type SessionMode,
+  type Message,
+} from "./chat-data"
 
 // ─── Markdown ─────────────────────────────────────────────────────────────────
 
@@ -87,7 +94,9 @@ function MessageBubble({ message }: { message: Message }) {
 // ─── ChallengeCard ────────────────────────────────────────────────────────────
 
 function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
-  if (challenge.response) {
+  const challengeState = selectChallengeState(challenge)
+
+  if (challengeState.isCompleted) {
     return (
       <motion.div
         initial={{ opacity: 0, y: 4 }}
@@ -101,7 +110,7 @@ function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
           </span>
           <span className="text-xs text-green-700 font-medium">Completed</span>
         </div>
-        <p className="text-sm text-neutral-700 leading-relaxed">{challenge.response}</p>
+        <p className="text-sm text-neutral-700 leading-relaxed">{challengeState.displayResponse}</p>
       </motion.div>
     )
   }
@@ -357,7 +366,9 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
 
   const lastMsg = activeSession.messages[activeSession.messages.length - 1]
   const activeChallenge =
-    lastMsg?.role === "assistant" && lastMsg.challenge && !lastMsg.challenge.response
+    lastMsg?.role === "assistant" &&
+    lastMsg.challenge &&
+    !selectChallengeState(lastMsg.challenge).isCompleted
       ? lastMsg.challenge
       : null
 
@@ -379,8 +390,14 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
       return {
         ...s,
         messages: s.messages.map((msg) =>
-          msg === lastMsg && msg.challenge && !msg.challenge.response
-            ? { ...msg, challenge: { ...msg.challenge, response } }
+          msg === lastMsg && msg.challenge && !selectChallengeState(msg.challenge).isCompleted
+            ? {
+                ...msg,
+                challenge: createChallengeData({
+                  ...msg.challenge,
+                  response,
+                }),
+              }
             : msg
         ),
       }

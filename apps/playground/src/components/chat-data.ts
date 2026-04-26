@@ -76,15 +76,97 @@ export type ChallengeData = {
   challengeId: string
   lessonId: string
   responseType: ChallengeResponseType
+  /**
+   * @deprecated Transitional compatibility field for existing UI tokens.
+   * Use `responseType` as the canonical challenge artifact type.
+   */
   type: ChallengeType
   prompt: string
   inputType: ChallengeInput
   placeholder?: string
+  /**
+   * @deprecated Legacy flat response string. Prefer `submission` / `attempts`.
+   */
   response?: string
   evaluated?: boolean
   submission?: ChallengeSubmission
   attempts?: ChallengeSubmission[]
   evaluation?: ChallengeEvaluation
+}
+
+export function toChallengeType(responseType: ChallengeResponseType): ChallengeType {
+  switch (responseType) {
+    case "reflection":
+      return "reflection"
+    case "structured_list":
+      return "self-report"
+    case "resource_link":
+      return "research-action"
+    case "outreach_draft":
+      return "craft"
+    case "interview_notes":
+      return "reflection"
+  }
+}
+
+export function createChallengeData(
+  input: Omit<ChallengeData, "type"> & { type?: ChallengeType }
+): ChallengeData {
+  return {
+    ...input,
+    type: toChallengeType(input.responseType),
+  }
+}
+
+export function getLatestChallengeResponse(challenge: ChallengeData): string | undefined {
+  const latestAttempt = challenge.attempts?.[challenge.attempts.length - 1] ?? challenge.submission
+
+  switch (latestAttempt?.responseType) {
+    case "reflection":
+      return latestAttempt.content.responseText
+    case "structured_list":
+      return latestAttempt.content.items.map((item) => `${item.label}: ${item.value}`).join("\n")
+    case "resource_link":
+      return latestAttempt.content.label
+        ? `${latestAttempt.content.label} (${latestAttempt.content.url})`
+        : latestAttempt.content.url
+    case "outreach_draft":
+      return latestAttempt.content.messageDraft
+    case "interview_notes":
+      return latestAttempt.content.notes
+    default:
+      return challenge.response
+  }
+}
+
+export type ChallengeSelectorState = {
+  displayResponse?: string
+  hasStructuredSubmission: boolean
+  hasLegacyResponse: boolean
+  isPassed: boolean
+  isBlocked: boolean
+  isCompleted: boolean
+}
+
+/**
+ * Transitional selector for challenge completion/response state.
+ * Temporary compatibility for legacy `response` while migrating to typed
+ * `submission` / `attempts` / `evaluation`.
+ */
+export function selectChallengeState(challenge: ChallengeData): ChallengeSelectorState {
+  const hasStructuredSubmission = Boolean(challenge.submission || challenge.attempts?.length)
+  const hasLegacyResponse = Boolean(challenge.response?.trim())
+  const isPassed = challenge.evaluation?.status === "pass"
+  const isBlocked = challenge.evaluation?.status === "blocked"
+
+  return {
+    displayResponse: getLatestChallengeResponse(challenge),
+    hasStructuredSubmission,
+    hasLegacyResponse,
+    isPassed,
+    isBlocked,
+    isCompleted: isPassed || (!challenge.evaluation && (hasStructuredSubmission || hasLegacyResponse)),
+  }
 }
 
 export type Message = {
@@ -169,15 +251,14 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         role: "assistant",
         content: "",
         timestamp: "Day 1",
-        challenge: {
+        challenge: createChallengeData({
           challengeId: "discovering-options-reflection-1",
           lessonId: "discovering-your-options-day-1",
           responseType: "reflection",
-          type: "reflection",
           prompt: "Reflect on the three graduate options — 9-5, freelancing, and entrepreneurship. Which do you gravitate towards, and why? Think about people you know who fit these categories — what does their daily life look like?",
           inputType: "textarea",
           placeholder: "Take your time. There's no right answer — just your honest thinking…",
-        },
+        }),
       },
     ],
   },
