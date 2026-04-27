@@ -21,6 +21,9 @@ import {
 } from "@mande/ui"
 import type { ChallengeType } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
+import { ChatReflectionInput } from "../../../components/chat-reflection-input"
+import { ChatQuizCard } from "../../../components/chat-quiz-card"
+import { ChatCommitmentCard } from "../../../components/chat-commitment-card"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -28,7 +31,9 @@ type ChallengeInput = "textarea" | "confirm" | "url" | "short-text" | "list"
 
 type ChallengeData = {
   type: ChallengeType
+  artifactType?: "reflection" | "commitment" | "quiz" | "mbti" | "holland"
   prompt: string
+  description?: string
   inputType: ChallengeInput
   placeholder?: string
   response?: string
@@ -254,7 +259,119 @@ function ChatNavbar({
   )
 }
 
-function MessageBubble({ message }: { message: Message }) {
+// ─── Demo quiz data ───────────────────────────────────────────────────────────
+
+const DEMO_QUIZ_QUESTIONS = [
+  {
+    id: "q1",
+    question: "When given a complex project, you prefer to:",
+    options: [
+      { id: "steps",       label: "Break it into clear steps first" },
+      { id: "collaborate", label: "Collaborate with others first" },
+      { id: "system",      label: "See the whole system at once" },
+      { id: "execute",     label: "Get into execution immediately" },
+    ],
+  },
+  {
+    id: "q2",
+    question: "Your ideal work environment is:",
+    options: [
+      { id: "solo",       label: "Quiet and independent" },
+      { id: "collab",     label: "Collaborative and open" },
+      { id: "flexible",   label: "Flexible — depends on the task" },
+      { id: "structured", label: "Structured with clear expectations" },
+    ],
+  },
+  {
+    id: "q3",
+    question: "When you hit a blocker, you typically:",
+    options: [
+      { id: "research",   label: "Research until you find the answer" },
+      { id: "ask",        label: "Ask someone immediately" },
+      { id: "workaround", label: "Find a workaround and move on" },
+      { id: "step-back",  label: "Step back and rethink the approach" },
+    ],
+  },
+]
+
+// ─── Artifact widget wrappers ─────────────────────────────────────────────────
+
+function ArtifactCompletedSummary({ challenge }: { challenge: ChallengeData }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={springs.snappy}
+      className="rounded-3 border border-green-200 bg-green-50 px-4 py-3 flex items-center gap-2"
+    >
+      <Icon name="IconCheckmark2" size={12} className="text-green-600 shrink-0" />
+      <span className="text-sm text-green-800 truncate">{challenge.response}</span>
+    </motion.div>
+  )
+}
+
+function ReflectionWidget({
+  challenge,
+  onComplete,
+}: {
+  challenge: ChallengeData
+  onComplete: (summary: string) => void
+}) {
+  const [value, setValue] = useState("")
+  return (
+    <ChatReflectionInput
+      prompt={challenge.prompt}
+      hint="Aim for 3-5 sentences"
+      value={value}
+      onChange={setValue}
+      onSubmit={() => onComplete(value.trim())}
+    />
+  )
+}
+
+function QuizWidget({ onComplete }: { onComplete: (summary: string) => void }) {
+  const [index, setIndex] = useState(0)
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [custom, setCustom] = useState("")
+
+  const current = DEMO_QUIZ_QUESTIONS[index]
+  const isLast = index === DEMO_QUIZ_QUESTIONS.length - 1
+  const hasAnswer = Boolean(answers[current.id] || custom.trim())
+
+  return (
+    <ChatQuizCard
+      question={current.question}
+      options={current.options}
+      current={index + 1}
+      total={DEMO_QUIZ_QUESTIONS.length}
+      selectedId={answers[current.id]}
+      customValue={custom}
+      onSelect={(id: string) => setAnswers((prev) => ({ ...prev, [current.id]: id }))}
+      onCustomChange={setCustom}
+      onPrev={index > 0 ? () => { setIndex((i) => i - 1); setCustom("") } : undefined}
+      onNext={
+        hasAnswer
+          ? () => {
+              if (isLast) {
+                onComplete("Completed work preference quiz")
+              } else {
+                setIndex((i) => i + 1)
+                setCustom("")
+              }
+            }
+          : undefined
+      }
+    />
+  )
+}
+
+function MessageBubble({
+  message,
+  onArtifactComplete,
+}: {
+  message: Message
+  onArtifactComplete: (messageId: string, summary: string) => void
+}) {
   const isUser = message.role === "user"
 
   if (isUser) {
@@ -269,16 +386,36 @@ function MessageBubble({ message }: { message: Message }) {
     )
   }
 
-  // Challenge message — assistant issues a challenge
   if (message.challenge) {
-    return <ChallengeMessage challenge={message.challenge} />
+    const { challenge } = message
+    const done = (summary: string) => onArtifactComplete(message.id, summary)
+
+    if (challenge.response) {
+      return <ArtifactCompletedSummary challenge={challenge} />
+    }
+
+    switch (challenge.artifactType) {
+      case "reflection":
+        return <ReflectionWidget challenge={challenge} onComplete={done} />
+      case "commitment":
+        return (
+          <ChatCommitmentCard
+            title={challenge.prompt}
+            description={challenge.description ?? ""}
+            onAccept={() => done("Accepted")}
+            onDecline={() => done("Declined")}
+          />
+        )
+      case "quiz":
+        return <QuizWidget onComplete={done} />
+      default:
+        return <ChallengeMessage challenge={challenge} />
+    }
   }
 
   return (
     <div className="text-neutral-900 text-sm leading-relaxed">
-      <ReactMarkdown components={mdComponents}>
-        {message.content}
-      </ReactMarkdown>
+      <ReactMarkdown components={mdComponents}>{message.content}</ReactMarkdown>
     </div>
   )
 }
@@ -481,7 +618,10 @@ export default function ChatPage() {
   // Derive active (unanswered) challenge from the last message
   const lastMsg = activeSession.messages[activeSession.messages.length - 1]
   const activeChallenge =
-    lastMsg?.role === "assistant" && lastMsg.challenge && !lastMsg.challenge.response
+    lastMsg?.role === "assistant" &&
+    lastMsg.challenge &&
+    !lastMsg.challenge.response &&
+    !lastMsg.challenge.artifactType
       ? lastMsg.challenge
       : null
 
@@ -498,6 +638,22 @@ export default function ChatPage() {
           ? { ...s, messages: [...s.messages, newMessage] }
           : s
       )
+    )
+  }
+
+  const handleArtifactComplete = (messageId: string, summary: string) => {
+    setSessions((prev) =>
+      prev.map((s) => {
+        if (s.id !== activeSessionId) return s
+        return {
+          ...s,
+          messages: s.messages.map((msg) =>
+            msg.id === messageId && msg.challenge
+              ? { ...msg, challenge: { ...msg.challenge, response: summary } }
+              : msg
+          ),
+        }
+      })
     )
   }
 
@@ -531,7 +687,11 @@ export default function ChatPage() {
           <div className="flex-1 py-6 px-4">
             <div className="max-w-3xl mx-auto flex flex-col gap-6">
               {activeSession.messages.map((msg) => (
-                <MessageBubble key={msg.id} message={msg} />
+                <MessageBubble
+                  key={msg.id}
+                  message={msg}
+                  onArtifactComplete={handleArtifactComplete}
+                />
               ))}
               <div ref={bottomRef} />
             </div>
