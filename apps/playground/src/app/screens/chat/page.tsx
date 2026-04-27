@@ -24,6 +24,8 @@ import { cn } from "@mande/ui/lib/utils"
 import { ChatReflectionInput } from "../../../components/chat-reflection-input"
 import { ChatQuizCard } from "../../../components/chat-quiz-card"
 import { ChatCommitmentCard } from "../../../components/chat-commitment-card"
+import { ChatMBTIPicker } from "../../../components/chat-mbti-picker"
+import { ChatHollandPicker } from "../../../components/chat-holland-picker"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -408,6 +410,14 @@ function MessageBubble({
         )
       case "quiz":
         return <QuizWidget onComplete={done} />
+      case "mbti":
+        return <ChatMBTIPicker onSubmit={(type) => done(type)} />
+      case "holland":
+        return (
+          <ChatHollandPicker
+            onSubmit={(code) => done(code.join(" · "))}
+          />
+        )
       default:
         return <ChallengeMessage challenge={challenge} />
     }
