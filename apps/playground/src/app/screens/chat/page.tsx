@@ -26,6 +26,7 @@ import { ChatQuizCard } from "../../../components/chat-quiz-card"
 import { ChatCommitmentCard } from "../../../components/chat-commitment-card"
 import { ChatMBTIPicker } from "../../../components/chat-mbti-picker"
 import { ChatHollandPicker } from "../../../components/chat-holland-picker"
+import { DevTriggerPanel, type InjectableChallenge } from "../../../components/dev-trigger-panel"
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -651,6 +652,23 @@ export default function ChatPage() {
     )
   }
 
+  const handleInject = (challenge: InjectableChallenge) => {
+    const newMessage: Message = {
+      id: `artifact-${Date.now()}`,
+      role: "assistant",
+      content: "",
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      challenge,
+    }
+    setSessions((prev) =>
+      prev.map((s) =>
+        s.id === activeSessionId
+          ? { ...s, messages: [...s.messages, newMessage] }
+          : s
+      )
+    )
+  }
+
   const handleArtifactComplete = (messageId: string, summary: string) => {
     setSessions((prev) =>
       prev.map((s) => {
@@ -720,6 +738,7 @@ export default function ChatPage() {
           onChallengeSubmit={handleChallengeSubmit}
         />
       </div>
+      <DevTriggerPanel onInject={handleInject} />
     </div>
   )
 }
