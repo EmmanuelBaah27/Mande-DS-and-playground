@@ -81,6 +81,14 @@ export function WelcomeState({
     e.target.value = ""
   }
 
+  const curriculumProgress = resumeSession?.progress
+  const resumeIconTone =
+    curriculumProgress &&
+    curriculumProgress.pillarIndex >= curriculumProgress.totalPillars &&
+    curriculumProgress.stepIndex >= curriculumProgress.totalSteps
+      ? "text-green-500"
+      : "text-blue-500"
+
   return (
     <div className="flex-1 flex flex-col min-h-0">
       {/* Scrollable content */}
@@ -90,7 +98,7 @@ export function WelcomeState({
             {/* Title group */}
             <div className="flex flex-col gap-2">
               <img src="/mande-ai-icon.svg" alt="Mande" width={28} height={28} />
-              <h1 className="text-H2 text-neutral-900">Welcome back, {userName}</h1>
+              <h1 className="text-H1 text-neutral-900">Welcome back, {userName}</h1>
             </div>
 
             {/* Resume group — text + card, 8px apart */}
@@ -101,7 +109,7 @@ export function WelcomeState({
                   onClick={() => onResumeSession(resumeSession.id)}
                   className="w-full flex items-center gap-3 px-4 py-3 rounded-4 border border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm transition-all text-left"
                 >
-                  <div className="shrink-0 text-orange-500">
+                  <div className={`shrink-0 ${resumeIconTone}`}>
                     <Icon name="IconCircleDashed" size={20} />
                   </div>
                   <div className="flex-1 min-w-0">

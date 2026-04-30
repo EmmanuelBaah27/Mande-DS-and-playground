@@ -226,7 +226,7 @@ function CurriculumSection({
       <div className="flex items-center justify-between px-2 py-0.5">
         <span className="text-small-regular text-muted-foreground">{label}</span>
         <Badge
-          color="warning"
+          color="info"
           size="sm"
           showIcon={false}
         >
@@ -244,7 +244,7 @@ function CurriculumSection({
               <Icon
                 name={isActive ? "IconCircleDashed" : "IconLock"}
                 size={20}
-                className={isActive ? "text-orange-500" : undefined}
+                className={isActive ? "text-blue-500" : undefined}
               />
             }
             selected={isActive && activeItem === pillar.id}

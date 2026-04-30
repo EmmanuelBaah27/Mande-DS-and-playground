@@ -4,12 +4,25 @@ import { ChatQuizCard } from "./chat-quiz-card"
 import { ChatReflectionInput } from "./chat-reflection-input"
 import { ChatCommitmentCard } from "./chat-commitment-card"
 
-// ─── Shared wrapper ───────────────────────────────────────────────────────────
+// ─── Wrappers ─────────────────────────────────────────────────────────────────
 
-function Wrapper({ children }: { children: React.ReactNode }) {
+function DesktopWrapper({ children }: { children: React.ReactNode }) {
   return (
     <div className="bg-neutral-100 p-8 min-h-screen">
-      <div className="max-w-2xl mx-auto">{children}</div>
+      <div className="max-w-3xl mx-auto">{children}</div>
+    </div>
+  )
+}
+
+function MobileWrapper({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="bg-neutral-100 min-h-screen flex items-start justify-center">
+      <div
+        className="w-full bg-neutral-100 p-4"
+        style={{ maxWidth: 390 }}
+      >
+        {children}
+      </div>
     </div>
   )
 }
@@ -23,9 +36,10 @@ const quizOptions = [
   { id: "execute",     label: "Get into execution immediately" },
 ]
 
-function QuizDemo() {
+function QuizDemo({ mobile = false }: { mobile?: boolean }) {
   const [selected, setSelected] = useState<string | undefined>()
   const [custom, setCustom] = useState("")
+  const Wrapper = mobile ? MobileWrapper : DesktopWrapper
   return (
     <Wrapper>
       <ChatQuizCard
@@ -46,8 +60,9 @@ function QuizDemo() {
 
 // ─── Reflection ───────────────────────────────────────────────────────────────
 
-function ReflectionDemo() {
+function ReflectionDemo({ mobile = false }: { mobile?: boolean }) {
   const [value, setValue] = useState("")
+  const Wrapper = mobile ? MobileWrapper : DesktopWrapper
   return (
     <Wrapper>
       <ChatReflectionInput
@@ -63,7 +78,8 @@ function ReflectionDemo() {
 
 // ─── Commitment ───────────────────────────────────────────────────────────────
 
-function CommitmentDemo() {
+function CommitmentDemo({ mobile = false }: { mobile?: boolean }) {
+  const Wrapper = mobile ? MobileWrapper : DesktopWrapper
   return (
     <Wrapper>
       <ChatCommitmentCard
@@ -85,6 +101,9 @@ const meta = {
 export default meta
 type Story = StoryObj
 
-export const Quiz: Story = { render: () => <QuizDemo /> }
-export const Reflection: Story = { render: () => <ReflectionDemo /> }
-export const Commitment: Story = { render: () => <CommitmentDemo /> }
+export const Quiz: Story           = { render: () => <QuizDemo /> }
+export const QuizMobile: Story     = { render: () => <QuizDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }
+export const Reflection: Story     = { render: () => <ReflectionDemo /> }
+export const ReflectionMobile: Story = { render: () => <ReflectionDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }
+export const Commitment: Story     = { render: () => <CommitmentDemo /> }
+export const CommitmentMobile: Story = { render: () => <CommitmentDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }

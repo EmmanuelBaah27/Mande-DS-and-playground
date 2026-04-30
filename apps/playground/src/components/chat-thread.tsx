@@ -13,6 +13,11 @@ import {
   challengeColors,
 } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
+import { ChatReflectionInput } from "./chat-reflection-input"
+import { ChatQuizCard } from "./chat-quiz-card"
+import { ChatCommitmentCard } from "./chat-commitment-card"
+import { ChatMBTIPicker } from "./chat-mbti-picker"
+import { ChatHollandPicker } from "./chat-holland-picker"
 import { evaluateChallengeSubmission } from "../lib/challenges/evaluate"
 import { validateSubmissionPayload } from "../lib/challenges/schema"
 import {
@@ -24,6 +29,93 @@ import {
   type SessionMode,
   type Message,
 } from "./chat-data"
+
+const DEMO_QUIZ_QUESTIONS = [
+  {
+    id: "q1",
+    question: "When given a complex project, you prefer to:",
+    options: [
+      { id: "steps", label: "Break it into clear steps first" },
+      { id: "collaborate", label: "Collaborate with others first" },
+      { id: "system", label: "See the whole system at once" },
+      { id: "execute", label: "Get into execution immediately" },
+    ],
+  },
+  {
+    id: "q2",
+    question: "Your ideal work environment is:",
+    options: [
+      { id: "solo", label: "Quiet and independent" },
+      { id: "collab", label: "Collaborative and open" },
+      { id: "flexible", label: "Flexible - depends on the task" },
+      { id: "structured", label: "Structured with clear expectations" },
+    ],
+  },
+]
+
+type ArtifactFlowStep = {
+  id: string
+  assistant: string
+  challenge: Omit<ChallengeData, "type">
+}
+
+const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, ArtifactFlowStep | null> = {
+  commitment: {
+    id: "artifact-reflection-1",
+    assistant:
+      "Great. Let's start with a short reflection so I can understand your starting point before we get tactical.",
+    challenge: {
+      challengeId: "artifact-reflection-1",
+      lessonId: "discovering-your-options-day-1",
+      responseType: "reflection",
+      artifactType: "reflection",
+      prompt:
+        "In 3-5 sentences, what kind of workday gives you energy, and what kind drains you?",
+      inputType: "textarea",
+      placeholder: "Write your reflection here...",
+    },
+  },
+  reflection: {
+    id: "artifact-quiz-1",
+    assistant:
+      "Nice. Next, let's run a quick work-preference check to sharpen your pattern.",
+    challenge: {
+      challengeId: "artifact-quiz-1",
+      lessonId: "discovering-your-options-day-1",
+      responseType: "structured_list",
+      artifactType: "quiz",
+      prompt: "Work preference quiz",
+      inputType: "confirm",
+    },
+  },
+  quiz: {
+    id: "artifact-mbti-1",
+    assistant:
+      "Solid. Let's add your MBTI so we can triangulate this with your preference signal.",
+    challenge: {
+      challengeId: "artifact-mbti-1",
+      lessonId: "discovering-your-options-day-1",
+      responseType: "resource_link",
+      artifactType: "mbti",
+      prompt: "What's your MBTI personality type?",
+      inputType: "confirm",
+    },
+  },
+  mbti: {
+    id: "artifact-holland-1",
+    assistant:
+      "Great. One more input: your Holland code, then I'll synthesize what this points to.",
+    challenge: {
+      challengeId: "artifact-holland-1",
+      lessonId: "discovering-your-options-day-1",
+      responseType: "structured_list",
+      artifactType: "holland",
+      prompt: "What's your Holland code?",
+      inputType: "confirm",
+    },
+  },
+  holland: null,
+}
 
 // ─── Markdown ─────────────────────────────────────────────────────────────────
 
@@ -78,12 +170,96 @@ function UserBubble({ content }: { content: string }) {
 
 // ─── MessageBubble ────────────────────────────────────────────────────────────
 
-function MessageBubble({ message }: { message: Message }) {
+function ReflectionWidget({
+  challenge,
+  onComplete,
+}: {
+  challenge: ChallengeData
+  onComplete: (summary: string) => void
+}) {
+  const [value, setValue] = useState("")
+  return (
+    <ChatReflectionInput
+      prompt={challenge.prompt}
+      hint="Aim for 3-5 sentences"
+      value={value}
+      onChange={setValue}
+      onSubmit={() => onComplete(value.trim())}
+    />
+  )
+}
+
+function QuizWidget({ onComplete }: { onComplete: (summary: string) => void }) {
+  const [index, setIndex] = useState(0)
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [custom, setCustom] = useState("")
+
+  const current = DEMO_QUIZ_QUESTIONS[index]
+  const isLast = index === DEMO_QUIZ_QUESTIONS.length - 1
+  const hasAnswer = Boolean(answers[current.id] || custom.trim())
+
+  return (
+    <ChatQuizCard
+      question={current.question}
+      options={current.options}
+      current={index + 1}
+      total={DEMO_QUIZ_QUESTIONS.length}
+      selectedId={answers[current.id]}
+      customValue={custom}
+      onSelect={(id: string) => setAnswers((prev) => ({ ...prev, [current.id]: id }))}
+      onCustomChange={setCustom}
+      onPrev={index > 0 ? () => { setIndex((i) => i - 1); setCustom("") } : undefined}
+      onNext={
+        hasAnswer
+          ? () => {
+              if (isLast) onComplete("Completed work preference quiz")
+              else {
+                setIndex((i) => i + 1)
+                setCustom("")
+              }
+            }
+          : undefined
+      }
+    />
+  )
+}
+
+function MessageBubble({
+  message,
+  onArtifactComplete,
+}: {
+  message: Message
+  onArtifactComplete: (messageId: string, summary: string) => void
+}) {
   if (message.role === "user") {
     return <UserBubble content={message.content} />
   }
 
   if (message.challenge) {
+    if (message.challenge.artifactType && !selectChallengeState(message.challenge).isCompleted) {
+      const done = (summary: string) => onArtifactComplete(message.id, summary)
+      switch (message.challenge.artifactType) {
+        case "reflection":
+          return <ReflectionWidget challenge={message.challenge} onComplete={done} />
+        case "commitment":
+          return (
+            <ChatCommitmentCard
+              title={message.challenge.prompt}
+              description={message.challenge.description ?? ""}
+              onAccept={() => done("Accepted 10-day challenge")}
+              onDecline={() => done("Not yet")}
+            />
+          )
+        case "quiz":
+          return <QuizWidget onComplete={done} />
+        case "mbti":
+          return <ChatMBTIPicker onSubmit={(type) => done(type)} />
+        case "holland":
+          return <ChatHollandPicker onSubmit={(code) => done(code.join(" - "))} />
+        default:
+          break
+      }
+    }
     return <ChallengeCard challenge={message.challenge} />
   }
 
@@ -406,6 +582,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   const activeChallenge =
     lastMsg?.role === "assistant" &&
     lastMsg.challenge &&
+    !lastMsg.challenge.artifactType &&
     lastMsg.challenge.evaluation?.status !== "pass" &&
     !selectChallengeState(lastMsg.challenge).isCompleted
       ? lastMsg.challenge
@@ -516,13 +693,61 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
     }))
   }
 
+  const handleArtifactComplete = (messageId: string, summary: string) => {
+    onSessionsChange(
+      sessions.map((s) => {
+        if (s.id !== activeSessionId) return s
+        const updatedMessages = s.messages.map((msg) =>
+          msg.id === messageId && msg.challenge
+            ? {
+                ...msg,
+                challenge: createChallengeData({
+                  ...msg.challenge,
+                  response: summary,
+                }),
+              }
+            : msg
+        )
+
+        const completed = updatedMessages.find((msg) => msg.id === messageId)?.challenge
+        const nextStep = completed?.artifactType ? ARTIFACT_FLOW_STEPS[completed.artifactType] : null
+        if (!nextStep) return { ...s, messages: updatedMessages }
+
+        const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+        return {
+          ...s,
+          messages: [
+            ...updatedMessages,
+            {
+              id: `artifact-note-${Date.now()}-${nextStep.id}`,
+              role: "assistant",
+              content: nextStep.assistant,
+              timestamp,
+            },
+            {
+              id: `artifact-challenge-${Date.now()}-${nextStep.id}`,
+              role: "assistant",
+              content: "",
+              timestamp,
+              challenge: createChallengeData(nextStep.challenge),
+            },
+          ],
+        }
+      })
+    )
+  }
+
   return (
     <div className="flex-1 flex flex-col min-h-0">
       <div className="relative flex-1 overflow-y-auto min-h-0">
         <div className="py-6 px-4">
           <div className="max-w-3xl mx-auto flex flex-col gap-6">
             {activeSession.messages.map((msg) => (
-              <MessageBubble key={msg.id} message={msg} />
+              <MessageBubble
+                key={msg.id}
+                message={msg}
+                onArtifactComplete={handleArtifactComplete}
+              />
             ))}
             <div ref={bottomRef} />
           </div>

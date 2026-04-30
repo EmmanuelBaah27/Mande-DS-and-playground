@@ -76,6 +76,8 @@ export type ChallengeData = {
   challengeId: string
   lessonId: string
   responseType: ChallengeResponseType
+  artifactType?: "reflection" | "commitment" | "quiz" | "mbti" | "holland"
+  description?: string
   /**
    * @deprecated Transitional compatibility field for existing UI tokens.
    * Use `responseType` as the canonical challenge artifact type.
@@ -255,9 +257,11 @@ export const INITIAL_SESSIONS: ChatSession[] = [
           challengeId: "discovering-options-reflection-1",
           lessonId: "discovering-your-options-day-1",
           responseType: "reflection",
-          prompt: "Reflect on the three graduate options — 9-5, freelancing, and entrepreneurship. Which do you gravitate towards, and why? Think about people you know who fit these categories — what does their daily life look like?",
-          inputType: "textarea",
-          placeholder: "Take your time. There's no right answer — just your honest thinking…",
+          artifactType: "commitment",
+          prompt: "Take the 10-day self-discovery challenge?",
+          description:
+            "School gave you a start. What comes next is on you. Figure out what you want, what you're good at, and how to make that work in the real world.",
+          inputType: "confirm",
         }),
       },
     ],

@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Icon } from "@mande/ui"
+import { Button, Icon } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
 
 export interface QuizOption {
@@ -24,40 +24,14 @@ export interface ChatQuizCardProps {
   className?: string
 }
 
-function ProgressArc({ current, total }: { current: number; total: number }) {
-  const size = 24
-  const strokeWidth = 2
-  const r = (size - strokeWidth) / 2
-  const circumference = 2 * Math.PI * r
-  const offset = circumference * (1 - current / total)
-
+function ProgressBar({ current, total }: { current: number; total: number }) {
   return (
-    <svg
-      width={size}
-      height={size}
-      className="-rotate-90"
-      aria-hidden
-    >
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={r}
-        fill="none"
-        strokeWidth={strokeWidth}
-        className="stroke-neutral-200"
+    <div className="w-12 h-1.5 shrink-0 rounded-full bg-neutral-200 overflow-hidden">
+      <div
+        className="h-full rounded-full bg-neutral-500 transition-[width] duration-[var(--duration-base)] ease-[var(--ease-out)]"
+        style={{ width: `${(current / total) * 100}%` }}
       />
-      <circle
-        cx={size / 2}
-        cy={size / 2}
-        r={r}
-        fill="none"
-        strokeWidth={strokeWidth}
-        strokeDasharray={circumference}
-        strokeDashoffset={offset}
-        strokeLinecap="round"
-        className="stroke-foreground transition-[stroke-dashoffset] duration-[var(--duration-base)] ease-[var(--ease-out)]"
-      />
-    </svg>
+    </div>
   )
 }
 
@@ -75,18 +49,23 @@ export function ChatQuizCard({
   onNext,
   className,
 }: ChatQuizCardProps) {
+  const handleOptionClick = (id: string) => {
+    onSelect(id)
+    onNext?.()
+  }
+
   return (
-    <div className={cn("bg-card rounded-5 p-6 flex flex-col gap-3", className)}>
-      <p className="text-lg-regular text-foreground">{question}</p>
+    <div className={cn("bg-card rounded-5 px-5 py-4 flex flex-col gap-3 border border-neutral-a20 w-full", className)}>
+      <p className="text-lg-medium text-foreground break-words">{question}</p>
 
       <div className="flex flex-col gap-2">
         {options.map((option) => (
           <button
             key={option.id}
             type="button"
-            onClick={() => onSelect(option.id)}
+            onClick={() => handleOptionClick(option.id)}
             className={cn(
-              "w-full text-left rounded-3 px-4 py-3.5 text-lg-regular text-foreground transition-colors",
+              "w-full text-left rounded-3 px-3 py-2.5 text-base-regular text-foreground transition-colors",
               selectedId === option.id
                 ? "bg-neutral-200"
                 : "bg-neutral-100 hover:bg-neutral-200"
@@ -97,43 +76,58 @@ export function ChatQuizCard({
         ))}
 
         {allowCustom && (
-          <input
-            type="text"
-            value={customValue}
-            onChange={(e) => onCustomChange(e.target.value)}
-            placeholder="Type something else"
-            className="w-full rounded-3 bg-neutral-100 px-4 py-3.5 text-lg-regular text-foreground placeholder:text-muted-foreground outline-none focus:bg-neutral-200 transition-colors"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              value={customValue}
+              onChange={(e) => onCustomChange(e.target.value)}
+              placeholder="Type something else"
+              className={cn(
+                "w-full rounded-3 bg-neutral-100 px-3 py-2.5 text-base-regular text-foreground placeholder:text-muted-foreground outline-none focus:bg-neutral-200 transition-colors",
+                customValue.trim().length > 0 && "pr-14"
+              )}
+            />
+            {customValue.trim().length > 0 && (
+              <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={<Icon name="IconArrowRight" size={16} />}
+                  iconPosition="only"
+                  onClick={onNext}
+                  disabled={!onNext}
+                  aria-label="Next question"
+                />
+              </div>
+            )}
+          </div>
         )}
       </div>
 
-      <div className="flex items-center justify-between mt-1">
-        <div className="flex items-center gap-2">
-          <ProgressArc current={current} total={total} />
-          <span className="text-small-regular text-muted-foreground">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <ProgressBar current={current} total={total} />
+          <span className="text-small-regular text-muted-foreground whitespace-nowrap">
             {current} of {total}
           </span>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
+        <div className="flex items-center gap-2 shrink-0">
+          <Button
+            variant="secondary"
+            icon={<Icon name="IconChevronLeft" size={20} stroke="2" radius="1" />}
+            iconPosition="only"
             onClick={onPrev}
             disabled={!onPrev}
             aria-label="Previous question"
-            className="size-11 rounded-full border border-border bg-background inline-flex items-center justify-center hover:bg-subtle transition-colors disabled:opacity-40 disabled:pointer-events-none"
-          >
-            <Icon name="IconArrowLeft" size={20} />
-          </button>
-          <button
-            type="button"
+          />
+          <Button
+            variant="secondary"
             onClick={onNext}
             disabled={!onNext}
-            aria-label="Next question"
-            className="size-11 rounded-full border border-border bg-background inline-flex items-center justify-center hover:bg-subtle transition-colors disabled:opacity-40 disabled:pointer-events-none"
           >
-            <Icon name="IconArrowRight" size={20} />
-          </button>
+            Skip
+          </Button>
         </div>
       </div>
     </div>

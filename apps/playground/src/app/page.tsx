@@ -7,8 +7,21 @@ import { motion, AnimatePresence } from "motion/react"
 import { Icon, AppSidebar, cn } from "@mande/ui"
 import { ChatThread } from "../components/chat-thread"
 import { WelcomeState } from "../components/welcome-state"
-import { INITIAL_SESSIONS, CURRICULUM_MODULES } from "../components/chat-data"
+import { DevTriggerPanel, type InjectableChallenge } from "../components/dev-trigger-panel"
+import { INITIAL_SESSIONS, CURRICULUM_MODULES, createChallengeData } from "../components/chat-data"
 import type { ChatSession } from "../components/chat-data"
+
+type PillarState = "active" | "locked" | "completed"
+
+type CurriculumSectionConfig = {
+  label: string
+  progress: string
+  pillars: Array<{
+    id: string
+    label: string
+    state: PillarState
+  }>
+}
 
 // ─── Chat navbar — editable session title ─────────────────────────────────────
 
@@ -74,14 +87,31 @@ const NAV_ITEMS = [
   { id: "curriculum", label: "Curriculum", icon: <Icon name="IconNewspaper1" size={20} /> },
 ]
 
-const CURRICULUM_SECTION = {
-  label: "Career clarity",
-  progress: "1/3",
-  pillars: CURRICULUM_MODULES.map((m, i) => ({
-    id: m.id,
-    label: m.label,
-    state: (i === 0 ? "active" : "locked") as "active" | "locked" | "completed",
-  })),
+function getCurriculumSection(sessions: ChatSession[]): CurriculumSectionConfig {
+  const curriculumSession = sessions.find((session) => session.mode === "curriculum")
+  const totalModules = CURRICULUM_MODULES.length
+  const activeModuleIndex = Math.max(
+    0,
+    Math.min(totalModules - 1, (curriculumSession?.progress?.pillarIndex ?? 1) - 1)
+  )
+
+  const pillars = CURRICULUM_MODULES.map((module, index) => {
+    let state: PillarState = "locked"
+    if (index < activeModuleIndex) state = "completed"
+    if (index === activeModuleIndex) state = "active"
+
+    return {
+      id: module.id,
+      label: module.label,
+      state,
+    }
+  })
+
+  return {
+    label: "Career clarity",
+    progress: "Active",
+    pillars,
+  }
 }
 
 const SIDEBAR_W = 272 // w-64 (256) + p-2 each side (8+8)
@@ -173,10 +203,59 @@ export default function ChatPage() {
     )
   }
 
+  const toResponseType = (artifactType: InjectableChallenge["artifactType"]) => {
+    switch (artifactType) {
+      case "reflection":
+      case "commitment":
+        return "reflection" as const
+      case "quiz":
+      case "holland":
+        return "structured_list" as const
+      case "mbti":
+        return "resource_link" as const
+    }
+  }
+
+  const handleInjectChallenge = (injectable: InjectableChallenge) => {
+    if (!activeSessionId) return
+    const now = Date.now()
+    const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+
+    setSessions((prev) =>
+      prev.map((session) => {
+        if (session.id !== activeSessionId) return session
+        return {
+          ...session,
+          messages: [
+            ...session.messages,
+            {
+              id: `inject-${now}`,
+              role: "assistant",
+              content: "",
+              timestamp,
+              challenge: createChallengeData({
+                challengeId: `inject-${injectable.artifactType}-${now}`,
+                lessonId: "artifact-dev-flow",
+                responseType: toResponseType(injectable.artifactType),
+                artifactType: injectable.artifactType,
+                prompt: injectable.prompt,
+                description: injectable.description,
+                inputType: injectable.inputType,
+                placeholder: injectable.placeholder,
+                type: injectable.type,
+              }),
+            },
+          ],
+        }
+      })
+    )
+    setView("thread")
+  }
+
   // ─── Shared sidebar props ─────────────────────────────────────────────────
   const sidebarProps = {
     navItems: NAV_ITEMS,
-    curriculumSection: CURRICULUM_SECTION,
+    curriculumSection: getCurriculumSection(sessions),
     chatGroups,
     activeItem,
     onNavigate: handleNavigate,
@@ -292,6 +371,7 @@ export default function ChatPage() {
           />
         )}
       </div>
+      <DevTriggerPanel onInject={handleInjectChallenge} />
     </div>
   )
 }

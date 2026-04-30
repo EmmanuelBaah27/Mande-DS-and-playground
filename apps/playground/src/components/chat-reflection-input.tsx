@@ -23,28 +23,41 @@ export function ChatReflectionInput({
   disabled = false,
   className,
 }: ChatReflectionInputProps) {
+  const textareaRef = React.useRef<HTMLTextAreaElement>(null)
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    onChange(e.target.value)
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = "auto"
+    el.style.height = `${el.scrollHeight}px`
+  }
+
   return (
-    <div className={cn("bg-card rounded-5 p-6 flex flex-col gap-4", className)}>
-      <p className="text-lg-semibold text-foreground">{prompt}</p>
+    <div className={cn("bg-card rounded-5 border border-neutral-a20 flex flex-col w-full overflow-hidden", className)}>
+      <div className="px-5 pt-4 pb-3 flex flex-col gap-3">
+        <p className="text-lg-medium text-foreground break-words">{prompt}</p>
+        <textarea
+          ref={textareaRef}
+          value={value}
+          onChange={handleChange}
+          placeholder="Write away..."
+          disabled={disabled}
+          rows={1}
+          style={{ maxHeight: "40vh" }}
+          className="w-full resize-none bg-transparent outline-none text-base-regular text-foreground placeholder:text-muted-foreground overflow-y-auto disabled:opacity-50 leading-6"
+        />
+      </div>
 
-      <textarea
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="Write away..."
-        disabled={disabled}
-        rows={3}
-        className="w-full resize-none bg-transparent outline-none text-lg-regular text-foreground placeholder:text-muted-foreground min-h-20 disabled:opacity-50"
-      />
-
-      <div className="flex items-center justify-between">
+      <div className="sticky bottom-0 bg-card px-5 py-4 flex items-center justify-between gap-3">
         {hint && (
-          <span className="text-small-regular text-muted-foreground">{hint}</span>
+          <span className="text-small-regular text-muted-foreground min-w-0 line-clamp-1">{hint}</span>
         )}
         <Button
           variant="primary"
           onClick={onSubmit}
           disabled={disabled || value.trim().length === 0}
-          className="ml-auto"
+          className="shrink-0 ml-auto"
         >
           Submit
         </Button>

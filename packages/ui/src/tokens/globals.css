@@ -29,6 +29,8 @@
   --color-neutral-a4:  oklch(12.5% 0.003 255 / 4%);
   --color-neutral-a8:  oklch(12.5% 0.003 255 / 8%);
   --color-neutral-a16: oklch(12.5% 0.003 255 / 16%);
+  --color-neutral-a20: oklch(12.5% 0.003 255 / 20%);
+  --color-neutral-a30: oklch(12.5% 0.003 255 / 30%);
 
   /* --------------------------------------------------------
      LIME — Primary: oklch(89% 0.252 119) — vivid CTA lime
@@ -203,8 +205,8 @@
   --font-weight-small-medium: 500;
   --font-weight-small-semibold: 600;
 
-  --letter-spacing-H1: -0.56px;
-  --letter-spacing-H2: -0.48px;
+  --letter-spacing-H1: -0.52px;
+  --letter-spacing-H2: -0.44px;
   --letter-spacing-H3: -0.4px;
   --letter-spacing-xlg-regular: -0.36px;
   --letter-spacing-xlg-medium: -0.36px;

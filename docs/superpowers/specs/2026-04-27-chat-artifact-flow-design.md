@@ -162,6 +162,7 @@ No new DS tokens or primitives needed.
 | `apps/playground/src/components/chat-holland-picker.tsx` | New |
 | `apps/playground/src/components/dev-trigger-panel.tsx` | New |
 
+
 ---
 
 ## Out of scope clarifications
@@ -169,3 +170,4 @@ No new DS tokens or primitives needed.
 - `ChatAssessmentResult` (scored outcome card after embedded quiz) is noted as needed but not in this build.
 - The 3 remaining challenge types (Research/Action, Craft, Self-report) are placeholders — no UI this cycle.
 - `chat-data.ts` is not changed. The `artifactType` discriminant is added only to the local `ChallengeData` type defined inside `chat/page.tsx`.
+
