@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Button } from "@mande/ui"
+import { Button, Card } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
 
 export interface ChatReflectionInputProps {
@@ -34,9 +34,9 @@ export function ChatReflectionInput({
   }
 
   return (
-    <div className={cn("bg-card rounded-5 border border-neutral-a20 flex flex-col w-full overflow-hidden", className)}>
-      <div className="px-5 pt-4 pb-3 flex flex-col gap-3">
-        <p className="text-lg-medium text-foreground break-words">{prompt}</p>
+    <Card surface="elevated" className={cn("flex flex-col w-full overflow-hidden", className)}>
+      <div className="px-5 pt-3 pb-3 flex flex-col gap-3">
+        <p className="text-base-medium text-foreground break-words">{prompt}</p>
         <textarea
           ref={textareaRef}
           value={value}
@@ -49,9 +49,9 @@ export function ChatReflectionInput({
         />
       </div>
 
-      <div className="sticky bottom-0 bg-card px-5 py-4 flex items-center justify-between gap-3">
+      <div className="sticky bottom-0 bg-card px-5 py-3 flex items-center justify-between gap-3">
         {hint && (
-          <span className="text-small-regular text-muted-foreground min-w-0 line-clamp-1">{hint}</span>
+          <span className="text-base-regular text-muted-foreground min-w-0 line-clamp-1">{hint}</span>
         )}
         <Button
           variant="primary"
@@ -62,6 +62,6 @@ export function ChatReflectionInput({
           Submit
         </Button>
       </div>
-    </div>
+    </Card>
   )
 }

@@ -65,13 +65,16 @@ function ReflectionWidget({
 }) {
   const [value, setValue] = useState("")
   return (
-    <ChatReflectionInput
-      prompt={challenge.prompt}
-      hint="Aim for 3-5 sentences"
-      value={value}
-      onChange={setValue}
-      onSubmit={() => onComplete(value.trim())}
-    />
+    <div className="flex flex-col gap-2">
+      <ArtifactBadge type="reflection" />
+      <ChatReflectionInput
+        prompt={challenge.prompt}
+        hint="Aim for 3-5 sentences"
+        value={value}
+        onChange={setValue}
+        onSubmit={() => onComplete(value.trim())}
+      />
+    </div>
   )
 }
 
