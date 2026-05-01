@@ -55,7 +55,7 @@ export function ChatHollandPicker({ onSubmit, className }: ChatHollandPickerProp
   return (
     <Card surface="elevated" className={cn("flex flex-col gap-4 overflow-hidden w-full", className)}>
       <div className="px-5 pt-4 flex flex-col gap-4">
-        <p className="text-lg-medium text-foreground">What&apos;s your Holland code?</p>
+        <p className="text-base-medium text-foreground">What&apos;s your Holland code?</p>
 
         <a
           href="https://www.truity.com/test/holland-code-career-test"

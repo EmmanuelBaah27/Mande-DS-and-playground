@@ -215,7 +215,7 @@ export function ChatMBTIPicker({ onSubmit, className }: ChatMBTIPickerProps) {
   return (
     <Card surface="elevated" className={cn("flex flex-col gap-4 overflow-hidden w-full", className)}>
       <div className="px-5 pt-4 flex flex-col gap-4">
-        <p className="text-lg-medium text-foreground">What&apos;s your MBTI personality type?</p>
+        <p className="text-base-medium text-foreground">What&apos;s your MBTI personality type?</p>
 
         <a
           href="https://www.16personalities.com/free-personality-test"

@@ -152,9 +152,19 @@ export function ChatActiveArtifactControls({
     case "quiz":
       return <QuizWidget onComplete={done} />
     case "mbti":
-      return <ChatMBTIPicker onSubmit={(type) => done(type)} />
+      return (
+        <div className="flex flex-col gap-2">
+          <ArtifactBadge type="mbti" />
+          <ChatMBTIPicker onSubmit={(type) => done(type)} />
+        </div>
+      )
     case "holland":
-      return <ChatHollandPicker onSubmit={(code) => done(code.join(" - "))} />
+      return (
+        <div className="flex flex-col gap-2">
+          <ArtifactBadge type="holland" />
+          <ChatHollandPicker onSubmit={(code) => done(code.join(" - "))} />
+        </div>
+      )
     default:
       return null
   }
