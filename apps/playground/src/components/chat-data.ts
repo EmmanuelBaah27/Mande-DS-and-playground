@@ -171,12 +171,42 @@ export function selectChallengeState(challenge: ChallengeData): ChallengeSelecto
   }
 }
 
+export type AssistantResponseDepth = "brief" | "standard" | "deep"
+
+export type AssistantConfidence = "high" | "medium" | "low"
+
+/** Layered assistant presentation: scan-first copy, optional rationale, expandable detail. */
+export type AssistantMessageMeta = {
+  depth?: AssistantResponseDepth
+  /** Short “why this shape / why now” line (process transparency). */
+  rationale?: string
+  assumptions?: string[]
+  /** Extra markdown revealed on demand (progressive disclosure). */
+  detailMarkdown?: string
+  confidence?: AssistantConfidence
+}
+
 export type Message = {
   id: string
   role: "user" | "assistant"
   content: string
   timestamp: string
   challenge?: ChallengeData
+  assistantMeta?: AssistantMessageMeta
+  /** Playground: simulated streaming slices `content` until complete. */
+  isStreaming?: boolean
+}
+
+/** Heuristic depth when `assistantMeta.depth` is omitted (seed history / plain assistants). */
+export function inferAssistantDepth(content: string): AssistantResponseDepth {
+  const trimmed = content.trim()
+  if (!trimmed) return "standard"
+  const words = trimmed.split(/\s+/).length
+  const paragraphs = trimmed.split(/\n\s*\n/).filter(Boolean).length
+  const listMarkers = (trimmed.match(/^[-*]\s|^\d+\.\s/gm) ?? []).length
+  if (words < 52 && paragraphs <= 2 && listMarkers < 2) return "brief"
+  if (words > 175 || paragraphs >= 5 || listMarkers >= 4) return "deep"
+  return "standard"
 }
 
 export type SessionMode = "curriculum" | "open"
@@ -197,6 +227,25 @@ export type ChatSession = {
   mode: SessionMode
   messages: Message[]
   progress?: CurriculumProgress
+  /**
+   * When false, curriculum sessions never auto-append artifact messages from chat heuristics (dev inject still works).
+   * When undefined, curriculum defaults to enabled in the playground.
+   */
+  autoConversationArtifacts?: boolean
+}
+
+/** Same shape as the curriculum seed / dev “Commitment” inject, single source for inject + conversation-triggered flow. */
+export function createCommitmentArtifactChallenge(): ChallengeData {
+  return createChallengeData({
+    challengeId: "discovering-options-reflection-1",
+    lessonId: "discovering-your-options-day-1",
+    responseType: "reflection",
+    artifactType: "commitment",
+    prompt: "Take the 10-day self-discovery challenge?",
+    description:
+      "School gave you a start. What comes next is on you. Figure out what you want, what you're good at, and how to make that work in the real world.",
+    inputType: "confirm",
+  })
 }
 
 export const INITIAL_SESSIONS: ChatSession[] = [
@@ -225,7 +274,7 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         id: "c2",
         role: "assistant",
         content:
-          "**Myth 1: Your career should be connected to your degree.**\nToday's careers don't care about your degree — unless you're in a licensed profession. What matters is having in-demand skills someone is willing to pay for.\n\n**Myth 2: You have to be 100% sure.**\nYou can't think your way to clarity. It comes with motion. The path is never straight, and you can always switch.\n\n**Myth 3: Follow your passion.**\nThere's nothing wrong with doing what you love — but for it to be sustainable, someone has to pay you for it. The focus should be monetising your passion, not just following it.",
+          "**Myth 1: Your career should be connected to your degree.**\nToday's careers don't care about your degree, unless you're in a licensed profession. What matters is having in-demand skills someone is willing to pay for.\n\n**Myth 2: You have to be 100% sure.**\nYou can't think your way to clarity. It comes with motion. The path is never straight, and you can always switch.\n\n**Myth 3: Follow your passion.**\nThere's nothing wrong with doing what you love, but for it to be sustainable, someone has to pay you for it. The focus should be monetising your passion, not just following it.",
         timestamp: "Day 1",
       },
       {
@@ -238,31 +287,32 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         id: "c4",
         role: "assistant",
         content:
-          "You didn't waste them — you trained a brain that understands systems, attention to detail, and how money flows. Those are transferable skills, not a prison sentence. Some of the best product managers I've seen came from accounting backgrounds because they intuitively understand unit economics.\n\nBut I hear the frustration. That feeling of \"was this all for nothing?\" is exactly what Myth 1 feeds on. The degree opened doors you walked through; the skills you build next will open different ones.\n\nNow, let me show you the three main paths available to you as a graduate.",
+          "You didn't waste them, you trained a brain that understands systems, attention to detail, and how money flows. Those are transferable skills, not a prison sentence. Some of the best product managers I've seen came from accounting backgrounds because they intuitively understand unit economics.\n\nBut I hear the frustration. That feeling of \"was this all for nothing?\" is exactly what Myth 1 feeds on. The degree opened doors you walked through; the skills you build next will open different ones.\n\nNow, let me show you the three main paths available to you as a graduate.",
         timestamp: "Day 1",
+        assistantMeta: {
+          depth: "standard",
+          rationale: "User expressed frustration about their accounting degree. I should validate the skills without dismissing the feeling, then pivot to the concrete options framework.",
+          confidence: "high",
+        },
       },
       {
         id: "c5",
         role: "assistant",
         content:
-          "There are three paths:\n\n**9-5 employment** — structure, salary, institutional learning. The trade-off: your ceiling is set by the company.\n\n**Freelancing** — flexibility, direct client relationships. The trade-off: you are your own sales team, accountant, and operations department.\n\n**Entrepreneurship** — highest upside, highest risk. The trade-off: most early income is deferred.\n\nNone of these is the 'right' answer. They depend on your risk tolerance, your finances, and what you want your daily life to look like.",
+          "There are three paths:\n\n**9-5 employment** - structure, salary, institutional learning. The trade-off: your ceiling is set by the company.\n\n**Freelancing** - flexibility, direct client relationships. The trade-off: you are your own sales team, accountant, and operations department.\n\n**Entrepreneurship** - highest upside, highest risk. The trade-off: most early income is deferred.\n\nNone of these is the 'right' answer. They depend on your risk tolerance, your finances, and what you want your daily life to look like.",
         timestamp: "Day 1",
+        assistantMeta: {
+          depth: "brief",
+          rationale: "Presenting the three-path framework concisely. No single right answer — framing it as a choice based on the user's own constraints.",
+          confidence: "high",
+        },
       },
       {
         id: "c6",
         role: "assistant",
-        content: "",
+        content:
+          "You've got the landscape. **Next**, we'll lock in a few concrete inputs so this doesn't stay abstract.\n\nWhen you're ready, send **any message** here, even a single word is fine, and I'll start you on the first quick exercise.",
         timestamp: "Day 1",
-        challenge: createChallengeData({
-          challengeId: "discovering-options-reflection-1",
-          lessonId: "discovering-your-options-day-1",
-          responseType: "reflection",
-          artifactType: "commitment",
-          prompt: "Take the 10-day self-discovery challenge?",
-          description:
-            "School gave you a start. What comes next is on you. Figure out what you want, what you're good at, and how to make that work in the real world.",
-          inputType: "confirm",
-        }),
       },
     ],
   },
@@ -281,8 +331,13 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         id: "m2",
         role: "assistant",
         content:
-          "That's a great move — your engineering background is actually a superpower in product design. You already understand constraints that most designers learn the hard way.\n\nHere's where I'd start:\n\n1. **Build your visual foundation** — Learn the fundamentals: typography, colour, spacing, hierarchy.\n2. **Get Figma fluent** — It's the industry standard.\n3. **Redesign things you already use** — Pick an app you use daily and redesign one flow.\n4. **Lean into your engineering context** — Your ability to design with implementation in mind is rare.",
+          "That's a great move, your engineering background is actually a superpower in product design. You already understand constraints that most designers learn the hard way.\n\nHere's where I'd start:\n\n1. **Build your visual foundation** - Learn the fundamentals: typography, colour, spacing, hierarchy.\n2. **Get Figma fluent** - It's the industry standard.\n3. **Redesign things you already use** - Pick an app you use daily and redesign one flow.\n4. **Lean into your engineering context** - Your ability to design with implementation in mind is rare.",
         timestamp: "10:03 AM",
+        assistantMeta: {
+          depth: "standard",
+          rationale: "Engineer switching to design. Lead with what transfers well, then give a concrete starting sequence rather than abstract advice.",
+          confidence: "high",
+        },
       },
       {
         id: "m3",
@@ -294,7 +349,7 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         id: "m4",
         role: "assistant",
         content:
-          "Realistically, 6–12 months to be competitive for junior/mid design roles — faster if you already have product intuition from engineering.\n\nThe bottleneck isn't learning design; it's building a portfolio that demonstrates taste and process.",
+          "Realistically, 6–12 months to be competitive for junior/mid design roles, faster if you already have product intuition from engineering.\n\nThe bottleneck isn't learning design; it's building a portfolio that demonstrates taste and process.",
         timestamp: "10:06 AM",
       },
     ],
@@ -314,7 +369,7 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         id: "m6",
         role: "assistant",
         content:
-          "For London, £95k for senior is on the lower end. Senior roles typically range £100k–£140k depending on company, stack, and domain.\n\nBase salary is only one lever — sometimes a £90k role with strong equity beats a £120k role with none.",
+          "For London, £95k for senior is on the lower end. Senior roles typically range £100k–£140k depending on company, stack, and domain.\n\nBase salary is only one lever, sometimes a £90k role with strong equity beats a £120k role with none.",
         timestamp: "Yesterday",
       },
     ],
