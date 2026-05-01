@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect, useLayoutEffect } from "react"
+import { useState, useRef, useEffect, useLayoutEffect, useMemo } from "react"
 import ReactMarkdown from "react-markdown"
 import { motion } from "motion/react"
 import {
@@ -13,11 +13,7 @@ import {
   challengeColors,
 } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
-import { ChatReflectionInput } from "./chat-reflection-input"
-import { ChatQuizCard } from "./chat-quiz-card"
-import { ChatCommitmentCard } from "./chat-commitment-card"
-import { ChatMBTIPicker } from "./chat-mbti-picker"
-import { ChatHollandPicker } from "./chat-holland-picker"
+import { ChatActiveArtifactFooterShell, ChatActiveArtifactControls } from "./chat-active-artifact"
 import { evaluateChallengeSubmission } from "../lib/challenges/evaluate"
 import { validateSubmissionPayload } from "../lib/challenges/schema"
 import {
@@ -30,28 +26,6 @@ import {
   type Message,
 } from "./chat-data"
 
-const DEMO_QUIZ_QUESTIONS = [
-  {
-    id: "q1",
-    question: "When given a complex project, you prefer to:",
-    options: [
-      { id: "steps", label: "Break it into clear steps first" },
-      { id: "collaborate", label: "Collaborate with others first" },
-      { id: "system", label: "See the whole system at once" },
-      { id: "execute", label: "Get into execution immediately" },
-    ],
-  },
-  {
-    id: "q2",
-    question: "Your ideal work environment is:",
-    options: [
-      { id: "solo", label: "Quiet and independent" },
-      { id: "collab", label: "Collaborative and open" },
-      { id: "flexible", label: "Flexible - depends on the task" },
-      { id: "structured", label: "Structured with clear expectations" },
-    ],
-  },
-]
 
 type ArtifactFlowStep = {
   id: string
@@ -154,7 +128,7 @@ function UserBubble({ content }: { content: string }) {
         ref={ref}
         onClick={overflows && !expanded ? () => setExpanded(true) : undefined}
         className={cn(
-          "relative max-w-[72%] px-4 py-3 rounded-4 text-base-regular leading-relaxed bg-neutral-200 text-neutral-700",
+          "relative max-w-[72%] px-4 py-3 rounded-4 text-lg-regular leading-relaxed bg-neutral-200 text-neutral-700",
           !expanded && "line-clamp-5",
           overflows && !expanded && "cursor-pointer"
         )}
@@ -170,65 +144,13 @@ function UserBubble({ content }: { content: string }) {
 
 // ─── MessageBubble ────────────────────────────────────────────────────────────
 
-function ReflectionWidget({
-  challenge,
-  onComplete,
-}: {
-  challenge: ChallengeData
-  onComplete: (summary: string) => void
-}) {
-  const [value, setValue] = useState("")
-  return (
-    <ChatReflectionInput
-      prompt={challenge.prompt}
-      hint="Aim for 3-5 sentences"
-      value={value}
-      onChange={setValue}
-      onSubmit={() => onComplete(value.trim())}
-    />
-  )
-}
-
-function QuizWidget({ onComplete }: { onComplete: (summary: string) => void }) {
-  const [index, setIndex] = useState(0)
-  const [answers, setAnswers] = useState<Record<string, string>>({})
-  const [custom, setCustom] = useState("")
-
-  const current = DEMO_QUIZ_QUESTIONS[index]
-  const isLast = index === DEMO_QUIZ_QUESTIONS.length - 1
-  const hasAnswer = Boolean(answers[current.id] || custom.trim())
-
-  return (
-    <ChatQuizCard
-      question={current.question}
-      options={current.options}
-      current={index + 1}
-      total={DEMO_QUIZ_QUESTIONS.length}
-      selectedId={answers[current.id]}
-      customValue={custom}
-      onSelect={(id: string) => setAnswers((prev) => ({ ...prev, [current.id]: id }))}
-      onCustomChange={setCustom}
-      onPrev={index > 0 ? () => { setIndex((i) => i - 1); setCustom("") } : undefined}
-      onNext={
-        hasAnswer
-          ? () => {
-              if (isLast) onComplete("Completed work preference quiz")
-              else {
-                setIndex((i) => i + 1)
-                setCustom("")
-              }
-            }
-          : undefined
-      }
-    />
-  )
-}
-
 function MessageBubble({
   message,
+  isActiveArtifact,
   onArtifactComplete,
 }: {
   message: Message
+  isActiveArtifact: boolean
   onArtifactComplete: (messageId: string, summary: string) => void
 }) {
   if (message.role === "user") {
@@ -236,37 +158,74 @@ function MessageBubble({
   }
 
   if (message.challenge) {
-    if (message.challenge.artifactType && !selectChallengeState(message.challenge).isCompleted) {
-      const done = (summary: string) => onArtifactComplete(message.id, summary)
-      switch (message.challenge.artifactType) {
-        case "reflection":
-          return <ReflectionWidget challenge={message.challenge} onComplete={done} />
-        case "commitment":
-          return (
-            <ChatCommitmentCard
-              title={message.challenge.prompt}
-              description={message.challenge.description ?? ""}
-              onAccept={() => done("Accepted 10-day challenge")}
-              onDecline={() => done("Not yet")}
-            />
-          )
-        case "quiz":
-          return <QuizWidget onComplete={done} />
-        case "mbti":
-          return <ChatMBTIPicker onSubmit={(type) => done(type)} />
-        case "holland":
-          return <ChatHollandPicker onSubmit={(code) => done(code.join(" - "))} />
-        default:
-          break
-      }
+    if (message.challenge.artifactType) {
+      if (!selectChallengeState(message.challenge).isCompleted) return null
+      return <ArtifactSubmittedState challenge={message.challenge} />
     }
     return <ChallengeCard challenge={message.challenge} />
   }
 
+  if (!message.content) return null
+
   return (
-    <div className="text-neutral-900 text-base-regular leading-relaxed">
+    <div className="text-neutral-900 text-lg-regular leading-relaxed">
       <ReactMarkdown components={mdComponents}>{message.content}</ReactMarkdown>
     </div>
+  )
+}
+
+function AssistantGroupRenderer({
+  messages,
+  activeArtifactId,
+  onArtifactComplete,
+}: {
+  messages: Message[]
+  activeArtifactId: string | null
+  onArtifactComplete: (messageId: string, summary: string) => void
+}) {
+  if (messages.length === 1) {
+    return (
+      <MessageBubble
+        message={messages[0]}
+        isActiveArtifact={messages[0].id === activeArtifactId}
+        onArtifactComplete={onArtifactComplete}
+      />
+    )
+  }
+  return (
+    <div className="flex flex-col gap-4">
+      {messages.map((msg) => (
+        <MessageBubble
+          key={msg.id}
+          message={msg}
+          isActiveArtifact={msg.id === activeArtifactId}
+          onArtifactComplete={onArtifactComplete}
+        />
+      ))}
+    </div>
+  )
+}
+
+// ─── ArtifactSubmittedState ───────────────────────────────────────────────────
+
+function ArtifactSubmittedState({ challenge }: { challenge: ChallengeData }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={springs.snappy}
+      className="rounded-3 border border-neutral-200 bg-white px-4 py-3"
+    >
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 min-w-0">
+          <span className={cn("text-small-medium px-2 py-0.5 rounded-1 shrink-0", challengeColors[challenge.type])}>
+            {challengeLabels[challenge.type]}
+          </span>
+          <span className="text-sm text-neutral-500 truncate">{challenge.prompt}</span>
+        </div>
+        <Icon name="IconCheckmark2" size={14} className="text-green-600 shrink-0" />
+      </div>
+    </motion.div>
   )
 }
 
@@ -561,6 +520,27 @@ function MessageInput({
   )
 }
 
+type MessageGroup =
+  | { kind: "user"; message: Message; key: string }
+  | { kind: "assistant"; messages: Message[]; key: string }
+
+function groupMessages(messages: Message[]): MessageGroup[] {
+  const groups: MessageGroup[] = []
+  for (const message of messages) {
+    if (message.role === "user") {
+      groups.push({ kind: "user", message, key: message.id })
+    } else {
+      const last = groups[groups.length - 1]
+      if (last?.kind === "assistant") {
+        last.messages.push(message)
+      } else {
+        groups.push({ kind: "assistant", messages: [message], key: message.id })
+      }
+    }
+  }
+  return groups
+}
+
 // ─── ChatThread ───────────────────────────────────────────────────────────────
 
 export type ChatThreadProps = {
@@ -587,6 +567,17 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
     !selectChallengeState(lastMsg.challenge).isCompleted
       ? lastMsg.challenge
       : null
+  const activeArtifactMsg =
+    lastMsg?.role === "assistant" &&
+    lastMsg.challenge?.artifactType &&
+    !selectChallengeState(lastMsg.challenge).isCompleted
+      ? lastMsg
+      : null
+
+  const groups = useMemo(
+    () => groupMessages(activeSession.messages),
+    [activeSession.messages]
+  )
 
   const handleSend = (text: string) => {
     const newMsg: Message = {
@@ -742,20 +733,39 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
       <div className="relative flex-1 overflow-y-auto min-h-0">
         <div className="py-6 px-4">
           <div className="max-w-3xl mx-auto flex flex-col gap-6">
-            {activeSession.messages.map((msg) => (
-              <MessageBubble
-                key={msg.id}
-                message={msg}
-                onArtifactComplete={handleArtifactComplete}
-              />
+            {groups.map((group) => (
+              <div
+                key={group.key}
+                data-message-id={group.kind === "user" ? group.message.id : group.messages[0].id}
+                className="scroll-mt-2"
+              >
+                {group.kind === "user" ? (
+                  <UserBubble content={group.message.content} />
+                ) : (
+                  <AssistantGroupRenderer
+                    messages={group.messages}
+                    activeArtifactId={activeArtifactMsg?.id ?? null}
+                    onArtifactComplete={handleArtifactComplete}
+                  />
+                )}
+              </div>
             ))}
             <div ref={bottomRef} />
           </div>
         </div>
-        {!activeChallenge && (
+        {!activeChallenge && !activeArtifactMsg && (
           <div className="pointer-events-none sticky bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-neutral-50 to-transparent" />
         )}
       </div>
+      {activeArtifactMsg ? (
+        <ChatActiveArtifactFooterShell>
+          <ChatActiveArtifactControls
+            challenge={activeArtifactMsg.challenge!}
+            messageId={activeArtifactMsg.id}
+            onArtifactComplete={handleArtifactComplete}
+          />
+        </ChatActiveArtifactFooterShell>
+      ) : (
       <div className="shrink-0">
         <MessageInput
           onSend={handleSend}
@@ -765,6 +775,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
           challengeError={challengeError}
         />
       </div>
+      )}
     </div>
   )
 }
