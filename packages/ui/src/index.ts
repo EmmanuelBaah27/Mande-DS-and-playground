@@ -6,8 +6,8 @@ export type { IconProps, IconSize, IconFill, IconName, IconRadius } from "./comp
 export { springs, durations, easings } from "./tokens/motion"
 export type { SpringName, DurationName, EasingName } from "./tokens/motion"
 
-export { challengeLabels, challengeColors } from "./tokens/challenges"
-export type { ChallengeType } from "./tokens/challenges"
+export { challengeLabels, challengeColors, artifactLabels } from "./tokens/challenges"
+export type { ChallengeType, ArtifactType } from "./tokens/challenges"
 
 // ── Form ──────────────────────────────────────────────────────────────────────
 export { Button, buttonVariants } from "./components/ui/button"
@@ -15,7 +15,8 @@ export type { ButtonProps } from "./components/ui/button"
 
 export { Input, inputVariants } from "./components/ui/input"
 
-export { Textarea } from "./components/ui/textarea"
+export { Textarea, textareaVariants } from "./components/ui/textarea"
+export type { TextareaProps } from "./components/ui/textarea"
 
 export {
   Select,
@@ -29,6 +30,7 @@ export {
   SelectScrollUpButton,
   SelectScrollDownButton,
 } from "./components/ui/select"
+export type { SelectSize } from "./components/ui/select"
 
 export { Checkbox } from "./components/ui/checkbox"
 export type { CheckboxProps } from "./components/ui/checkbox"

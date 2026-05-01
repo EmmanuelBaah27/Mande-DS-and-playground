@@ -37,3 +37,21 @@ export const challengeColors: Record<ChallengeType, string> = {
   "embedded-assessment": "bg-orange-100 text-orange-800",
   "external-assessment": "bg-orange-100 text-orange-800",
 }
+
+/**
+ * Artifact type metadata — labels for the 5 artifact types
+ * that appear in the chat UI and artifact badges.
+ *
+ * Distinct from challenge types; these are the types of
+ * deliverables/artifacts produced through chat interactions.
+ */
+
+export type ArtifactType = "commitment" | "reflection" | "quiz" | "mbti" | "holland"
+
+export const artifactLabels: Record<ArtifactType, string> = {
+  commitment: "Commitment",
+  reflection: "Reflection",
+  quiz: "Work preference",
+  mbti: "Personality type",
+  holland: "Interest profile",
+}
