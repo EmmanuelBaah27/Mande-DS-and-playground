@@ -764,16 +764,45 @@ function AssistantGroupRenderer({
   )
 }
 
+function getOffsetTopWithinAncestor(el: HTMLElement, ancestor: HTMLElement): number {
+  let top = 0
+  let current: HTMLElement | null = el
+  while (current && current !== ancestor) {
+    top += current.offsetTop
+    current = current.offsetParent as HTMLElement | null
+  }
+  return top
+}
+
+const ARTIFACT_GAP_MIN_PX = 48
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ChatPage() {
   const [sessions, setSessions] = useState<ChatSession[]>(CHAT_HISTORY)
   const [activeSessionId, setActiveSessionId] = useState(CHAT_HISTORY[0].id)
   const bottomRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const pendingTopScrollIdRef = useRef<string | null>(null)
 
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
 
   useEffect(() => {
+    if (pendingTopScrollIdRef.current) {
+      const targetId = pendingTopScrollIdRef.current
+      pendingTopScrollIdRef.current = null
+      const scrollContainer = scrollContainerRef.current
+      const targetEl = scrollContainer?.querySelector<HTMLElement>(`[data-message-id="${targetId}"]`)
+      if (scrollContainer && targetEl) {
+        const rawOffset = getOffsetTopWithinAncestor(targetEl, scrollContainer)
+        const maxAllowedScrollTop =
+          scrollContainer.scrollHeight - scrollContainer.clientHeight - ARTIFACT_GAP_MIN_PX
+        scrollContainer.scrollTop = Math.max(0, Math.min(rawOffset, Math.max(0, maxAllowedScrollTop)))
+      } else {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+      }
+      return
+    }
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [activeSession.messages])
 
@@ -799,6 +828,7 @@ export default function ChatPage() {
       content: text,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     }
+    pendingTopScrollIdRef.current = newMessage.id
     setSessions((prev) =>
       prev.map((s) =>
         s.id === activeSessionId
@@ -866,7 +896,7 @@ export default function ChatPage() {
         />
 
         {/* Message thread */}
-        <div className="relative flex-1 overflow-y-auto flex flex-col">
+        <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto flex flex-col">
           <div className="flex-1 py-6 px-4">
             <div className="max-w-3xl mx-auto flex flex-col gap-6">
               {groups.map((group) => (
