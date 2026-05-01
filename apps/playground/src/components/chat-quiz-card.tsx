@@ -62,7 +62,7 @@ export function ChatQuizCard({
 
   return (
     <Card surface="elevated" className={cn("px-4 py-3 flex flex-col gap-2 w-full", className)}>
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex items-center gap-3">
         <div className="flex items-center gap-2 shrink-0">
           <div className="flex items-center gap-2 min-w-0">
             <ProgressBar current={current} total={total} />
@@ -105,7 +105,7 @@ export function ChatQuizCard({
             className={cn(
               "w-full text-left rounded-3 px-3 py-2 text-base-regular text-foreground border border-neutral-200 bg-white transition-colors",
               selectedId === option.id
-                ? "bg-neutral-50"
+                ? "bg-neutral-100 hover:bg-neutral-100"
                 : "hover:bg-neutral-50"
             )}
           >
