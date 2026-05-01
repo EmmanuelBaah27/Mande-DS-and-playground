@@ -642,8 +642,6 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
     [activeSession.messages]
   )
 
-  const latestUserGroupIdx = groups.reduce((idx, g, i) => (g.kind === "user" ? i : idx), -1)
-
   const handleSend = (text: string) => {
     const newMsg: Message = {
       id: `m${Date.now()}`,
@@ -799,11 +797,12 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
       <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto min-h-0">
         <div className="py-6 px-4">
           <div className="max-w-3xl mx-auto flex flex-col gap-6">
-            {groups.map((group, i) => (
+            {groups.map((group) => (
               <div
                 key={group.key}
                 data-message-id={group.kind === "user" ? group.message.id : group.messages[0].id}
-                className={cn("scroll-mt-2 transition-opacity duration-500", i < latestUserGroupIdx ? "opacity-35" : "")}
+                data-message-role={group.kind}
+                className="scroll-mt-2"
               >
                 {group.kind === "user" ? (
                   <UserBubble content={group.message.content} />
