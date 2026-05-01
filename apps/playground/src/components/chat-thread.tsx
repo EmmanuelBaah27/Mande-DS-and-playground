@@ -21,6 +21,7 @@ import {
   createChallengeData,
   type ChallengeSubmission,
   selectChallengeState,
+  getLatestChallengeResponse,
   type ChatSession,
   type ChallengeData,
   type SessionMode,
@@ -212,6 +213,7 @@ function AssistantGroupRenderer({
 // ─── ArtifactSubmittedState ───────────────────────────────────────────────────
 
 function ArtifactSubmittedState({ challenge }: { challenge: ChallengeData }) {
+  const displayResponse = getLatestChallengeResponse(challenge)
   return (
     <motion.div
       initial={{ opacity: 0, y: 4 }}
@@ -226,13 +228,13 @@ function ArtifactSubmittedState({ challenge }: { challenge: ChallengeData }) {
           )}
           <span className="text-small-regular text-neutral-500 truncate">{challenge.prompt}</span>
         </div>
-        {challenge.response && (
+        {displayResponse && (
           <p className="text-small-regular text-neutral-400 line-clamp-3 leading-relaxed">
-            {challenge.response}
+            {displayResponse}
           </p>
         )}
       </div>
-      {challenge.response && (
+      {displayResponse && (
         <div
           aria-hidden
           className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent"
