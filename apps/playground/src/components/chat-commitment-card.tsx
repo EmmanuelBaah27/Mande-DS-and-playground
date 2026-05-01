@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Button, Icon } from "@mande/ui"
+import { Button, Card, Icon } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
 
 export interface ChatCommitmentCardProps {
@@ -26,9 +26,9 @@ export function ChatCommitmentCard({
   className,
 }: ChatCommitmentCardProps) {
   return (
-    <div className={cn("bg-card rounded-5 px-5 py-4 flex flex-col gap-4 border border-neutral-a20 w-full overflow-hidden", className)}>
+    <Card surface="elevated" className={cn("px-5 py-3 flex flex-col gap-4 w-full overflow-hidden", className)}>
       <div className="flex flex-col gap-2">
-        <p className="text-lg-medium text-foreground break-words">{title}</p>
+        <p className="text-base-medium text-foreground break-words">{title}</p>
         <p className="text-base-regular text-muted-foreground break-words">{description}</p>
       </div>
 
@@ -50,6 +50,6 @@ export function ChatCommitmentCard({
           {acceptLabel}
         </Button>
       </div>
-    </div>
+    </Card>
   )
 }

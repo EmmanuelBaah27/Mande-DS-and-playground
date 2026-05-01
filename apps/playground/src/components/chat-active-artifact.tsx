@@ -139,12 +139,15 @@ export function ChatActiveArtifactControls({
       return <ReflectionWidget challenge={challenge} onComplete={done} />
     case "commitment":
       return (
-        <ChatCommitmentCard
-          title={challenge.prompt}
-          description={challenge.description ?? ""}
-          onAccept={() => done("Accepted 10-day challenge")}
-          onDecline={() => done("Not yet")}
-        />
+        <div className="flex flex-col gap-2">
+          <ArtifactBadge type="commitment" />
+          <ChatCommitmentCard
+            title={challenge.prompt}
+            description={challenge.description ?? ""}
+            onAccept={() => done("Accepted 10-day challenge")}
+            onDecline={() => done("Not yet")}
+          />
+        </div>
       )
     case "quiz":
       return <QuizWidget onComplete={done} />
