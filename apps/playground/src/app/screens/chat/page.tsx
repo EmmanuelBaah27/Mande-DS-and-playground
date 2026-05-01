@@ -218,7 +218,7 @@ function ChatNavbar({
     <header className="h-14 flex items-center px-4 bg-white gap-3 shrink-0 border-b border-neutral-100">
       <div className="flex items-center gap-3 flex-1 min-w-0">
         {isCurriculum && (
-          <span className="text-xs font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full shrink-0">
+          <span className="text-small-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full shrink-0">
             Curriculum
           </span>
         )}
@@ -244,8 +244,8 @@ function ChatNavbar({
       {isCurriculum && activeSession.progress && (
         <div className="flex items-center gap-3 shrink-0">
           <div className="text-right">
-            <p className="text-xs text-neutral-500 leading-none">{activeSession.progress.pillar}</p>
-            <p className="text-[10px] text-neutral-400 leading-none mt-0.5">
+            <p className="text-small-regular text-neutral-500 leading-none">{activeSession.progress.pillar}</p>
+            <p className="text-small-regular text-neutral-400 leading-none mt-0.5">
               Step {activeSession.progress.stepIndex}/{activeSession.progress.totalSteps}
             </p>
           </div>
@@ -442,10 +442,10 @@ function ChallengeMessage({ challenge }: { challenge: ChallengeData }) {
         className="rounded-3 border border-green-200 bg-green-50 p-4"
       >
         <div className="flex items-center gap-2 mb-2">
-          <span className={cn("text-xs px-2 py-0.5 rounded-1 font-medium", challengeColors[challenge.type])}>
+          <span className={cn("text-small-medium px-2 py-0.5 rounded-1", challengeColors[challenge.type])}>
             {challengeLabels[challenge.type]}
           </span>
-          <span className="text-xs text-green-700 font-medium">Completed</span>
+          <span className="text-small-medium text-green-700">Completed</span>
         </div>
         <p className="text-sm text-neutral-700 leading-relaxed">
           {challenge.response}
@@ -458,7 +458,7 @@ function ChallengeMessage({ challenge }: { challenge: ChallengeData }) {
   return (
     <div className="rounded-3 border border-neutral-200 bg-white p-4">
       <div className="flex items-center gap-2 mb-3">
-        <span className={cn("text-xs px-2 py-0.5 rounded-1 font-medium", challengeColors[challenge.type])}>
+        <span className={cn("text-small-medium px-2 py-0.5 rounded-1", challengeColors[challenge.type])}>
           {challengeLabels[challenge.type]}
         </span>
       </div>
@@ -520,10 +520,10 @@ function MessageInput({
         <div className="max-w-3xl mx-auto pt-3">
           {/* Challenge context bar */}
           <div className="flex items-center gap-2 mb-3">
-            <span className={cn("text-xs px-2 py-0.5 rounded-1 font-medium", challengeColors[activeChallenge.type])}>
+            <span className={cn("text-small-medium px-2 py-0.5 rounded-1", challengeColors[activeChallenge.type])}>
               {challengeLabels[activeChallenge.type]}
             </span>
-            <span className="text-xs text-neutral-400 truncate">{activeChallenge.prompt.slice(0, 60)}…</span>
+            <span className="text-small-regular text-neutral-400 truncate">{activeChallenge.prompt.slice(0, 60)}…</span>
           </div>
 
           {activeChallenge.inputType === "confirm" ? (
@@ -606,7 +606,7 @@ function MessageInput({
           <Icon name="IconArrowUp" size={16} />
         </Button>
       </div>
-      <p className="text-center text-xs text-neutral-400 mt-2">
+      <p className="text-center text-small-regular text-neutral-400 mt-2">
         Mande can make mistakes. Double-check important information.
       </p>
     </div>
