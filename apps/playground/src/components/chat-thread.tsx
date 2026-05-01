@@ -541,6 +541,18 @@ function groupMessages(messages: Message[]): MessageGroup[] {
   return groups
 }
 
+function getOffsetTopWithinAncestor(el: HTMLElement, ancestor: HTMLElement): number {
+  let top = 0
+  let current: HTMLElement | null = el
+  while (current && current !== ancestor) {
+    top += current.offsetTop
+    current = current.offsetParent as HTMLElement | null
+  }
+  return top
+}
+
+const ARTIFACT_GAP_MIN_PX = 48
+
 // ─── ChatThread ───────────────────────────────────────────────────────────────
 
 export type ChatThreadProps = {
@@ -551,10 +563,25 @@ export type ChatThreadProps = {
 
 export function ChatThread({ sessions, activeSessionId, onSessionsChange }: ChatThreadProps) {
   const bottomRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const pendingTopScrollIdRef = useRef<string | null>(null)
   const [challengeError, setChallengeError] = useState<string | null>(null)
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
 
   useEffect(() => {
+    if (pendingTopScrollIdRef.current) {
+      const targetId = pendingTopScrollIdRef.current
+      pendingTopScrollIdRef.current = null
+      const scrollContainer = scrollContainerRef.current
+      const targetEl = scrollContainer?.querySelector<HTMLElement>(`[data-message-id="${targetId}"]`)
+      if (scrollContainer && targetEl) {
+        const rawOffset = getOffsetTopWithinAncestor(targetEl, scrollContainer)
+        const maxAllowedScrollTop =
+          scrollContainer.scrollHeight - scrollContainer.clientHeight - ARTIFACT_GAP_MIN_PX
+        scrollContainer.scrollTop = Math.max(0, Math.min(rawOffset, Math.max(0, maxAllowedScrollTop)))
+      }
+      return
+    }
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [activeSession.messages])
 
@@ -586,6 +613,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
       content: text,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     }
+    pendingTopScrollIdRef.current = newMsg.id
     onSessionsChange(sessions.map((s) =>
       s.id === activeSessionId ? { ...s, messages: [...s.messages, newMsg] } : s
     ))
@@ -730,7 +758,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
 
   return (
     <div className="flex-1 flex flex-col min-h-0">
-      <div className="relative flex-1 overflow-y-auto min-h-0">
+      <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto min-h-0">
         <div className="py-6 px-4">
           <div className="max-w-3xl mx-auto flex flex-col gap-6">
             {groups.map((group) => (
