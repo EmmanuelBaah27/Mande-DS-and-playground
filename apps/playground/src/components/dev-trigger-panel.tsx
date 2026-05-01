@@ -4,9 +4,7 @@ import * as React from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { Icon, springs } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
-import type { ChallengeType } from "@mande/ui"
-
-type ArtifactType = "reflection" | "commitment" | "quiz" | "mbti" | "holland"
+import type { ChallengeType, ArtifactType } from "@mande/ui"
 type ChallengeInput = "textarea" | "confirm" | "url" | "short-text" | "list"
 
 export type InjectableChallenge = {

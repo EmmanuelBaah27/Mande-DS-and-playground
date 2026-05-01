@@ -45,7 +45,6 @@ export const challengeColors: Record<ChallengeType, string> = {
  * Distinct from challenge types; these are the types of
  * deliverables/artifacts produced through chat interactions.
  */
-
 export type ArtifactType = "commitment" | "reflection" | "quiz" | "mbti" | "holland"
 
 export const artifactLabels: Record<ArtifactType, string> = {
