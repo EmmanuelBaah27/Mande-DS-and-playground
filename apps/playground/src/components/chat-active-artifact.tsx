@@ -94,25 +94,27 @@ function QuizWidget({ onComplete }: { onComplete: (summary: string) => void }) {
   }
 
   return (
-    <ChatQuizCard
-      categoryLabel="Work preference check"
-      question={current.question}
-      options={current.options}
-      current={index + 1}
-      total={DEMO_QUIZ_QUESTIONS.length}
-      selectedId={answers[current.id]}
-      customValue={custom}
-      canPrev={!isFirst}
-      canNext={!isLast}
-      onSelect={(id: string) => {
-        setAnswers((prev) => ({ ...prev, [current.id]: id }))
-        goToNext()
-      }}
-      onCustomChange={setCustom}
-      onPrev={!isFirst ? () => { setIndex((i) => i - 1); setCustom("") } : undefined}
-      onNext={hasAnswer ? goToNext : undefined}
-      onSkip={!isLast ? () => { setIndex((i) => i + 1); setCustom("") } : undefined}
-    />
+    <div className="flex flex-col gap-2">
+      <ArtifactBadge type="quiz" />
+      <ChatQuizCard
+        question={current.question}
+        options={current.options}
+        current={index + 1}
+        total={DEMO_QUIZ_QUESTIONS.length}
+        selectedId={answers[current.id]}
+        customValue={custom}
+        canPrev={!isFirst}
+        canNext={!isLast}
+        onSelect={(id: string) => {
+          setAnswers((prev) => ({ ...prev, [current.id]: id }))
+          goToNext()
+        }}
+        onCustomChange={setCustom}
+        onPrev={!isFirst ? () => { setIndex((i) => i - 1); setCustom("") } : undefined}
+        onNext={hasAnswer ? goToNext : undefined}
+        onSkip={!isLast ? () => { setIndex((i) => i + 1); setCustom("") } : undefined}
+      />
+    </div>
   )
 }
 
