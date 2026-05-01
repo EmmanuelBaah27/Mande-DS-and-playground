@@ -53,7 +53,7 @@ export const LongContent: Story = {
       "Realistically, 6–12 months to be competitive for junior/mid design roles, faster if you already have product intuition from engineering.\n\nThe bottleneck isn't learning design — it's building a portfolio that demonstrates taste and process.\n\n1. **Build your visual foundation** — typography, colour, spacing, hierarchy.\n2. **Get Figma fluent** — it's the industry standard.\n3. **Redesign things you already use** — pick an app and redesign one flow.\n4. **Lean into your engineering context** — designing with implementation in mind is rare.",
     isStreaming: false,
     assistantMeta: {
-      depth: "detailed",
+      depth: "deep",
       rationale:
         "The user asked a specific timeline question. I should give a realistic estimate with the key bottleneck named, then actionable next steps.",
       confidence: "high",

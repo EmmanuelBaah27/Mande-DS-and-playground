@@ -221,9 +221,9 @@ function ArtifactSubmittedState({ challenge }: { challenge: ChallengeData }) {
           <span className={cn("text-small-medium px-2 py-0.5 rounded-1 shrink-0", challengeColors[challenge.type])}>
             {challengeLabels[challenge.type]}
           </span>
-          <span className="text-sm text-neutral-500 truncate">{challenge.prompt}</span>
+          <span className="text-base-regular text-neutral-500 truncate">{challenge.prompt}</span>
         </div>
-        <Icon name="IconCheckmark2" size={14} className="text-green-600 shrink-0" />
+        <Icon name="IconCheckmark2" size={16} className="text-green-600 shrink-0" />
       </div>
     </motion.div>
   )
