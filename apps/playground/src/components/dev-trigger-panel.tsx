@@ -65,6 +65,43 @@ const ARTIFACT_CONFIGS: Array<{ label: string; payload: InjectableChallenge }> =
       inputType: "confirm",
     },
   },
+  {
+    label: "Craft",
+    payload: {
+      type: "craft",
+      artifactType: "craft",
+      prompt: "Write a cold email to a professional you'd like to learn from.",
+      inputType: "textarea",
+      placeholder: "Write your cold email here...",
+    },
+  },
+  {
+    label: "Self-report",
+    payload: {
+      type: "self-report",
+      artifactType: "self-report",
+      prompt: "What industries or sectors appeal to you most right now?",
+      inputType: "textarea",
+    },
+  },
+  {
+    label: "Research & Action",
+    payload: {
+      type: "research-action",
+      artifactType: "research-action",
+      prompt: "Find 3 professionals in your target field and describe what you learned.",
+      inputType: "textarea",
+    },
+  },
+  {
+    label: "External Assessment",
+    payload: {
+      type: "embedded-assessment",
+      artifactType: "external-assessment",
+      prompt: "What were your results from the values assessment?",
+      inputType: "textarea",
+    },
+  },
 ]
 
 export interface DevTriggerPanelProps {
