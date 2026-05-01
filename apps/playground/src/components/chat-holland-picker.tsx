@@ -65,7 +65,7 @@ export function ChatHollandPicker({ onSubmit, className }: ChatHollandPickerProp
         >
           <Icon name="IconBulletList" size={16} className="text-neutral-600 shrink-0" />
           <div className="flex items-baseline gap-2 flex-1 min-w-0">
-            <span className="text-lg-medium text-neutral-900">Take the test</span>
+            <span className="text-base-medium text-neutral-900">Take the test</span>
             <span className="text-base-regular text-neutral-500">Approx. 20 mins</span>
           </div>
           <Icon name="IconArrowUpRight" size={16} className="text-neutral-400 shrink-0" />

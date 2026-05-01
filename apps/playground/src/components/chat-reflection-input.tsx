@@ -51,7 +51,7 @@ export function ChatReflectionInput({
 
       <div className="sticky bottom-0 bg-card px-5 py-3 flex items-center justify-between gap-3">
         {hint && (
-          <span className="text-base-regular text-muted-foreground min-w-0 line-clamp-1">{hint}</span>
+          <span className="text-small-regular text-muted-foreground min-w-0 line-clamp-1">{hint}</span>
         )}
         <Button
           variant="primary"

@@ -153,7 +153,7 @@ function MBTICombobox({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search..."
-            className="w-full text-lg-regular px-2 py-1.5 rounded-2 bg-neutral-50 outline-none placeholder:text-neutral-400"
+            className="w-full text-base-regular px-2 py-1.5 rounded-2 bg-neutral-50 outline-none placeholder:text-neutral-400"
           />
         </div>
         <div className="overflow-y-auto" style={{ maxHeight: `${menuRect.maxListHeight}px` }}>
@@ -167,14 +167,14 @@ function MBTICombobox({
                 setQuery("")
               }}
               className={cn(
-                "w-full text-left px-3 py-2 text-lg-regular hover:bg-neutral-50 transition-colors",
-                value === t.id && "bg-neutral-100 text-lg-medium"
+                "w-full text-left px-3 py-2 text-base-regular hover:bg-neutral-50 transition-colors",
+                value === t.id && "bg-neutral-100 text-base-medium"
               )}
             >
               {t.label}
             </button>
           ))}
-          {filtered.length === 0 && <p className="px-3 py-2 text-lg-regular text-neutral-400">No results</p>}
+          {filtered.length === 0 && <p className="px-3 py-2 text-base-regular text-neutral-400">No results</p>}
         </div>
       </div>,
       document.body
@@ -192,7 +192,7 @@ function MBTICombobox({
             return next
           })
         }}
-        className="w-full h-11 flex items-center justify-between rounded-3 border border-neutral-200 bg-white px-3 py-2 text-lg-regular text-left hover:bg-neutral-50 transition-colors"
+        className="w-full h-11 flex items-center justify-between rounded-3 border border-neutral-200 bg-white px-3 py-2 text-base-regular text-left hover:bg-neutral-50 transition-colors"
       >
         <span className={cn("truncate", selected ? "text-neutral-900" : "text-neutral-400")}>
           {selected ? selected.label : "Select type"}
@@ -225,7 +225,7 @@ export function ChatMBTIPicker({ onSubmit, className }: ChatMBTIPickerProps) {
         >
           <Icon name="IconBulletList" size={16} className="text-neutral-600 shrink-0" />
           <div className="flex items-baseline gap-2 flex-1 min-w-0">
-            <span className="text-lg-medium text-neutral-900">Take the test</span>
+            <span className="text-base-medium text-neutral-900">Take the test</span>
             <span className="text-base-regular text-neutral-500">Approx. 20 mins</span>
           </div>
           <Icon name="IconArrowUpRight" size={16} className="text-neutral-400 shrink-0" />
