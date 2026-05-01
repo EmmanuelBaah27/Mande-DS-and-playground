@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
+import ReactMarkdown from "react-markdown"
 import { motion } from "motion/react"
 import {
   Button,
@@ -13,54 +14,61 @@ import {
   SelectValue,
   Progress,
   Textarea,
+  Badge,
   springs,
   challengeLabels,
   challengeColors,
 } from "@mande/ui"
+import type { ChallengeType } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
-import {
-  ChatActiveArtifactControls,
-  ChatActiveArtifactFooterShell,
-} from "../../../components/chat-active-artifact"
-import {
-  createChallengeData,
-  createCommitmentArtifactChallenge,
-  selectChallengeState,
-  type ChatSession,
-  type ChallengeData,
-  type Message,
-  type SessionMode,
-} from "../../../components/chat-data"
-import { AssistantTextBubble } from "../../../components/chat-assistant-bubble"
+import { ChatReflectionInput } from "../../../components/chat-reflection-input"
+import { ChatQuizCard } from "../../../components/chat-quiz-card"
+import { ChatCommitmentCard } from "../../../components/chat-commitment-card"
+import { ChatMBTIPicker } from "../../../components/chat-mbti-picker"
+import { ChatHollandPicker } from "../../../components/chat-holland-picker"
 import { DevTriggerPanel, type InjectableChallenge } from "../../../components/dev-trigger-panel"
-import { runTextStream } from "../../../lib/chat/assistant-stream"
-import { getMockOpenChatAssistantReply } from "../../../lib/chat/mock-open-reply"
-import { sanitizeAssistantMeta } from "../../../lib/chat/sanitize-assistant-text"
-import {
-  CURRICULUM_ARTIFACT_ACK_META,
-  CURRICULUM_ARTIFACT_ACK_TEXT,
-} from "../../../lib/chat/curriculum-artifact-ack"
 
-/** Same as main chat thread: curriculum auto-artifact fires on the **second user message**. */
-const CURRICULUM_AUTO_ARTIFACT_USER_MESSAGE_THRESHOLD = 2
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-function lastMessageHasBlockingArtifact(messages: Message[]): boolean {
-  const last = messages[messages.length - 1]
-  if (!last || last.role !== "assistant" || !last.challenge) return false
-  return Boolean(last.challenge.artifactType) && !selectChallengeState(last.challenge).isCompleted
+type ChallengeInput = "textarea" | "confirm" | "url" | "short-text" | "list"
+
+type ChallengeData = {
+  type: ChallengeType
+  artifactType?: "reflection" | "commitment" | "quiz" | "mbti" | "holland"
+  prompt: string
+  description?: string
+  inputType: ChallengeInput
+  placeholder?: string
+  response?: string
+  evaluated?: boolean
 }
 
-const toResponseType = (artifactType: InjectableChallenge["artifactType"]) => {
-  switch (artifactType) {
-    case "reflection":
-    case "commitment":
-      return "reflection" as const
-    case "quiz":
-    case "holland":
-      return "structured_list" as const
-    case "mbti":
-      return "resource_link" as const
-  }
+type Message = {
+  id: string
+  role: "user" | "assistant"
+  content: string
+  timestamp: string
+  challenge?: ChallengeData
+}
+
+type SessionMode = "curriculum" | "open"
+
+type CurriculumProgress = {
+  pillar: string
+  pillarIndex: number
+  totalPillars: number
+  step: string
+  stepIndex: number
+  totalSteps: number
+  percentComplete: number
+}
+
+type ChatSession = {
+  id: string
+  title: string
+  mode: SessionMode
+  messages: Message[]
+  progress?: CurriculumProgress
 }
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
@@ -91,7 +99,7 @@ const CHAT_HISTORY: ChatSession[] = [
         id: "c2",
         role: "assistant",
         content:
-          "**Myth 1: Your career should be connected to your degree.**\nToday's careers don't care about your degree, unless you're in a licensed profession. What matters is having in-demand skills someone is willing to pay for.\n\n**Myth 2: You have to be 100% sure.**\nYou can't think your way to clarity. It comes with motion. The path is never straight, and you can always switch.\n\n**Myth 3: Follow your passion.**\nThere's nothing wrong with doing what you love, but for it to be sustainable, someone has to pay you for it. The focus should be monetising your passion, not just following it.",
+          "**Myth 1: Your career should be connected to your degree.**\nToday's careers don't care about your degree — unless you're in a licensed profession. What matters is having in-demand skills someone is willing to pay for.\n\n**Myth 2: You have to be 100% sure.**\nYou can't think your way to clarity. It comes with motion. The path is never straight, and you can always switch.\n\n**Myth 3: Follow your passion.**\nThere's nothing wrong with doing what you love — but for it to be sustainable, someone has to pay you for it. The focus should be monetising your passion, not just following it.",
         timestamp: "Day 1",
       },
       {
@@ -104,22 +112,27 @@ const CHAT_HISTORY: ChatSession[] = [
         id: "c4",
         role: "assistant",
         content:
-          "You didn't waste them, you trained a brain that understands systems, attention to detail, and how money flows. Those are transferable skills, not a prison sentence. Some of the best product managers I've seen came from accounting backgrounds because they intuitively understand unit economics.\n\nBut I hear the frustration. That feeling of \"was this all for nothing?\" is exactly what Myth 1 feeds on. The degree opened doors you walked through; the skills you build next will open different ones.\n\nNow, let me show you the three main paths available to you as a graduate.",
+          "You didn't waste them — you trained a brain that understands systems, attention to detail, and how money flows. Those are transferable skills, not a prison sentence. Some of the best product managers I've seen came from accounting backgrounds because they intuitively understand unit economics.\n\nBut I hear the frustration. That feeling of \"was this all for nothing?\" is exactly what Myth 1 feeds on. The degree opened doors you walked through; the skills you build next will open different ones.\n\nNow, let me show you the three main paths available to you as a graduate.",
         timestamp: "Day 1",
       },
       {
         id: "c5",
         role: "assistant",
         content:
-          "There are three paths:\n\n**9-5 employment** - structure, salary, institutional learning. The trade-off: your ceiling is set by the company.\n\n**Freelancing** - flexibility, direct client relationships. The trade-off: you are your own sales team, accountant, and operations department.\n\n**Entrepreneurship** - highest upside, highest risk. The trade-off: most early income is deferred.\n\nNone of these is the 'right' answer. They depend on your risk tolerance, your finances, and what you want your daily life to look like.",
+          "There are three paths:\n\n**9-5 employment** — structure, salary, institutional learning. The trade-off: your ceiling is set by the company.\n\n**Freelancing** — flexibility, direct client relationships. The trade-off: you are your own sales team, accountant, and operations department.\n\n**Entrepreneurship** — highest upside, highest risk. The trade-off: most early income is deferred.\n\nNone of these is the 'right' answer. They depend on your risk tolerance, your finances, and what you want your daily life to look like.",
         timestamp: "Day 1",
       },
       {
         id: "c6",
         role: "assistant",
-        content:
-          "You've got the landscape. **Next**, we'll lock in a few concrete inputs so this doesn't stay abstract.\n\nWhen you're ready, send **any message** here, even a single word is fine, and I'll start you on the first quick exercise.",
+        content: "",
         timestamp: "Day 1",
+        challenge: {
+          type: "reflection",
+          prompt: "Reflect on the three graduate options — 9-5, freelancing, and entrepreneurship. Which do you gravitate towards, and why? Think about people you know who fit these categories — what does their daily life look like?",
+          inputType: "textarea",
+          placeholder: "Take your time. There's no right answer — just your honest thinking…",
+        },
       },
     ],
   },
@@ -138,7 +151,7 @@ const CHAT_HISTORY: ChatSession[] = [
         id: "m2",
         role: "assistant",
         content:
-          "That's a great move, your engineering background is actually a superpower in product design. You already understand constraints that most designers learn the hard way.\n\nHere's where I'd start:\n\n1. **Build your visual foundation** - Learn the fundamentals: typography, colour, spacing, hierarchy.\n2. **Get Figma fluent** - It's the industry standard.\n3. **Redesign things you already use** - Pick an app you use daily and redesign one flow.\n4. **Lean into your engineering context** - Your ability to design with implementation in mind is rare.",
+          "That's a great move — your engineering background is actually a superpower in product design. You already understand constraints that most designers learn the hard way.\n\nHere's where I'd start:\n\n1. **Build your visual foundation** — Learn the fundamentals: typography, colour, spacing, hierarchy.\n2. **Get Figma fluent** — It's the industry standard.\n3. **Redesign things you already use** — Pick an app you use daily and redesign one flow.\n4. **Lean into your engineering context** — Your ability to design with implementation in mind is rare.",
         timestamp: "10:03 AM",
       },
       {
@@ -151,7 +164,7 @@ const CHAT_HISTORY: ChatSession[] = [
         id: "m4",
         role: "assistant",
         content:
-          "Realistically, 6–12 months to be competitive for junior/mid design roles, faster if you already have product intuition from engineering.\n\nThe bottleneck isn't learning design; it's building a portfolio that demonstrates taste and process.",
+          "Realistically, 6–12 months to be competitive for junior/mid design roles — faster if you already have product intuition from engineering.\n\nThe bottleneck isn't learning design; it's building a portfolio that demonstrates taste and process.",
         timestamp: "10:06 AM",
       },
     ],
@@ -171,12 +184,22 @@ const CHAT_HISTORY: ChatSession[] = [
         id: "m6",
         role: "assistant",
         content:
-          "For London, £95k for senior is on the lower end. Senior roles typically range £100k–£140k depending on company, stack, and domain.\n\nBase salary is only one lever, sometimes a £90k role with strong equity beats a £120k role with none.",
+          "For London, £95k for senior is on the lower end. Senior roles typically range £100k–£140k depending on company, stack, and domain.\n\nBase salary is only one lever — sometimes a £90k role with strong equity beats a £120k role with none.",
         timestamp: "Yesterday",
       },
     ],
   },
 ]
+
+// ─── Markdown components ──────────────────────────────────────────────────────
+
+const mdComponents = {
+  p: ({ children }: { children?: React.ReactNode }) => <p className="mb-2 last:mb-0">{children}</p>,
+  strong: ({ children }: { children?: React.ReactNode }) => <strong className="font-semibold">{children}</strong>,
+  ol: ({ children }: { children?: React.ReactNode }) => <ol className="list-decimal pl-5 mb-2 space-y-0.5">{children}</ol>,
+  ul: ({ children }: { children?: React.ReactNode }) => <ul className="list-disc pl-5 mb-2 space-y-0.5">{children}</ul>,
+  li: ({ children }: { children?: React.ReactNode }) => <li>{children}</li>,
+}
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
@@ -192,58 +215,87 @@ function ChatNavbar({
   const isCurriculum = activeSession.mode === "curriculum"
 
   return (
-    <div className="relative z-10 shrink-0 overflow-visible">
-      <header className="flex items-center px-4 pt-2.5 pb-2 gap-3 border-b border-neutral-100 bg-white">
-        <div className="flex items-center gap-3 flex-1 min-w-0">
-          {isCurriculum && (
-            <span className="text-small-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full shrink-0">
-              Curriculum
-            </span>
-          )}
-          <Select value={activeSession.id} onValueChange={onSessionChange}>
-            <SelectTrigger className="w-auto max-w-xs border border-neutral-200 shadow-none bg-transparent px-3 gap-3 font-medium text-neutral-900 focus:ring-0 hover:bg-neutral-50 transition-colors [&>span]:truncate [&>span]:max-w-[28ch]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="border-neutral-200">
-              {sessions.map((s) => (
-                <SelectItem key={s.id} value={s.id}>
-                  <span className="flex items-center gap-2">
-                    {s.mode === "curriculum" && (
-                      <span className="h-1.5 w-1.5 rounded-full bg-primary-500 shrink-0" />
-                    )}
-                    {s.title}
-                  </span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {isCurriculum && activeSession.progress && (
-          <div className="flex items-center gap-3 shrink-0">
-            <div className="text-right">
-              <p className="text-small-regular text-neutral-500 leading-none">{activeSession.progress.pillar}</p>
-              <p className="text-small-regular text-neutral-400 leading-none mt-0.5">
-                Step {activeSession.progress.stepIndex}/{activeSession.progress.totalSteps}
-              </p>
-            </div>
-            <Progress value={activeSession.progress.percentComplete} className="w-20 h-1.5" />
-          </div>
+    <header className="h-14 flex items-center px-4 bg-white gap-3 shrink-0 border-b border-neutral-100">
+      <div className="flex items-center gap-3 flex-1 min-w-0">
+        {isCurriculum && (
+          <span className="text-xs font-medium text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full shrink-0">
+            Curriculum
+          </span>
         )}
+        <Select value={activeSession.id} onValueChange={onSessionChange}>
+          <SelectTrigger className="w-auto max-w-xs border border-neutral-200 shadow-none bg-transparent px-3 gap-3 font-medium text-neutral-900 focus:ring-0 hover:bg-neutral-50 transition-colors [&>span]:truncate [&>span]:max-w-[28ch]">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent className="border-neutral-200">
+            {sessions.map((s) => (
+              <SelectItem key={s.id} value={s.id}>
+                <span className="flex items-center gap-2">
+                  {s.mode === "curriculum" && (
+                    <span className="h-1.5 w-1.5 rounded-full bg-primary-500 shrink-0" />
+                  )}
+                  {s.title}
+                </span>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
-        <div className="flex items-center gap-2 shrink-0">
-          <Button variant="tertiary" size="icon" className="active:scale-[0.95]">
-            <Icon name="IconEditSmall1" size={16} />
-          </Button>
+      {isCurriculum && activeSession.progress && (
+        <div className="flex items-center gap-3 shrink-0">
+          <div className="text-right">
+            <p className="text-xs text-neutral-500 leading-none">{activeSession.progress.pillar}</p>
+            <p className="text-[10px] text-neutral-400 leading-none mt-0.5">
+              Step {activeSession.progress.stepIndex}/{activeSession.progress.totalSteps}
+            </p>
+          </div>
+          <Progress value={activeSession.progress.percentComplete} className="w-20 h-1.5" />
         </div>
-      </header>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 -bottom-8 h-8 z-10 bg-[linear-gradient(to_bottom,rgb(255_255_255)_0%,rgb(255_255_255_/_0.94)_42%,rgb(255_255_255_/_0.62)_72%,transparent_100%)]"
-      />
-    </div>
+      )}
+
+      <div className="flex items-center gap-2 shrink-0">
+        <Button variant="tertiary" size="icon" className="active:scale-[0.95]">
+          <Icon name="IconEditSmall1" size={16} />
+        </Button>
+      </div>
+    </header>
   )
 }
+
+// ─── Demo quiz data ───────────────────────────────────────────────────────────
+
+const DEMO_QUIZ_QUESTIONS = [
+  {
+    id: "q1",
+    question: "When given a complex project, you prefer to:",
+    options: [
+      { id: "steps",       label: "Break it into clear steps first" },
+      { id: "collaborate", label: "Collaborate with others first" },
+      { id: "system",      label: "See the whole system at once" },
+      { id: "execute",     label: "Get into execution immediately" },
+    ],
+  },
+  {
+    id: "q2",
+    question: "Your ideal work environment is:",
+    options: [
+      { id: "solo",       label: "Quiet and independent" },
+      { id: "collab",     label: "Collaborative and open" },
+      { id: "flexible",   label: "Flexible — depends on the task" },
+      { id: "structured", label: "Structured with clear expectations" },
+    ],
+  },
+  {
+    id: "q3",
+    question: "When you hit a blocker, you typically:",
+    options: [
+      { id: "research",   label: "Research until you find the answer" },
+      { id: "ask",        label: "Ask someone immediately" },
+      { id: "workaround", label: "Find a workaround and move on" },
+      { id: "step-back",  label: "Step back and rethink the approach" },
+    ],
+  },
+]
 
 // ─── Artifact widget wrappers ─────────────────────────────────────────────────
 
@@ -256,19 +308,80 @@ function ArtifactCompletedSummary({ challenge }: { challenge: ChallengeData }) {
       className="rounded-3 border border-green-200 bg-green-50 px-4 py-3 flex items-center gap-2"
     >
       <Icon name="IconCheckmark2" size={12} className="text-green-600 shrink-0" />
-      <span className="text-lg-regular text-green-800 truncate">{challenge.response}</span>
+      <span className="text-sm text-green-800 truncate">{challenge.response}</span>
     </motion.div>
   )
 }
 
-function MessageBubble({ message }: { message: Message }) {
+function ReflectionWidget({
+  challenge,
+  onComplete,
+}: {
+  challenge: ChallengeData
+  onComplete: (summary: string) => void
+}) {
+  const [value, setValue] = useState("")
+  return (
+    <ChatReflectionInput
+      prompt={challenge.prompt}
+      hint="Aim for 3-5 sentences"
+      value={value}
+      onChange={setValue}
+      onSubmit={() => onComplete(value.trim())}
+    />
+  )
+}
+
+function QuizWidget({ onComplete }: { onComplete: (summary: string) => void }) {
+  const [index, setIndex] = useState(0)
+  const [answers, setAnswers] = useState<Record<string, string>>({})
+  const [custom, setCustom] = useState("")
+
+  const current = DEMO_QUIZ_QUESTIONS[index]
+  const isLast = index === DEMO_QUIZ_QUESTIONS.length - 1
+  const hasAnswer = Boolean(answers[current.id] || custom.trim())
+
+  return (
+    <ChatQuizCard
+      question={current.question}
+      options={current.options}
+      current={index + 1}
+      total={DEMO_QUIZ_QUESTIONS.length}
+      selectedId={answers[current.id]}
+      customValue={custom}
+      onSelect={(id: string) => setAnswers((prev) => ({ ...prev, [current.id]: id }))}
+      onCustomChange={setCustom}
+      onPrev={index > 0 ? () => { setIndex((i) => i - 1); setCustom("") } : undefined}
+      onNext={
+        hasAnswer
+          ? () => {
+              if (isLast) {
+                onComplete("Completed work preference quiz")
+              } else {
+                setIndex((i) => i + 1)
+                setCustom("")
+              }
+            }
+          : undefined
+      }
+    />
+  )
+}
+
+function MessageBubble({
+  message,
+  onArtifactComplete,
+}: {
+  message: Message
+  onArtifactComplete: (messageId: string, summary: string) => void
+}) {
   const isUser = message.role === "user"
 
   if (isUser) {
     return (
       <div className="flex justify-end">
         <div className="max-w-[72%]">
-          <div className="px-4 py-3 rounded-3 rounded-tr-1 text-lg-regular leading-relaxed bg-neutral-100 text-neutral-900">
+          <div className="px-4 py-3 rounded-3 rounded-tr-1 text-sm leading-relaxed bg-neutral-100 text-neutral-900">
             {message.content}
           </div>
         </div>
@@ -278,39 +391,48 @@ function MessageBubble({ message }: { message: Message }) {
 
   if (message.challenge) {
     const { challenge } = message
-
-    if (challenge.artifactType && !selectChallengeState(challenge).isCompleted) {
-      const trimmed = message.content.trim()
-      if (trimmed || message.isStreaming) {
-        return (
-          <AssistantTextBubble
-            content={message.content}
-            isStreaming={message.isStreaming}
-            assistantMeta={message.assistantMeta}
-          />
-        )
-      }
-      return null
-    }
+    const done = (summary: string) => onArtifactComplete(message.id, summary)
 
     if (challenge.response) {
       return <ArtifactCompletedSummary challenge={challenge} />
     }
 
-    return <ChallengeMessage challenge={challenge} />
+    switch (challenge.artifactType) {
+      case "reflection":
+        return <ReflectionWidget challenge={challenge} onComplete={done} />
+      case "commitment":
+        return (
+          <ChatCommitmentCard
+            title={challenge.prompt}
+            description={challenge.description ?? ""}
+            onAccept={() => done("Accepted")}
+            onDecline={() => done("Declined")}
+          />
+        )
+      case "quiz":
+        return <QuizWidget onComplete={done} />
+      case "mbti":
+        return <ChatMBTIPicker onSubmit={(type) => done(type)} />
+      case "holland":
+        return (
+          <ChatHollandPicker
+            onSubmit={(code) => done(code.join(" · "))}
+          />
+        )
+      default:
+        return <ChallengeMessage challenge={challenge} />
+    }
   }
 
   return (
-    <AssistantTextBubble
-      content={message.content}
-      isStreaming={message.isStreaming}
-      assistantMeta={message.assistantMeta}
-    />
+    <div className="text-neutral-900 text-sm leading-relaxed">
+      <ReactMarkdown components={mdComponents}>{message.content}</ReactMarkdown>
+    </div>
   )
 }
 
 function ChallengeMessage({ challenge }: { challenge: ChallengeData }) {
-  // Completed challenge, show response in thread
+  // Completed challenge — show response in thread
   if (challenge.response) {
     return (
       <motion.div
@@ -320,27 +442,27 @@ function ChallengeMessage({ challenge }: { challenge: ChallengeData }) {
         className="rounded-3 border border-green-200 bg-green-50 p-4"
       >
         <div className="flex items-center gap-2 mb-2">
-          <span className={cn("text-small-medium px-2 py-0.5 rounded-1", challengeColors[challenge.type])}>
+          <span className={cn("text-xs px-2 py-0.5 rounded-1 font-medium", challengeColors[challenge.type])}>
             {challengeLabels[challenge.type]}
           </span>
-          <span className="text-small-medium text-green-700">Completed</span>
+          <span className="text-xs text-green-700 font-medium">Completed</span>
         </div>
-        <p className="text-lg-regular text-neutral-700 leading-relaxed">
+        <p className="text-sm text-neutral-700 leading-relaxed">
           {challenge.response}
         </p>
       </motion.div>
     )
   }
 
-  // Active challenge, show prompt only (input is at the bottom)
+  // Active challenge — show prompt only (input is at the bottom)
   return (
     <div className="rounded-3 border border-neutral-200 bg-white p-4">
       <div className="flex items-center gap-2 mb-3">
-        <span className={cn("text-small-medium px-2 py-0.5 rounded-1", challengeColors[challenge.type])}>
+        <span className={cn("text-xs px-2 py-0.5 rounded-1 font-medium", challengeColors[challenge.type])}>
           {challengeLabels[challenge.type]}
         </span>
       </div>
-      <p className="text-lg-regular text-neutral-900 leading-relaxed">{challenge.prompt}</p>
+      <p className="text-sm text-neutral-900 leading-relaxed">{challenge.prompt}</p>
     </div>
   )
 }
@@ -398,10 +520,10 @@ function MessageInput({
         <div className="max-w-3xl mx-auto pt-3">
           {/* Challenge context bar */}
           <div className="flex items-center gap-2 mb-3">
-            <span className={cn("text-small-medium px-2 py-0.5 rounded-1", challengeColors[activeChallenge.type])}>
+            <span className={cn("text-xs px-2 py-0.5 rounded-1 font-medium", challengeColors[activeChallenge.type])}>
               {challengeLabels[activeChallenge.type]}
             </span>
-            <span className="text-small-regular text-neutral-400 truncate">{activeChallenge.prompt.slice(0, 60)}…</span>
+            <span className="text-xs text-neutral-400 truncate">{activeChallenge.prompt.slice(0, 60)}…</span>
           </div>
 
           {activeChallenge.inputType === "confirm" ? (
@@ -420,7 +542,6 @@ function MessageInput({
             <div className="flex gap-3">
               <Input
                 type="url"
-                size="lg"
                 value={value}
                 onChange={(e) => setValue(e.target.value)}
                 placeholder={activeChallenge.placeholder ?? "https://..."}
@@ -442,12 +563,11 @@ function MessageInput({
             <div className="relative">
               <Textarea
                 ref={textareaRef as React.RefObject<HTMLTextAreaElement>}
-                size="lg"
                 value={value}
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}
                 placeholder={activeChallenge.placeholder ?? "Your response…"}
-                className="resize-none pr-16"
+                className="min-h-[100px] text-sm resize-none pr-16"
               />
               <Button
                 onClick={handleSend}
@@ -475,7 +595,7 @@ function MessageInput({
           onChange={handleChange}
           onKeyDown={handleKeyDown}
           placeholder={mode === "curriculum" ? "Respond to Mande…" : "Ask anything about your career…"}
-          className="w-full min-h-[80px] resize-none rounded-4 border border-neutral-200 shadow-sm bg-white px-4 pt-3 pb-14 text-lg-regular text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-0 leading-relaxed"
+          className="w-full min-h-[80px] resize-none rounded-4 border border-neutral-200 bg-white px-4 pt-3 pb-14 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-primary-300 focus:ring-offset-0 leading-relaxed"
         />
         <Button
           onClick={handleSend}
@@ -486,7 +606,7 @@ function MessageInput({
           <Icon name="IconArrowUp" size={16} />
         </Button>
       </div>
-      <p className="text-center text-small-regular text-neutral-400 mt-2">
+      <p className="text-center text-xs text-neutral-400 mt-2">
         Mande can make mistakes. Double-check important information.
       </p>
     </div>
@@ -511,126 +631,34 @@ export default function ChatPage() {
   const activeChallenge =
     lastMsg?.role === "assistant" &&
     lastMsg.challenge &&
-    !lastMsg.challenge.artifactType &&
-    lastMsg.challenge.evaluation?.status !== "pass" &&
-    !selectChallengeState(lastMsg.challenge).isCompleted
+    !lastMsg.challenge.response &&
+    !lastMsg.challenge.artifactType
       ? lastMsg.challenge
       : null
 
-  const activeArtifact =
-    lastMsg?.role === "assistant" &&
-    lastMsg.challenge != null &&
-    lastMsg.challenge.artifactType != null &&
-    !selectChallengeState(lastMsg.challenge).isCompleted
-
   const handleSend = (text: string) => {
-    const uid = Date.now()
-    const timeStr = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     const newMessage: Message = {
-      id: `m${uid}`,
+      id: `m${Date.now()}`,
       role: "user",
       content: text,
-      timestamp: timeStr,
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     }
-
-    let streamPlan:
-      | {
-          messageId: string
-          fullText: string
-          onComplete?: () => void
-        }
-      | undefined
-
     setSessions((prev) =>
-      prev.map((s) => {
-        if (s.id !== activeSessionId) return s
-        if (lastMessageHasBlockingArtifact(s.messages)) {
-          return { ...s, messages: [...s.messages, newMessage] }
-        }
-        const messagesAfterUser = [...s.messages, newMessage]
-        const userCount = messagesAfterUser.filter((m) => m.role === "user").length
-        const shouldAttachCurriculumArtifact =
-          s.mode === "curriculum" &&
-          s.autoConversationArtifacts !== false &&
-          userCount === CURRICULUM_AUTO_ARTIFACT_USER_MESSAGE_THRESHOLD
-
-        if (shouldAttachCurriculumArtifact) {
-          const ackId = `m-curriculum-auto-${uid}-ack`
-          streamPlan = { messageId: ackId, fullText: CURRICULUM_ARTIFACT_ACK_TEXT }
-          return {
-            ...s,
-            messages: [
-              ...messagesAfterUser,
-              {
-                id: ackId,
-                role: "assistant",
-                content: "",
-                timestamp: timeStr,
-                isStreaming: true,
-                assistantMeta: sanitizeAssistantMeta(CURRICULUM_ARTIFACT_ACK_META),
-                challenge: createCommitmentArtifactChallenge(),
-              },
-            ],
-          }
-        }
-
-        if (s.mode === "open") {
-          const { content: fullReply, assistantMeta } = getMockOpenChatAssistantReply(text)
-          const aiId = `m-open-ai-${uid}`
-          streamPlan = { messageId: aiId, fullText: fullReply }
-          return {
-            ...s,
-            messages: [
-              ...messagesAfterUser,
-              {
-                id: aiId,
-                role: "assistant",
-                content: "",
-                timestamp: timeStr,
-                isStreaming: true,
-                assistantMeta: sanitizeAssistantMeta(assistantMeta),
-              },
-            ],
-          }
-        }
-
-        return { ...s, messages: messagesAfterUser }
-      })
-    )
-
-    if (streamPlan) {
-      const plan = streamPlan
-      queueMicrotask(() =>
-        runTextStream({
-          setSessions,
-          sessionId: activeSessionId,
-          messageId: plan.messageId,
-          fullText: plan.fullText,
-          onComplete: plan.onComplete,
-        })
+      prev.map((s) =>
+        s.id === activeSessionId
+          ? { ...s, messages: [...s.messages, newMessage] }
+          : s
       )
-    }
+    )
   }
 
-  const handleInject = (injectable: InjectableChallenge) => {
-    const now = Date.now()
-    const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+  const handleInject = (challenge: InjectableChallenge) => {
     const newMessage: Message = {
-      id: `artifact-${now}`,
+      id: `artifact-${Date.now()}`,
       role: "assistant",
       content: "",
-      timestamp,
-      challenge: createChallengeData({
-        challengeId: `inject-${injectable.artifactType}-${now}`,
-        lessonId: "artifact-dev-flow",
-        responseType: toResponseType(injectable.artifactType),
-        artifactType: injectable.artifactType,
-        prompt: injectable.prompt,
-        description: injectable.description,
-        inputType: injectable.inputType,
-        placeholder: injectable.placeholder,
-        type: injectable.type,
-      }),
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      challenge,
     }
     setSessions((prev) =>
       prev.map((s) =>
@@ -675,7 +703,6 @@ export default function ChatPage() {
 
   return (
     <div className="flex h-screen bg-neutral-50 overflow-hidden">
-      <DevTriggerPanel onInject={handleInject} />
       <div className="flex-1 flex flex-col min-w-0">
         <ChatNavbar
           sessions={sessions}
@@ -686,9 +713,13 @@ export default function ChatPage() {
         {/* Message thread */}
         <div className="relative flex-1 overflow-y-auto flex flex-col">
           <div className="flex-1 py-6 px-4">
-            <div className="max-w-3xl mx-auto flex flex-col gap-10">
+            <div className="max-w-3xl mx-auto flex flex-col gap-6">
               {activeSession.messages.map((msg) => (
-                <MessageBubble key={msg.id} message={msg} />
+                <MessageBubble
+                  key={msg.id}
+                  message={msg}
+                  onArtifactComplete={handleArtifactComplete}
+                />
               ))}
               <div ref={bottomRef} />
             </div>
@@ -700,25 +731,14 @@ export default function ChatPage() {
           )}
         </div>
 
-        <div className="shrink-0">
-          {activeArtifact && lastMsg?.challenge ? (
-            <ChatActiveArtifactFooterShell>
-              <ChatActiveArtifactControls
-                challenge={lastMsg.challenge}
-                messageId={lastMsg.id}
-                onArtifactComplete={handleArtifactComplete}
-              />
-            </ChatActiveArtifactFooterShell>
-          ) : (
-            <MessageInput
-              onSend={handleSend}
-              mode={activeSession.mode}
-              activeChallenge={activeChallenge}
-              onChallengeSubmit={handleChallengeSubmit}
-            />
-          )}
-        </div>
+        <MessageInput
+          onSend={handleSend}
+          mode={activeSession.mode}
+          activeChallenge={activeChallenge}
+          onChallengeSubmit={handleChallengeSubmit}
+        />
       </div>
+      <DevTriggerPanel onInject={handleInject} />
     </div>
   )
 }
