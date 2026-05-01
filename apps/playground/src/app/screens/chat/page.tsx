@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useMemo } from "react"
 import ReactMarkdown from "react-markdown"
 import { motion } from "motion/react"
 import {
@@ -129,6 +129,7 @@ const CHAT_HISTORY: ChatSession[] = [
         timestamp: "Day 1",
         challenge: {
           type: "reflection",
+          artifactType: "reflection",
           prompt: "Reflect on the three graduate options — 9-5, freelancing, and entrepreneurship. Which do you gravitate towards, and why? Think about people you know who fit these categories — what does their daily life look like?",
           inputType: "textarea",
           placeholder: "Take your time. There's no right answer — just your honest thinking…",
@@ -262,40 +263,150 @@ function ChatNavbar({
   )
 }
 
-// ─── Demo quiz data ───────────────────────────────────────────────────────────
+// ─── Work preference quiz ─────────────────────────────────────────────────────
 
 const DEMO_QUIZ_QUESTIONS = [
   {
     id: "q1",
     question: "When given a complex project, you prefer to:",
     options: [
-      { id: "steps",       label: "Break it into clear steps first" },
-      { id: "collaborate", label: "Collaborate with others first" },
-      { id: "system",      label: "See the whole system at once" },
-      { id: "execute",     label: "Get into execution immediately" },
+      { id: "focuser",    label: "Break it into clear steps first" },
+      { id: "relator",    label: "Collaborate with others first" },
+      { id: "integrator", label: "See the whole system at once" },
+      { id: "operator",   label: "Get into execution immediately" },
     ],
   },
   {
     id: "q2",
     question: "Your ideal work environment is:",
     options: [
-      { id: "solo",       label: "Quiet and independent" },
-      { id: "collab",     label: "Collaborative and open" },
-      { id: "flexible",   label: "Flexible — depends on the task" },
-      { id: "structured", label: "Structured with clear expectations" },
+      { id: "focuser",    label: "Quiet and independent" },
+      { id: "relator",    label: "Collaborative and open" },
+      { id: "integrator", label: "Flexible — depends on the task" },
+      { id: "operator",   label: "Structured with clear expectations" },
     ],
   },
   {
     id: "q3",
     question: "When you hit a blocker, you typically:",
     options: [
-      { id: "research",   label: "Research until you find the answer" },
-      { id: "ask",        label: "Ask someone immediately" },
-      { id: "workaround", label: "Find a workaround and move on" },
-      { id: "step-back",  label: "Step back and rethink the approach" },
+      { id: "focuser",    label: "Research until you find the answer" },
+      { id: "relator",    label: "Ask someone immediately" },
+      { id: "integrator", label: "Step back and rethink the approach" },
+      { id: "operator",   label: "Find a workaround and move on" },
+    ],
+  },
+  {
+    id: "q4",
+    question: "You feel most accomplished when you've:",
+    options: [
+      { id: "focuser",    label: "Deeply understood something complex" },
+      { id: "relator",    label: "Helped someone work through a challenge" },
+      { id: "integrator", label: "Connected two things that seemed unrelated" },
+      { id: "operator",   label: "Shipped or delivered a tangible result" },
+    ],
+  },
+  {
+    id: "q5",
+    question: "When something goes wrong on a team, you:",
+    options: [
+      { id: "focuser",    label: "Want to understand the root cause" },
+      { id: "relator",    label: "Check in with the people involved" },
+      { id: "integrator", label: "Look at the system that allowed it" },
+      { id: "operator",   label: "Fix what you can fix right now" },
+    ],
+  },
+  {
+    id: "q6",
+    question: "In a meeting with no clear agenda, you:",
+    options: [
+      { id: "focuser",    label: "Get frustrated and want to focus" },
+      { id: "relator",    label: "Enjoy the conversation and flow" },
+      { id: "integrator", label: "Start connecting dots across topics" },
+      { id: "operator",   label: "Steer it towards a decision or action" },
+    ],
+  },
+  {
+    id: "q7",
+    question: "You naturally keep track of:",
+    options: [
+      { id: "focuser",    label: "Details, notes, and frameworks" },
+      { id: "relator",    label: "Relationships and conversations" },
+      { id: "integrator", label: "Patterns and emerging connections" },
+      { id: "operator",   label: "Tasks, deadlines, and progress" },
+    ],
+  },
+  {
+    id: "q8",
+    question: "Your biggest strength is:",
+    options: [
+      { id: "focuser",    label: "Going deep on one thing" },
+      { id: "relator",    label: "Building trust with people" },
+      { id: "integrator", label: "Seeing what others miss" },
+      { id: "operator",   label: "Getting things across the finish line" },
     ],
   },
 ]
+
+// ─── Script continuations ─────────────────────────────────────────────────────
+// Keyed by the message ID of the completed artifact.
+// When that artifact is completed, these messages are appended to the thread.
+
+const SCRIPT_CONTINUATIONS: Record<string, Message[]> = {
+  c6: [
+    {
+      id: "c7",
+      role: "assistant",
+      content:
+        "That kind of honest thinking is exactly the starting point. You've already named your instinct — that's real data you can build on.\n\nNow let me tell you what happens next. **PIVOTS** is a 10-day self-discovery challenge built for graduates like you. Not generic career advice — a structured path that helps you figure out what you want, what you're good at, and how to make that work in the real world.",
+      timestamp: "Day 1",
+    },
+    {
+      id: "c8",
+      role: "assistant",
+      content: "",
+      timestamp: "Day 1",
+      challenge: {
+        type: "commitment",
+        artifactType: "commitment",
+        prompt: "Take the 10-day PIVOTS self-discovery challenge?",
+        description:
+          "School gave you a start. What comes next is on you. Figure out what you want, what you're good at, and how to make that work in the real world. Mande helps, but you have to show up for yourself first.",
+        inputType: "confirm",
+      },
+    },
+  ],
+  c8: [
+    {
+      id: "c9",
+      role: "assistant",
+      content:
+        "Welcome aboard. We start now.\n\nBefore we can match you to paths and opportunities, we need to understand how you actually work — not how you think you should work, but how you naturally show up. This short assessment identifies your **work preference archetype**: Focuser, Relator, Integrator, or Operator.\n\nAnswer honestly. There are no wrong answers.",
+      timestamp: "Day 1",
+    },
+    {
+      id: "c10",
+      role: "assistant",
+      content: "",
+      timestamp: "Day 1",
+      challenge: {
+        type: "embedded-assessment",
+        artifactType: "quiz",
+        prompt: "Work preference assessment",
+        inputType: "confirm",
+      },
+    },
+  ],
+  c10: [
+    {
+      id: "c11",
+      role: "assistant",
+      content:
+        "Based on your answers, you're showing strong signals as a **Focuser** — someone who thrives in deep work, values structured environments, and delivers through precision rather than volume.\n\nWe'll use this throughout the curriculum to make sure the paths and roles we explore actually fit how you operate. Day 1 done.",
+      timestamp: "Day 1",
+    },
+  ],
+}
 
 // ─── Artifact widget wrappers ─────────────────────────────────────────────────
 
@@ -613,6 +724,46 @@ function MessageInput({
   )
 }
 
+type MessageGroup =
+  | { kind: "user"; message: Message; key: string }
+  | { kind: "assistant"; messages: Message[]; key: string }
+
+function groupMessages(messages: Message[]): MessageGroup[] {
+  const groups: MessageGroup[] = []
+  for (const message of messages) {
+    if (message.role === "user") {
+      groups.push({ kind: "user", message, key: message.id })
+    } else {
+      const last = groups[groups.length - 1]
+      if (last?.kind === "assistant") {
+        last.messages.push(message)
+      } else {
+        groups.push({ kind: "assistant", messages: [message], key: message.id })
+      }
+    }
+  }
+  return groups
+}
+
+function AssistantGroupRenderer({
+  messages,
+  onArtifactComplete,
+}: {
+  messages: Message[]
+  onArtifactComplete: (messageId: string, summary: string) => void
+}) {
+  if (messages.length === 1) {
+    return <MessageBubble message={messages[0]} onArtifactComplete={onArtifactComplete} />
+  }
+  return (
+    <div className="flex flex-col gap-4">
+      {messages.map((msg) => (
+        <MessageBubble key={msg.id} message={msg} onArtifactComplete={onArtifactComplete} />
+      ))}
+    </div>
+  )
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function ChatPage() {
@@ -635,6 +786,11 @@ export default function ChatPage() {
     !lastMsg.challenge.artifactType
       ? lastMsg.challenge
       : null
+
+  const groups = useMemo(
+    () => groupMessages(activeSession.messages),
+    [activeSession.messages]
+  )
 
   const handleSend = (text: string) => {
     const newMessage: Message = {
@@ -673,14 +829,13 @@ export default function ChatPage() {
     setSessions((prev) =>
       prev.map((s) => {
         if (s.id !== activeSessionId) return s
-        return {
-          ...s,
-          messages: s.messages.map((msg) =>
-            msg.id === messageId && msg.challenge
-              ? { ...msg, challenge: { ...msg.challenge, response: summary } }
-              : msg
-          ),
-        }
+        const updated = s.messages.map((msg) =>
+          msg.id === messageId && msg.challenge
+            ? { ...msg, challenge: { ...msg.challenge, response: summary } }
+            : msg
+        )
+        const continuations = SCRIPT_CONTINUATIONS[messageId] ?? []
+        return { ...s, messages: [...updated, ...continuations] }
       })
     )
   }
@@ -714,12 +869,17 @@ export default function ChatPage() {
         <div className="relative flex-1 overflow-y-auto flex flex-col">
           <div className="flex-1 py-6 px-4">
             <div className="max-w-3xl mx-auto flex flex-col gap-6">
-              {activeSession.messages.map((msg) => (
-                <MessageBubble
-                  key={msg.id}
-                  message={msg}
-                  onArtifactComplete={handleArtifactComplete}
-                />
+              {groups.map((group) => (
+                <div
+                  key={group.key}
+                  data-message-id={group.kind === "user" ? group.message.id : group.messages[0].id}
+                >
+                  {group.kind === "user" ? (
+                    <MessageBubble message={group.message} onArtifactComplete={handleArtifactComplete} />
+                  ) : (
+                    <AssistantGroupRenderer messages={group.messages} onArtifactComplete={handleArtifactComplete} />
+                  )}
+                </div>
               ))}
               <div ref={bottomRef} />
             </div>
