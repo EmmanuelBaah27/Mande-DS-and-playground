@@ -8,8 +8,8 @@ import { cn } from "@mande/ui/lib/utils"
 import type { AssistantMessageMeta } from "./chat-data"
 import { inferAssistantDepth } from "./chat-data"
 
-const HANDOFF_DELAY_MS = 250
-const THINKING_AUTO_COLLAPSE_MS = 2500
+const THINKING_AUTO_COLLAPSE_MS = 800
+const RESPONSE_EASE_IN_MS = 200
 
 const mdComponents = {
   p: ({ children }: { children?: React.ReactNode }) => (
@@ -68,6 +68,7 @@ export function AssistantTextBubble({
       wasStreamingRef.current = false
       return
     }
+
     if (isStreaming) {
       setShowResponse(false)
       wasStreamingRef.current = true
@@ -75,6 +76,10 @@ export function AssistantTextBubble({
         thinkCollapseTimerRef.current = window.setTimeout(() => {
           setIsProcessCollapsed(true)
           thinkCollapseTimerRef.current = null
+          responseGateTimerRef.current = window.setTimeout(() => {
+            setShowResponse(true)
+            responseGateTimerRef.current = null
+          }, RESPONSE_EASE_IN_MS)
         }, THINKING_AUTO_COLLAPSE_MS)
       }
       return
@@ -84,16 +89,20 @@ export function AssistantTextBubble({
     wasStreamingRef.current = false
 
     if (justFinishedStreaming) {
-      setIsProcessCollapsed(true)
-      if (responseGateTimerRef.current) window.clearTimeout(responseGateTimerRef.current)
-      responseGateTimerRef.current = window.setTimeout(() => {
-        setShowResponse(true)
+      if (thinkCollapseTimerRef.current) {
+        window.clearTimeout(thinkCollapseTimerRef.current)
+        thinkCollapseTimerRef.current = null
+      }
+      if (responseGateTimerRef.current) {
+        window.clearTimeout(responseGateTimerRef.current)
         responseGateTimerRef.current = null
-      }, HANDOFF_DELAY_MS)
+      }
+      setIsProcessCollapsed(true)
+      setShowResponse(true)
       return
     }
 
-    // For already-completed messages, keep both thought row + response visible immediately.
+    // Historical: show immediately, collapsed
     setShowResponse(true)
     if (!hasUserToggled) {
       setIsProcessCollapsed(true)
@@ -156,19 +165,27 @@ export function AssistantTextBubble({
               <span className="text-small-regular text-neutral-500 transition-colors group-hover:text-neutral-700">
                 {processLabel}
               </span>
-              <span className="inline-flex h-4 w-4 shrink-0 items-center justify-center">
+              <motion.span
+                animate={{ rotate: isProcessCollapsed ? 0 : 90 }}
+                transition={springs.snappy}
+                className="inline-flex h-4 w-4 shrink-0 items-center justify-center"
+              >
                 <Icon
-                  name={isProcessCollapsed ? "IconChevronRight" : "IconChevronBottom"}
+                  name="IconChevronRight"
                   size={12}
                   stroke="2"
                   className="text-neutral-600 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
                   aria-hidden
                 />
-              </span>
+              </motion.span>
             </span>
           </Button>
-          {!isProcessCollapsed && (
-            <div className="relative">
+          <motion.div
+            animate={{ height: isProcessCollapsed ? 0 : "auto" }}
+            transition={springs.snappy}
+            style={{ overflow: "hidden" }}
+          >
+            <div className="relative pb-1">
               <div className="max-h-28 overflow-hidden whitespace-pre-wrap pr-1 text-small-regular text-neutral-400">
                 {processText}
                 {isStreaming && (
@@ -185,7 +202,7 @@ export function AssistantTextBubble({
                 />
               )}
             </div>
-          )}
+          </motion.div>
         </div>
       )}
       <motion.div
