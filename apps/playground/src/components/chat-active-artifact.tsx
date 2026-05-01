@@ -8,10 +8,14 @@ import { ChatQuizCard } from "./chat-quiz-card"
 import { ChatCommitmentCard } from "./chat-commitment-card"
 import { ChatMBTIPicker } from "./chat-mbti-picker"
 import { ChatHollandPicker } from "./chat-holland-picker"
+import { ChatCraftInput } from "./chat-craft-input"
+import { ChatSelfReportInput } from "./chat-self-report-input"
+import { ChatResearchActionInput } from "./chat-research-action-input"
+import { ChatExternalAssessmentInput } from "./chat-external-assessment-input"
 
 export function ArtifactBadge({ type }: { type: ArtifactType }) {
   return (
-    <span className="inline-flex items-center bg-neutral-100 text-neutral-700 text-small-medium px-2 py-0.5 rounded-1 shrink-0 self-start">
+    <span className="text-small-regular text-neutral-500 self-start shrink-0">
       {artifactLabels[type]}
     </span>
   )
@@ -54,6 +58,7 @@ export type ArtifactChallengeForControls = {
   artifactType?: ArtifactType
   prompt: string
   description?: string
+  testUrl?: string
 }
 
 function ReflectionWidget({
@@ -65,16 +70,14 @@ function ReflectionWidget({
 }) {
   const [value, setValue] = useState("")
   return (
-    <div className="flex flex-col gap-2">
-      <ArtifactBadge type="reflection" />
-      <ChatReflectionInput
-        prompt={challenge.prompt}
-        hint="Aim for 3-5 sentences"
-        value={value}
-        onChange={setValue}
-        onSubmit={() => onComplete(value.trim())}
-      />
-    </div>
+    <ChatReflectionInput
+      prompt={challenge.prompt}
+      hint="Aim for 3-5 sentences"
+      value={value}
+      onChange={setValue}
+      onSubmit={() => onComplete(value.trim())}
+      badge={<ArtifactBadge type="reflection" />}
+    />
   )
 }
 
@@ -97,27 +100,102 @@ function QuizWidget({ onComplete }: { onComplete: (summary: string) => void }) {
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <ArtifactBadge type="quiz" />
-      <ChatQuizCard
-        question={current.question}
-        options={current.options}
-        current={index + 1}
-        total={DEMO_QUIZ_QUESTIONS.length}
-        selectedId={answers[current.id]}
-        customValue={custom}
-        canPrev={!isFirst}
-        canNext={!isLast}
-        onSelect={(id: string) => {
-          setAnswers((prev) => ({ ...prev, [current.id]: id }))
-          goToNext()
-        }}
-        onCustomChange={setCustom}
-        onPrev={!isFirst ? () => { setIndex((i) => i - 1); setCustom("") } : undefined}
-        onNext={hasAnswer ? goToNext : undefined}
-        onSkip={!isLast ? () => { setIndex((i) => i + 1); setCustom("") } : undefined}
-      />
-    </div>
+    <ChatQuizCard
+      question={current.question}
+      options={current.options}
+      current={index + 1}
+      total={DEMO_QUIZ_QUESTIONS.length}
+      selectedId={answers[current.id]}
+      customValue={custom}
+      canPrev={!isFirst}
+      canNext={!isLast}
+      onSelect={(id: string) => {
+        setAnswers((prev) => ({ ...prev, [current.id]: id }))
+        goToNext()
+      }}
+      onCustomChange={setCustom}
+      onPrev={!isFirst ? () => { setIndex((i) => i - 1); setCustom("") } : undefined}
+      onNext={hasAnswer ? goToNext : undefined}
+      onSkip={!isLast ? () => { setIndex((i) => i + 1); setCustom("") } : undefined}
+      badge={<ArtifactBadge type="quiz" />}
+    />
+  )
+}
+
+function CraftWidget({
+  challenge,
+  onComplete,
+}: {
+  challenge: ArtifactChallengeForControls
+  onComplete: (summary: string) => void
+}) {
+  const [value, setValue] = useState("")
+  return (
+    <ChatCraftInput
+      prompt={challenge.prompt}
+      value={value}
+      onChange={setValue}
+      onSubmit={() => onComplete(value.trim())}
+      badge={<ArtifactBadge type="craft" />}
+    />
+  )
+}
+
+function SelfReportWidget({
+  challenge,
+  onComplete,
+}: {
+  challenge: ArtifactChallengeForControls
+  onComplete: (summary: string) => void
+}) {
+  const [value, setValue] = useState("")
+  return (
+    <ChatSelfReportInput
+      prompt={challenge.prompt}
+      value={value}
+      onChange={setValue}
+      onSubmit={() => onComplete(value.trim())}
+      badge={<ArtifactBadge type="self-report" />}
+    />
+  )
+}
+
+function ResearchActionWidget({
+  challenge,
+  onComplete,
+}: {
+  challenge: ArtifactChallengeForControls
+  onComplete: (summary: string) => void
+}) {
+  const [value, setValue] = useState("")
+  return (
+    <ChatResearchActionInput
+      prompt={challenge.prompt}
+      value={value}
+      onChange={setValue}
+      onSubmit={() => onComplete(value.trim())}
+      badge={<ArtifactBadge type="research-action" />}
+    />
+  )
+}
+
+function ExternalAssessmentWidget({
+  challenge,
+  onComplete,
+}: {
+  challenge: ArtifactChallengeForControls
+  onComplete: (summary: string) => void
+}) {
+  const [value, setValue] = useState("")
+  return (
+    <ChatExternalAssessmentInput
+      prompt={challenge.prompt}
+      testUrl={challenge.testUrl}
+      value={value}
+      onChange={setValue}
+      onSubmit={() => onComplete(value.trim())}
+      badge={<ArtifactBadge type="external-assessment" />}
+    />
   )
 }
 
@@ -139,32 +217,38 @@ export function ChatActiveArtifactControls({
       return <ReflectionWidget challenge={challenge} onComplete={done} />
     case "commitment":
       return (
-        <div className="flex flex-col gap-2">
-          <ArtifactBadge type="commitment" />
-          <ChatCommitmentCard
-            title={challenge.prompt}
-            description={challenge.description ?? ""}
-            onAccept={() => done("Accepted 10-day challenge")}
-            onDecline={() => done("Not yet")}
-          />
-        </div>
+        <ChatCommitmentCard
+          title={challenge.prompt}
+          description={challenge.description ?? ""}
+          badge={<ArtifactBadge type="commitment" />}
+          onAccept={() => done("Accepted 10-day challenge")}
+          onDecline={() => done("Not yet")}
+        />
       )
     case "quiz":
       return <QuizWidget onComplete={done} />
     case "mbti":
       return (
-        <div className="flex flex-col gap-2">
-          <ArtifactBadge type="mbti" />
-          <ChatMBTIPicker onSubmit={(type) => done(type)} />
-        </div>
+        <ChatMBTIPicker
+          onSubmit={(type) => done(type)}
+          badge={<ArtifactBadge type="mbti" />}
+        />
       )
     case "holland":
       return (
-        <div className="flex flex-col gap-2">
-          <ArtifactBadge type="holland" />
-          <ChatHollandPicker onSubmit={(code) => done(code.join(" - "))} />
-        </div>
+        <ChatHollandPicker
+          onSubmit={(code) => done(code.join(" - "))}
+          badge={<ArtifactBadge type="holland" />}
+        />
       )
+    case "craft":
+      return <CraftWidget challenge={challenge} onComplete={done} />
+    case "self-report":
+      return <SelfReportWidget challenge={challenge} onComplete={done} />
+    case "research-action":
+      return <ResearchActionWidget challenge={challenge} onComplete={done} />
+    case "external-assessment":
+      return <ExternalAssessmentWidget challenge={challenge} onComplete={done} />
     default:
       return null
   }

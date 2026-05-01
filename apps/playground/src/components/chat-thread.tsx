@@ -91,6 +91,10 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
     },
   },
   holland: null,
+  craft: null,
+  "self-report": null,
+  "research-action": null,
+  "external-assessment": null,
 }
 
 // ─── Markdown ─────────────────────────────────────────────────────────────────
@@ -222,12 +226,9 @@ function ArtifactSubmittedState({ challenge }: { challenge: ChallengeData }) {
       className="relative rounded-3 border border-neutral-200 bg-white px-4 py-3 overflow-hidden"
     >
       <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-2 min-w-0">
-          {challenge.artifactType && (
-            <ArtifactBadge type={challenge.artifactType} />
-          )}
-          <span className="text-small-regular text-neutral-500 truncate">{challenge.prompt}</span>
-        </div>
+        {challenge.artifactType && (
+          <ArtifactBadge type={challenge.artifactType} />
+        )}
         {displayResponse && (
           <p className="text-small-regular text-neutral-400 line-clamp-3 leading-relaxed">
             {displayResponse}
@@ -580,28 +581,44 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   const bottomRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const pendingTopScrollIdRef = useRef<string | null>(null)
+  const skipNextSmoothScrollRef = useRef(true)
   const [challengeError, setChallengeError] = useState<string | null>(null)
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
+
+  // Instant scroll to bottom before paint so seed messages never flash on session open
+  useLayoutEffect(() => {
+    skipNextSmoothScrollRef.current = true
+    const container = scrollContainerRef.current
+    if (container) container.scrollTop = container.scrollHeight
+  }, [activeSessionId])
 
   useEffect(() => {
     if (pendingTopScrollIdRef.current) {
       const targetId = pendingTopScrollIdRef.current
       pendingTopScrollIdRef.current = null
-      requestAnimationFrame(() => {
+      // Double-RAF: first ensures layout is committed, second ensures paint is done
+      requestAnimationFrame(() => requestAnimationFrame(() => {
         const scrollContainer = scrollContainerRef.current
         const targetEl = scrollContainer?.querySelector<HTMLElement>(`[data-message-id="${targetId}"]`)
         if (scrollContainer && targetEl) {
-          const rawOffset = getOffsetTopWithinAncestor(targetEl, scrollContainer)
-          const maxAllowedScrollTop =
-            scrollContainer.scrollHeight - scrollContainer.clientHeight - ARTIFACT_GAP_MIN_PX
-          scrollContainer.scrollTop = Math.max(0, Math.min(rawOffset, Math.max(0, maxAllowedScrollTop)))
+          scrollContainer.scrollTop = getOffsetTopWithinAncestor(targetEl, scrollContainer)
         } else {
           bottomRef.current?.scrollIntoView({ behavior: "smooth" })
         }
-      })
+      }))
       return
     }
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+    if (skipNextSmoothScrollRef.current) {
+      skipNextSmoothScrollRef.current = false
+      return
+    }
+    const container = scrollContainerRef.current
+    if (container) {
+      const distFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight
+      if (distFromBottom < 300) {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+      }
+    }
   }, [activeSession.messages])
 
   const lastMsg = activeSession.messages[activeSession.messages.length - 1]
@@ -624,6 +641,8 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
     () => groupMessages(activeSession.messages),
     [activeSession.messages]
   )
+
+  const latestUserGroupIdx = groups.reduce((idx, g, i) => (g.kind === "user" ? i : idx), -1)
 
   const handleSend = (text: string) => {
     const newMsg: Message = {
@@ -780,11 +799,11 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
       <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto min-h-0">
         <div className="py-6 px-4">
           <div className="max-w-3xl mx-auto flex flex-col gap-6">
-            {groups.map((group) => (
+            {groups.map((group, i) => (
               <div
                 key={group.key}
                 data-message-id={group.kind === "user" ? group.message.id : group.messages[0].id}
-                className="scroll-mt-2"
+                className={cn("scroll-mt-2 transition-opacity duration-500", i < latestUserGroupIdx ? "opacity-35" : "")}
               >
                 {group.kind === "user" ? (
                   <UserBubble content={group.message.content} />
