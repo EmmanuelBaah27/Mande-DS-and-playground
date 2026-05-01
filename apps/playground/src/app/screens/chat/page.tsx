@@ -791,16 +791,18 @@ export default function ChatPage() {
     if (pendingTopScrollIdRef.current) {
       const targetId = pendingTopScrollIdRef.current
       pendingTopScrollIdRef.current = null
-      const scrollContainer = scrollContainerRef.current
-      const targetEl = scrollContainer?.querySelector<HTMLElement>(`[data-message-id="${targetId}"]`)
-      if (scrollContainer && targetEl) {
-        const rawOffset = getOffsetTopWithinAncestor(targetEl, scrollContainer)
-        const maxAllowedScrollTop =
-          scrollContainer.scrollHeight - scrollContainer.clientHeight - ARTIFACT_GAP_MIN_PX
-        scrollContainer.scrollTop = Math.max(0, Math.min(rawOffset, Math.max(0, maxAllowedScrollTop)))
-      } else {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" })
-      }
+      requestAnimationFrame(() => {
+        const scrollContainer = scrollContainerRef.current
+        const targetEl = scrollContainer?.querySelector<HTMLElement>(`[data-message-id="${targetId}"]`)
+        if (scrollContainer && targetEl) {
+          const rawOffset = getOffsetTopWithinAncestor(targetEl, scrollContainer)
+          const maxAllowedScrollTop =
+            scrollContainer.scrollHeight - scrollContainer.clientHeight - ARTIFACT_GAP_MIN_PX
+          scrollContainer.scrollTop = Math.max(0, Math.min(rawOffset, Math.max(0, maxAllowedScrollTop)))
+        } else {
+          bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+        }
+      })
       return
     }
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })

@@ -14,6 +14,7 @@ import {
 } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
 import { ChatActiveArtifactFooterShell, ChatActiveArtifactControls } from "./chat-active-artifact"
+import { AssistantTextBubble } from "./chat-assistant-bubble"
 import { evaluateChallengeSubmission } from "../lib/challenges/evaluate"
 import { validateSubmissionPayload } from "../lib/challenges/schema"
 import {
@@ -168,9 +169,11 @@ function MessageBubble({
   if (!message.content) return null
 
   return (
-    <div className="text-neutral-900 text-lg-regular leading-relaxed">
-      <ReactMarkdown components={mdComponents}>{message.content}</ReactMarkdown>
-    </div>
+    <AssistantTextBubble
+      content={message.content}
+      isStreaming={message.isStreaming}
+      assistantMeta={message.assistantMeta}
+    />
   )
 }
 
@@ -572,16 +575,18 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
     if (pendingTopScrollIdRef.current) {
       const targetId = pendingTopScrollIdRef.current
       pendingTopScrollIdRef.current = null
-      const scrollContainer = scrollContainerRef.current
-      const targetEl = scrollContainer?.querySelector<HTMLElement>(`[data-message-id="${targetId}"]`)
-      if (scrollContainer && targetEl) {
-        const rawOffset = getOffsetTopWithinAncestor(targetEl, scrollContainer)
-        const maxAllowedScrollTop =
-          scrollContainer.scrollHeight - scrollContainer.clientHeight - ARTIFACT_GAP_MIN_PX
-        scrollContainer.scrollTop = Math.max(0, Math.min(rawOffset, Math.max(0, maxAllowedScrollTop)))
-      } else {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" })
-      }
+      requestAnimationFrame(() => {
+        const scrollContainer = scrollContainerRef.current
+        const targetEl = scrollContainer?.querySelector<HTMLElement>(`[data-message-id="${targetId}"]`)
+        if (scrollContainer && targetEl) {
+          const rawOffset = getOffsetTopWithinAncestor(targetEl, scrollContainer)
+          const maxAllowedScrollTop =
+            scrollContainer.scrollHeight - scrollContainer.clientHeight - ARTIFACT_GAP_MIN_PX
+          scrollContainer.scrollTop = Math.max(0, Math.min(rawOffset, Math.max(0, maxAllowedScrollTop)))
+        } else {
+          bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+        }
+      })
       return
     }
     bottomRef.current?.scrollIntoView({ behavior: "smooth" })
