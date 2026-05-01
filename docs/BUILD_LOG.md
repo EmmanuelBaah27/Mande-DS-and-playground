@@ -4,6 +4,33 @@ Chronological record of all work done on the Mande Design System.
 
 ---
 
+## 2026-05-01 — Session 13: Chat reading UX + streaming (playground)
+
+### What was done
+
+- **Layered assistant presentation** — `AssistantTextBubble`: rationale rail, typography by inferred or explicit depth (`brief` / `standard` / `deep`), progressive disclosure via `<details>` (assumptions, extra markdown), confidence badge + AI disclaimer.
+- **Message model** — `Message.assistantMeta`, `Message.isStreaming`; `inferAssistantDepth()` in `chat-data.ts`.
+- **Simulated streaming** — `runTextStream()` slices text with `isStreaming` until complete; respects `prefers-reduced-motion` (instant full text).
+- **Playground wiring** — Open-chat sends get mock replies via `getMockOpenChatAssistantReply()`; curriculum second-user-message path streams ack then appends commitment artifact; artifact flow transition lines stream after completion.
+- **Surfaces** — `ChatThread` (root app) and `/screens/chat` page aligned; shared copy in `lib/chat/curriculum-artifact-ack.ts`.
+
+### Files changed
+
+- `apps/playground/src/components/chat-data.ts`
+- `apps/playground/src/components/chat-assistant-bubble.tsx` (new)
+- `apps/playground/src/components/chat-thread.tsx`
+- `apps/playground/src/app/screens/chat/page.tsx`
+- `apps/playground/src/lib/chat/assistant-stream.ts` (new)
+- `apps/playground/src/lib/chat/mock-open-reply.ts` (new)
+- `apps/playground/src/lib/chat/curriculum-artifact-ack.ts` (new)
+
+### Verified
+
+- `pnpm exec tsc --noEmit -p apps/playground`
+- `pnpm run build` in `apps/playground` (Next.js 15.4.10) — success
+
+---
+
 ## 2026-04-25 — Session 12: Chat as main page — brainstorm + design + plan
 
 ### What was done

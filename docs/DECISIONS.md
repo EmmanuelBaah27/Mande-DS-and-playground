@@ -4,6 +4,13 @@ Key decisions, patterns, and processes for the Mande Design System. Updated as t
 
 ---
 
+## Playground chat streaming (Session 13)
+
+### Simulated streaming in the playground
+**Why:** Product chat needs a believable typing rhythm before a real LLM stream exists. The playground updates `Message.content` on an interval and toggles `isStreaming` off when done; curriculum acks and artifact handoffs use the same helper. Production can reuse the same message shape with server-driven chunks.
+
+---
+
 ## Chat as Main Page (Session 12)
 
 ### Always use DS components before building locally

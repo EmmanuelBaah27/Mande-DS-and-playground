@@ -4,6 +4,13 @@ Things learned while building the Mande Design System. Captured so they compound
 
 ---
 
+## 2026-05-01 — Session 13: Chat streaming + markdown
+
+- **Don’t parse markdown while “typing”.** Incremental character streaming breaks mid-token bold/list syntax and flickers layout. Safer pattern: stream as plain `pre-wrap` text, then swap to `ReactMarkdown` when `isStreaming` becomes false.
+- **`prefers-reduced-motion` for chat streaming.** Treat streaming as motion: if the user prefers reduced motion, jump straight to full `content` and clear `isStreaming` in one update so assistive tech and vestibular preferences stay respected.
+
+---
+
 ## 2026-04-25 — Session 12: Chat as main page
 
 - **DS AppSidebar has no `isOpen` prop.** The collapse button calls `onCollapse` callback, but the component doesn't manage its own collapsed state — that must be handled externally if needed. Don't pass `isOpen` — it doesn't exist on the props type.
