@@ -579,6 +579,8 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
         const maxAllowedScrollTop =
           scrollContainer.scrollHeight - scrollContainer.clientHeight - ARTIFACT_GAP_MIN_PX
         scrollContainer.scrollTop = Math.max(0, Math.min(rawOffset, Math.max(0, maxAllowedScrollTop)))
+      } else {
+        bottomRef.current?.scrollIntoView({ behavior: "smooth" })
       }
       return
     }
