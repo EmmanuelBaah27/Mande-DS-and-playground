@@ -13,7 +13,7 @@ import {
   challengeColors,
 } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
-import { ChatActiveArtifactFooterShell, ChatActiveArtifactControls } from "./chat-active-artifact"
+import { ChatActiveArtifactFooterShell, ChatActiveArtifactControls, ArtifactBadge } from "./chat-active-artifact"
 import { AssistantTextBubble } from "./chat-assistant-bubble"
 import { evaluateChallengeSubmission } from "../lib/challenges/evaluate"
 import { validateSubmissionPayload } from "../lib/challenges/schema"
@@ -217,17 +217,27 @@ function ArtifactSubmittedState({ challenge }: { challenge: ChallengeData }) {
       initial={{ opacity: 0, y: 4 }}
       animate={{ opacity: 1, y: 0 }}
       transition={springs.snappy}
-      className="rounded-3 border border-neutral-200 bg-white px-4 py-3"
+      className="relative rounded-3 border border-neutral-200 bg-white px-4 py-3 overflow-hidden"
     >
-      <div className="flex items-center justify-between gap-3">
+      <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <span className={cn("text-small-medium px-2 py-0.5 rounded-1 shrink-0", challengeColors[challenge.type])}>
-            {challengeLabels[challenge.type]}
-          </span>
-          <span className="text-base-regular text-neutral-500 truncate">{challenge.prompt}</span>
+          {challenge.artifactType && (
+            <ArtifactBadge type={challenge.artifactType} />
+          )}
+          <span className="text-small-regular text-neutral-500 truncate">{challenge.prompt}</span>
         </div>
-        <Icon name="IconCheckmark2" size={16} className="text-green-600 shrink-0" />
+        {challenge.response && (
+          <p className="text-small-regular text-neutral-400 line-clamp-3 leading-relaxed">
+            {challenge.response}
+          </p>
+        )}
       </div>
+      {challenge.response && (
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-white to-transparent"
+        />
+      )}
     </motion.div>
   )
 }
