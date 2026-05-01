@@ -51,7 +51,7 @@ const DEMO_QUIZ_QUESTIONS = [
 ]
 
 export type ArtifactChallengeForControls = {
-  artifactType?: "reflection" | "commitment" | "quiz" | "mbti" | "holland"
+  artifactType?: ArtifactType
   prompt: string
   description?: string
 }

@@ -1,4 +1,4 @@
-import type { ChallengeType } from "@mande/ui"
+import type { ChallengeType, ArtifactType } from "@mande/ui"
 
 export type ChallengeInput = "textarea" | "confirm" | "url" | "short-text" | "list"
 
@@ -76,7 +76,7 @@ export type ChallengeData = {
   challengeId: string
   lessonId: string
   responseType: ChallengeResponseType
-  artifactType?: "reflection" | "commitment" | "quiz" | "mbti" | "holland"
+  artifactType?: ArtifactType
   description?: string
   /**
    * @deprecated Transitional compatibility field for existing UI tokens.
