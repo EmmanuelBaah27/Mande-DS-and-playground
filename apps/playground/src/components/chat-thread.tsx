@@ -585,13 +585,27 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   const [challengeError, setChallengeError] = useState<string | null>(null)
   const [isAtBottom, setIsAtBottom] = useState(true)
   const isAtBottomRef = useRef(true)
+  const sessionInitializedRef = useRef(false)
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
 
-  // Instant scroll to bottom before paint so seed messages never flash on session open
+  // Before paint: position scroll to last user message (or bottom for fresh sessions)
   useLayoutEffect(() => {
-    skipNextSmoothScrollRef.current = true
+    sessionInitializedRef.current = false  // mark session as not yet initialized for the messages effect
     const container = scrollContainerRef.current
-    if (container) container.scrollTop = container.scrollHeight
+    if (!container) return
+    // Reset to 0 first so getBoundingClientRect offsets are relative to container top
+    container.scrollTop = 0
+    const userGroups = Array.from(
+      container.querySelectorAll<HTMLElement>('[data-message-role="user"]')
+    )
+    const lastUserEl = userGroups[userGroups.length - 1]
+    if (lastUserEl) {
+      container.scrollTop =
+        lastUserEl.getBoundingClientRect().top - container.getBoundingClientRect().top
+    } else {
+      // No user messages yet (fresh session with only an assistant greeting)
+      container.scrollTop = container.scrollHeight
+    }
   }, [activeSessionId])
 
   useEffect(() => {
