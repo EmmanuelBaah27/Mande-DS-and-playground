@@ -269,6 +269,7 @@ export {
   DropdownMenuRadioItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSearch,
   DropdownMenuShortcut,
   DropdownMenuGroup,
   DropdownMenuPortal,

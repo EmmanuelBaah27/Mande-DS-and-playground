@@ -154,7 +154,7 @@ const DropdownMenuSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DropdownMenuPrimitive.Separator
     ref={ref}
-    className={cn("-mx-1 my-1 h-px bg-muted", className)}
+    className={cn("-mx-1.5 my-1 h-px bg-muted", className)}
     {...props}
   />
 ))
@@ -165,6 +165,7 @@ interface DropdownMenuSearchProps {
   onChange: (value: string) => void
   placeholder?: string
   autoFocus?: boolean
+  className?: string
 }
 
 const DropdownMenuSearch = ({
@@ -172,8 +173,9 @@ const DropdownMenuSearch = ({
   onChange,
   placeholder = "Search…",
   autoFocus = true,
+  className,
 }: DropdownMenuSearchProps) => (
-  <div className="-mx-1.5 -mt-1 mb-1 flex items-center px-1.5 py-2 border-b border-neutral-100">
+  <div className={cn("-mx-1.5 -mt-1 mb-1 flex items-center px-1.5 py-2 border-b border-neutral-100", className)}>
     <input
       type="text"
       value={value}
