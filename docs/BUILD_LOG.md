@@ -544,3 +544,40 @@ Catches up docs for the large batch of commits between Session 7 and today. Five
 - Complete the chat screen UI (next session)
 - Animations: install `motion` + `tailwindcss-animate`, spring physics on modals/drawers
 - Storybook GitHub Pages deployment
+
+---
+
+## 2026-05-02 — Dropdown/Combobox unification (Sessions 15–16)
+
+### What was done
+
+**Session 15 (DS visual parity):**
+1. Restyled `DropdownMenu` DS component to match `ChatCombobox` visual language: `rounded-3`, `border-neutral-200`, `px-1.5 pb-1.5 pt-1` container, `rounded-2 px-2 py-1 text-base-regular` items, `text-small-medium text-muted-foreground` labels.
+2. Added composable `DropdownMenuSearch` sub-component: controlled input, edge-to-edge via `-mx-1.5 -mt-1` negative margins, `border-b border-neutral-100`, `autoFocus` defaults false.
+3. Fixed 12px icon stroke from `"1"` to `"1.5"` (16px already correct at `"1.5"`).
+4. Exported `DropdownMenuSearch` from `packages/ui/src/index.ts`.
+5. Added `WithSearch` Storybook story.
+
+**Session 16 (unification + viewport awareness):**
+1. Added `collisionPadding={8}` default to `DropdownMenuContent` — gives every dropdown Radix Floating UI flip placement, dynamic max-height capping, and 8px viewport-edge clearance. (commit `c81e52c`)
+2. Stripped `DevTriggerPanel` className overrides — removed `p-1.5` from content, entire className from label, heavy overrides from items; kept only `w-52` and `justify-between`. (commit `f8605f1`)
+3. Rebuilt `ChatCombobox` on `DropdownMenu` primitives — dropped `createPortal`, `motion/react`, manual `updateDropdownPosition`, `resize`/`scroll` listeners. Now uses `DropdownMenuContent` with `w-[var(--radix-dropdown-menu-trigger-width)]`, `DropdownMenuSearch` with `autoFocus` when `searchable`, `DropdownMenuItem` with `IconCheckmark2` + `text-base-medium` for selected state. Public API unchanged. (commit `afa5b02`)
+
+### Files changed
+- `packages/ui/src/components/ui/dropdown-menu.tsx` — collisionPadding default, full DS restyle, DropdownMenuSearch
+- `packages/ui/src/components/ui/icon.tsx` — 12px stroke `"1"` → `"1.5"`
+- `packages/ui/src/components/ui/dropdown-menu.stories.tsx` — sentence case label, WithSearch story
+- `packages/ui/src/index.ts` — DropdownMenuSearch export
+- `apps/playground/src/components/dev-trigger-panel.tsx` — stripped className overrides
+- `apps/playground/src/components/chat-combobox.tsx` — rebuilt on DropdownMenu primitives (231 → 115 lines)
+
+### Verified
+- Typecheck passes (0 errors) after each change
+- Both callers (`chat-mbti-picker.tsx`, `chat-holland-picker.tsx`) untouched and compatible
+- Final code review: APPROVED (3 non-blocking suggestions noted)
+- Visual verification pending user review in Storybook + playground
+
+### What's next
+- User visual verification of combobox and DevTriggerPanel in Storybook/playground
+- Address non-blocking suggestion: `DropdownMenuSearch` `onKeyDown` propagation to Radix nav
+- Open PR for `build-foundation` → `main`
