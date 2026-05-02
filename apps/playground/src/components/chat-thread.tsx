@@ -557,16 +557,6 @@ function groupMessages(messages: Message[]): MessageGroup[] {
   return groups
 }
 
-function getOffsetTopWithinAncestor(el: HTMLElement, ancestor: HTMLElement): number {
-  let top = 0
-  let current: HTMLElement | null = el
-  while (current && current !== ancestor) {
-    top += current.offsetTop
-    current = current.offsetParent as HTMLElement | null
-  }
-  return top
-}
-
 const ARTIFACT_GAP_MIN_PX = 48
 
 // ─── ChatThread ───────────────────────────────────────────────────────────────
@@ -580,8 +570,6 @@ export type ChatThreadProps = {
 export function ChatThread({ sessions, activeSessionId, onSessionsChange }: ChatThreadProps) {
   const sentinelRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
-  const pendingTopScrollIdRef = useRef<string | null>(null)
-  const skipNextSmoothScrollRef = useRef(true)
   const [challengeError, setChallengeError] = useState<string | null>(null)
   const [isAtBottom, setIsAtBottom] = useState(true)
   const isAtBottomRef = useRef(true)
@@ -626,31 +614,33 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   }, [])
 
   useEffect(() => {
-    if (pendingTopScrollIdRef.current) {
-      const targetId = pendingTopScrollIdRef.current
-      pendingTopScrollIdRef.current = null
-      // Double-RAF: first ensures layout is committed, second ensures paint is done
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        const scrollContainer = scrollContainerRef.current
-        const targetEl = scrollContainer?.querySelector<HTMLElement>(`[data-message-id="${targetId}"]`)
-        if (scrollContainer && targetEl) {
-          scrollContainer.scrollTop = getOffsetTopWithinAncestor(targetEl, scrollContainer)
-        } else {
-          sentinelRef.current?.scrollIntoView({ behavior: "smooth" })
-        }
-      }))
+    // Skip the first run after a session switch — useLayoutEffect already positioned the scroll.
+    if (!sessionInitializedRef.current) {
+      sessionInitializedRef.current = true
       return
     }
-    if (skipNextSmoothScrollRef.current) {
-      skipNextSmoothScrollRef.current = false
-      return
-    }
+
     const container = scrollContainerRef.current
-    if (container) {
-      const distFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight
-      if (distFromBottom < 300) {
-        sentinelRef.current?.scrollIntoView({ behavior: "smooth" })
+    if (!container) return
+    const msgs = activeSession.messages
+    const lastMsg = msgs[msgs.length - 1]
+    if (!lastMsg) return
+
+    if (lastMsg.role === "user") {
+      // New user message sent — scroll it to top of viewport
+      const userEls = Array.from(
+        container.querySelectorAll<HTMLElement>('[data-message-role="user"]')
+      )
+      const lastUserEl = userEls[userEls.length - 1]
+      if (lastUserEl) {
+        container.scrollTop =
+          lastUserEl.getBoundingClientRect().top -
+          container.getBoundingClientRect().top +
+          container.scrollTop
       }
+    } else if (isAtBottomRef.current) {
+      // AI message streaming or complete — follow trailing edge
+      container.scrollTop = container.scrollHeight
     }
   }, [activeSession.messages])
 
@@ -682,7 +672,6 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
       content: text,
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     }
-    pendingTopScrollIdRef.current = newMsg.id
     onSessionsChange(sessions.map((s) =>
       s.id === activeSessionId ? { ...s, messages: [...s.messages, newMsg] } : s
     ))
