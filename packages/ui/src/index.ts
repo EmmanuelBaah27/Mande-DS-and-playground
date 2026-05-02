@@ -126,6 +126,8 @@ export type {
   AccountSelectorProps,
   NavItem,
   ChatGroup,
+  PillarState,
+  CurriculumSectionConfig,
 } from "./components/ui/app-sidebar"
 
 export { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/tabs"

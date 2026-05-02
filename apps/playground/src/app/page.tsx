@@ -5,27 +5,24 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
 import { Icon, AppSidebar, cn } from "@mande/ui"
+import type { PillarState, CurriculumSectionConfig } from "@mande/ui"
 import { ChatThread } from "../components/chat-thread"
 import { WelcomeState } from "../components/welcome-state"
 import { DevTriggerPanel, type InjectableChallenge } from "../components/dev-trigger-panel"
 import { INITIAL_SESSIONS, CURRICULUM_MODULES, createChallengeData } from "../components/chat-data"
-import type { ChatSession } from "../components/chat-data"
-
-type PillarState = "active" | "locked" | "completed"
-
-type CurriculumSectionConfig = {
-  label: string
-  progress: string
-  pillars: Array<{
-    id: string
-    label: string
-    state: PillarState
-  }>
-}
+import type { ChatSession, ChallengeResponseType } from "../components/chat-data"
 
 // ─── Editable session title ───────────────────────────────────────────────────
 
-function EditableTitle({ title, onTitleChange }: { title: string; onTitleChange: (title: string) => void }) {
+function EditableTitle({
+  title,
+  onTitleChange,
+  isCurriculum,
+}: {
+  title: string
+  onTitleChange: (title: string) => void
+  isCurriculum?: boolean
+}) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(title)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -44,45 +41,36 @@ function EditableTitle({ title, onTitleChange }: { title: string; onTitleChange:
 
   const displayTitle = title.length > 40 ? title.slice(0, 40) + "…" : title
 
+  const curriculumIcon =
+    isCurriculum === true ? (
+      <Icon name="IconNewspaper1" size={16} className="text-neutral-500" aria-hidden />
+    ) : null
+
   return editing ? (
-    <input
-      ref={inputRef}
-      value={draft}
-      onChange={(e) => setDraft(e.target.value)}
-      onBlur={save}
-      onKeyDown={(e) => {
-        if (e.key === "Enter") save()
-        if (e.key === "Escape") setEditing(false)
-      }}
-      className="text-base-regular text-neutral-900 px-1 py-0 rounded-1 border-none outline-none bg-transparent w-[200px] max-w-full"
-      autoFocus
-    />
-  ) : (
-    <button
-      onClick={startEdit}
-      className="text-base-regular text-neutral-900 px-1 py-0 rounded-1 hover:bg-neutral-100 transition-colors truncate max-w-full block text-left"
-    >
-      {displayTitle}
-    </button>
-  )
-}
-
-// ─── Chat navbar ──────────────────────────────────────────────────────────────
-
-function ChatNavbar({ title, onTitleChange }: { title: string; onTitleChange: (title: string) => void }) {
-  return (
-    <div className="relative z-10 shrink-0 overflow-visible">
-      <header className="flex items-center gap-3 pt-6 pb-2 px-4 bg-neutral-50">
-        <div className="min-w-0 flex-1">
-          <EditableTitle title={title} onTitleChange={onTitleChange} />
-        </div>
-      </header>
-      {/* Overlaps thread so scroll isn’t a hard edge; same-tone header made ::after fade invisible */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 -bottom-8 h-8 z-10 bg-[linear-gradient(to_bottom,rgb(250_250_250)_0%,rgb(250_250_250_/_0.94)_42%,rgb(250_250_250_/_0.62)_72%,transparent_100%)]"
+    <div className="flex min-w-0 max-w-full items-center gap-2">
+      {curriculumIcon}
+      <input
+        ref={inputRef}
+        value={draft}
+        onChange={(e) => setDraft(e.target.value)}
+        onBlur={save}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") save()
+          if (e.key === "Escape") setEditing(false)
+        }}
+        className="text-base-regular text-neutral-900 min-w-0 flex-1 rounded-1 border-none bg-transparent px-1 py-0 outline-none"
+        autoFocus
       />
     </div>
+  ) : (
+    <button
+      type="button"
+      onClick={startEdit}
+      className="text-base-regular text-neutral-900 flex max-w-full min-w-0 items-center gap-2 rounded-1 px-1 py-0 text-left transition-colors hover:bg-neutral-100"
+    >
+      {curriculumIcon}
+      <span className="min-w-0 truncate">{displayTitle}</span>
+    </button>
   )
 }
 
@@ -123,9 +111,14 @@ function getCurriculumSection(sessions: ChatSession[]): CurriculumSectionConfig 
   }
 }
 
-const SIDEBAR_W = 272 // w-64 (256) + p-2 each side (8+8)
+const SIDEBAR_W = 272      // w-64 (256) + p-2 each side (8+8)
+const SIDEBAR_CARD_W = 256 // w-64 — inner card width
+const HEADER_H = 60        // 8px top margin + py-3 row (12+28+12=52px)
+// Left zone starts at x=8 (ml-2) with pl-4 pr-3 justify-between:
+// collapsed: ml-2(8) + pl-4(16) + logo(80) + gap(20) + btn(28) + pr-3(12) = 164 total → zone width = 156
+// expanded:  ml-2(8) + SIDEBAR_CARD_W(256) = 264 total → zone width = 256
+const HEADER_CTRL_W = 156  // left zone width when fully collapsed
 const EASE_OUT: [number, number, number, number] = [0.23, 1, 0.32, 1]
-const EASE_DRAWER: [number, number, number, number] = [0.32, 0.72, 0, 1] // iOS-like momentum for panel exits
 
 export default function ChatPage() {
   const router = useRouter()
@@ -224,16 +217,21 @@ export default function ChatPage() {
     )
   }
 
-  const toResponseType = (artifactType: InjectableChallenge["artifactType"]) => {
+  const toResponseType = (artifactType: InjectableChallenge["artifactType"]): ChallengeResponseType => {
     switch (artifactType) {
       case "reflection":
       case "commitment":
-        return "reflection" as const
+        return "reflection"
       case "quiz":
       case "holland":
-        return "structured_list" as const
+      case "self-report":
+        return "structured_list"
       case "mbti":
-        return "resource_link" as const
+      case "research-action":
+      case "external-assessment":
+        return "resource_link"
+      case "craft":
+        return "outreach_draft"
     }
   }
 
@@ -273,6 +271,12 @@ export default function ChatPage() {
     setView("thread")
   }
 
+  const logoLink = (
+    <Link href="/dashboard" className="hover:opacity-80 transition-opacity">
+      <img src="/logo.svg" alt="Mande" width={80} height={20} />
+    </Link>
+  )
+
   // ─── Shared sidebar props ─────────────────────────────────────────────────
   const sidebarProps = {
     navItems: NAV_ITEMS,
@@ -280,24 +284,76 @@ export default function ChatPage() {
     chatGroups,
     activeItem,
     onNavigate: handleNavigate,
+    onCollapse: handleCollapse,
+    logo: logoLink,
     user: { name: "Angela", initials: "A" },
   }
-
-  const logoLink = (
-    <Link href="/dashboard" className="hover:opacity-80 transition-opacity">
-      <img src="/logo.svg" alt="Mande" width={80} height={20} />
-    </Link>
-  )
 
   return (
     <div className="flex h-screen bg-neutral-50 overflow-hidden relative">
 
-      {/* ── Full sidebar (absolute overlay — no layout shift) ───────────── */}
+      {/* ── Persistent header strip ──────────────────────────────────────
+           Left zone is transparent — sidebar card shows through it.
+           Right zone has bg-neutral-50 to mask content scrolling.
+           Right zone bg-neutral-50 masks scrolling content. Sidebar lives
+           directly below at z-[65], above this strip's z-[60]. */}
+      <div
+        className="absolute top-0 left-0 right-0 z-[60] pointer-events-none"
+        style={{ height: HEADER_H }}
+      >
+        <div className="flex items-stretch py-3 mt-2">
+          {/* Left zone — transparent; items only visible when collapsed */}
+          <motion.div
+            className="flex items-center justify-between shrink-0 ml-2 pl-4 pr-3"
+            animate={{ width: collapsed ? HEADER_CTRL_W : SIDEBAR_CARD_W }}
+            transition={{ duration: 0.22, ease: EASE_OUT }}
+          >
+            <div style={{ pointerEvents: collapsed ? "auto" : "none" }}>
+              {logoLink}
+            </div>
+            <motion.div
+              animate={{ opacity: collapsed ? 1 : 0 }}
+              transition={{ duration: collapsed ? 0.1 : 0.08, delay: collapsed ? 0.16 : 0 }}
+              style={{ pointerEvents: collapsed ? "auto" : "none" }}
+              onMouseEnter={collapsed ? startHover : undefined}
+              onMouseLeave={collapsed ? endHover : undefined}
+            >
+              <button
+                type="button"
+                onClick={collapsed ? handleTriggerClick : undefined}
+                aria-label={collapsed ? (pinned ? "Expand sidebar" : "Open sidebar") : undefined}
+                className="flex items-center justify-center p-1 rounded-2 text-muted-foreground hover:bg-neutral-100 shrink-0 [transition:background-color_var(--duration-moderate)_var(--ease-out)]"
+              >
+                <Icon name="IconSidebarSimpleLeftWide" size={20} fill="outlined" />
+              </button>
+            </motion.div>
+          </motion.div>
+
+          {/* Right zone — bg-neutral-50 masks content scrolling under the header */}
+          <div className="flex-1 bg-neutral-50 flex items-center px-3 gap-3 min-w-0 pointer-events-auto">
+            {view === "thread" && activeSession && (
+              <EditableTitle
+                title={activeSession.title}
+                onTitleChange={handleTitleChange}
+                isCurriculum={activeSession.mode === "curriculum"}
+              />
+            )}
+            {view === "thread" && activeSession && (
+              <div className="ml-auto shrink-0">
+                <DevTriggerPanel onInject={handleInjectChallenge} placement="header" />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* ── Sidebar body ─────────────────────────────────────────────────── */}
       <AnimatePresence>
         {!collapsed && (
           <motion.div
-            key="sidebar"
-            className="absolute top-0 left-0 z-[60] h-full"
+            key="sidebar-body"
+            className="absolute pt-2 px-2 pb-2 z-[65]"
+            style={{ top: 0, left: 0, bottom: 0, width: SIDEBAR_W }}
             initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0, transition: { duration: 0.22, ease: EASE_OUT } }}
             exit={{
@@ -309,94 +365,39 @@ export default function ChatPage() {
               },
             }}
           >
-            <div className="p-2 h-full" style={{ width: SIDEBAR_W }}>
-              <AppSidebar
-                {...sidebarProps}
-                logo={logoLink}
-                onCollapse={handleCollapse}
-                className="shadow-sm"
-              />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── Collapsed trigger + floating panel ─────────────────────────── */}
-      <AnimatePresence>
-        {collapsed && (
-          <motion.div
-            key="trigger"
-            className="absolute top-0 left-0 right-0 z-50 flex flex-col"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, transition: { duration: 0.18, ease: EASE_OUT, delay: 0.12 } }}
-            exit={{ opacity: 0, transition: { duration: 0.1, ease: EASE_OUT } }}
-          >
-            {/* Trigger row — full-width bar so it masks chat content behind it */}
-            <div className="flex items-center gap-5 pl-6 pr-3 py-3 bg-neutral-50 w-full">
-              {logoLink}
-              {/* Hover zone scoped to the collapse button only */}
-              <div onMouseEnter={startHover} onMouseLeave={endHover}>
-                <button
-                  type="button"
-                  onClick={handleTriggerClick}
-                  aria-label={pinned ? "Expand sidebar" : "Pin sidebar"}
-                  className="flex items-center justify-center p-1 rounded-2 text-muted-foreground hover:bg-neutral-100 shrink-0 [transition:background-color_var(--duration-moderate)_var(--ease-out)]"
-                >
-                  <Icon name="IconSidebarSimpleLeftWide" size={20} fill="outlined" />
-                </button>
-              </div>
-              {view === "thread" && activeSession && (
-                <EditableTitle title={activeSession.title} onTitleChange={handleTitleChange} />
-              )}
-            </div>
-
-            {/* Bottom fade — full-width, z-1 so floating panel (z-2) always paints on top */}
-            <div
-              aria-hidden
-              className="pointer-events-none absolute left-0 right-0 h-12 bg-gradient-to-b from-neutral-50 to-transparent"
-              style={{ top: 52, zIndex: 1 }}
+            <AppSidebar
+              {...sidebarProps}
+              className="shadow-sm h-full"
             />
-
-            {/* Floating panel — z-2 so it always sits above the fade */}
-            <div className="relative" style={{ zIndex: 2 }}>
-              <AnimatePresence>
-                {floatingVisible && (
-                  <motion.div
-                    key="floating"
-                    initial={{ opacity: 0, y: -8, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1, transition: { duration: 0.18, ease: EASE_OUT } }}
-                    exit={{ opacity: 0, y: -8, scale: 0.98, transition: { duration: 0.12, ease: EASE_OUT } }}
-                    style={{ transformOrigin: "top left", height: "calc(100vh - 68px)", width: SIDEBAR_W }}
-                    className="px-2 pb-2 mt-1"
-                    onMouseEnter={startHover}
-                    onMouseLeave={endHover}
-                  >
-                    <AppSidebar
-                      {...sidebarProps}
-                      hideHeader
-                      className="!h-full shadow-sm"
-                    />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* ── Main content ───────────────────────────────────────────────── */}
+      {/* ── Floating panel — hover preview when collapsed ────────────── */}
+      <AnimatePresence>
+        {floatingVisible && (
+          <motion.div
+            key="floating"
+            className="absolute px-2 pb-2 z-[65]"
+            style={{ top: HEADER_H, left: 0, bottom: 8, width: SIDEBAR_W }}
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0, transition: { duration: 0.18, ease: EASE_OUT } }}
+            exit={{ opacity: 0, y: -6, transition: { duration: 0.12, ease: EASE_OUT } }}
+            onMouseEnter={startHover}
+            onMouseLeave={endHover}
+          >
+            <AppSidebar {...sidebarProps} hideHeader className="!h-full shadow-sm" />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── Main content ─────────────────────────────────────────────── */}
       <motion.div
         className="relative flex-1 flex flex-col min-w-0 overflow-hidden bg-neutral-50"
-        animate={{ marginLeft: collapsed ? 0 : SIDEBAR_W, paddingTop: collapsed ? 44 : 0 }}
+        animate={{ marginLeft: collapsed ? 0 : SIDEBAR_W }}
         transition={{ duration: 0.22, ease: EASE_OUT }}
+        style={{ paddingTop: HEADER_H }}
       >
-        {view === "thread" && activeSession && (
-          <DevTriggerPanel onInject={handleInjectChallenge} />
-        )}
-        {!collapsed && view === "thread" && activeSession && (
-          <ChatNavbar title={activeSession.title} onTitleChange={handleTitleChange} />
-        )}
-
         {view === "welcome" || !activeSession ? (
           <WelcomeState
             userName="Angela"
