@@ -171,7 +171,7 @@ export function selectChallengeState(challenge: ChallengeData): ChallengeSelecto
   }
 }
 
-export type AssistantResponseDepth = “brief” | “standard” | “deep”
+export type AssistantResponseDepth = "brief" | "standard" | "deep"
 
 /** Process transparency: how Mande got to this response. */
 export type AssistantMessageMeta = {
