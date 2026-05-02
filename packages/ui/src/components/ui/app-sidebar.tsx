@@ -287,7 +287,7 @@ export function AppSidebar({
   return (
     <div
       className={cn(
-        "flex flex-col w-64 h-full bg-background rounded-3 overflow-hidden border border-neutral-200",
+        "flex flex-col w-64 h-full bg-background rounded-3 overflow-hidden border border-neutral-300",
         className
       )}
       style={{ borderWidth: "0.5px" }}
@@ -339,6 +339,7 @@ export function AppSidebar({
                 label={item.label}
                 selected={activeItem === item.id}
                 onClick={() => onNavigate?.(item.id)}
+                className="hover:bg-neutral-100"
               />
             ))}
           </SectionTitle>
