@@ -41,7 +41,6 @@ export function AssistantTextBubble({
   const bodyTypography =
     depth === "brief" ? "text-xl-regular leading-relaxed" : "text-lg-regular leading-relaxed"
 
-  const streamTypography = cn("whitespace-pre-wrap text-neutral-900", bodyTypography)
   const hasExplicitThoughtMeta = Boolean(
     assistantMeta?.rationale?.trim() || assistantMeta?.detailMarkdown?.trim()
   )
@@ -142,7 +141,7 @@ export function AssistantTextBubble({
 
   const displayedResponse = showResponse ? content.slice(0, visibleChars) : ""
   const isResponseStreaming = showResponse && visibleChars < content.length
-  const showParsedMarkdown = showResponse && !isResponseStreaming && displayedResponse.length > 0
+  const showParsedMarkdown = showResponse && displayedResponse.length > 0
   const processLabel = isStreaming ? "Thinking" : "Thought briefly"
 
   return (
@@ -211,13 +210,9 @@ export function AssistantTextBubble({
         transition={springs.snappy}
         className={!showResponse ? "pointer-events-none" : undefined}
       >
-        {showParsedMarkdown ? (
+        {showParsedMarkdown && (
           <div className={cn("text-neutral-900", bodyTypography)}>
             <ReactMarkdown components={mdComponents}>{displayedResponse}</ReactMarkdown>
-          </div>
-        ) : (
-          <div className={streamTypography}>
-            {displayedResponse}
             {isResponseStreaming && (
               <span
                 className="inline-block w-0.5 h-[1.1em] align-[-0.15em] ml-0.5 bg-primary-500 rounded-full motion-safe:animate-pulse"
