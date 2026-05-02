@@ -295,7 +295,7 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         id: "c5",
         role: "assistant",
         content:
-          "There are three paths:\n\n**9-5 employment** - structure, salary, institutional learning. The trade-off: your ceiling is set by the company.\n\n**Freelancing** - flexibility, direct client relationships. The trade-off: you are your own sales team, accountant, and operations department.\n\n**Entrepreneurship** - highest upside, highest risk. The trade-off: most early income is deferred.\n\nNone of these is the 'right' answer. They depend on your risk tolerance, your finances, and what you want your daily life to look like.",
+          "There are three paths:\n\n- **9-5 employment** - structure, salary, institutional learning. The trade-off: your ceiling is set by the company.\n- **Freelancing** - flexibility, direct client relationships. The trade-off: you are your own sales team, accountant, and operations department.\n- **Entrepreneurship** - highest upside, highest risk. The trade-off: most early income is deferred.\n\nNone of these is the 'right' answer. They depend on your risk tolerance, your finances, and what you want your daily life to look like.",
         timestamp: "Day 1",
         assistantMeta: {
           depth: "brief",
