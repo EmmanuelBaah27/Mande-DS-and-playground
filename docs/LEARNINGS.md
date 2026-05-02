@@ -4,6 +4,17 @@ Things learned while building the Mande Design System. Captured so they compound
 
 ---
 
+## 2026-05-01 — Session 14: Chat scroll behavior
+
+- **`getBoundingClientRect` for precise scroll positioning.** `offsetParent` traversal (`offsetTop` accumulation) breaks when any ancestor has `position: relative` or when layout boxes don't form a contiguous stack. `getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop` is accurate at any scroll position. In `useLayoutEffect`, reset `scrollTop = 0` first so the `+ container.scrollTop` term is 0 and you don't need it; in live effects, include it.
+- **`IntersectionObserver` root scoping.** Passing `root: scrollContainerEl` (not `null`) scopes observations to the scroll container viewport, not the browser viewport. This is required when the scroll container is not the window.
+- **Zero-height sentinel is unreliable.** `IntersectionObserver` with `threshold: 0` on a zero-dimension `<div>` may not fire `isIntersecting: true` in all browsers. Give the sentinel `className="h-px"` to ensure it occupies 1px and is reliably detectable.
+- **Dual ref+state pattern for IntersectionObserver.** `isAtBottom` state drives JSX re-renders (pill visibility). `isAtBottomRef` is read synchronously in effects without stale closures. Keep both in sync inside the Observer callback.
+- **Session init guard — track ID, not boolean.** A `useRef(false)` guard against `useEffect` overwriting `useLayoutEffect` scroll has a race on rapid session switches. `useRef<string | null>(null)` tracking the session ID is self-consistent: set to `null` in `useLayoutEffect`, set to `activeSessionId` on first `useEffect` run, skip if mismatch.
+- **Eager `setIsAtBottom(true)` on pill click.** Don't wait for `IntersectionObserver` to fire after clicking "jump to bottom" — set state immediately so the pill disappears without a visible lag while scroll position catches up.
+
+---
+
 ## 2026-05-01 — Session 13: Chat streaming + markdown
 
 - **Don’t parse markdown while “typing”.** Incremental character streaming breaks mid-token bold/list syntax and flickers layout. Safer pattern: stream as plain `pre-wrap` text, then swap to `ReactMarkdown` when `isStreaming` becomes false.

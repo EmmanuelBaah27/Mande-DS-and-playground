@@ -4,6 +4,33 @@ Chronological record of all work done on the Mande Design System.
 
 ---
 
+## 2026-05-01 — Session 14: Chat scroll behavior fix (playground)
+
+### What was done
+
+- Removed `opacity-35` dimming on older message groups.
+- Added `data-message-role` attribute to each message group div for DOM targeting.
+- Replaced brittle `getOffsetTopWithinAncestor` + double-RAF + `distFromBottom < 300` heuristic stack with three clean primitives:
+  1. `useLayoutEffect` positions to last user message before first paint using `getBoundingClientRect`; falls back to `scrollHeight` for assistant-only sessions.
+  2. `IntersectionObserver` on a `<div ref={sentinelRef} className="h-px">` drives `isAtBottom` state + `isAtBottomRef` ref.
+  3. Messages `useEffect` uses `sessionInitializedRef` (tracks session ID) to skip first run after session switch, then does `getBoundingClientRect` send scroll or `isAtBottomRef`-gated streaming scroll.
+- Added centered "↓ Latest message" pill (`Button` + `Icon` from `@mande/ui`, `AnimatePresence` fade). Hidden during `activeChallenge || activeArtifactMsg`.
+- Deleted `getOffsetTopWithinAncestor`, `pendingTopScrollIdRef`, `skipNextSmoothScrollRef`, `ARTIFACT_GAP_MIN_PX`.
+
+### Files changed
+
+- `apps/playground/src/components/chat-thread.tsx`
+- `docs/superpowers/specs/2026-05-01-chat-scroll-behavior-design.md` (new)
+- `docs/superpowers/plans/2026-05-01-chat-scroll-behavior.md` (new)
+
+### Verified
+
+- TypeScript clean in `chat-thread.tsx` (one pre-existing unrelated error in `page.tsx:259`)
+- Full golden path code-path review: all 7 scenarios pass (session open, fresh session, session switch, send, streaming, pill click, challenge flow)
+- Spec compliance + code quality review passed for all 6 tasks via Subagent-Driven Development
+
+---
+
 ## 2026-05-01 — Session 13: Chat reading UX + streaming (playground)
 
 ### What was done
