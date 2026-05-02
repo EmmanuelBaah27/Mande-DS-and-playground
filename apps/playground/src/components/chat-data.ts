@@ -270,7 +270,7 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         id: "c2",
         role: "assistant",
         content:
-          "**Myth 1: Your career should be connected to your degree.**\nToday's careers don't care about your degree, unless you're in a licensed profession. What matters is having in-demand skills someone is willing to pay for.\n\n**Myth 2: You have to be 100% sure.**\nYou can't think your way to clarity. It comes with motion. The path is never straight, and you can always switch.\n\n**Myth 3: Follow your passion.**\nThere's nothing wrong with doing what you love, but for it to be sustainable, someone has to pay you for it. The focus should be monetising your passion, not just following it.",
+          "- **Myth 1: Your career should be connected to your degree.** Today's careers don't care about your degree, unless you're in a licensed profession. What matters is having in-demand skills someone is willing to pay for.\n- **Myth 2: You have to be 100% sure.** You can't think your way to clarity. It comes with motion. The path is never straight, and you can always switch.\n- **Myth 3: Follow your passion.** There's nothing wrong with doing what you love, but for it to be sustainable, someone has to pay you for it. The focus should be monetising your passion, not just following it.",
         timestamp: "Day 1",
       },
       {
@@ -287,7 +287,7 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         timestamp: "Day 1",
         assistantMeta: {
           depth: "standard",
-          summary: "You mentioned feeling like your degree was wasted, so I led with what those years actually built before showing the paths forward",
+          summary: "Led with what those years built",
           rationale: "You've trained a brain that understands systems, detail, and how money flows. Those are transferable skills, not a consolation prize. I didn't skip the frustration — I named it before pivoting to the options framework because dismissing it would have broken trust.",
         },
       },
@@ -299,7 +299,7 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         timestamp: "Day 1",
         assistantMeta: {
           depth: "brief",
-          summary: "You needed the landscape of options before we could narrow anything down, so I kept it to the three main paths without editorialising",
+          summary: "Mapped the landscape before narrowing",
           rationale: "Each path has a real trade-off that depends on risk tolerance, finances, and daily life. Presenting them without a 'right answer' puts the choice where it belongs.",
         },
       },
@@ -307,7 +307,7 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         id: "c6",
         role: "assistant",
         content:
-          "You've got the landscape. **Next**, we'll lock in a few concrete inputs so this doesn't stay abstract.\n\nWhen you're ready, send **any message** here, even a single word is fine, and I'll start you on the first quick exercise.",
+          "You've got the landscape. Next, we'll lock in a few concrete inputs so this doesn't stay abstract.\n\nWhen you're ready, send any message here, even a single word is fine, and I'll start you on the first quick exercise.",
         timestamp: "Day 1",
       },
     ],
@@ -331,7 +331,7 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         timestamp: "10:03 AM",
         assistantMeta: {
           depth: "standard",
-          summary: "Your engineering background is a genuine asset here, so I named that first before giving a concrete starting sequence",
+          summary: "Named the engineering advantage first",
           rationale: "Leading with what transfers well reduces the intimidation of starting from scratch. The four steps are ordered by what builds fastest on existing strengths.",
         },
       },
