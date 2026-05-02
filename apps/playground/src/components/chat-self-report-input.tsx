@@ -59,6 +59,7 @@ export function ChatSelfReportInput({
         )}
         <Button
           variant="primary"
+          size="default"
           onClick={onSubmit}
           disabled={disabled || value.trim().length === 0}
           className="shrink-0 ml-auto"

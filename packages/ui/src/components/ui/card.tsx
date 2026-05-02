@@ -1,19 +1,31 @@
 "use client"
 
 import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/utils"
 
+const cardVariants = cva("bg-card text-card-foreground", {
+  variants: {
+    surface: {
+      default: "rounded-lg border border-neutral-200 shadow-sm",
+      elevated: "rounded-5 border border-neutral-a8 shadow-sm",
+    },
+  },
+  defaultVariants: {
+    surface: "default",
+  },
+})
+
+type CardProps = React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof cardVariants>
+
 const Card = React.forwardRef<
   HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
+  CardProps
+>(({ className, surface, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn(
-      "rounded-lg border border-neutral-200 bg-card text-card-foreground shadow-sm",
-      className
-    )}
+    className={cn(cardVariants({ surface }), className)}
     {...props}
   />
 ))
@@ -78,4 +90,4 @@ const CardFooter = React.forwardRef<
 ))
 CardFooter.displayName = "CardFooter"
 
-export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }
+export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent, cardVariants }

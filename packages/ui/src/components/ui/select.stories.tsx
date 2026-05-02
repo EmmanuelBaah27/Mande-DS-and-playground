@@ -64,3 +64,21 @@ export const Disabled: Story = {
     </Select>
   ),
 }
+
+export const Large: Story = {
+  render: () => (
+    <Select size="lg">
+      <SelectTrigger className="w-56">
+        <SelectValue placeholder="Select a fruit" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel>Fruits</SelectLabel>
+          <SelectItem value="apple">Apple</SelectItem>
+          <SelectItem value="banana">Banana</SelectItem>
+          <SelectItem value="mango">Mango</SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
+  ),
+}

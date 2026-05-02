@@ -60,6 +60,7 @@ Each challenge has metadata (type, preceded-by lesson, sequencing) and a challen
 - **No slang.** Conversational and warm but culturally neutral — no regional or online slang.
 - **They/them default pronouns** until the student indicates otherwise.
 - **Active voice, contractions, plain English.** Jargon explained before use.
+- **No em dashes in assistant output.** Use commas, periods, or spaced hyphens instead.
 
 ---
 

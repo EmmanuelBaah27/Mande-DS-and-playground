@@ -31,15 +31,8 @@ export function getMockOpenChatAssistantReply(userMessage: string): {
     ].join("\n")
     const assistantMeta: AssistantMessageMeta = {
       depth: "deep",
-      rationale:
-        "They asked for depth, so I should give a quick takeaway first, then a practical plan they can act on this week.",
-      assumptions: [
-        "You're aiming at a professional switch, not a weekend hobby.",
-        "You can spend ~6-10 hours per week for the next few months.",
-      ],
-      confidence: "medium",
-      detailMarkdown:
-        "I'll keep your engineering edge visible in each example so the plan reads practical, not generic career advice.",
+      summary: "You asked for depth on a product design transition, so I led with the one-sentence strategy before breaking it into three concrete moves",
+      rationale: "You can scan the headline first and only open detail if you need it. The three moves — proof, craft, signal — cover the real bottleneck (portfolio), not just the learning curve. I flagged the target-role question because generalist vs. design systems vs. UX research changes the answer meaningfully.",
     }
     return {
       content: sanitizeAssistantText(content),
@@ -54,9 +47,8 @@ export function getMockOpenChatAssistantReply(userMessage: string): {
   ].join("\n")
   const assistantMeta: AssistantMessageMeta = {
     depth: "brief",
-    rationale:
-      "This ask is broad, so I should start with one clear exercise instead of a long checklist.",
-    confidence: "high",
+    summary: "The ask was broad, so I narrowed it to one concrete exercise rather than a checklist",
+    rationale: "A specific 45-minute task is easier to start than a system to build. Once you have something to show, the next step becomes clearer.",
   }
 
   return {

@@ -111,7 +111,7 @@ function Badge({
     <span
       className={cn(
         "inline-flex items-center justify-center align-middle gap-1 rounded-full transition-colors text-small-regular",
-        size === "sm" ? "py-px pl-1 pr-1.5 tabular-nums" : "py-0.5 pl-1.5 pr-2",
+        size === "sm" ? "py-px px-1.5 tabular-nums" : "py-0.5 px-2",
         COLOR_STYLES[color][appearance],
         className,
       )}

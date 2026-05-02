@@ -6,25 +6,49 @@ import { motion, useReducedMotion } from "motion/react"
 import { Button, Icon, springs } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
 import type { AssistantMessageMeta } from "./chat-data"
-import { inferAssistantDepth } from "./chat-data"
 
 const THINKING_AUTO_COLLAPSE_MS = 800
 const RESPONSE_EASE_IN_MS = 200
 
+function extractSummary(text: string, maxLen = 72): string {
+  const first = (text.split(/[.!?]\s/)[0] ?? "").trim()
+  if (first.length <= maxLen) return first
+  return first.slice(0, maxLen).replace(/\s+\S*$/, "") + "…"
+}
+
 const mdComponents = {
   p: ({ children }: { children?: React.ReactNode }) => (
-    <p className="mb-2 last:mb-0">{children}</p>
+    <p className="mb-4 last:mb-0">{children}</p>
   ),
   strong: ({ children }: { children?: React.ReactNode }) => (
-    <strong className="text-lg-medium">{children}</strong>
+    <strong className="font-semibold">{children}</strong>
+  ),
+  em: ({ children }: { children?: React.ReactNode }) => (
+    <em className="italic">{children}</em>
+  ),
+  h1: ({ children }: { children?: React.ReactNode }) => (
+    <h1 className="text-xl-medium mb-3 mt-5 first:mt-0">{children}</h1>
+  ),
+  h2: ({ children }: { children?: React.ReactNode }) => (
+    <h2 className="text-lg-medium mb-2 mt-4 first:mt-0">{children}</h2>
+  ),
+  h3: ({ children }: { children?: React.ReactNode }) => (
+    <h3 className="text-base-medium mb-1.5 mt-3 first:mt-0">{children}</h3>
   ),
   ol: ({ children }: { children?: React.ReactNode }) => (
-    <ol className="list-decimal pl-5 mb-2 space-y-0.5">{children}</ol>
+    <ol className="list-decimal pl-5 mb-4 space-y-1 last:mb-0">{children}</ol>
   ),
   ul: ({ children }: { children?: React.ReactNode }) => (
-    <ul className="list-disc pl-5 mb-2 space-y-0.5">{children}</ul>
+    <ul className="list-disc pl-5 mb-4 space-y-1 last:mb-0">{children}</ul>
   ),
-  li: ({ children }: { children?: React.ReactNode }) => <li>{children}</li>,
+  li: ({ children }: { children?: React.ReactNode }) => <li className="leading-relaxed">{children}</li>,
+  hr: () => <hr className="my-4 border-neutral-200" />,
+  code: ({ children }: { children?: React.ReactNode }) => (
+    <code className="rounded-1 bg-neutral-100 px-1 py-0.5 text-sm font-mono">{children}</code>
+  ),
+  pre: ({ children }: { children?: React.ReactNode }) => (
+    <pre className="mb-4 overflow-x-auto rounded-3 bg-neutral-100 px-4 py-3 text-sm font-mono last:mb-0">{children}</pre>
+  ),
 }
 
 export function AssistantTextBubble({
@@ -37,19 +61,20 @@ export function AssistantTextBubble({
   assistantMeta?: AssistantMessageMeta
 }) {
   const reduceMotion = useReducedMotion()
-  const depth = assistantMeta?.depth ?? inferAssistantDepth(content)
-  const bodyTypography =
-    depth === "brief" ? "text-xl-regular leading-relaxed" : "text-lg-regular leading-relaxed"
-
+  const bodyTypography = "text-lg-regular leading-relaxed"
+  const streamTypography = cn("whitespace-pre-wrap text-neutral-900", bodyTypography)
   const hasExplicitThoughtMeta = Boolean(
     assistantMeta?.rationale?.trim() || assistantMeta?.detailMarkdown?.trim()
   )
   const processText = useMemo(() => {
-    const parts = [assistantMeta?.rationale?.trim(), assistantMeta?.detailMarkdown?.trim()].filter(Boolean)
-    const explicit = parts.join("\n\n")
-    if (explicit) return explicit
+    // Body shows detailMarkdown if present; otherwise falls back to full rationale.
+    // The label already shows a 1-sentence summary so the body adds more detail, not duplication.
+    const detail = assistantMeta?.detailMarkdown?.trim()
+    if (detail) return detail
+    const rationale = assistantMeta?.rationale?.trim()
+    if (rationale) return rationale
     // Show fallback thought copy only during active generation.
-    return isStreaming ? "I'm preparing a clear response based on your latest message." : ""
+    return isStreaming ? "Thinking through your message…" : ""
   }, [assistantMeta?.detailMarkdown, assistantMeta?.rationale, isStreaming])
   const hasProcess = hasExplicitThoughtMeta || Boolean(isStreaming && processText)
 
@@ -101,11 +126,8 @@ export function AssistantTextBubble({
       return
     }
 
-    // Historical: show immediately, collapsed
+    // Historical: show immediately, expanded — auto-collapse only fires during live generation
     setShowResponse(true)
-    if (!hasUserToggled) {
-      setIsProcessCollapsed(true)
-    }
   }, [hasProcess, hasUserToggled, isStreaming])
 
   useEffect(() => {
@@ -141,8 +163,12 @@ export function AssistantTextBubble({
 
   const displayedResponse = showResponse ? content.slice(0, visibleChars) : ""
   const isResponseStreaming = showResponse && visibleChars < content.length
-  const showParsedMarkdown = showResponse && displayedResponse.length > 0
-  const processLabel = isStreaming ? "Thinking" : "Thought briefly"
+  const showParsedMarkdown = showResponse && !isResponseStreaming && displayedResponse.length > 0
+  const processLabel = isStreaming
+    ? "Thinking"
+    : assistantMeta?.rationale?.trim()
+      ? extractSummary(assistantMeta.rationale.trim())
+      : "Thought briefly"
 
   return (
     <div className="space-y-2">
@@ -160,7 +186,7 @@ export function AssistantTextBubble({
             aria-label={isProcessCollapsed ? "Expand thought details" : "Collapse thought details"}
             className="group h-auto w-auto justify-start rounded-3 px-0 py-0 text-left hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus-visible:bg-transparent focus-visible:outline-none focus-visible:ring-0"
           >
-            <span className="inline-flex min-w-0 items-center gap-1.5 text-left">
+            <span className="inline-flex min-w-0 items-center gap-1 text-left">
               <span className="text-small-regular text-neutral-500 transition-colors group-hover:text-neutral-700">
                 {processLabel}
               </span>
@@ -173,7 +199,7 @@ export function AssistantTextBubble({
                   name="IconChevronRight"
                   size={12}
                   stroke="2"
-                  className="text-neutral-600 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
+                  className="text-neutral-500 transition-colors duration-150 group-hover:text-neutral-700"
                   aria-hidden
                 />
               </motion.span>
@@ -210,9 +236,13 @@ export function AssistantTextBubble({
         transition={springs.snappy}
         className={!showResponse ? "pointer-events-none" : undefined}
       >
-        {showParsedMarkdown && (
+        {showParsedMarkdown ? (
           <div className={cn("text-neutral-900", bodyTypography)}>
             <ReactMarkdown components={mdComponents}>{displayedResponse}</ReactMarkdown>
+          </div>
+        ) : (
+          <div className={streamTypography}>
+            {displayedResponse}
             {isResponseStreaming && (
               <span
                 className="inline-block w-0.5 h-[1.1em] align-[-0.15em] ml-0.5 bg-primary-500 rounded-full motion-safe:animate-pulse"

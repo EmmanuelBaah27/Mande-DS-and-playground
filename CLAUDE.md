@@ -43,6 +43,11 @@ Never push broken code, never skip hooks, never batch unrelated changes.
 
 Three phases, in order. Every phase has a required superpowers skill — invoke it before doing anything else in that phase.
 
+Non-negotiable process guardrail:
+- Always run the full collaboration flow in order: Brainstorm -> user-reviewed written plan -> Build -> DS update.
+- Do not jump straight to implementation before collaborative brainstorming and explicit plan agreement.
+- Keep periodic checkpoints during execution; when context grows or shifts, pause, restate current status/next step, and realign to the agreed plan before continuing.
+
 ### 1. Brainstorm
 
 **Skill: `superpowers:brainstorming`** — invoke before any creative or feature work.
@@ -61,7 +66,7 @@ Three phases, in order. Every phase has a required superpowers skill — invoke 
 - Before writing implementation code for any feature or fix, use `superpowers:test-driven-development`.
 - When a bug or test failure appears, use `superpowers:systematic-debugging` before proposing a fix.
 - **Before claiming anything is done**, use `superpowers:verification-before-completion`. Run the build, typecheck, and any tests. Evidence before assertions.
-- Work in `apps/playground/` first. The playground is where you prove the pattern.
+- Work in `apps/playground/` first. The playground is where you prove the pattern — it should **consume** `@mande/ui` (tokens + shared components), not become the long-term home for reusable styling; see **DS-first for chat and shared UI** below.
 - Start the dev server and check the golden path visually before declaring done.
 - Commit coherent units. Push after user confirms ("looks good", "push it", "ship").
 - Use `superpowers:finishing-a-development-branch` when implementation is complete and you're deciding how to integrate.
@@ -131,6 +136,12 @@ Known breaking changes already encountered:
 - `calendar.tsx` `String.raw` template literals: not supported by Storybook's Babel docgen parser — use regular escaped strings instead
 
 ## Component and DS work
+
+### DS-first for chat and shared UI
+
+- Prefer **tokens and components in `@mande/ui`** when the change is reusable across surfaces (typography, borders, form control sizes, spacing patterns, shared primitives). Put token work in `packages/ui/src/tokens/globals.css` (and promote or extend shared components there) rather than leaving the design intent only in `apps/playground`.
+- **`apps/playground` proves patterns**; once validated, **promote** styles and components into the DS so Storybook and every consumer stay aligned. Avoid accumulating duplicate raw Tailwind utility stacks in the playground for patterns that should be canonical.
+- **Exception:** playground-only experiments that are **explicitly throwaway** (named or commented as such) may stay local until you decide to promote or delete them.
 
 - **`build-component`** — invoke before writing or editing any DS component. Covers token mapping, icon lookup, gap surfacing, and all hard rules. Single source of truth for component protocol.
 - **`emil-design-eng`** — invoke for design polish, animation decisions, spacing/typography taste, and any "works but doesn't feel right" question.

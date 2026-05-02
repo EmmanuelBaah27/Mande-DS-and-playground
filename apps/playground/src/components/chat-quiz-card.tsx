@@ -24,19 +24,10 @@ export interface ChatQuizCardProps {
   onPrev?: () => void
   onNext?: () => void
   onSkip?: () => void
+  badge?: React.ReactNode
   className?: string
 }
 
-function ProgressBar({ current, total }: { current: number; total: number }) {
-  return (
-    <div className="w-12 h-1 shrink-0 rounded-full bg-neutral-200 overflow-hidden">
-      <div
-        className="h-full rounded-full bg-neutral-500 transition-[width] duration-[var(--duration-base)] ease-[var(--ease-out)]"
-        style={{ width: `${(current / total) * 100}%` }}
-      />
-    </div>
-  )
-}
 
 export function ChatQuizCard({
   question,
@@ -53,6 +44,7 @@ export function ChatQuizCard({
   onPrev,
   onNext,
   onSkip,
+  badge,
   className,
 }: ChatQuizCardProps) {
   const handleOptionClick = (id: string) => {
@@ -62,38 +54,34 @@ export function ChatQuizCard({
 
   return (
     <Card surface="elevated" className={cn("px-4 py-3 flex flex-col gap-2 w-full", className)}>
-      <div className="flex items-center gap-3">
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="flex items-center gap-2 min-w-0">
-            <ProgressBar current={current} total={total} />
-            <span className="text-small-regular text-muted-foreground whitespace-nowrap">
-              {current} of {total}
-            </span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Button
-              variant="tertiary"
-              size="sm"
-              icon={<Icon name="IconChevronLeft" size={16} stroke="2" radius="1" />}
-              iconPosition="only"
-              onClick={onPrev}
-              disabled={!canPrev || !onPrev}
-              aria-label="Previous question"
-            />
-            <Button
-              variant="tertiary"
-              size="sm"
-              icon={<Icon name="IconChevronRight" size={16} stroke="2" radius="1" />}
-              iconPosition="only"
-              onClick={onNext}
-              disabled={!canNext || !onNext}
-              aria-label="Next question"
-            />
-          </div>
+      <div className="flex items-center justify-between gap-2">
+        {badge && <div className="shrink-0">{badge}</div>}
+        <div className="flex items-center gap-0.5 ml-auto">
+          <Button
+            variant="tertiary"
+            size="sm"
+            icon={<Icon name="IconChevronLeft" size={16} stroke="2" radius="1" />}
+            iconPosition="only"
+            onClick={onPrev}
+            disabled={!canPrev || !onPrev}
+            aria-label="Previous question"
+          />
+          <span className="text-small-regular text-muted-foreground whitespace-nowrap tabular-nums px-1">
+            {current} of {total}
+          </span>
+          <Button
+            variant="tertiary"
+            size="sm"
+            icon={<Icon name="IconChevronRight" size={16} stroke="2" radius="1" />}
+            iconPosition="only"
+            onClick={onNext}
+            disabled={!canNext || !onNext}
+            aria-label="Next question"
+          />
         </div>
       </div>
       <div className="min-w-0 -mt-1.5">
-        <p className="text-base-medium text-foreground break-words pb-1">{question}</p>
+        <p className="text-base-medium text-foreground break-words py-1">{question}</p>
       </div>
 
       <div className="flex flex-col gap-2">

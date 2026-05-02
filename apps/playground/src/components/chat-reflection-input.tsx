@@ -11,6 +11,7 @@ export interface ChatReflectionInputProps {
   onChange: (value: string) => void
   onSubmit: () => void
   disabled?: boolean
+  badge?: React.ReactNode
   className?: string
 }
 
@@ -21,6 +22,7 @@ export function ChatReflectionInput({
   onChange,
   onSubmit,
   disabled = false,
+  badge,
   className,
 }: ChatReflectionInputProps) {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
@@ -36,7 +38,10 @@ export function ChatReflectionInput({
   return (
     <Card surface="elevated" className={cn("flex flex-col w-full overflow-hidden", className)}>
       <div className="px-5 pt-3 pb-3 flex flex-col gap-3">
-        <p className="text-base-medium text-foreground break-words">{prompt}</p>
+        <div>
+          {badge && <div className="mb-1">{badge}</div>}
+          <p className="text-base-medium text-foreground break-words">{prompt}</p>
+        </div>
         <textarea
           ref={textareaRef}
           value={value}
@@ -55,6 +60,7 @@ export function ChatReflectionInput({
         )}
         <Button
           variant="primary"
+          size="default"
           onClick={onSubmit}
           disabled={disabled || value.trim().length === 0}
           className="shrink-0 ml-auto"

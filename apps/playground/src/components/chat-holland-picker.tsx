@@ -1,17 +1,9 @@
 "use client"
 
 import * as React from "react"
-import {
-  Button,
-  Card,
-  Icon,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@mande/ui"
+import { Button, Card, Icon } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
+import { ChatCombobox } from "./chat-combobox"
 
 const RIASEC = [
   { id: "R", label: "Realistic" },
@@ -32,10 +24,11 @@ type HollandState = { primary: string; secondary: string; tertiary: string }
 
 export interface ChatHollandPickerProps {
   onSubmit: (code: [string, string, string]) => void
+  badge?: React.ReactNode
   className?: string
 }
 
-export function ChatHollandPicker({ onSubmit, className }: ChatHollandPickerProps) {
+export function ChatHollandPicker({ onSubmit, badge, className }: ChatHollandPickerProps) {
   const [values, setValues] = React.useState<HollandState>({
     primary: "",
     secondary: "",
@@ -55,7 +48,10 @@ export function ChatHollandPicker({ onSubmit, className }: ChatHollandPickerProp
   return (
     <Card surface="elevated" className={cn("flex flex-col gap-4 overflow-hidden w-full", className)}>
       <div className="px-5 pt-4 flex flex-col gap-4">
-        <p className="text-base-medium text-foreground">What&apos;s your Holland code?</p>
+        <div>
+          {badge && <div className="mb-1">{badge}</div>}
+          <p className="text-base-medium text-foreground">What&apos;s your Holland code?</p>
+        </div>
 
         <a
           href="https://www.truity.com/test/holland-code-career-test"
@@ -74,19 +70,14 @@ export function ChatHollandPicker({ onSubmit, className }: ChatHollandPickerProp
         <div className="grid grid-cols-3 gap-3">
           {SLOTS.map(({ key, label }) => (
             <div key={key} className="flex flex-col gap-1.5">
-              <label className="text-base-medium text-neutral-500">{label}</label>
-              <Select size="lg" value={values[key]} onValueChange={set(key)}>
-                <SelectTrigger className="shadow-none">
-                  <SelectValue placeholder="Select code" />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableFor(key).map((r) => (
-                    <SelectItem key={r.id} value={r.id}>
-                      {r.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <label className="text-base-regular text-neutral-500">{label}</label>
+              <ChatCombobox
+                options={availableFor(key)}
+                value={values[key]}
+                onChange={set(key)}
+                placeholder="Select"
+                searchable={false}
+              />
             </div>
           ))}
         </div>

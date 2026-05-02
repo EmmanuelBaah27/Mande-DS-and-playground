@@ -24,6 +24,9 @@ const meta: Meta<typeof Badge> = {
       control: "select",
       options: ["outlined", "filled"],
     },
+    showIcon: {
+      control: "boolean",
+    },
   },
 }
 

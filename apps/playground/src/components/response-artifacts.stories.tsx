@@ -3,6 +3,8 @@ import { useState } from "react"
 import { ChatQuizCard } from "./chat-quiz-card"
 import { ChatReflectionInput } from "./chat-reflection-input"
 import { ChatCommitmentCard } from "./chat-commitment-card"
+import { ChatMBTIPicker } from "./chat-mbti-picker"
+import { ChatHollandPicker } from "./chat-holland-picker"
 
 // ─── Wrappers ─────────────────────────────────────────────────────────────────
 
@@ -101,9 +103,35 @@ const meta = {
 export default meta
 type Story = StoryObj
 
-export const Quiz: Story           = { render: () => <QuizDemo /> }
-export const QuizMobile: Story     = { render: () => <QuizDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }
-export const Reflection: Story     = { render: () => <ReflectionDemo /> }
-export const ReflectionMobile: Story = { render: () => <ReflectionDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }
-export const Commitment: Story     = { render: () => <CommitmentDemo /> }
-export const CommitmentMobile: Story = { render: () => <CommitmentDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }
+// ─── MBTI ─────────────────────────────────────────────────────────────────────
+
+function MBTIDemo({ mobile = false }: { mobile?: boolean }) {
+  const Wrapper = mobile ? MobileWrapper : DesktopWrapper
+  return (
+    <Wrapper>
+      <ChatMBTIPicker onSubmit={() => {}} />
+    </Wrapper>
+  )
+}
+
+// ─── Holland ──────────────────────────────────────────────────────────────────
+
+function HollandDemo({ mobile = false }: { mobile?: boolean }) {
+  const Wrapper = mobile ? MobileWrapper : DesktopWrapper
+  return (
+    <Wrapper>
+      <ChatHollandPicker onSubmit={() => {}} />
+    </Wrapper>
+  )
+}
+
+export const Quiz: Story                = { render: () => <QuizDemo /> }
+export const QuizMobile: Story          = { render: () => <QuizDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }
+export const Reflection: Story         = { render: () => <ReflectionDemo /> }
+export const ReflectionMobile: Story   = { render: () => <ReflectionDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }
+export const Commitment: Story         = { render: () => <CommitmentDemo /> }
+export const CommitmentMobile: Story   = { render: () => <CommitmentDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }
+export const MBTIPicker: Story         = { render: () => <MBTIDemo /> }
+export const MBTIPickerMobile: Story   = { render: () => <MBTIDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }
+export const HollandPicker: Story      = { render: () => <HollandDemo /> }
+export const HollandPickerMobile: Story = { render: () => <HollandDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }

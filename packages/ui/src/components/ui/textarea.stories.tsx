@@ -23,3 +23,12 @@ export const Default: Story = {
 export const Disabled: Story = {
   render: () => <Textarea disabled placeholder="Disabled textarea" className="w-72" />,
 }
+
+export const Large: Story = {
+  render: () => (
+    <div className="flex flex-col gap-2 w-72">
+      <Label htmlFor="msg-lg">Message</Label>
+      <Textarea id="msg-lg" size="lg" placeholder="Large textarea (16px body)…" />
+    </div>
+  ),
+}

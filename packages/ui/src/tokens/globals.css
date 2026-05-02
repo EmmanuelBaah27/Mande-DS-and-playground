@@ -208,15 +208,16 @@
   --letter-spacing-H1: -0.52px;
   --letter-spacing-H2: -0.44px;
   --letter-spacing-H3: -0.4px;
+  --letter-spacing-xl-regular: -0.24px;
   --letter-spacing-xlg-regular: -0.36px;
   --letter-spacing-xlg-medium: -0.36px;
   --letter-spacing-xlg-semibold: -0.36px;
-  --letter-spacing-lg-regular: -0.36px;
-  --letter-spacing-lg-medium: -0.36px;
-  --letter-spacing-lg-semibold: -0.36px;
-  --letter-spacing-base-regular: -0.14px;
-  --letter-spacing-base-medium: -0.14px;
-  --letter-spacing-base-semibold: -0.14px;
+  --letter-spacing-lg-regular: -0.12px;
+  --letter-spacing-lg-medium: -0.12px;
+  --letter-spacing-lg-semibold: -0.12px;
+  --letter-spacing-base-regular: 0.02px;
+  --letter-spacing-base-medium: 0.02px;
+  --letter-spacing-base-semibold: 0.02px;
   --letter-spacing-small-regular: 0px;
   --letter-spacing-small-medium: 0px;
   --letter-spacing-small-semibold: 0px;
@@ -596,6 +597,7 @@
       letter-spacing: var(--letter-spacing-H3);
     }
   }
+  .text-xl-regular,
   .text-xlg-regular,
   .text-xlg-medium,
   .text-xlg-semibold,
@@ -613,6 +615,7 @@
     font-weight: inherit;
     letter-spacing: inherit;
   }
+  .text-xl-regular { font-size: var(--font-size-lg-regular); line-height: var(--line-height-lg-regular); font-weight: var(--font-weight-lg-regular); letter-spacing: var(--letter-spacing-xl-regular); }
   .text-xlg-regular { font-size: var(--font-size-xlg-regular); line-height: var(--line-height-xlg-regular); font-weight: var(--font-weight-xlg-regular); letter-spacing: var(--letter-spacing-xlg-regular); }
   .text-xlg-medium { font-size: var(--font-size-xlg-medium); line-height: var(--line-height-xlg-medium); font-weight: var(--font-weight-xlg-medium); letter-spacing: var(--letter-spacing-xlg-medium); }
   .text-xlg-semibold { font-size: var(--font-size-xlg-semibold); line-height: var(--line-height-xlg-semibold); font-weight: var(--font-weight-xlg-semibold); letter-spacing: var(--letter-spacing-xlg-semibold); }
@@ -666,6 +669,15 @@
 }
 
 @layer base {
+  button,
+  [role="button"],
+  a,
+  label[for],
+  select,
+  summary {
+    cursor: pointer;
+  }
+
   html {
     /* Cascade smoothing to all descendants (including Storybook iframes) */
     -webkit-font-smoothing: antialiased;
@@ -686,10 +698,10 @@
       "cv02" 1,   /* Open four               */
       "cv03" 1,   /* Open six                */
       "cv04" 1,   /* Open nine               */
-      "cv05" 1,   /* Lower-case l with tail  */
+      "cv05" 0,   /* Lower-case l default    */
       "cv06" 1,   /* r with curved tail      */
       "cv07" 1,   /* Alternate German ß      */
-      "cv08" 1,   /* Upper-case I with serif */
+      "cv08" 0,   /* Upper-case I default    */
       "cv09" 1;   /* Flat-top three          */
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
