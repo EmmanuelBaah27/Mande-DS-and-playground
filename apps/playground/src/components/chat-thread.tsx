@@ -821,7 +821,6 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
                 key={group.key}
                 data-message-id={group.kind === "user" ? group.message.id : group.messages[0].id}
                 data-message-role={group.kind}
-                className="scroll-mt-2"
               >
                 {group.kind === "user" ? (
                   <UserBubble content={group.message.content} />
@@ -834,7 +833,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
                 )}
               </div>
             ))}
-            <div ref={sentinelRef} />
+            <div ref={sentinelRef} className="h-px" aria-hidden />
           </div>
         </div>
         {!activeChallenge && !activeArtifactMsg && (
