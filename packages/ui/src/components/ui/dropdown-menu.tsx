@@ -160,6 +160,32 @@ const DropdownMenuSeparator = React.forwardRef<
 ))
 DropdownMenuSeparator.displayName = DropdownMenuPrimitive.Separator.displayName
 
+interface DropdownMenuSearchProps {
+  value: string
+  onChange: (value: string) => void
+  placeholder?: string
+  autoFocus?: boolean
+}
+
+const DropdownMenuSearch = ({
+  value,
+  onChange,
+  placeholder = "Search…",
+  autoFocus = true,
+}: DropdownMenuSearchProps) => (
+  <div className="-mx-1.5 -mt-1 mb-1 flex items-center px-1.5 py-2 border-b border-neutral-100">
+    <input
+      type="text"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      placeholder={placeholder}
+      autoFocus={autoFocus}
+      className="w-full px-2 text-base-regular text-foreground placeholder:text-muted-foreground bg-transparent outline-none"
+    />
+  </div>
+)
+DropdownMenuSearch.displayName = "DropdownMenuSearch"
+
 const DropdownMenuShortcut = ({
   className,
   ...props
@@ -182,6 +208,7 @@ export {
   DropdownMenuRadioItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSearch,
   DropdownMenuShortcut,
   DropdownMenuGroup,
   DropdownMenuPortal,
