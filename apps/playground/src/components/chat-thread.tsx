@@ -595,10 +595,10 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
     if (!container) return
     // Reset to 0 first so getBoundingClientRect offsets are relative to container top
     container.scrollTop = 0
-    const userGroups = Array.from(
+    const userEls = Array.from(
       container.querySelectorAll<HTMLElement>('[data-message-role="user"]')
     )
-    const lastUserEl = userGroups[userGroups.length - 1]
+    const lastUserEl = userEls[userEls.length - 1]
     if (lastUserEl) {
       container.scrollTop =
         lastUserEl.getBoundingClientRect().top - container.getBoundingClientRect().top
