@@ -843,7 +843,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
           <div className="pointer-events-none sticky bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-neutral-50 to-transparent" />
         )}
         <AnimatePresence>
-          {!isAtBottom && (
+          {!isAtBottom && !activeChallenge && !activeArtifactMsg && (
             <motion.div
               key="scroll-to-bottom"
               initial={{ opacity: 0, y: 6 }}
@@ -857,11 +857,12 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
                 size="sm"
                 onClick={() => {
                   const container = scrollContainerRef.current
-                  if (container) container.scrollTop = container.scrollHeight
+                  if (!container) return
+                  container.scrollTop = container.scrollHeight
                   isAtBottomRef.current = true
                   setIsAtBottom(true)
                 }}
-                icon={<Icon name="IconArrowDown" size={16} />}
+                icon={<Icon name="IconArrowDown" size={16} aria-hidden />}
                 className="pointer-events-auto rounded-full shadow-sm gap-1.5"
               >
                 Latest message
