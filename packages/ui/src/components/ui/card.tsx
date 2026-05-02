@@ -9,7 +9,7 @@ const cardVariants = cva("bg-card text-card-foreground", {
   variants: {
     surface: {
       default: "rounded-lg border border-neutral-200 shadow-sm",
-      elevated: "rounded-5 border border-neutral-a8 shadow-sm",
+      elevated: "rounded-5 border border-neutral-300 shadow-sm",
     },
   },
   defaultVariants: {
@@ -17,18 +17,38 @@ const cardVariants = cva("bg-card text-card-foreground", {
   },
 })
 
-type CardProps = React.HTMLAttributes<HTMLDivElement> & VariantProps<typeof cardVariants>
+type CardProps = React.HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof cardVariants> & {
+    autoFocusInput?: boolean
+  }
 
-const Card = React.forwardRef<
-  HTMLDivElement,
-  CardProps
->(({ className, surface, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(cardVariants({ surface }), className)}
-    {...props}
-  />
-))
+const Card = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, surface, autoFocusInput, ...props }, ref) => {
+    const innerRef = React.useRef<HTMLDivElement>(null)
+
+    React.useEffect(() => {
+      if (!autoFocusInput) return
+      const node = innerRef.current
+      if (!node) return
+      const id = setTimeout(() => {
+        node.querySelector<HTMLElement>('input:not([type="hidden"]), textarea')?.focus()
+      }, 120)
+      return () => clearTimeout(id)
+    }, [autoFocusInput])
+
+    return (
+      <div
+        ref={(el) => {
+          innerRef.current = el
+          if (typeof ref === "function") ref(el)
+          else if (ref) ref.current = el
+        }}
+        className={cn(cardVariants({ surface }), className)}
+        {...props}
+      />
+    )
+  }
+)
 Card.displayName = "Card"
 
 const CardHeader = React.forwardRef<

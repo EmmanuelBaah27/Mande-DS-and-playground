@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils"
 const buttonVariants = cva(
   [
     "inline-flex items-center justify-center rounded-full text-base-medium transition-colors",
-    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+    "outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
     "disabled:pointer-events-none cursor-pointer ring-offset-background",
   ],
   {
@@ -18,34 +18,34 @@ const buttonVariants = cva(
       variant: {
         primary: [
           "bg-primary text-primary-foreground",
-          "hover:bg-primary-hover focus:bg-primary-hover",
+          "hover:bg-primary-hover focus-visible:bg-primary-hover",
           "disabled:bg-disabled disabled:text-disabled-foreground",
         ],
         secondary: [
           "bg-background text-foreground border border-border",
-          "hover:bg-subtle hover:border-border focus:bg-subtle focus:ring-ring",
+          "hover:bg-subtle hover:border-border focus-visible:bg-subtle focus-visible:ring-ring",
           "disabled:bg-background disabled:border-border-subtle disabled:text-disabled-foreground",
         ],
         tertiary: [
           "bg-transparent text-foreground",
-          "hover:bg-muted focus:bg-muted",
+          "hover:bg-muted focus-visible:bg-muted",
           "disabled:text-disabled-foreground",
         ],
         destructive: [
           "bg-destructive text-destructive-foreground",
-          "hover:bg-destructive-hover focus:bg-destructive-hover focus:ring-ring",
+          "hover:bg-destructive-hover focus-visible:bg-destructive-hover focus-visible:ring-ring",
           "disabled:bg-disabled disabled:text-disabled-foreground",
         ],
         "secondary-destructive": [
           "bg-background text-danger border border-danger-border",
           "hover:bg-danger-subtle hover:text-danger hover:border-danger-border",
-          "focus:bg-danger-subtle focus:text-danger focus:ring-ring",
+          "focus-visible:bg-danger-subtle focus-visible:text-danger focus-visible:ring-ring",
           "disabled:bg-background disabled:border-border-subtle disabled:text-disabled-foreground",
         ],
         "tertiary-destructive": [
           "bg-transparent text-danger",
           "hover:bg-danger-subtle hover:text-danger",
-          "focus:bg-transparent focus:text-danger focus:ring-ring",
+          "focus-visible:bg-transparent focus-visible:text-danger focus-visible:ring-ring",
           "disabled:text-disabled-foreground",
         ],
       },
