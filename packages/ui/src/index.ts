@@ -18,6 +18,10 @@ export { Input, inputVariants } from "./components/ui/input"
 export { Textarea, textareaVariants } from "./components/ui/textarea"
 export type { TextareaProps } from "./components/ui/textarea"
 
+// ── Chat ─────────────────────────────────────────────────────────────────────
+export { ChatInput } from "./components/ui/chat-input"
+export type { ChatInputProps } from "./components/ui/chat-input"
+
 export {
   Select,
   SelectGroup,
