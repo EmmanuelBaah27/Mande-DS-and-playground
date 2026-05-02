@@ -11,6 +11,7 @@ import {
   springs,
   challengeLabels,
   challengeColors,
+  ChatInput,
 } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
 import { ChatActiveArtifactFooterShell, ChatActiveArtifactControls, ArtifactBadge } from "./chat-active-artifact"
@@ -350,16 +351,8 @@ function MessageInput({
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const resize = () => {
-    const el = textareaRef.current
-    if (!el) return
-    el.style.height = "auto"
-    el.style.height = `${el.scrollHeight}px`
-  }
-
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value)
-    resize()
   }
 
   const handleSend = () => {
@@ -371,7 +364,6 @@ function MessageInput({
     }
     setValue("")
     setAttachments([])
-    if (textareaRef.current) textareaRef.current.style.height = "auto"
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -466,47 +458,34 @@ function MessageInput({
   return (
     <div className="px-4 pb-4 bg-neutral-50">
       <div className="max-w-3xl mx-auto">
-        <div className="flex flex-col gap-3 bg-white border border-neutral-300 rounded-4 px-4 py-2 hover:border-neutral-400 focus-within:border-neutral-400 transition-colors">
-          {attachments.length > 0 && (
-            <div className="flex flex-wrap gap-2 pt-1">
-              {attachments.map((file, i) => (
-                <AttachmentPreview
-                  key={i}
-                  file={file}
-                  onDismiss={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
-                />
-              ))}
-            </div>
-          )}
-          <div className="flex items-end gap-3">
-            <textarea
-              ref={textareaRef}
-              rows={1}
-              value={value}
-              onChange={handleChange}
-              onKeyDown={handleKeyDown}
-              placeholder={mode === "curriculum" ? "Respond to Mande…" : "Ask anything about your career…"}
-              className="flex-1 resize-none bg-transparent text-sm text-neutral-900 placeholder:text-neutral-400 outline-none leading-6 min-h-6 py-1"
-            />
-            <div className="flex items-center gap-2 shrink-0 self-end">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="size-5 flex items-center justify-center text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-1 transition-colors"
-              >
-                <Icon name="IconPaperclip2" size={16} />
-              </button>
-              <Button
-                onClick={handleSend}
-                disabled={!value.trim() && attachments.length === 0}
-                size="icon"
-                className="active:scale-[0.95]"
-              >
-                <Icon name="IconArrowUp" size={16} stroke="2" />
-              </Button>
-            </div>
-          </div>
-        </div>
+        <ChatInput
+          value={value}
+          onChange={setValue}
+          onSend={handleSend}
+          placeholder={mode === "curriculum" ? "Respond to Mande…" : "Ask anything about your career…"}
+          sendDisabled={!value.trim() && attachments.length === 0}
+          hint="Mande is AI and can make mistakes. Please double-check responses."
+          topSlot={
+            attachments.length > 0
+              ? attachments.map((file, i) => (
+                  <AttachmentPreview
+                    key={i}
+                    file={file}
+                    onDismiss={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
+                  />
+                ))
+              : undefined
+          }
+          actionsSlot={
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="size-5 flex items-center justify-center text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-1 transition-colors"
+            >
+              <Icon name="IconPaperclip2" size={16} />
+            </button>
+          }
+        />
         <input
           ref={fileInputRef}
           type="file"
@@ -515,9 +494,6 @@ function MessageInput({
           onChange={handleFileChange}
           className="hidden"
         />
-        <p className="text-center text-small-regular text-neutral-400 mt-1">
-          Mande is AI and can make mistakes. Please double-check responses.
-        </p>
       </div>
     </div>
   )
@@ -841,6 +817,9 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   return (
     <div className="flex-1 flex flex-col min-h-0">
       <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto min-h-0">
+        {showTopScrollFade && (
+          <div className="pointer-events-none sticky top-0 left-0 right-0 h-14 bg-gradient-to-b from-neutral-50 to-transparent z-10" />
+        )}
         <div ref={scrollOuterRef} className="pt-10 pb-6 px-4">
           <div className="max-w-3xl mx-auto flex flex-col gap-10">
             {groups.map((group) => (
