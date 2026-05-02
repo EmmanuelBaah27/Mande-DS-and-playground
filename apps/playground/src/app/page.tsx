@@ -41,10 +41,9 @@ function EditableTitle({
 
   const displayTitle = title.length > 40 ? title.slice(0, 40) + "…" : title
 
-  const curriculumIcon =
-    isCurriculum === true ? (
-      <Icon name="IconNewspaper1" size={16} className="text-neutral-500" aria-hidden />
-    ) : null
+  const curriculumIcon = isCurriculum ? (
+    <Icon name="IconNewspaper1" size={16} className="text-neutral-500" aria-hidden />
+  ) : null
 
   return editing ? (
     <div className="flex min-w-0 max-w-full items-center gap-2">
