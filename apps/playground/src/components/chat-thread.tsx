@@ -587,6 +587,8 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   const isAtBottomRef = useRef(true)
   const sessionInitializedRef = useRef<string | null>(null)
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
+  // Pixels below the container top where user messages land — clears the nav fade (h-8 = 32px) with breathing room
+  const USER_MSG_TOP_OFFSET = 40
 
   // Before paint: position scroll to last user message (or bottom for fresh sessions)
   useLayoutEffect(() => {
@@ -600,8 +602,10 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
     )
     const lastUserEl = userEls[userEls.length - 1]
     if (lastUserEl) {
-      container.scrollTop =
-        lastUserEl.getBoundingClientRect().top - container.getBoundingClientRect().top
+      container.scrollTop = Math.max(
+        0,
+        lastUserEl.getBoundingClientRect().top - container.getBoundingClientRect().top - USER_MSG_TOP_OFFSET
+      )
     } else {
       // No user messages yet (fresh session with only an assistant greeting)
       container.scrollTop = container.scrollHeight
@@ -647,7 +651,8 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
         container.scrollTop =
           lastUserEl.getBoundingClientRect().top -
           container.getBoundingClientRect().top +
-          container.scrollTop
+          container.scrollTop -
+          USER_MSG_TOP_OFFSET
       }
     } else if (isAtBottomRef.current) {
       // AI message streaming or complete — follow trailing edge
