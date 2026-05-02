@@ -31,8 +31,6 @@ export function ChatExternalAssessmentInput({
 }: ChatExternalAssessmentInputProps) {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
-  React.useEffect(() => { textareaRef.current?.focus() }, [])
-
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.target.value)
     const el = textareaRef.current
@@ -41,8 +39,15 @@ export function ChatExternalAssessmentInput({
     el.style.height = `${el.scrollHeight}px`
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      if (!disabled && value.trim().length > 0) onSubmit()
+    }
+  }
+
   return (
-    <Card surface="elevated" className={cn("flex flex-col w-full overflow-hidden", className)}>
+    <Card surface="elevated" autoFocusInput className={cn("flex flex-col w-full overflow-hidden", className)}>
       <div className="px-5 pt-4 flex flex-col gap-4">
         <div>
           {badge && <div className="mb-1">{badge}</div>}
@@ -68,6 +73,7 @@ export function ChatExternalAssessmentInput({
           ref={textareaRef}
           value={value}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           placeholder="Write away..."
           disabled={disabled}
           rows={1}

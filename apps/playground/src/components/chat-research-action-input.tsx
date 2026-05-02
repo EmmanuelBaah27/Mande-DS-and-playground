@@ -27,8 +27,6 @@ export function ChatResearchActionInput({
 }: ChatResearchActionInputProps) {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
-  React.useEffect(() => { textareaRef.current?.focus() }, [])
-
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.target.value)
     const el = textareaRef.current
@@ -37,8 +35,15 @@ export function ChatResearchActionInput({
     el.style.height = `${el.scrollHeight}px`
   }
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault()
+      if (!disabled && value.trim().length > 0) onSubmit()
+    }
+  }
+
   return (
-    <Card surface="elevated" className={cn("flex flex-col w-full overflow-hidden", className)}>
+    <Card surface="elevated" autoFocusInput className={cn("flex flex-col w-full overflow-hidden", className)}>
       <div className="px-5 pt-3 pb-3 flex flex-col gap-3">
         <div>
           {badge && <div className="mb-1">{badge}</div>}
@@ -48,6 +53,7 @@ export function ChatResearchActionInput({
           ref={textareaRef}
           value={value}
           onChange={handleChange}
+          onKeyDown={handleKeyDown}
           placeholder="Write away..."
           disabled={disabled}
           rows={1}

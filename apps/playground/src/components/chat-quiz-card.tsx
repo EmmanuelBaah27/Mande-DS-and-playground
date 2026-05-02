@@ -107,6 +107,9 @@ export function ChatQuizCard({
               type="text"
               value={customValue}
               onChange={(e) => onCustomChange(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && customValue.trim().length > 0) onNext?.()
+              }}
               placeholder="Type something else"
               className={cn(
                 "w-full rounded-3 border border-transparent bg-neutral-100 px-3 py-2 text-base-regular text-foreground placeholder:text-muted-foreground outline-none hover:bg-neutral-50 focus:bg-neutral-100 focus:border-neutral-300 transition-[background-color,border-color]",
