@@ -47,7 +47,7 @@ export function ChatExternalAssessmentInput({
   }
 
   return (
-    <Card surface="elevated" autoFocusInput className={cn("flex flex-col w-full overflow-hidden", className)}>
+    <Card surface="elevated" className={cn("flex flex-col w-full overflow-hidden", className)}>
       <div className="px-5 pt-4 flex flex-col gap-4">
         <div>
           {badge && <div className="mb-1">{badge}</div>}
@@ -76,6 +76,7 @@ export function ChatExternalAssessmentInput({
           onKeyDown={handleKeyDown}
           placeholder="Write away..."
           disabled={disabled}
+          autoFocus
           rows={1}
           style={{ maxHeight: "40vh" }}
           className="w-full resize-none bg-transparent outline-none text-base-regular text-foreground placeholder:text-muted-foreground overflow-y-auto disabled:opacity-50 leading-6"
