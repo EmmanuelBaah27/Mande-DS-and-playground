@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useRef, useEffect } from "react"
-import { Button, Icon } from "@mande/ui"
+import { useState, useRef } from "react"
+import { ChatInput, Icon } from "@mande/ui"
 import type { ChatSession } from "./chat-data"
 import { AttachmentPreview } from "./shared/attachment-preview"
 
@@ -21,30 +21,13 @@ export function WelcomeState({
   const [value, setValue] = useState("")
   const [attachments, setAttachments] = useState<File[]>([])
   const [showTopScrollFade, setShowTopScrollFade] = useState(false)
-  const scrollAreaRef = useRef<HTMLDivElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
-  const resize = () => {
-    const el = textareaRef.current
-    if (!el) return
-    el.style.height = "auto"
-    el.style.height = `${el.scrollHeight}px`
-  }
 
   const handleSend = () => {
     if (!value.trim() && attachments.length === 0) return
     onStartNewChat(value.trim())
     setValue("")
     setAttachments([])
-    if (textareaRef.current) textareaRef.current.style.height = "auto"
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault()
-      handleSend()
-    }
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,7 +48,6 @@ export function WelcomeState({
     <div className="flex-1 flex flex-col min-h-0">
       {/* Scrollable content */}
       <div
-        ref={scrollAreaRef}
         onScroll={(e) => setShowTopScrollFade(e.currentTarget.scrollTop > 0)}
         className="flex-1 overflow-y-auto relative min-h-0"
       >
@@ -113,47 +95,34 @@ export function WelcomeState({
       {/* Message bar — outside scroll area, always pinned at bottom */}
       <div className="px-4 pb-4 bg-neutral-50 shrink-0">
         <div className="max-w-3xl mx-auto">
-          <div className="flex flex-col gap-3 bg-white border border-neutral-300 rounded-4 px-4 py-2 hover:border-neutral-400 focus-within:border-neutral-400 transition-colors">
-            {attachments.length > 0 && (
-              <div className="flex flex-wrap gap-2 pt-1">
-                {attachments.map((file, i) => (
-                  <AttachmentPreview
-                    key={i}
-                    file={file}
-                    onDismiss={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
-                  />
-                ))}
-              </div>
-            )}
-            <div className="flex items-end gap-3">
-              <textarea
-                ref={textareaRef}
-                rows={1}
-                value={value}
-                onChange={(e) => { setValue(e.target.value); resize() }}
-                onKeyDown={handleKeyDown}
-                placeholder="What's on your mind?"
-                className="flex-1 resize-none bg-transparent text-sm text-neutral-900 placeholder:text-neutral-400 outline-none leading-6 min-h-6 py-1"
-              />
-              <div className="flex items-center gap-2 shrink-0 self-end">
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="size-5 flex items-center justify-center text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-1 transition-colors"
-                >
-                  <Icon name="IconPaperclip2" size={16} />
-                </button>
-                <Button
-                  onClick={handleSend}
-                  disabled={!value.trim() && attachments.length === 0}
-                  size="icon"
-                  className="active:scale-[0.95]"
-                >
-                  <Icon name="IconArrowUp" size={16} stroke="2" />
-                </Button>
-              </div>
-            </div>
-          </div>
+          <ChatInput
+            value={value}
+            onChange={setValue}
+            onSend={handleSend}
+            placeholder="What's on your mind?"
+            sendDisabled={!value.trim() && attachments.length === 0}
+            hint="Mande is AI and can make mistakes. Please double-check responses."
+            topSlot={
+              attachments.length > 0
+                ? attachments.map((file, i) => (
+                    <AttachmentPreview
+                      key={i}
+                      file={file}
+                      onDismiss={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
+                    />
+                  ))
+                : undefined
+            }
+            actionsSlot={
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="size-5 flex items-center justify-center text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-1 transition-colors"
+              >
+                <Icon name="IconPaperclip2" size={16} />
+              </button>
+            }
+          />
           <input
             ref={fileInputRef}
             type="file"
@@ -162,9 +131,6 @@ export function WelcomeState({
             onChange={handleFileChange}
             className="hidden"
           />
-          <p className="text-center text-xs text-neutral-400 mt-1">
-            Mande is AI and can make mistakes. Please double-check responses.
-          </p>
         </div>
       </div>
     </div>
