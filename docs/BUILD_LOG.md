@@ -4,6 +4,31 @@ Chronological record of all work done on the Mande Design System.
 
 ---
 
+## 2026-05-02 — Session 15: DropdownMenu / Combobox visual parity + icon stroke fix
+
+### What was done
+
+- Restyled `DropdownMenu` DS component to match `ChatCombobox` dropdown panel: `rounded-3`, `border-neutral-200`, `px-1.5 pb-1.5 pt-1` container, `rounded-2 text-base-regular py-1` items, `text-small-medium text-muted-foreground` labels
+- Fixed `DropdownMenuSeparator` negative margin from `-mx-1` to `-mx-1.5` to match updated container padding
+- Added `DropdownMenuSearch` composable sub-component (controlled input, edge-to-edge via negative margins, exported from file + `packages/ui/src/index.ts`)
+- Fixed 12px icon stroke: `"1"` → `"1.5"` in `STROKE_BY_SIZE`
+- Updated `dropdown-menu.stories.tsx`: sentence-case label, new `WithSearch` story
+- Removed conflicting `overflow-hidden` from `DropdownMenuContent` that would break scroll on long menus
+
+### Files changed
+
+- `packages/ui/src/components/ui/dropdown-menu.tsx`
+- `packages/ui/src/components/ui/dropdown-menu.stories.tsx`
+- `packages/ui/src/components/ui/icon.tsx`
+- `packages/ui/src/index.ts`
+
+### Verified
+
+- TypeCheck passes across all packages
+- Storybook running at localhost:6006 (visual verification by user pending)
+
+---
+
 ## 2026-05-01 — Session 14: Chat scroll behavior fix (playground)
 
 ### What was done
