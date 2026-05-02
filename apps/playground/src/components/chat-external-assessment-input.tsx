@@ -31,6 +31,8 @@ export function ChatExternalAssessmentInput({
 }: ChatExternalAssessmentInputProps) {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
+  React.useEffect(() => { textareaRef.current?.focus() }, [])
+
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.target.value)
     const el = textareaRef.current
@@ -76,7 +78,6 @@ export function ChatExternalAssessmentInput({
           onKeyDown={handleKeyDown}
           placeholder="Write away..."
           disabled={disabled}
-          autoFocus
           rows={1}
           style={{ maxHeight: "40vh" }}
           className="w-full resize-none bg-transparent outline-none text-base-regular text-foreground placeholder:text-muted-foreground overflow-y-auto disabled:opacity-50 leading-6"
