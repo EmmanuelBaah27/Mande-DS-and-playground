@@ -565,6 +565,20 @@ export type ChatThreadProps = {
   onSessionsChange: (sessions: ChatSession[]) => void
 }
 
+function easeOutScroll(container: HTMLElement, target: number, duration = 300) {
+  const start = container.scrollTop
+  const distance = target - start
+  if (Math.abs(distance) < 1) return
+  const startTime = performance.now()
+  function step(time: number) {
+    const elapsed = Math.min(time - startTime, duration)
+    const t = elapsed / duration
+    container.scrollTop = start + distance * (1 - (1 - t) ** 3)
+    if (elapsed < duration) requestAnimationFrame(step)
+  }
+  requestAnimationFrame(step)
+}
+
 export function ChatThread({ sessions, activeSessionId, onSessionsChange }: ChatThreadProps) {
   const sentinelRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -814,7 +828,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   return (
     <div className="flex-1 flex flex-col min-h-0">
       <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto min-h-0">
-        <div className="py-6 px-4">
+        <div className="pt-10 pb-6 px-4">
           <div className="max-w-3xl mx-auto flex flex-col gap-6">
             {groups.map((group) => (
               <div
@@ -855,7 +869,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
                 onClick={() => {
                   const container = scrollContainerRef.current
                   if (!container) return
-                  container.scrollTop = container.scrollHeight
+                  easeOutScroll(container, container.scrollHeight - container.clientHeight)
                   isAtBottomRef.current = true
                   setIsAtBottom(true)
                 }}
