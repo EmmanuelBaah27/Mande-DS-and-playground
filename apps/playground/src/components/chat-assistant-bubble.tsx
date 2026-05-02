@@ -3,18 +3,12 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import { motion, useReducedMotion } from "motion/react"
-import { Button, Icon, springs } from "@mande/ui"
+import { Button, Icon, easings, durations } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
 import type { AssistantMessageMeta } from "./chat-data"
 
 const THINKING_AUTO_COLLAPSE_MS = 800
 const RESPONSE_EASE_IN_MS = 200
-
-function extractSummary(text: string, maxLen = 72): string {
-  const first = (text.split(/[.!?]\s/)[0] ?? "").trim()
-  if (first.length <= maxLen) return first
-  return first.slice(0, maxLen).replace(/\s+\S*$/, "") + "…"
-}
 
 const mdComponents = {
   p: ({ children }: { children?: React.ReactNode }) => (
@@ -63,22 +57,15 @@ export function AssistantTextBubble({
   const reduceMotion = useReducedMotion()
   const bodyTypography = "text-lg-regular leading-relaxed"
   const streamTypography = cn("whitespace-pre-wrap text-neutral-900", bodyTypography)
-  const hasExplicitThoughtMeta = Boolean(
-    assistantMeta?.rationale?.trim() || assistantMeta?.detailMarkdown?.trim()
-  )
+  const hasExplicitThoughtMeta = Boolean(assistantMeta?.summary)
   const processText = useMemo(() => {
-    // Body shows detailMarkdown if present; otherwise falls back to full rationale.
-    // The label already shows a 1-sentence summary so the body adds more detail, not duplication.
-    const detail = assistantMeta?.detailMarkdown?.trim()
-    if (detail) return detail
     const rationale = assistantMeta?.rationale?.trim()
     if (rationale) return rationale
-    // Show fallback thought copy only during active generation.
     return isStreaming ? "Thinking through your message…" : ""
-  }, [assistantMeta?.detailMarkdown, assistantMeta?.rationale, isStreaming])
+  }, [assistantMeta?.rationale, isStreaming])
   const hasProcess = hasExplicitThoughtMeta || Boolean(isStreaming && processText)
 
-  const [isProcessCollapsed, setIsProcessCollapsed] = useState(false)
+  const [isProcessCollapsed, setIsProcessCollapsed] = useState(!isStreaming)
   const [hasUserToggled, setHasUserToggled] = useState(false)
   const [showResponse, setShowResponse] = useState(true)
   const [visibleChars, setVisibleChars] = useState(() => (isStreaming ? 0 : content.length))
@@ -164,11 +151,10 @@ export function AssistantTextBubble({
   const displayedResponse = showResponse ? content.slice(0, visibleChars) : ""
   const isResponseStreaming = showResponse && visibleChars < content.length
   const showParsedMarkdown = showResponse && !isResponseStreaming && displayedResponse.length > 0
+  const hasExpandableBody = Boolean(assistantMeta?.rationale?.trim()) || Boolean(isStreaming && processText)
   const processLabel = isStreaming
     ? "Thinking"
-    : assistantMeta?.rationale?.trim()
-      ? extractSummary(assistantMeta.rationale.trim())
-      : "Thought briefly"
+    : assistantMeta?.summary ?? "Thought briefly"
 
   return (
     <div className="space-y-2">
@@ -178,40 +164,52 @@ export function AssistantTextBubble({
             type="button"
             variant="tertiary"
             size="sm"
-            onClick={() => {
+            onClick={hasExpandableBody ? () => {
               setHasUserToggled(true)
               setIsProcessCollapsed((prev) => !prev)
-            }}
-            aria-expanded={!isProcessCollapsed}
-            aria-label={isProcessCollapsed ? "Expand thought details" : "Collapse thought details"}
+            } : undefined}
+            aria-expanded={hasExpandableBody ? !isProcessCollapsed : undefined}
+            aria-label={
+              !hasExpandableBody
+                ? undefined
+                : isProcessCollapsed
+                  ? "Expand thought details"
+                  : "Collapse thought details"
+            }
             className="group h-auto w-auto justify-start rounded-3 px-0 py-0 text-left hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus-visible:bg-transparent focus-visible:outline-none focus-visible:ring-0"
           >
             <span className="inline-flex min-w-0 items-center gap-1 text-left">
-              <span className="text-small-regular text-neutral-500 transition-colors group-hover:text-neutral-700">
+              <span className="text-base-regular text-neutral-500 transition-colors group-hover:text-neutral-700">
                 {processLabel}
               </span>
-              <motion.span
-                animate={{ rotate: isProcessCollapsed ? 0 : 90 }}
-                transition={springs.snappy}
-                className="inline-flex h-4 w-4 shrink-0 items-center justify-center"
-              >
-                <Icon
-                  name="IconChevronRight"
-                  size={12}
-                  stroke="2"
-                  className="text-neutral-500 transition-colors duration-150 group-hover:text-neutral-700"
-                  aria-hidden
-                />
-              </motion.span>
+              {hasExpandableBody && (
+                <motion.span
+                  animate={{ rotate: isProcessCollapsed ? 0 : 90 }}
+                  transition={{ duration: durations.base / 1000, ease: easings.out }}
+                  className="inline-flex h-4 w-4 shrink-0 items-center justify-center"
+                >
+                  <Icon
+                    name="IconChevronRight"
+                    size={12}
+                    stroke="2"
+                    className="text-neutral-500 transition-colors duration-150 group-hover:text-neutral-700"
+                    aria-hidden
+                  />
+                </motion.span>
+              )}
             </span>
           </Button>
           <motion.div
             animate={{ height: isProcessCollapsed ? 0 : "auto" }}
-            transition={springs.snappy}
+            transition={
+              isProcessCollapsed
+                ? { duration: durations.fast / 1000, ease: easings.in }
+                : { duration: durations.base / 1000, ease: easings.out }
+            }
             style={{ overflow: "hidden" }}
           >
             <div className="relative pb-1">
-              <div className="max-h-28 overflow-hidden whitespace-pre-wrap pr-1 text-small-regular text-neutral-400">
+              <div className="max-h-28 overflow-hidden whitespace-pre-wrap pr-1 text-base-regular text-neutral-400">
                 {processText}
                 {isStreaming && (
                   <span
@@ -233,7 +231,7 @@ export function AssistantTextBubble({
       <motion.div
         initial={reduceMotion ? undefined : { opacity: 0.88, y: 2 }}
         animate={{ opacity: showResponse ? 1 : 0, y: showResponse ? 0 : 2 }}
-        transition={springs.snappy}
+        transition={{ duration: durations.base / 1000, ease: easings.out }}
         className={!showResponse ? "pointer-events-none" : undefined}
       >
         {showParsedMarkdown ? (
