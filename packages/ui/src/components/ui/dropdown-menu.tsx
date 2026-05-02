@@ -172,7 +172,7 @@ const DropdownMenuSearch = ({
   value,
   onChange,
   placeholder = "Search…",
-  autoFocus = true,
+  autoFocus = false,
   className,
 }: DropdownMenuSearchProps) => (
   <div className={cn("-mx-1.5 -mt-1 mb-1 flex items-center px-1.5 py-2 border-b border-neutral-100", className)}>
