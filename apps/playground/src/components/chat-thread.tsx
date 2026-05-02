@@ -834,7 +834,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
     <div className="flex-1 flex flex-col min-h-0">
       <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto min-h-0">
         <div className="pt-10 pb-6 px-4">
-          <div className="max-w-3xl mx-auto flex flex-col gap-6">
+          <div className="max-w-3xl mx-auto flex flex-col gap-10">
             {groups.map((group) => (
               <div
                 key={group.key}
