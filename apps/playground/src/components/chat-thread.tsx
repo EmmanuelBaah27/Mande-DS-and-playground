@@ -557,8 +557,6 @@ function groupMessages(messages: Message[]): MessageGroup[] {
   return groups
 }
 
-const ARTIFACT_GAP_MIN_PX = 48
-
 // ─── ChatThread ───────────────────────────────────────────────────────────────
 
 export type ChatThreadProps = {
