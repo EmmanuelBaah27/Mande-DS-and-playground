@@ -8,5 +8,5 @@ export const CURRICULUM_ARTIFACT_ACK_TEXT =
 
 export const CURRICULUM_ARTIFACT_ACK_META: AssistantMessageMeta = sanitizeAssistantMeta({
   depth: "brief",
-  summary: "They confirmed they were ready, so I kept the acknowledgement short and moved straight to what's next",
+  summary: "Kept it brief, moved on",
 })!

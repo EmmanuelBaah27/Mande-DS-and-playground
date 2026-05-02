@@ -38,7 +38,7 @@ export function ChatMBTIPicker({ onSubmit, badge, className }: ChatMBTIPickerPro
       <div className="px-5 pt-4 flex flex-col gap-4">
         <div>
           {badge && <div className="mb-1">{badge}</div>}
-          <p className="text-base-medium text-foreground">What&apos;s your MBTI personality type?</p>
+          <p className="text-lg-medium text-foreground">What&apos;s your MBTI personality type?</p>
         </div>
 
         <a

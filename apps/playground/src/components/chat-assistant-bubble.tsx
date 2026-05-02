@@ -200,15 +200,16 @@ export function AssistantTextBubble({
             </span>
           </Button>
           <motion.div
+            initial={false}
             animate={{ height: isProcessCollapsed ? 0 : "auto" }}
             transition={
               isProcessCollapsed
-                ? { duration: durations.fast / 1000, ease: easings.in }
+                ? { duration: durations.base / 1000, ease: easings.out }
                 : { duration: durations.base / 1000, ease: easings.out }
             }
             style={{ overflow: "hidden" }}
           >
-            <div className="relative pb-1">
+            <div className="relative pt-0.5 pb-1">
               <div className="max-h-28 overflow-hidden whitespace-pre-wrap pr-1 text-base-regular text-neutral-400">
                 {processText}
                 {isStreaming && (

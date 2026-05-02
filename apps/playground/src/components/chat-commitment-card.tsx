@@ -32,7 +32,7 @@ export function ChatCommitmentCard({
       <div className="flex flex-col gap-2">
         <div>
           {badge && <div className="mb-1">{badge}</div>}
-          <p className="text-base-medium text-foreground break-words">{title}</p>
+          <p className="text-lg-medium text-foreground break-words">{title}</p>
         </div>
         <p className="text-base-regular text-muted-foreground break-words">{description}</p>
       </div>

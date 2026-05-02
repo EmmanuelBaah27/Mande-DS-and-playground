@@ -31,7 +31,7 @@ export function getMockOpenChatAssistantReply(userMessage: string): {
     ].join("\n")
     const assistantMeta: AssistantMessageMeta = {
       depth: "deep",
-      summary: "You asked for depth on a product design transition, so I led with the one-sentence strategy before breaking it into three concrete moves",
+      summary: "Led with strategy, then broke it into three moves",
       rationale: "You can scan the headline first and only open detail if you need it. The three moves — proof, craft, signal — cover the real bottleneck (portfolio), not just the learning curve. I flagged the target-role question because generalist vs. design systems vs. UX research changes the answer meaningfully.",
     }
     return {
@@ -47,7 +47,7 @@ export function getMockOpenChatAssistantReply(userMessage: string): {
   ].join("\n")
   const assistantMeta: AssistantMessageMeta = {
     depth: "brief",
-    summary: "The ask was broad, so I narrowed it to one concrete exercise rather than a checklist",
+    summary: "Narrowed a broad ask to one concrete exercise",
     rationale: "A specific 45-minute task is easier to start than a system to build. Once you have something to show, the next step becomes clearer.",
   }
 

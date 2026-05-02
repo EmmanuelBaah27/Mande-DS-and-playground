@@ -81,7 +81,7 @@ export function ChatQuizCard({
         </div>
       </div>
       <div className="min-w-0 -mt-1.5">
-        <p className="text-base-medium text-foreground break-words py-1">{question}</p>
+        <p className="text-lg-medium text-foreground break-words py-1">{question}</p>
       </div>
 
       <div className="flex flex-col gap-2">

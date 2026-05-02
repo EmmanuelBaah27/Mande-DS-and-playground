@@ -27,6 +27,8 @@ export function ChatResearchActionInput({
 }: ChatResearchActionInputProps) {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
+  React.useEffect(() => { textareaRef.current?.focus() }, [])
+
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.target.value)
     const el = textareaRef.current
@@ -40,7 +42,7 @@ export function ChatResearchActionInput({
       <div className="px-5 pt-3 pb-3 flex flex-col gap-3">
         <div>
           {badge && <div className="mb-1">{badge}</div>}
-          <p className="text-base-medium text-foreground break-words">{prompt}</p>
+          <p className="text-lg-medium text-foreground break-words">{prompt}</p>
         </div>
         <textarea
           ref={textareaRef}

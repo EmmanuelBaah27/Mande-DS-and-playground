@@ -31,6 +31,8 @@ export function ChatExternalAssessmentInput({
 }: ChatExternalAssessmentInputProps) {
   const textareaRef = React.useRef<HTMLTextAreaElement>(null)
 
+  React.useEffect(() => { textareaRef.current?.focus() }, [])
+
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.target.value)
     const el = textareaRef.current
@@ -44,7 +46,7 @@ export function ChatExternalAssessmentInput({
       <div className="px-5 pt-4 flex flex-col gap-4">
         <div>
           {badge && <div className="mb-1">{badge}</div>}
-          <p className="text-base-medium text-foreground break-words">{prompt}</p>
+          <p className="text-lg-medium text-foreground break-words">{prompt}</p>
         </div>
 
         {testUrl && (
