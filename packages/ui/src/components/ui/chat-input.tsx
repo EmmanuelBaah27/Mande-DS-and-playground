@@ -40,6 +40,11 @@ export function ChatInput({
   }
 
   React.useEffect(() => {
+    resize()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  React.useEffect(() => {
     if (value === "" && textareaRef.current) {
       textareaRef.current.style.height = "auto"
     }
