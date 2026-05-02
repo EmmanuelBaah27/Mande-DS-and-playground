@@ -578,11 +578,13 @@ export type ChatThreadProps = {
 }
 
 export function ChatThread({ sessions, activeSessionId, onSessionsChange }: ChatThreadProps) {
-  const bottomRef = useRef<HTMLDivElement>(null)
+  const sentinelRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const pendingTopScrollIdRef = useRef<string | null>(null)
   const skipNextSmoothScrollRef = useRef(true)
   const [challengeError, setChallengeError] = useState<string | null>(null)
+  const [isAtBottom, setIsAtBottom] = useState(true)
+  const isAtBottomRef = useRef(true)
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
 
   // Instant scroll to bottom before paint so seed messages never flash on session open
@@ -591,6 +593,23 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
     const container = scrollContainerRef.current
     if (container) container.scrollTop = container.scrollHeight
   }, [activeSessionId])
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current
+    const container = scrollContainerRef.current
+    if (!sentinel || !container) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const val = entry.isIntersecting
+        isAtBottomRef.current = val
+        setIsAtBottom(val)
+      },
+      { root: container, threshold: 0 }
+    )
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     if (pendingTopScrollIdRef.current) {
@@ -603,7 +622,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
         if (scrollContainer && targetEl) {
           scrollContainer.scrollTop = getOffsetTopWithinAncestor(targetEl, scrollContainer)
         } else {
-          bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+          sentinelRef.current?.scrollIntoView({ behavior: "smooth" })
         }
       }))
       return
@@ -616,7 +635,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
     if (container) {
       const distFromBottom = container.scrollHeight - container.scrollTop - container.clientHeight
       if (distFromBottom < 300) {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" })
+        sentinelRef.current?.scrollIntoView({ behavior: "smooth" })
       }
     }
   }, [activeSession.messages])
@@ -815,7 +834,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
                 )}
               </div>
             ))}
-            <div ref={bottomRef} />
+            <div ref={sentinelRef} />
           </div>
         </div>
         {!activeChallenge && !activeArtifactMsg && (
