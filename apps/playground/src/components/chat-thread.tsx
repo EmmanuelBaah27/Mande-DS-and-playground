@@ -15,6 +15,7 @@ import {
 import { cn } from "@mande/ui/lib/utils"
 import { ChatActiveArtifactFooterShell, ChatActiveArtifactControls, ArtifactBadge } from "./chat-active-artifact"
 import { AssistantTextBubble } from "./chat-assistant-bubble"
+import { AttachmentPreview } from "./shared/attachment-preview"
 import { evaluateChallengeSubmission } from "../lib/challenges/evaluate"
 import { validateSubmissionPayload } from "../lib/challenges/schema"
 import {
@@ -32,7 +33,7 @@ import {
 type ArtifactFlowStep = {
   id: string
   assistant: string
-  challenge: Omit<ChallengeData, "type">
+  challenge?: Omit<ChallengeData, "type">
 }
 
 const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, ArtifactFlowStep | null> = {
@@ -90,11 +91,30 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
       inputType: "confirm",
     },
   },
-  holland: null,
-  craft: null,
-  "self-report": null,
-  "research-action": null,
-  "external-assessment": null,
+  holland: {
+    id: "artifact-holland-done",
+    assistant:
+      "All five inputs are in. Let me pull this together and show you what the pattern points to.",
+  },
+  craft: {
+    id: "artifact-craft-done",
+    assistant:
+      "Good. That's saved — we can sharpen it further once you've had a chance to send it.",
+  },
+  "self-report": {
+    id: "artifact-self-report-done",
+    assistant: "Got it. That context is noted.",
+  },
+  "research-action": {
+    id: "artifact-research-action-done",
+    assistant:
+      "Good work getting that done. That evidence gives the next step real grounding.",
+  },
+  "external-assessment": {
+    id: "artifact-external-assessment-done",
+    assistant:
+      "Thanks for bringing those results back. That rounds out the picture.",
+  },
 }
 
 // ─── Markdown ─────────────────────────────────────────────────────────────────
@@ -306,39 +326,6 @@ function ChallengeCard({ challenge }: { challenge: ChallengeData }) {
         </span>
       </div>
       <p className="text-sm text-neutral-900 leading-relaxed">{challenge.prompt}</p>
-    </div>
-  )
-}
-
-// ─── AttachmentPreview ────────────────────────────────────────────────────────
-
-function AttachmentPreview({ file, onDismiss }: { file: File; onDismiss: () => void }) {
-  const isImage = file.type.startsWith("image/")
-  const [preview, setPreview] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (!isImage) return
-    const url = URL.createObjectURL(file)
-    setPreview(url)
-    return () => URL.revokeObjectURL(url)
-  }, [file, isImage])
-
-  return (
-    <div className="relative size-12 rounded-2 overflow-hidden border border-neutral-200 bg-neutral-100 shrink-0">
-      {isImage && preview ? (
-        <img src={preview} alt={file.name} className="size-full object-cover" />
-      ) : (
-        <div className="size-full flex items-center justify-center">
-          <Icon name="IconFileText" size={20} className="text-neutral-400" />
-        </div>
-      )}
-      <button
-        type="button"
-        onClick={onDismiss}
-        className="absolute top-0.5 right-0.5 size-4 flex items-center justify-center rounded-full bg-neutral-900/60 text-white hover:bg-neutral-900/80 transition-colors"
-      >
-        <Icon name="IconCrossMedium" size={12} />
-      </button>
     </div>
   )
 }
@@ -581,8 +568,10 @@ function easeOutScroll(container: HTMLElement, target: number, duration = 300) {
 
 export function ChatThread({ sessions, activeSessionId, onSessionsChange }: ChatThreadProps) {
   const sentinelRef = useRef<HTMLDivElement>(null)
+  const scrollOuterRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [challengeError, setChallengeError] = useState<string | null>(null)
+  const [showTopScrollFade, setShowTopScrollFade] = useState(false)
   const [isAtBottom, setIsAtBottom] = useState(true)
   const isAtBottomRef = useRef(true)
   const sessionInitializedRef = useRef<string | null>(null)
@@ -593,6 +582,8 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   // Before paint: position scroll to last user message (or bottom for fresh sessions)
   useLayoutEffect(() => {
     sessionInitializedRef.current = null  // mark session as not yet initialized for the messages effect
+    // Reset scroll buffer so padding doesn't affect initial positioning
+    if (scrollOuterRef.current) scrollOuterRef.current.style.paddingBottom = ""
     const container = scrollContainerRef.current
     if (!container) return
     // Reset to 0 first so getBoundingClientRect offsets are relative to container top
@@ -607,9 +598,24 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
         lastUserEl.getBoundingClientRect().top - container.getBoundingClientRect().top - USER_MSG_TOP_OFFSET
       )
     } else {
-      // No user messages yet (fresh session with only an assistant greeting)
-      container.scrollTop = container.scrollHeight
+      // No user messages: pin last group to bottom so scroll buffer stays off-screen
+      const groupEls = container.querySelectorAll<HTMLElement>("[data-message-role]")
+      const lastGroupEl = groupEls[groupEls.length - 1] ?? null
+      if (lastGroupEl) {
+        const groupBottom = lastGroupEl.getBoundingClientRect().bottom - container.getBoundingClientRect().top
+        container.scrollTop = Math.max(0, groupBottom - container.clientHeight + 24)
+      }
     }
+    setShowTopScrollFade(container.scrollTop > 0)
+  }, [activeSessionId])
+
+  useEffect(() => {
+    const el = scrollContainerRef.current
+    if (!el) return
+    const syncTopFade = () => setShowTopScrollFade(el.scrollTop > 0)
+    syncTopFade()
+    el.addEventListener("scroll", syncTopFade, { passive: true })
+    return () => el.removeEventListener("scroll", syncTopFade)
   }, [activeSessionId])
 
   useEffect(() => {
@@ -643,21 +649,24 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
     if (!lastMsg) return
 
     if (lastMsg.role === "user") {
-      // New user message sent — scroll it to top of viewport
-      const lastUserEl = container.querySelector<HTMLElement>(
-        `[data-message-id="${lastMsg.id}"]`
-      )
+      const lastUserEl = container.querySelector<HTMLElement>(`[data-message-id="${lastMsg.id}"]`)
       if (lastUserEl) {
-        container.scrollTop =
-          lastUserEl.getBoundingClientRect().top -
-          container.getBoundingClientRect().top +
-          container.scrollTop -
-          USER_MSG_TOP_OFFSET
+        const elementTop = lastUserEl.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop
+        container.scrollTop = Math.max(0, elementTop - USER_MSG_TOP_OFFSET)
       }
+      isAtBottomRef.current = true
+      setIsAtBottom(true)
     } else if (isAtBottomRef.current) {
-      // AI message streaming or complete — follow trailing edge
-      container.scrollTop = container.scrollHeight
+      // AI response: scroll it to top so the user message scrolls off above
+      const lastMsgEl = container.querySelector<HTMLElement>(`[data-message-id="${lastMsg.id}"]`)
+      if (lastMsgEl) {
+        const elementTop = lastMsgEl.getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop
+        container.scrollTop = elementTop - USER_MSG_TOP_OFFSET
+      } else {
+        container.scrollTop = container.scrollHeight - container.clientHeight
+      }
     }
+    setShowTopScrollFade(container.scrollTop > 0)
   }, [activeSession.messages])
 
   const lastMsg = activeSession.messages[activeSession.messages.length - 1]
@@ -807,25 +816,24 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
         if (!nextStep) return { ...s, messages: updatedMessages }
 
         const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-        return {
-          ...s,
-          messages: [
-            ...updatedMessages,
-            {
-              id: `artifact-note-${Date.now()}-${nextStep.id}`,
-              role: "assistant",
-              content: nextStep.assistant,
-              timestamp,
-            },
-            {
-              id: `artifact-challenge-${Date.now()}-${nextStep.id}`,
-              role: "assistant",
-              content: "",
-              timestamp,
-              challenge: createChallengeData(nextStep.challenge),
-            },
-          ],
+        const followUps: Message[] = [
+          {
+            id: `artifact-note-${Date.now()}-${nextStep.id}`,
+            role: "assistant",
+            content: nextStep.assistant,
+            timestamp,
+          },
+        ]
+        if (nextStep.challenge) {
+          followUps.push({
+            id: `artifact-challenge-${Date.now()}-${nextStep.id}`,
+            role: "assistant",
+            content: "",
+            timestamp,
+            challenge: createChallengeData(nextStep.challenge),
+          })
         }
+        return { ...s, messages: [...updatedMessages, ...followUps] }
       })
     )
   }
@@ -833,7 +841,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   return (
     <div className="flex-1 flex flex-col min-h-0">
       <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto min-h-0">
-        <div className="pt-10 pb-6 px-4">
+        <div ref={scrollOuterRef} className="pt-10 pb-6 px-4">
           <div className="max-w-3xl mx-auto flex flex-col gap-10">
             {groups.map((group) => (
               <div
@@ -859,7 +867,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
           <div className="pointer-events-none sticky bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-neutral-50 to-transparent" />
         )}
         <AnimatePresence>
-          {!isAtBottom && !activeChallenge && !activeArtifactMsg && (
+          {!isAtBottom && activeSession.messages.at(-1)?.role === "assistant" && !activeChallenge && !activeArtifactMsg && (
             <motion.div
               key="scroll-to-bottom"
               initial={{ opacity: 0, y: 6 }}

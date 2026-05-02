@@ -3,37 +3,7 @@
 import { useState, useRef, useEffect } from "react"
 import { Button, Icon } from "@mande/ui"
 import type { ChatSession } from "./chat-data"
-
-function AttachmentPreview({ file, onDismiss }: { file: File; onDismiss: () => void }) {
-  const isImage = file.type.startsWith("image/")
-  const [preview, setPreview] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (!isImage) return
-    const url = URL.createObjectURL(file)
-    setPreview(url)
-    return () => URL.revokeObjectURL(url)
-  }, [file, isImage])
-
-  return (
-    <div className="relative size-12 rounded-2 overflow-hidden border border-neutral-200 bg-neutral-100 shrink-0">
-      {isImage && preview ? (
-        <img src={preview} alt={file.name} className="size-full object-cover" />
-      ) : (
-        <div className="size-full flex items-center justify-center">
-          <Icon name="IconFileText" size={20} className="text-neutral-400" />
-        </div>
-      )}
-      <button
-        type="button"
-        onClick={onDismiss}
-        className="absolute top-0.5 right-0.5 size-4 flex items-center justify-center rounded-full bg-neutral-900/60 text-white hover:bg-neutral-900/80 transition-colors"
-      >
-        <Icon name="IconCrossMedium" size={12} />
-      </button>
-    </div>
-  )
-}
+import { AttachmentPreview } from "./shared/attachment-preview"
 
 export type WelcomeStateProps = {
   userName: string
@@ -50,6 +20,8 @@ export function WelcomeState({
 }: WelcomeStateProps) {
   const [value, setValue] = useState("")
   const [attachments, setAttachments] = useState<File[]>([])
+  const [showTopScrollFade, setShowTopScrollFade] = useState(false)
+  const scrollAreaRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -92,8 +64,18 @@ export function WelcomeState({
   return (
     <div className="flex-1 flex flex-col min-h-0">
       {/* Scrollable content */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="px-4 pt-16 pb-6">
+      <div
+        ref={scrollAreaRef}
+        onScroll={(e) => setShowTopScrollFade(e.currentTarget.scrollTop > 0)}
+        className="flex-1 overflow-y-auto relative min-h-0"
+      >
+        <div
+          aria-hidden
+          className={`pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-gradient-to-b from-neutral-50 to-transparent transition-opacity duration-150 ${
+            showTopScrollFade ? "opacity-100" : "opacity-0"
+          }`}
+        />
+        <div className="px-4 pt-3 pb-6">
           <div className="max-w-3xl mx-auto flex flex-col gap-6">
             {/* Title group */}
             <div className="flex flex-col gap-2">
