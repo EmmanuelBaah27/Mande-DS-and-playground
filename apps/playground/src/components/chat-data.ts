@@ -171,19 +171,15 @@ export function selectChallengeState(challenge: ChallengeData): ChallengeSelecto
   }
 }
 
-export type AssistantResponseDepth = "brief" | "standard" | "deep"
+export type AssistantResponseDepth = “brief” | “standard” | “deep”
 
-export type AssistantConfidence = "high" | "medium" | "low"
-
-/** Layered assistant presentation: scan-first copy, optional rationale, expandable detail. */
+/** Process transparency: how Mande got to this response. */
 export type AssistantMessageMeta = {
   depth?: AssistantResponseDepth
-  /** Short “why this shape / why now” line (process transparency). */
+  /** One-line “how we got here” label shown in the toggle row. Required when meta is present. */
+  summary: string
+  /** Body prose — assumptions woven in naturally, does not repeat summary. */
   rationale?: string
-  assumptions?: string[]
-  /** Extra markdown revealed on demand (progressive disclosure). */
-  detailMarkdown?: string
-  confidence?: AssistantConfidence
 }
 
 export type Message = {
@@ -291,8 +287,8 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         timestamp: "Day 1",
         assistantMeta: {
           depth: "standard",
-          rationale: "User expressed frustration about their accounting degree. I should validate the skills without dismissing the feeling, then pivot to the concrete options framework.",
-          confidence: "high",
+          summary: "You mentioned feeling like your degree was wasted, so I led with what those years actually built before showing the paths forward",
+          rationale: "You've trained a brain that understands systems, detail, and how money flows. Those are transferable skills, not a consolation prize. I didn't skip the frustration — I named it before pivoting to the options framework because dismissing it would have broken trust.",
         },
       },
       {
@@ -303,8 +299,8 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         timestamp: "Day 1",
         assistantMeta: {
           depth: "brief",
-          rationale: "Presenting the three-path framework concisely. No single right answer — framing it as a choice based on the user's own constraints.",
-          confidence: "high",
+          summary: "You needed the landscape of options before we could narrow anything down, so I kept it to the three main paths without editorialising",
+          rationale: "Each path has a real trade-off that depends on risk tolerance, finances, and daily life. Presenting them without a 'right answer' puts the choice where it belongs.",
         },
       },
       {
@@ -335,8 +331,8 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         timestamp: "10:03 AM",
         assistantMeta: {
           depth: "standard",
-          rationale: "Engineer switching to design. Lead with what transfers well, then give a concrete starting sequence rather than abstract advice.",
-          confidence: "high",
+          summary: "Your engineering background is a genuine asset here, so I named that first before giving a concrete starting sequence",
+          rationale: "Leading with what transfers well reduces the intimidation of starting from scratch. The four steps are ordered by what builds fastest on existing strengths.",
         },
       },
       {
