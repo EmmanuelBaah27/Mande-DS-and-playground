@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useLayoutEffect, useMemo } from "react"
 import ReactMarkdown from "react-markdown"
-import { motion } from "motion/react"
+import { motion, AnimatePresence } from "motion/react"
 import {
   Button,
   Icon,
@@ -842,6 +842,33 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
         {!activeChallenge && !activeArtifactMsg && (
           <div className="pointer-events-none sticky bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-neutral-50 to-transparent" />
         )}
+        <AnimatePresence>
+          {!isAtBottom && (
+            <motion.div
+              key="scroll-to-bottom"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 6 }}
+              transition={{ duration: 0.15 }}
+              className="pointer-events-none sticky bottom-4 left-0 right-0 flex justify-center z-10"
+            >
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  const container = scrollContainerRef.current
+                  if (container) container.scrollTop = container.scrollHeight
+                  isAtBottomRef.current = true
+                  setIsAtBottom(true)
+                }}
+                icon={<Icon name="IconArrowDown" size={16} />}
+                className="pointer-events-auto rounded-full shadow-sm gap-1.5"
+              >
+                Latest message
+              </Button>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       {activeArtifactMsg ? (
         <ChatActiveArtifactFooterShell>
