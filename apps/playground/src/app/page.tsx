@@ -28,9 +28,11 @@ type CurriculumSectionConfig = {
 function ChatNavbar({
   title,
   onTitleChange,
+  collapsed = false,
 }: {
   title: string
   onTitleChange: (title: string) => void
+  collapsed?: boolean
 }) {
   const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(title)
@@ -52,7 +54,7 @@ function ChatNavbar({
 
   return (
     <header className="flex pt-6 pb-1 px-4 shrink-0 bg-neutral-50">
-      {editing ? (
+      {!collapsed && (editing ? (
         <input
           ref={inputRef}
           value={draft}
@@ -72,7 +74,7 @@ function ChatNavbar({
         >
           {displayTitle}
         </button>
-      )}
+      ))}
     </header>
   )
 }
@@ -297,7 +299,7 @@ export default function ChatPage() {
         {collapsed && (
           <motion.div
             key="trigger"
-            className="absolute top-0 left-0 z-20 flex flex-col"
+            className="absolute top-0 left-0 z-20 flex flex-col bg-neutral-50"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -349,10 +351,11 @@ export default function ChatPage() {
 
       {/* ── Main content ───────────────────────────────────────────────── */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden bg-neutral-50">
-        {!collapsed && view === "thread" && activeSession && (
+        {view === "thread" && activeSession && (
           <ChatNavbar
             title={activeSession.title}
             onTitleChange={handleTitleChange}
+            collapsed={collapsed}
           />
         )}
 
