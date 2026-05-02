@@ -573,12 +573,12 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   const [challengeError, setChallengeError] = useState<string | null>(null)
   const [isAtBottom, setIsAtBottom] = useState(true)
   const isAtBottomRef = useRef(true)
-  const sessionInitializedRef = useRef(false)
+  const sessionInitializedRef = useRef<string | null>(null)
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
 
   // Before paint: position scroll to last user message (or bottom for fresh sessions)
   useLayoutEffect(() => {
-    sessionInitializedRef.current = false  // mark session as not yet initialized for the messages effect
+    sessionInitializedRef.current = null  // mark session as not yet initialized for the messages effect
     const container = scrollContainerRef.current
     if (!container) return
     // Reset to 0 first so getBoundingClientRect offsets are relative to container top
@@ -615,8 +615,8 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
 
   useEffect(() => {
     // Skip the first run after a session switch — useLayoutEffect already positioned the scroll.
-    if (!sessionInitializedRef.current) {
-      sessionInitializedRef.current = true
+    if (sessionInitializedRef.current !== activeSessionId) {
+      sessionInitializedRef.current = activeSessionId
       return
     }
 
@@ -628,10 +628,9 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
 
     if (lastMsg.role === "user") {
       // New user message sent — scroll it to top of viewport
-      const userEls = Array.from(
-        container.querySelectorAll<HTMLElement>('[data-message-role="user"]')
+      const lastUserEl = container.querySelector<HTMLElement>(
+        `[data-message-id="${lastMsg.id}"]`
       )
-      const lastUserEl = userEls[userEls.length - 1]
       if (lastUserEl) {
         container.scrollTop =
           lastUserEl.getBoundingClientRect().top -
