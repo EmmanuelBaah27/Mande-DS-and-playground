@@ -7,12 +7,14 @@ import { Button, Icon, springs, cn } from "@mande/ui"
 export type AssessmentCardStatus = "not-started" | "in-progress" | "completed"
 
 export interface ChatAssessmentCardProps {
+  title: string
+  icon?: string
+  duration: string
+  description: string
   status: AssessmentCardStatus
   totalQuestions: number
   currentQuestion?: number
-  resultLabel?: string
   resultSubtitle?: string
-  resultIcon?: string
   onStart: () => void
   onContinue: () => void
   onRetake: () => void
@@ -20,12 +22,14 @@ export interface ChatAssessmentCardProps {
 }
 
 export function ChatAssessmentCard({
+  title,
+  icon = "🎯",
+  duration,
+  description,
   status,
   totalQuestions,
   currentQuestion = 0,
-  resultLabel,
   resultSubtitle,
-  resultIcon = "🎯",
   onStart,
   onContinue,
   onRetake,
@@ -47,15 +51,15 @@ export function ChatAssessmentCard({
         <div className="flex flex-col gap-3">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-2 bg-neutral-100 flex items-center justify-center text-lg shrink-0">
-              🎯
+              {icon}
             </div>
             <div className="min-w-0">
-              <p className="text-base-medium text-foreground leading-tight">Work Preference</p>
-              <p className="text-small-regular text-muted-foreground">{totalQuestions} choices · ~3 min</p>
+              <p className="text-base-medium text-foreground leading-tight">{title}</p>
+              <p className="text-small-regular text-muted-foreground">{duration}</p>
             </div>
           </div>
           <p className="text-small-regular text-muted-foreground leading-relaxed">
-            Discover how you naturally approach tasks, teams, and problems.
+            {description}
           </p>
           <Button variant="primary" size="default" onClick={onStart} className="w-full">
             Take the test
@@ -68,10 +72,10 @@ export function ChatAssessmentCard({
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-9 h-9 rounded-2 bg-neutral-100 flex items-center justify-center text-lg shrink-0">
-                🎯
+                {icon}
               </div>
               <div className="min-w-0">
-                <p className="text-base-medium text-foreground leading-tight">Work Preference</p>
+                <p className="text-base-medium text-foreground leading-tight">{title}</p>
                 <p className="text-small-regular text-muted-foreground">In progress</p>
               </div>
             </div>
@@ -86,27 +90,29 @@ export function ChatAssessmentCard({
             />
           </div>
           <Button variant="primary" size="default" onClick={onContinue} className="w-full">
-            Continue
+            Resume test
           </Button>
         </div>
       )}
 
       {status === "completed" && (
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-2 bg-neutral-100 flex items-center justify-center text-lg shrink-0">
-              {resultIcon}
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-start gap-3 min-w-0">
+            <div className="w-9 h-9 rounded-2 bg-neutral-100 flex items-center justify-center text-lg shrink-0 mt-0.5">
+              {icon}
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="text-base-medium text-foreground leading-tight">{resultLabel}</p>
+                <p className="text-base-medium text-foreground leading-tight">{title}</p>
                 <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 border border-green-200 rounded-1 px-1.5 py-0.5 text-xs font-medium leading-none">
                   <Icon name="IconCheckmark2" size={12} />
                   Done
                 </span>
               </div>
               {resultSubtitle && (
-                <p className="text-small-regular text-muted-foreground">{resultSubtitle}</p>
+                <p className="text-small-regular text-muted-foreground mt-0.5 leading-relaxed">
+                  {resultSubtitle}
+                </p>
               )}
             </div>
           </div>

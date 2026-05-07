@@ -219,11 +219,13 @@ function MessageBubble({
         const icon = Object.values(STYLES).find((s) => label.startsWith(s.name))?.icon ?? "🎯"
         return (
           <ChatAssessmentCard
+            title={label}
+            icon={icon}
+            duration={`${TOTAL_QUESTIONS} choices · ~3 min`}
+            description="Discover how you naturally approach tasks, teams, and problems."
             status="completed"
             totalQuestions={TOTAL_QUESTIONS}
-            resultLabel={label}
             resultSubtitle={subtitle}
-            resultIcon={icon}
             onStart={() => onOpenWorkPreferenceQuiz(message.id)}
             onContinue={() => onOpenWorkPreferenceQuiz(message.id)}
             onRetake={() => onOpenWorkPreferenceQuiz(message.id)}
@@ -233,6 +235,10 @@ function MessageBubble({
       const cardStatus = workPreferenceCurrentQuestion > 0 ? "in-progress" : "not-started"
       return (
         <ChatAssessmentCard
+          title="Work Preference"
+          icon="🎯"
+          duration={`${TOTAL_QUESTIONS} choices · ~3 min`}
+          description="Discover how you naturally approach tasks, teams, and problems."
           status={cardStatus}
           totalQuestions={TOTAL_QUESTIONS}
           currentQuestion={workPreferenceCurrentQuestion}
