@@ -4,6 +4,13 @@ Things learned while building the Mande Design System. Captured so they compound
 
 ---
 
+## 2026-05-07 — Session 20: Stale closure in delayed state reads
+
+- **Don't read React state inside a `setTimeout` after calling a state setter.** If a hook calls `setProgress(prev => ...)` (async), any `setTimeout` closure that reads from the same state object captures the pre-update value. The fix: write to localStorage synchronously inside the state update, then read from localStorage inside the timeout — localStorage is always current regardless of React's batching.
+- **Exclude special-case artifact types from `activeArtifactMsg` early.** If an artifact type renders its own in-thread card and should never appear in the footer shell, add the exclusion in the `activeArtifactMsg` derivation rather than inside `ChatActiveArtifactControls`. One guard at the source is cleaner than defensive null checks further down.
+
+---
+
 ## 2026-05-07 — Session 17: Data hierarchy naming
 
 - **Name data exports to match what they contain, not where they're used.** We had `CURRICULUM_MODULES` holding lessons, which caused confusion when adding a real module layer above it. Rename early — the rename propagates via TypeScript errors, which is exactly the right forcing function.

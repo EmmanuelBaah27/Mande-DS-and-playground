@@ -4,6 +4,33 @@ Chronological record of all work done on the Mande Design System.
 
 ---
 
+## 2026-05-07 — Session 20: Values Assessment — full implementation
+
+Built the complete in-app values assessment: 55-question, 10-category, 4-point rating scale, with page-level full-screen rendering and in-thread CTA card.
+
+### Files created
+- `apps/playground/src/lib/assessments/values-assessment-data.ts` — 55 questions, 10 categories, scale constants, scoring helpers (`computeCategoryScores`, `computeTopCategories`)
+- `apps/playground/src/lib/assessments/__tests__/values-assessment-data.test.ts` — 10 tests, all passing
+- `apps/playground/src/lib/assessments/useValuesAssessmentState.ts` — localStorage persistence hook (`mande:assessment:values:progress`), answer/skip/beginCategory/retake methods
+- `apps/playground/src/components/values-assessment-quiz.tsx` — 5-screen full-screen quiz (`ValuesAssessmentQuiz`) + in-thread card (`ValuesArtifactCard`)
+
+### Files modified
+- `apps/playground/src/components/chat-assessment-card.tsx` — genericised with `title`, `icon`, `duration`, `description`, `resultSubtitle` props (was hardcoded for Work Preference)
+- `apps/playground/src/components/chat-thread.tsx` — `onOpenValues` callback threaded through; `"values"` excluded from `activeArtifactMsg`; `ValuesArtifactCard` rendered directly in `MessageBubble` for values artifacts
+- `apps/playground/src/app/page.tsx` — `valuesOpen` state + `handleValuesComplete`; page-level swap renders `<ValuesAssessmentQuiz />` when open
+- `apps/playground/src/components/dev-trigger-panel.tsx` — "Values Assessment" entry updated to inject correct artifact type
+
+### Verified
+- 10/10 data tests passing
+- TypeScript clean (pre-existing TS5097 in test files only)
+- 7 commits, all coherent units
+
+### What's next
+- User visual smoke test: dev panel → "Values Assessment" → run full flow → check results screen → Back to chat → verify card updates
+- Mobile check at 375px viewport
+
+---
+
 ## 2026-05-07 — Session 19: Holland Interest Assessment — verification + cleanup
 
 Verified the Holland Code in-app assessment (built during Session 18 context before compaction). Confirmed the feature was fully committed at `c37997f` — no wire-up work remained.
