@@ -1,7 +1,7 @@
-// @ts-nocheck
 import test from "node:test"
 import assert from "node:assert/strict"
 
+// @ts-ignore — node --experimental-strip-types requires the .ts extension at runtime
 import {
   QUESTIONS,
   TOTAL_QUESTIONS,
@@ -59,6 +59,10 @@ test("computeResult returns single winner when one score is highest", () => {
 test("computeResult returns all tied winners", () => {
   assert.deepEqual(computeResult({ A: 5, B: 5, C: 3, D: 1 }), ["A", "B"])
   assert.deepEqual(computeResult({ A: 6, B: 6, C: 6, D: 6 }), ["A", "B", "C", "D"])
+})
+
+test("computeResult returns all four letters when all scores are zero", () => {
+  assert.deepEqual(computeResult({ A: 0, B: 0, C: 0, D: 0 }), ["A", "B", "C", "D"])
 })
 
 test("resultLabel formats single winner", () => {
