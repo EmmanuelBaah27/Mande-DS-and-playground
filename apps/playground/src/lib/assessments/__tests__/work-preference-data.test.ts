@@ -1,7 +1,6 @@
 import test from "node:test"
 import assert from "node:assert/strict"
 
-// @ts-ignore — node --experimental-strip-types requires the .ts extension at runtime
 import {
   QUESTIONS,
   TOTAL_QUESTIONS,
@@ -9,6 +8,7 @@ import {
   computeResult,
   resultLabel,
   resultSubtitle,
+// @ts-ignore — node --experimental-strip-types requires the .ts extension at runtime
 } from "../work-preference-data.ts"
 
 test("QUESTIONS has exactly 24 items", () => {
