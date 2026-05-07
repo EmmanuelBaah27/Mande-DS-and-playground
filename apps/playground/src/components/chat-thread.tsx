@@ -32,7 +32,7 @@ import {
 import { ChatAssessmentCard } from "./chat-assessment-card"
 import { WorkPreferenceQuiz } from "./work-preference-quiz"
 import { useWorkPreferenceState } from "../lib/assessments/use-work-preference-state"
-import { TOTAL_QUESTIONS, resultLabel, resultSubtitle } from "../lib/assessments/work-preference-data"
+import { TOTAL_QUESTIONS, STYLES, resultLabel, resultSubtitle } from "../lib/assessments/work-preference-data"
 
 
 type ArtifactFlowStep = {
@@ -216,13 +216,14 @@ function MessageBubble({
         const sepIdx = response.indexOf(" · ")
         const label = sepIdx !== -1 ? response.slice(0, sepIdx) : response
         const subtitle = sepIdx !== -1 ? response.slice(sepIdx + 3) : undefined
+        const icon = Object.values(STYLES).find((s) => label.startsWith(s.name))?.icon ?? "🎯"
         return (
           <ChatAssessmentCard
             status="completed"
             totalQuestions={TOTAL_QUESTIONS}
             resultLabel={label}
             resultSubtitle={subtitle}
-            resultIcon="🚀"
+            resultIcon={icon}
             onStart={() => onOpenWorkPreferenceQuiz(message.id)}
             onContinue={() => onOpenWorkPreferenceQuiz(message.id)}
             onRetake={() => onOpenWorkPreferenceQuiz(message.id)}
