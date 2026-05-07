@@ -7,7 +7,7 @@ import { ChatReflectionInput } from "./chat-reflection-input"
 import { ChatQuizCard } from "./chat-quiz-card"
 import { ChatCommitmentCard } from "./chat-commitment-card"
 import { ChatMBTIPicker } from "./chat-mbti-picker"
-import { ChatHollandPicker } from "./chat-holland-picker"
+import { ChatHollandAssessmentTrigger } from "./chat-holland-assessment-trigger"
 import { ChatCraftInput } from "./chat-craft-input"
 import { ChatSelfReportInput } from "./chat-self-report-input"
 import { ChatResearchActionInput } from "./chat-research-action-input"
@@ -117,7 +117,7 @@ function QuizWidget({ onComplete }: { onComplete: (summary: string) => void }) {
       onPrev={!isFirst ? () => { setIndex((i) => i - 1); setCustom("") } : undefined}
       onNext={hasAnswer ? goToNext : undefined}
       onSkip={!isLast ? () => { setIndex((i) => i + 1); setCustom("") } : undefined}
-      badge={<ArtifactBadge type="quiz" />}
+      badge={<ArtifactBadge type="work-preference" />}
     />
   )
 }
@@ -155,7 +155,7 @@ function SelfReportWidget({
       value={value}
       onChange={setValue}
       onSubmit={() => onComplete(value.trim())}
-      badge={<ArtifactBadge type="self-report" />}
+      badge={<ArtifactBadge type={challenge.artifactType ?? "interests"} />}
     />
   )
 }
@@ -225,7 +225,7 @@ export function ChatActiveArtifactControls({
           onDecline={() => done("Not yet")}
         />
       )
-    case "quiz":
+    case "work-preference":
       return <QuizWidget onComplete={done} />
     case "mbti":
       return (
@@ -236,14 +236,18 @@ export function ChatActiveArtifactControls({
       )
     case "holland":
       return (
-        <ChatHollandPicker
-          onSubmit={(code) => done(code.join(" - "))}
+        <ChatHollandAssessmentTrigger
+          onSubmit={(code) => done(code)}
           badge={<ArtifactBadge type="holland" />}
         />
       )
     case "craft":
       return <CraftWidget challenge={challenge} onComplete={done} />
-    case "self-report":
+    case "interests":
+    case "values":
+    case "opportunities":
+    case "threats":
+    case "skills-audit":
       return <SelfReportWidget challenge={challenge} onComplete={done} />
     case "research-action":
       return <ResearchActionWidget challenge={challenge} onComplete={done} />

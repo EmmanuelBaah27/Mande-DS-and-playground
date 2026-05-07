@@ -98,26 +98,3 @@ export const HOLLAND_TYPES: Record<HollandType, HollandTypeDefinition> = {
     thrives: "You will thrive in environments where structure and precision are valued, where clear processes and systems exist to guide your work, and where your ability to maintain order, accuracy, and consistency makes a measurable difference.",
   },
 }
-
-export type HollandResult = {
-  code: string
-  ranked: Array<{
-    type: HollandType
-    score: number
-    name: string
-    bracket: string
-    likes: string
-  }>
-}
-
-export function computeHollandResult(answers: (LikertValue | null)[]): HollandResult {
-  const scores: Record<HollandType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 }
-  HOLLAND_QUESTIONS.forEach((q, i) => {
-    const a = answers[i]
-    if (a != null) scores[q.type] += a
-  })
-  const ranked = (Object.entries(scores) as [HollandType, number][])
-    .sort((a, b) => b[1] - a[1])
-    .map(([type, score]) => ({ type, score, ...HOLLAND_TYPES[type] }))
-  return { code: ranked[0].type + ranked[1].type + ranked[2].type, ranked }
-}
