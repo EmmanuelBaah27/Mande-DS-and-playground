@@ -29,7 +29,7 @@ import {
   type SessionMode,
   type Message,
 } from "./chat-data"
-import { ValuesArtifactCard } from "./values-assessment-quiz"
+import { ChatValuesAssessmentTrigger } from "./chat-values-assessment-trigger"
 import { ChatWorkPreferenceAssessmentTrigger } from "./chat-work-preference-assessment-trigger"
 import { ChatHollandAssessmentTrigger } from "./chat-holland-assessment-trigger"
 
@@ -194,12 +194,10 @@ function MessageBubble({
   message,
   isActiveArtifact,
   onArtifactComplete,
-  onOpenValues,
 }: {
   message: Message
   isActiveArtifact: boolean
   onArtifactComplete: (messageId: string, summary: string) => void
-  onOpenValues?: (messageId: string) => void
 }) {
   if (message.role === "user") {
     return <UserBubble content={message.content} />
@@ -207,7 +205,14 @@ function MessageBubble({
 
   if (message.challenge) {
     if (message.challenge.artifactType === "values") {
-      return <ValuesArtifactCard onOpen={() => onOpenValues?.(message.id)} />
+      const challengeState = selectChallengeState(message.challenge)
+      return (
+        <ChatValuesAssessmentTrigger
+          isCompleted={challengeState.isCompleted}
+          completedSummary={challengeState.isCompleted ? (challengeState.displayResponse ?? undefined) : undefined}
+          onComplete={(summary) => onArtifactComplete(message.id, summary)}
+        />
+      )
     }
     if (message.challenge.artifactType === "work-preference") {
       const challengeState = selectChallengeState(message.challenge)
@@ -252,12 +257,10 @@ function AssistantGroupRenderer({
   messages,
   activeArtifactId,
   onArtifactComplete,
-  onOpenValues,
 }: {
   messages: Message[]
   activeArtifactId: string | null
   onArtifactComplete: (messageId: string, summary: string) => void
-  onOpenValues?: (messageId: string) => void
 }) {
   if (messages.length === 1) {
     return (
@@ -265,7 +268,6 @@ function AssistantGroupRenderer({
         message={messages[0]}
         isActiveArtifact={messages[0].id === activeArtifactId}
         onArtifactComplete={onArtifactComplete}
-        onOpenValues={onOpenValues}
       />
     )
   }
@@ -277,7 +279,6 @@ function AssistantGroupRenderer({
           message={msg}
           isActiveArtifact={msg.id === activeArtifactId}
           onArtifactComplete={onArtifactComplete}
-          onOpenValues={onOpenValues}
         />
       ))}
     </div>
@@ -575,7 +576,6 @@ export type ChatThreadProps = {
   sessions: ChatSession[]
   activeSessionId: string
   onSessionsChange: (sessions: ChatSession[]) => void
-  onOpenValues?: (messageId: string) => void
 }
 
 function easeOutScroll(container: HTMLElement, target: number, duration = 300) {
@@ -592,7 +592,7 @@ function easeOutScroll(container: HTMLElement, target: number, duration = 300) {
   requestAnimationFrame(step)
 }
 
-export function ChatThread({ sessions, activeSessionId, onSessionsChange, onOpenValues }: ChatThreadProps) {
+export function ChatThread({ sessions, activeSessionId, onSessionsChange }: ChatThreadProps) {
   const sentinelRef = useRef<HTMLDivElement>(null)
   const scrollOuterRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -888,7 +888,6 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange, onOpen
                         messages={group.messages}
                         activeArtifactId={activeArtifactMsg?.id ?? null}
                         onArtifactComplete={handleArtifactComplete}
-                        onOpenValues={onOpenValues}
                       />
                     )}
                   </div>

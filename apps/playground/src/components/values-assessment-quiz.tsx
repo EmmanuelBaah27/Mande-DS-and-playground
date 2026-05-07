@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { useState, useEffect } from "react"
+import { createPortal } from "react-dom"
 import { Button, Icon, cn, springs } from "@mande/ui"
 import { motion } from "motion/react"
 import { ChatAssessmentCard } from "./chat-assessment-card"
@@ -398,7 +399,7 @@ function ResultsScreen({
 
 type QuizScreen = "intro" | "resume" | "category-transition" | "question" | "results"
 
-export function ValuesAssessmentQuiz({
+function ValuesAssessmentQuizContent({
   onComplete,
   onExit,
 }: {
@@ -515,37 +516,40 @@ export function ValuesAssessmentQuiz({
   )
 }
 
-// ─── ValuesArtifactCard ───────────────────────────────────────────────────────
+// ─── ValuesAssessmentQuiz (portal overlay) ────────────────────────────────────
 
-export function ValuesArtifactCard({ onOpen }: { onOpen: () => void }) {
-  const { status, answeredCount, totalQuestions, topCategories, retake } = useValuesAssessmentState()
+export function ValuesAssessmentQuiz({
+  onComplete,
+  onExit,
+}: {
+  onComplete: (topCategories: string[]) => void
+  onExit: () => void
+}) {
+  const [mounted, setMounted] = React.useState(false)
 
-  const handleRetake = () => {
-    retake()
-    onOpen()
-  }
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
-  return (
-    <ChatAssessmentCard
-      title="Values Assessment"
-      icon="🧭"
-      duration="55 questions · ~8 min"
-      description="Uncover the work values that drive you — what makes a job feel real."
-      status={
-        status === "completed" ? "completed"
-        : status === "in-progress" ? "in-progress"
-        : "not-started"
-      }
-      totalQuestions={totalQuestions}
-      currentQuestion={answeredCount}
-      resultSubtitle={
-        topCategories.length > 0
-          ? `Top values: ${topCategories.join(" · ")}`
-          : undefined
-      }
-      onStart={onOpen}
-      onContinue={onOpen}
-      onRetake={handleRetake}
-    />
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onExit()
+    }
+    document.addEventListener("keydown", handleKey)
+    return () => document.removeEventListener("keydown", handleKey)
+  }, [onExit])
+
+  if (!mounted) return null
+
+  return createPortal(
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Values Assessment"
+      className="fixed inset-0 z-[200] overflow-hidden"
+    >
+      <ValuesAssessmentQuizContent onComplete={onComplete} onExit={onExit} />
+    </div>,
+    document.body
   )
 }

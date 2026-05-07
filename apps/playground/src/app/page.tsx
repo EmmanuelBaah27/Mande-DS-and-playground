@@ -7,12 +7,11 @@ import { motion, AnimatePresence } from "motion/react"
 import { Icon, AppSidebar, cn } from "@mande/ui"
 import type { PillarState, CurriculumSectionConfig } from "@mande/ui"
 import { ChatThread } from "../components/chat-thread"
-import { ValuesAssessmentQuiz } from "../components/values-assessment-quiz"
 import { WelcomeState } from "../components/welcome-state"
 import { CurriculumView } from "../components/curriculum-view"
 import { DevTriggerPanel, type InjectableChallenge } from "../components/dev-trigger-panel"
 import { INITIAL_SESSIONS, CURRICULUM_MODULES, createChallengeData } from "../components/chat-data"
-import type { ChatSession, ChallengeResponseType, Message } from "../components/chat-data"
+import type { ChatSession, ChallengeResponseType } from "../components/chat-data"
 
 // ─── Editable session title ───────────────────────────────────────────────────
 
@@ -122,9 +121,6 @@ export default function ChatPage() {
   const [sessions, setSessions] = useState<ChatSession[]>(INITIAL_SESSIONS)
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
   const [view, setView] = useState<View>("welcome")
-  const [valuesOpen, setValuesOpen] = useState(false)
-  const [activeValuesMessageId, setActiveValuesMessageId] = useState<string | null>(null)
-
   // ─── Sidebar collapse state ───────────────────────────────────────────────
   const [collapsed, setCollapsed] = useState(false)
   const [hovering, setHovering] = useState(false)
@@ -223,39 +219,6 @@ export default function ChatPage() {
     )
   }
 
-  const handleOpenValues = (messageId: string) => {
-    setActiveValuesMessageId(messageId)
-    setValuesOpen(true)
-  }
-
-  const handleValuesComplete = (topCategories: string[]) => {
-    setValuesOpen(false)
-    if (!activeValuesMessageId || !activeSessionId) {
-      setActiveValuesMessageId(null)
-      return
-    }
-    const summary = topCategories.join(" · ")
-    const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-    setSessions((prev) =>
-      prev.map((session) => {
-        if (session.id !== activeSessionId) return session
-        const updatedMessages = session.messages.map((msg) =>
-          msg.id === activeValuesMessageId && msg.challenge
-            ? { ...msg, challenge: createChallengeData({ ...msg.challenge, response: summary }) }
-            : msg
-        )
-        const followUp: Message = {
-          id: `artifact-note-${Date.now()}`,
-          role: "assistant",
-          content: "Good. Your non-negotiables are in. Those shape which paths stay on the table and which come off it.",
-          timestamp,
-        }
-        return { ...session, messages: [...updatedMessages, followUp] }
-      })
-    )
-    setActiveValuesMessageId(null)
-  }
-
   const toResponseType = (artifactType: InjectableChallenge["artifactType"]): ChallengeResponseType => {
     switch (artifactType) {
       case "reflection":
@@ -330,15 +293,6 @@ export default function ChatPage() {
     onCollapse: handleCollapse,
     logo: logoLink,
     user: { name: "Angela", initials: "A" },
-  }
-
-  if (valuesOpen) {
-    return (
-      <ValuesAssessmentQuiz
-        onComplete={handleValuesComplete}
-        onExit={() => setValuesOpen(false)}
-      />
-    )
   }
 
   return (
@@ -467,7 +421,6 @@ export default function ChatPage() {
             sessions={sessions}
             activeSessionId={activeSessionId!}
             onSessionsChange={setSessions}
-            onOpenValues={handleOpenValues}
           />
         )}
       </motion.div>
