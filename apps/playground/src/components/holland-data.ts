@@ -121,7 +121,3 @@ export function computeHollandResult(answers: (LikertValue | null)[]): HollandRe
     .map(([type, score]) => ({ type, score, ...HOLLAND_TYPES[type] }))
   return { code: ranked[0].type + ranked[1].type + ranked[2].type, ranked }
 }
-
-// Lowercase aliases for backward compatibility with existing imports
-export const hollandQuestions = HOLLAND_QUESTIONS
-export const hollandTypes = HOLLAND_TYPES
