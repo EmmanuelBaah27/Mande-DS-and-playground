@@ -4,6 +4,24 @@ Key decisions, patterns, and processes for the Mande Design System. Updated as t
 
 ---
 
+## Artifact taxonomy — specific over generic (Session 17)
+
+**Decision:** `ArtifactType` uses 13 specific named types rather than a generic `"self-report"` umbrella.
+
+**Why:** The system needs to know which PIVOTS factor is captured to label artifacts correctly, trigger the right UI widget, and sequence them accurately within a lesson. Generic types collapse information needed downstream.
+
+**Outcome:** `work-preference`, `interests`, `values`, `opportunities`, `threats`, `skills-audit` replace the old `"self-report"` and `"quiz"` types.
+
+---
+
+## Curriculum data hierarchy (Session 17)
+
+**Decision:** Canonical naming is Curriculum → Module (7 readiness categories) → Lesson. The three "Discovering/Clarity/Choice" steps are *lessons*, not modules.
+
+**Why:** Matches the product spec and iOS app exactly. Sidebar shows the active module's lessons as pillars — as the student progresses, the module context swaps.
+
+---
+
 ## Playground chat streaming (Session 13)
 
 ### Simulated streaming in the playground

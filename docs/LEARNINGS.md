@@ -4,6 +4,13 @@ Things learned while building the Mande Design System. Captured so they compound
 
 ---
 
+## 2026-05-07 — Session 17: Data hierarchy naming
+
+- **Name data exports to match what they contain, not where they're used.** We had `CURRICULUM_MODULES` holding lessons, which caused confusion when adding a real module layer above it. Rename early — the rename propagates via TypeScript errors, which is exactly the right forcing function.
+- **ArtifactType labels should describe user action, not academic methodology.** "Holland code" and "Interest profile" test differently: one requires knowing what Holland theory is; the other is self-evident. Same applies to "Industries & hobbies" vs "Interests (self-reported)". User-action naming wins at every decision point.
+
+---
+
 ## 2026-05-01 — Session 14: Chat scroll behavior
 
 - **`getBoundingClientRect` for precise scroll positioning.** `offsetParent` traversal (`offsetTop` accumulation) breaks when any ancestor has `position: relative` or when layout boxes don't form a contiguous stack. `getBoundingClientRect().top - container.getBoundingClientRect().top + container.scrollTop` is accurate at any scroll position. In `useLayoutEffect`, reset `scrollTop = 0` first so the `+ container.scrollTop` term is 0 and you don't need it; in live effects, include it.

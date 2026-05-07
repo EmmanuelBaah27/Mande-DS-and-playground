@@ -4,6 +4,35 @@ Chronological record of all work done on the Mande Design System.
 
 ---
 
+## 2026-05-07 — Session 17: Artifact taxonomy + curriculum data hierarchy
+
+### What was done
+
+- Renamed data hierarchy: `CurriculumModuleMeta` → `CurriculumLessonMeta`; `CURRICULUM_MODULES` (3 items) → `CURRICULUM_LESSONS`; new `CURRICULUM_MODULES` = 7 top-level readiness modules
+- Added all 7 curriculum modules matching product spec (Career Clarity through Location & Access)
+- Updated sidebar to show active module's lessons as pillars (not all 7 modules)
+- Split `ArtifactType "self-report"` and `"quiz"` into 6 specific types: `work-preference`, `interests`, `values`, `opportunities`, `threats`, `skills-audit`
+- Added `artifacts: readonly ArtifactType[]` to `CurriculumLessonMeta` — ordered sequence per lesson
+- Updated `artifactLabels`: `holland: "Interest profile"`, `interests: "Industries & hobbies"` (user-action naming)
+- Updated all consumers: `dev-trigger-panel.tsx`, `chat-active-artifact.tsx`, `chat-thread.tsx`, `page.tsx`
+
+### Files changed
+
+- `packages/ui/src/tokens/challenges.ts`
+- `apps/playground/src/components/chat-data.ts`
+- `apps/playground/src/components/dev-trigger-panel.tsx`
+- `apps/playground/src/components/chat-active-artifact.tsx`
+- `apps/playground/src/components/chat-thread.tsx`
+- `apps/playground/src/components/curriculum-view.tsx`
+- `apps/playground/src/app/page.tsx`
+
+### Verified
+
+- TypeScript (`tsc --noEmit`) passing across all packages
+- All 13 artifact types injectable via dev trigger panel
+
+---
+
 ## 2026-05-02 — Session 15: DropdownMenu / Combobox visual parity + icon stroke fix
 
 ### What was done
