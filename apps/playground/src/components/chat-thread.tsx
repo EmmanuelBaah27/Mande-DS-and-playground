@@ -30,6 +30,7 @@ import {
   type Message,
 } from "./chat-data"
 import { ChatAssessmentCard } from "./chat-assessment-card"
+import { ValuesArtifactCard } from "./values-assessment-quiz"
 import { WorkPreferenceQuiz } from "./work-preference-quiz"
 import { useWorkPreferenceState } from "../lib/assessments/use-work-preference-state"
 import { TOTAL_QUESTIONS, STYLES, resultLabel, resultSubtitle } from "../lib/assessments/work-preference-data"
@@ -197,18 +198,23 @@ function MessageBubble({
   onArtifactComplete,
   onOpenWorkPreferenceQuiz,
   workPreferenceCurrentQuestion,
+  onOpenValues,
 }: {
   message: Message
   isActiveArtifact: boolean
   onArtifactComplete: (messageId: string, summary: string) => void
   onOpenWorkPreferenceQuiz: (messageId: string) => void
   workPreferenceCurrentQuestion: number
+  onOpenValues?: (messageId: string) => void
 }) {
   if (message.role === "user") {
     return <UserBubble content={message.content} />
   }
 
   if (message.challenge) {
+    if (message.challenge.artifactType === "values") {
+      return <ValuesArtifactCard onOpen={() => onOpenValues?.(message.id)} />
+    }
     if (message.challenge.artifactType === "work-preference") {
       const challengeState = selectChallengeState(message.challenge)
       if (challengeState.isCompleted) {
@@ -273,12 +279,14 @@ function AssistantGroupRenderer({
   onArtifactComplete,
   onOpenWorkPreferenceQuiz,
   workPreferenceCurrentQuestion,
+  onOpenValues,
 }: {
   messages: Message[]
   activeArtifactId: string | null
   onArtifactComplete: (messageId: string, summary: string) => void
   onOpenWorkPreferenceQuiz: (messageId: string) => void
   workPreferenceCurrentQuestion: number
+  onOpenValues?: (messageId: string) => void
 }) {
   if (messages.length === 1) {
     return (
@@ -288,6 +296,7 @@ function AssistantGroupRenderer({
         onArtifactComplete={onArtifactComplete}
         onOpenWorkPreferenceQuiz={onOpenWorkPreferenceQuiz}
         workPreferenceCurrentQuestion={workPreferenceCurrentQuestion}
+        onOpenValues={onOpenValues}
       />
     )
   }
@@ -301,6 +310,7 @@ function AssistantGroupRenderer({
           onArtifactComplete={onArtifactComplete}
           onOpenWorkPreferenceQuiz={onOpenWorkPreferenceQuiz}
           workPreferenceCurrentQuestion={workPreferenceCurrentQuestion}
+          onOpenValues={onOpenValues}
         />
       ))}
     </div>
@@ -598,6 +608,7 @@ export type ChatThreadProps = {
   sessions: ChatSession[]
   activeSessionId: string
   onSessionsChange: (sessions: ChatSession[]) => void
+  onOpenValues?: (messageId: string) => void
 }
 
 function easeOutScroll(container: HTMLElement, target: number, duration = 300) {
@@ -614,7 +625,7 @@ function easeOutScroll(container: HTMLElement, target: number, duration = 300) {
   requestAnimationFrame(step)
 }
 
-export function ChatThread({ sessions, activeSessionId, onSessionsChange }: ChatThreadProps) {
+export function ChatThread({ sessions, activeSessionId, onSessionsChange, onOpenValues }: ChatThreadProps) {
   const sentinelRef = useRef<HTMLDivElement>(null)
   const scrollOuterRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
@@ -732,7 +743,8 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   const activeArtifactMsg =
     lastMsg?.role === "assistant" &&
     lastMsg.challenge?.artifactType &&
-    lastMsg.challenge?.artifactType !== "work-preference" &&
+    lastMsg.challenge.artifactType !== "work-preference" &&
+    lastMsg.challenge.artifactType !== "values" &&
     !selectChallengeState(lastMsg.challenge).isCompleted
       ? lastMsg
       : null
@@ -948,6 +960,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
                         onArtifactComplete={handleArtifactComplete}
                         onOpenWorkPreferenceQuiz={handleOpenWorkPreferenceQuiz}
                         workPreferenceCurrentQuestion={quiz.currentQuestion}
+                        onOpenValues={onOpenValues}
                       />
                     )}
                   </div>
