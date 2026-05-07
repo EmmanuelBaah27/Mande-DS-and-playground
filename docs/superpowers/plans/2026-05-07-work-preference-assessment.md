@@ -8,6 +8,8 @@
 
 **Tech Stack:** React 19, TypeScript, `@mande/ui` (Button, Icon, Card, springs), motion/react, Node 24 built-in test runner (`node:test`)
 
+**Mobile responsiveness:** The quiz is a mobile-first experience. All interactive touch targets must be ≥44px tall. The full-screen quiz fills the available chat area (not `h-screen`) and scrolls within that container. iOS safe area insets must be respected on the result screen footer.
+
 ---
 
 ## File map
@@ -479,6 +481,13 @@ git commit -m "feat(chat): add ChatAssessmentCard — 3-state in-chat assessment
 ## Task 4: WorkPreferenceQuiz full-screen component
 
 This mounts inside ChatThread when the quiz is open, replacing the scroll+input area.
+
+**Mobile requirements for this component:**
+- Choice card buttons: min-height `60px` (use `py-5 min-h-[60px]`) — safe thumb tap targets
+- Outer wrapper: `overflow-x-hidden` to prevent horizontal scroll on 320px–375px screens
+- Result screen footer (`flex gap-3`): add `pb-[env(safe-area-inset-bottom,0px)]` for iOS home indicator
+- Header back button: at least `44×44px` tap area
+- All text fits within `min-w-0` containers — no overflow on narrow viewports
 
 **Files:**
 - Create: `apps/playground/src/components/work-preference-quiz.tsx`
@@ -1090,7 +1099,7 @@ Wait for `Ready in` message before continuing.
 
 - [ ] **Step 7.2 — Open the playground and verify the golden path**
 
-Open http://localhost:3000 in a browser. Follow this sequence:
+Open http://localhost:3000 in a browser. Set viewport to 390px wide (iPhone 14 size) in DevTools. Follow this sequence:
 
 1. Start or open a curriculum session (or open-1)
 2. Click the "Artifacts" dev panel → "Work Preference"
@@ -1104,6 +1113,7 @@ Open http://localhost:3000 in a browser. Follow this sequence:
 10. Answer all remaining questions through to Q24
 11. Verify the result screen appears with a style name, subtitle pill, and description
 12. Click "Back to chat" — verify the quiz closes, the card shows **completed** state with result label, and Mande sends a follow-up message
+13. Resize to 320px — verify no horizontal scroll, all text fits, buttons remain tappable
 
 - [ ] **Step 7.3 — Typecheck one final time**
 

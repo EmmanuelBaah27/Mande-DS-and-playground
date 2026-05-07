@@ -4,6 +4,45 @@ Chronological record of all work done on the Mande Design System.
 
 ---
 
+## 2026-05-07 — Session 18: Work Preference Assessment + Mobile Responsiveness
+
+Built the complete work preference assessment flow end-to-end.
+
+### What was done
+
+1. **Assessment data** (`work-preference-data.ts`) — 24 forced-choice questions, 4 styles (Focuser/Relator/Integrator/Operator), `computeResult`/`resultLabel`/`resultSubtitle` helpers. 13 tests passing (node:test runner).
+
+2. **State hook** (`use-work-preference-state.ts`) — `useReducer`-based hook managing `phase`/`currentQuestion`/`scores`/`result`. Replaced an initial `useState` nesting anti-pattern (side effects inside functional updater) with an atomic reducer.
+
+3. **`ChatAssessmentCard`** — 3-state in-chat CTA card (not-started / in-progress / completed). Progress bar, question counter, "Done ✓" badge. `motion/react` entrance animation.
+
+4. **`WorkPreferenceQuiz`** — Full-screen quiz + result screen. `QuestionScreen` with `AnimatePresence` question transitions, 380ms auto-advance, `clearTimeout` cleanup. `ResultScreen` with single/hybrid result display. iOS safe area footer padding.
+
+5. **ChatThread wiring** — `work-preference` artifacts render `ChatAssessmentCard` inline (not the footer shell). `quizOpen` state conditionally mounts `WorkPreferenceQuiz` replacing the scroll+input area. Result stored as `"Label · Subtitle"` string and recovered by splitting at ` · `.
+
+6. **Mobile responsiveness** — Added to plan and implementation: choice card `min-h-[60px]`, 44×44px back button, `overflow-x-hidden` guards, iOS `env(safe-area-inset-bottom)` on result footer. Smoke test targets 390px and 320px.
+
+### Files changed
+- `apps/playground/src/lib/assessments/work-preference-data.ts` — created
+- `apps/playground/src/lib/assessments/__tests__/work-preference-data.test.ts` — created
+- `apps/playground/src/lib/assessments/use-work-preference-state.ts` — created (then rewritten to useReducer)
+- `apps/playground/src/components/chat-assessment-card.tsx` — created
+- `apps/playground/src/components/work-preference-quiz.tsx` — created
+- `apps/playground/src/components/chat-thread.tsx` — wired in all new components
+- `docs/superpowers/plans/2026-05-07-work-preference-assessment.md` — updated with mobile requirements
+
+### Verified
+- 13 data tests pass (`node:test`)
+- TypeScript clean (no new errors introduced)
+- Dev server returns 200 on localhost:3000
+- Visual smoke test pending user walkthrough
+
+### What's next
+- User visual verification of the full quiz flow in playground
+- Session docs commit and push
+
+---
+
 ## 2026-05-07 — Session 17: Artifact taxonomy + curriculum data hierarchy
 
 ### What was done
