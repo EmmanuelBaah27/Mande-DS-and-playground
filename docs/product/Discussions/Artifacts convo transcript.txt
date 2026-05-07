@@ -1,0 +1,389 @@
+Meeting Title: Career assessment tests and app design strategy for mobile experience
+Date: May 3
+Meeting participants: Emmanuelbaah27
+
+─────────────────────────────────────────────────────────────────
+EXTRACTED DECISIONS & ACTION ITEMS
+─────────────────────────────────────────────────────────────────
+
+## Assessment delivery — core rule
+
+All assessment triggers live in the chat thread as a card/CTA. From there,
+the experience branches based on the test type:
+
+| Test | Delivery | Notes |
+|---|---|---|
+| Work preference | In-app, full-screen or bottom sheet | Pairwise ranking; ~20–30 questions |
+| Holland (interest assessment) | In-app, full-screen or bottom sheet | Built internally |
+| Values assessment | In-app, selection-based | Predefined options, inside app |
+| MBTI | External for now; eventually in-app | Only test that routes out of app |
+| Industry preferences | In-chat bottom sheet | ~16 predefined options, multi-select |
+| Hobbies / obsessions | In-chat, free text | Self-reported, short answer |
+| Opportunities & threats | In-chat bottom sheet | 7 survey questions (country, work type, risk) |
+| Skills audit | In-app, AI-assisted selection | User gives job title → AI generates responsibilities → user selects |
+
+Rule of thumb: long/complex test → full-screen or bottom sheet. Short/simple
+answer → inline chat or quick bottom sheet. External only: MBTI (for now).
+
+
+## Assessment UX — key decisions
+
+- CTA in chat always. The in-chat card is the trigger; the test itself opens
+  as full-screen or bottom sheet from there.
+- Two CTA states on the in-chat card: "Take the test" (not done yet) and
+  "Enter result" (already done externally — only relevant for MBTI).
+- Resume on return: if a user exits mid-test, re-entering the app should
+  show a "Continue where you left off" prompt for that test.
+- Re-taking is allowed. Results can change (e.g. MBTI shifts are common).
+  Don't lock to first result.
+- Card design in chat should be visually distinct and beautiful — referenced
+  the Career Discovery card style.
+
+
+## Skills audit — specific flow
+
+1. User provides job title (or uploads resume).
+2. AI generates 10 role-specific responsibilities.
+3. User selects which ones apply to their experience.
+4. AI infers skill profile from selections — no manual reflection required.
+Goal: reduce mental load; surface experience people don't realise they have.
+
+
+## Assessment state
+
+- All tests save progress locally (on device) and to backend.
+- Mid-completion state should persist across sessions.
+- MBTI: one output, one selector ("this is my result") — no complex scoring
+  logic needed on our side for the external version.
+- Backend (Django): Emmanuel to build backend hooks for each test. UI to be
+  built now and connected once backend configs are ready.
+
+
+## In-app vs external — rationale
+
+Routing users externally risks losing them and makes result capture fragile
+(extension approach was tried, caused friction). Building tests internally
+gives full control over UX, timing, and result ingestion. MBTI is the only
+exception for now due to complexity — open-source MBTI implementation being
+explored.
+
+
+## Action items
+
+DESIGN (Emmanuel B / Claude)
+- [ ] Design full-screen and bottom sheet assessment UI components
+- [ ] Design in-chat test trigger card (distinct visual from regular messages)
+- [ ] Handle 16-option industry multi-select UX
+- [ ] Mid-test resume prompt UX (re-entry flow)
+- [ ] Finish current artifact components by end of this week
+
+PRODUCT / BACKEND (Emmanuel — product side)
+- [ ] Write up questions, options, and scoring logic for each internal test
+- [ ] Share predefined list of 16 industries
+- [ ] Build backend configs for each test (Django) so UI can hook in
+- [ ] Explore open-source MBTI implementation for eventual in-app build
+
+
+─────────────────────────────────────────────────────────────────
+RELATED DECISIONS — from Claude Code design session (same week)
+─────────────────────────────────────────────────────────────────
+
+## Assessment delivery — web vs. mobile
+
+The in-chat card is always the trigger (consistent with meeting decisions above).
+Once tapped, the assessment opens in full-screen on both web and mobile (bottom
+sheet is the mobile-native variant of the same pattern). The current playground
+prototype shows assessment inputs inline in the chat thread — that is a
+prototype convenience only and does not reflect the intended UX.
+
+Rule: in-chat card triggers → full-screen assessment experience → result
+returned to chat on completion.
+
+
+## Pillar / session architecture
+
+- Each curriculum pillar = a separate chat session.
+- Sessions are grouped under "Career Clarity" in the sidebar.
+- Pillars are sequential — completing one unlocks the next.
+- Locked sessions are navigable: show the module description and a locked
+  input ("Finish the previous session to unlock this one").
+- Completed sessions move to the bottom of the section list with a round
+  check icon.
+- After the final pillar of a module is completed, the next module becomes
+  the active section in the sidebar. The completed module (e.g. Career
+  Clarity) is preserved on the curriculum page for historical reference.
+
+
+## Session completion moment
+
+- Input box transforms into a "Continue to [Next Topic]" CTA when the final
+  artifact of a session is complete. No continued chatting is allowed after
+  session end — the input is fully blocked.
+- Confetti ruled out (cliché).
+- Design recommendation: badge drop-in — round check badge animates down
+  with elastic bounce above the input zone, then lifts away as the CTA fades
+  in. The same check icon simultaneously fills in on the sidebar session
+  item. Mockup built and demoed. Decision pending confirmation.
+
+
+## Curriculum page
+
+- Central place for all curriculum-related data and module history.
+- Lists all modules in the active programme; sequential — completing one
+  unlocks the next.
+- Active module: accessible and visually highlighted.
+- Inactive / upcoming modules: visible but locked (description shown, not
+  enterable).
+- Completed modules remain visible as historical record.
+- Sidebar persists — curriculum is an in-page view, not a separate route.
+
+## Artifact engine bug fix (resolved)
+
+- 5 artifact types (holland, craft, self-report, research-action,
+  external-assessment) were returning null after completion — Mande went
+  silent with no follow-up.
+- Fixed: all 5 now have acknowledgment messages; toResponseType covers all
+  9 artifact types with correct return type.
+
+─────────────────────────────────────────────────────────────────
+RAW TRANSCRIPT
+─────────────────────────────────────────────────────────────────
+
+Transcript:
+ 
+Them: I'm thinking that. For that experience, right, it'd be either it be full page like what you see, right? Try click on one of. The things. No, no, no.  
+Me: This will be the result.  
+Them: Yeah, do the generate career plan. Tap on one of the cards. So you see the way they're destined, the bottom sheet open, you see say something day back.  
+Me: Yeah.  
+Them: So it's either with a run those tests either in a bottom sheet like this or a full screen experience. But you decide which one they make sense design wise. But it will be within the app. The only one way with the rows of people out of the app. So if I don't build the logic and things. Be the MDTI.  
+Me: Okay.  
+Them: Yeah.  
+Me: So it'll be apis.  
+Them: So what it will look like is that if once you have, you're not going to be API with a render like with a build the thing. Within the app, get a result within the app.  
+Me: Yeah. I got.  
+Them: So yeah, if you go to the other thing.  
+Me: My main callback.  
+Them: Go to the other one, the values assessment. I think you clicked on one of them.  
+Me: Let me come back to the. Here.  
+Them: Now, maybe this one. The other one, like the one will be the test and casa. Because the idea, you see that this thing as a local. Whatever. So this like here we click. Let's find out or whatever. Right? Let's go. You click all this preview. These things we could select. No, it did a person in local. Into no area. Like it was safe to the back end. Whichever progress it is, they in local, like in phone top. Ic. It didn't get the point. So it doesn't communicate with any external test provider.  
+Me: So. So it means with the. With the build a test inside one.  
+Them: No. Yes.  
+Me: Hour. So we have. We have our own set of questions and stuff.  
+Them: Yes. Yeah. All the questions like everything they see for debbie, something I work on already. Like the questions, then the logic, everything did a this thing inside. What did you say? She has left. Hey. Hey. Thanksgiving. She's able to take calls from. Back to a. Nigeria. I'm sure that's what they are going to pay next. No. Hey, give save money.  
+Me: Already. 10. 30 year old man like you.  
+Them: So what are the talk we say with the build apart from the mbti or the other tests we build up? Like have this be how it would be inside. So the logic and things they right now, all that is needed is the.  
+Me: Already. Where we want to make this interactive, right? It's not a question or type answer. This. It should be this interactive because I feel like this is easier.  
+Them: Yes, yes, yes, exactly. So right now the questions there, the options, the plugins. One.  
+Me: I mean, the way I see him at this point from what we are saying, we can do everything in this. World, but on mobile. On mobile when they were on mobile view. So the way it's down here like this. But it might cover the full, almost the four bottoms that we're saying. It's just.  
+Them: Yeah. Like, so that'll be the shots I won't make because which are we using, which approach are we using? It get.  
+Me: Figured out.  
+Them: Cause. High ambition is that the questions, then the answers. They like, they follow the same structure in terms of their visuals. They get. So whilst you decide you are how the UI will look like a google use that component, then take build whatever content you go give them. Then the scoring logic.  
+Me: Yeah. So I'll go to share some reunion right now. We are not expect. And my friends from childhood. No, no. Then they help me go carry the things. Way. Like, I forget say the same. I just call whoever I go. When they walk, come. If they're not saying the income is for yesterday, then just come.  
+Them: Is one community. You know the crazy part. This is what I know they like about even count. That place be lonely fast, bro. Whatever I feel like. Some movers made that come then charge you some money.  
+Me: Some movement.  
+Them: You say.  
+Me: At one level.  
+Them: When I make up your wife.  
+Me: Yeah, I finally.  
+Them: Oh, you said that.  
+Me: The opportunities are the like I for finding. How are for position? It might be easier for me out there. But we'll come back. No be safe for town forever. Because I won't build the design agency to me. They are starting businesses.  
+Them: Makes sense.  
+Me: So I don't have. I don't have enough.  
+Them: They ain't going to do this thing. If I look at them. You know. The options, the, the German blue card opportunity card or global talent.  
+Me: Blue card viewer. That'll be interesting.  
+Them: Yeah, it's an opportunity card. Yeah, they will give you why make you get visa and things, then go job hands for. There.  
+Me: Okay. Then I think about another.  
+Them: Canada to no bad. As long as you often get. Company with the car, that'd be cool. Are you able to meet Jason visitors visa? Now we are hunting anymore.  
+Me: I don't know. Okay. Cool. So I'll go start.  
+Them: Advice pick UK build your. Travel history. Now like, yeah, you can trade back because you can be is very, very easy to get in. To where you came. Now. What do they apply? Canada.  
+Me: If I'll pass everything through. So maybe I think say. This. It's okay. It seems like it might work. But now I might want to make the taking the test more prominent because I doubt. They.  
+Them: Distance, right? The CTSF.  
+Me: Yeah.  
+Them: The ctSF.  
+Me: Yeah.  
+Them: Are they. I'm thinking about it as. It being. You see how you see how then the career plan. You see how the destiny, the CT is sit for the chat inside similar to WhatsApp.  
+Me: So. So. So like the. The ctf op in here like this. Right? Yeah. They think right now.  
+Them: Yeah, exactly.  
+Me: See? Because I have. I would have to rethink. This is like you already have your answer. Then you are providing it rather than come and do. But then I also.  
+Them: Yeah. We not. See.  
+Me: Yeah.  
+Them: No diastole. You see water, how WhatsApp them as ETA day for them are chat inside. Something similar. Because you go have the main thing being the card with the two cts. There won't be the take the test, the other one be enter resort, whatever cta be like enter is on it. And what type. Yeah. Then bottom sheet make you enter.  
+Me: So.  
+Them: If you go enter your tense like whichever way it is.  
+Me: So we shouldn't. Like, we shouldn't replace the message box with the. Like the way claw does it like this. Like this. Now.  
+Them: We go use the same cloth, but let's think of it as. For you say claud if cloth they try process results. Right? It will ask you a series of questions. Okay. And providing those series of questions, you use this box. Right to do that. I mean cloud know the route people out or they create some artifacts and all of that. The only time claudic create as fact is whilst you are done building and all of that, if you tap on the artifact on the charter, then you open some side panel for you.  
+Me: This side. Here.  
+Them: So like that be how me at the envision I'm. Say for anything that require input. You still like the moment you trigger that part. The main trigger that part, right? The more you trigger that part, you go provide the necessary value. So like the primary second mutation, whatever it is, it will provide that particular information within the bottom sheet. But then anything that involves like a CTA, CTA, which has to be a bit more static and all the one will appear for the chat inside. So say that one, people click through, then go do your things because we get a lot of that behavior.  
+Me: Okay. So. Yeah. Good. So now something like the test that is like a side quest like that, but compose you come and continue the chat, the chat. You know, that one is going to. It's going to be triggered differently from this because I. I personally think having this down here, just like we have the message box, it's. It's. It's a consistent experience for me. But to do the. The this one, what is it called? The values, assessments. The assessments and then those things taking.  
+Them: Yeah.  
+Me: That one shouldn't be in here. I I want.  
+Them: Exactly. That'd be how means I think about them. So let's play the experience.  
+Me: I want. To. Yes. So two approaches. Maybe, like I say, maybe. I don't know if it should be one CTA that I think it should be one. Okay. Two. Two cities. If they've already done it, they click on. Then maybe we'll give them. But if you've not done it.  
+Them: Yeah. Exactly. But you see the interesting thing, the interesting thing we say. If you're the only pair where that thing affects. Like if they've already done it. And this is why I'm saying that, right? The average student will engage with. They don't do any of these tests.  
+Me: And how long do.  
+Them: That means the average student they engage with, they don't do any of these tests. And on top of that too, we they won't make you use the latest results. What I say. Are not three months ago. But for all, you know, within that three months, the thing changed. Like. That particular value change. If they are three months ago, I'll do estp. But three months later, right now, the enfg.  
+Me: It's very normal.  
+Them: Oh, possible.  
+Me: No, no, no. Apostle maker happened to him before, but I know. I know the reason people go off the answers me are they give. I give the right answer. S.  
+Them: Hold on. You first people say you're this single flip.  
+Me: Okay. Cool.  
+Them: Yeah. So based on that, right? And that also helps us to clarify that the person has actually done the test. That be the thing. Right. So we won't do them in such a way. Says I compulsory visa. Why a cry go through? I'm again.  
+Me: So. Why. Why the mbti pair we likely say then go like take the test and then. Or they might already taking that. I mean, I think they are all the same. And I'm a brother.  
+Them: No, no, the mbti, they route you out of the app. That's what I mean. Because yeah, at the end of what happened, By the mbti, like I'm here to work on that one because it'd be complex more. But I'm able to work on that one. Make a day the app inside.  
+Me: Okay.  
+Them: Because I know if you did the app inside and we know they need any routing out. Because right now it's work for you at the end or outside. And I said. That was one of, that was actually one of the main reasons why I actually cut off the external test. Because one thing is going externally. And going to do it. You come back, I go fit and live. This one you do. I'm in the upper. We go fit track how much time you take even take the test. To get through.  
+Me: So the.  
+Them: No. If you actually take your time.  
+Me: Yeah. So the whole. So the Holland test pump weather assessment day. In this.  
+Them: Pressed interest assessment.  
+Me: Career interest assessment. Right. Where there were preference be.  
+Them: Yeah. Yeah. Work preference.  
+Me: I. Have that here. Some. Where. Here. That might be a big set of questions.  
+Them: Yeah, it make, it make like the same.  
+Me: Right.  
+Them: Career preference here. They'll be choose one out of two. One out of four. Like then one out of two. They'll give you two if you pay them. Give you two options. Then go rank. Them.  
+Me: So it's the same thing. Asks a lot of questions. I like work. As I. Follow. Proceed. Ing. Called metals.  
+Them: So yes, they take like they present two at a time. Then they rank them, they go.  
+Me: Okay. Here.  
+Them: Into. Then you go rank and get the result. Everything they know what your work preference will go down logic and things all data back.  
+Me: Can't you do that in this? I think we can do that in this.  
+Them: But you see that like does that break the experience? Because I'm thinking about.  
+Me: That'd be what they think about, too. It breaks the.  
+Them: Because right now you get like 30, 20 questions. I don't want us to be showing one of 20 for the top. That'd be the first one.  
+Me: Top.  
+Them: Then secondly, you shouldn't be able to easily navigate back antenna. I said one of the things where you do a wavy. How many are the cnbc? Everything quiz make it be full page experience.  
+Me: Okay.  
+Them: Or that bottom sheet experience. You enter that mood. It's just the complete things for that side. But the UI elements will definitely come from you guys. Then this experience right now. What you get right now. Would work for cases where you do something external. Or cases where. We provide options for you and then you take or like then turn some. We get something like that. Like the skills audit side.  
+Me: Questions. Thing. Like maybe something short small. Quick answer.  
+Them: Yes. Quick answer.  
+Me: Then. All right.  
+Them: Skills are the skills audits not actually have that.  
+Me: Cool.  
+Them: One. Day. Now they work on them. Yeah. Now they work on them. So skills are there to get that. Thing.  
+Me: If we use this component.  
+Them: Aha. Based on the work experience. These be 10 rules and responsibilities. Take the one way you apply. Because we are skills for the snail. They tell you your job title. They will generate something of that. Intian said, go to your product designer. Then the AI go generates 10 different rules and responsibilities of a product designer. Then it will pop up to you. Then tell you say select the ones where they apply. Into who selected the ones with the instead of telling you to reflect and type what you do as a product designer. We do the heavy lifting on your on your mental load. Something like that. We could need this sheet. We go first play that 10 rows and go f split them into three steps or whatever it is. But the bottom line is that someone does a selection and then we take that into the context of the AI and then continue the chat. So that one will work well for this particular design.  
+Me: Okay. Okay.  
+Them: Right? Yeah, don't work out for this particular design. Once if I get chance, do the mbti way that one will happen. Internally. Right in the app. Then.  
+Me: Approach.  
+Them: Exactly. So that one what will happen? They say we are testing. You know, I go pick it. They pick the result. You know be you for car enter cities. In my column code. What I say.  
+Me: Yeah. So.  
+Them: Because me and I got results. No. Then tell you, this be your this be your this thing. The outcome of your work. So once you complete the test on the UI like whatever UI really think about on that side. It brings you into the chat and then gives you a summary of like the result of that particular test where you do. Get. Them. Yeah. And that one too they give you control. S. One of the tests safe, one of the tests actually break the everywhere when they use money papers. They know they the values assessment. But the people that masa did down was a debut. I don't know.  
+Me: There are no fever out here even back. So them now them for count car inputs, their results.  
+Them: Then. That was the biggest friction. The one with this man work on. That was the biggest reason. So then this month they think about ways where if a router was now called test now some extension where you go through the results and things. But there were so many assumptions first of all. Web view. For extension because extensions maybe as common for mobile and even trying to get an additional extension. It be stressed. It just be stress. So I thought about it like instead of routing them out risking losing them they know will come back again. Then also then my results input I was like why we know go rather. Build the thing inside the best part about the mbti one is say. You go give it just one output in here nobody have another selector said this thing my output. Of the of the result. But that one eventually safe we go keep inside the plasma. They look at some open source ones go do them inside the platform then it will catch so on one aside. Like I get in touch with what we want to be safe. We won't build out all the logic. For the back end for jungle.  
+Me: Okay.  
+Them: But some of the things course some logics and things they like. So a bon't do that like it won't give the product team. That flexibility because it also sets us up for success in the future. If Eunice won do maybe some form of assessment whatever they can create it in such a platform, right where it connects to the Django database and things so it will make we do them. So I get in touch with them say maybe start work on all those things in the back end. So say once the UI and things the components make ready is literally hooking it to all those configurations that has had that has been done in the back end.  
+Me: Okay. That. Didn't make sense. Yeah.  
+Them: So that'd be the that be the thing that one thing though that I was thinking once the thing comes inside the charts. Right. If the CTA comes inside the chat. I'm thinking about the like a card like design like you see.  
+Me: There's going to be. A. There's going to be. A.  
+Them: A cat like design.  
+Me: Car. Everyone make it be nicer.  
+Them: Right.  
+Me: Safe. So if we can even add something that it should be beautiful. So are the reason.  
+Them: Yeah for me visual like you go see a bit distinct right then the city that'll be exactly how they look at them.  
+Me: Yeah. Q from the. Career Discovery. Thing that we did. Yeah. But the other one, the C.  
+Them: Yeah exactly. Because maybe I mbt or see something like interest like their imagery for yeah if it makes sense.  
+Me: And so from this, I don't know if you can identify all of these things, but it was like in a thread of the conversation. Sometimes they need to. Do. This, these question and answers, they are not going to be material Clarity flow.  
+Them: At the comm. On.  
+Me: Would they? Because I picked. This something like one industry or sectors appeal to you most right now. And then they have to come.  
+Them: Thing.  
+Me: And.  
+Them: Aha so that one exactly that one like this is a something like a you for select time for here.  
+Me: Yeah. Okay. Okay. Okay. Cool. Then that one. Yes.  
+Them: If I select I'm for.  
+Me: I might have to. Check again to see because mid and Claude not really do that story when I edible. But like for check C which challenges are in the career.  
+Them: Exactly exactly so at least the ones will be.  
+Me: I thought these were the challenges.  
+Them: So these were the these are the challen. Ge open omega show something so it's a it's a combination reflection be challenge type right commitment be challenge type we some of them be external test some internal tests. But so right now in the meantime I say external and internal test here. Get that artifact right if internal test.  
+Me: Holland peka, the mbtip.  
+Them: Yeah then be like. Five yeah values assessment then something but everything else like skills audits like this skills audit.  
+Me: Okay. Goog. Le does. Appear.  
+Them: Yeah exactly because skills are there to be like self reported.  
+Me: Okay. Okay. Okay.  
+Them: What I say if you self-reported and yet anything or do a part a part of the skills audit would involve a file upload. Which is you can upload your if you get a resume go free upload them if you know get it'd be cool you know the crazy part the crazy parts we the skills audit there like you see make us show you.  
+Me: Okay.  
+Them: That girl he names. Made for more. Hazel. Like the skills auditor at the cch alle. If they make sense for people pass. Because I will send you the prompt some big ass prompt right now they try slice himself. See this girl. She then she figures if she not do anything. This is the skills audit report he come up with. All this being experience experience where she never.  
+Me: Even us.  
+Them: Think about exactly she never think about right and then. She get back. You see with the skills audit so I enjoy having a guy to put together my collateral experience because honestly I've never journaled anything I had achieved big or small right so make like they do some big this thing where yes she. Come this is where she can tell me. So I wanted to say thank you for this once again so I was finding it difficult to put together my motivation letter and essay for grad school and each time I come to this for reference it made it easier. Watch the boss. Of mine and you see that that will be the only thing this girl. What be name. This girl yes tea. She tweets something. About you see. Nobody they talk about how we use school now either you be smart about after that you know they get job. Right where she say she stopped searching and started learning the school so I can't I can't they ask. We then he can't talk say she not get much skill or experience since then I said she not get job she going to data analytics but more of management and then doing NSS and then work as movender. And I was then they look at look at the jobs that they look out for. Cashier secretary meanwhile this is somebody where she did do digital marketing you know the whole idea of self worth. I have some will on CSC.  
+Me: Exactly.  
+Them: Value affair package so I tell and say the downplaying experience. But it can't toxic maybe but I really feel I don't have we are give them the destiny I drop the skills audits for make it good. Way ago. Lots of questions in the same circle still answering them. Right now say endorse so you see this with the experience. So you see the list of experience so it detoxes for that rule type the numbers that reflect what you are actually accountable for but in our case it wouldn't be type. It will be select which of them apply to the work that she did so a person will feel watched then we select one two three this one be up to six right but it could be more. By the infer I'm from the fact that it's a sales executive role in the sales there near my winner so instead of telling you to reflect so she do she do finish. Where a calm tox say I'm down now wow thanks for introducing me to this. Where it has here I asked them to. Write a review a new CV based on that but it'd be like the doc node they generate right so I say make it do for me. But atalam say so now you agree what I said when you say yes I do thank you it's an eye opener so I feel skills auditing itself a lot of people know they even take time they do.  
+Me: Yeah.  
+Them: Time they do Amity for the student it will be very important to be very key for them because hormonal experience like they know the book have experience like the first girl has experience it's you know at least that interaction from the selection standpoint at the cc it could be very applicable to that because even some of the things if we go ask you whether you get some results for or you get like it's just something that you you have because we differentiate.  
+Me: Most of that won't do me since earlier. I forget this thing, right? If I don't get time right, I go to working circles.  
+Them: Yeah so so that's that's basically it right like at least for those ones I get them say it will apply word and those industry and then those things those of questions about we get predefined let's say for choose and things. Yeah we go use this artifact.  
+Me: Okay. So from the ones that I have built so far will be the. This is the work preference. We name so I'll be referring to quiz. One, two.  
+Them: You need to share screen.  
+Me: Oh, sorry. Okay.  
+Them: Because right now you know say at a sit down self and they look at just the career clarity module. Be enough to do a lot of selling then mileage give me just that one standalone.  
+Me: Yeah, this is. Because mayor there, this is a fool. The curriculum work because it's a full-fledged thing.  
+Them: Full-fledged.  
+Me: So here from this list.  
+Them: They talk the queen.  
+Me: Yeah. So preference. Now.  
+Them: S.  
+Me: Work preference mbti Holland. These are the ones that are going to be used in the.  
+Them: Yeah.  
+Me: They are the ones I'm going to use the CTA and then the full screen or model, whichever approach. Okay, cool.  
+Them: Yeah remember now in fact all the tests so work preference.  
+Me: Which other test you have?  
+Them: Web preference Holland. Values assessment. Where preference Holland valley interest so work reference Poland values assessment click the decimacy. Click the artifact.  
+Me: These ones.  
+Them: Yeah value.  
+Me: Provide.  
+Them: Five I come give me a second.  
+Me: Okay.  
+Them: Make an open.  
+Me: Building. This was an experience. Oh,  
+Them: So.  
+Me: Very. Fine. Cool experience.  
+Them: Maybe work preference MBTI. Interest industry preferences. Right. Hobbies make I see the hobbies the obese be self report so that and then down then we type down there with the type.  
+Me: What Industries or sectors appeal to you most right now? I mean. Those ones then go type for here.  
+Them: It did we got see so that one like this right the industries be different because the industries with selection.  
+Me: Okay.  
+Them: So I think that that's what maybe be their guiding light that whenever it's a selection very predefined list. You go fake click but also if you see color my experience where even if the options you did at least things I know they be you. Go fix type. Now the complication comes in when you have.  
+Me: I did. I did. This guy. The quiz. Here.  
+Them: Aha exactly exactly now the complication they come in if the list be like 16.  
+Me: So. 1669.  
+Them: 16 list into any one of it thinking about that but.  
+Me: Or 16. Disc.  
+Them: 16 options.  
+Me: Options here.  
+Them: Yes. Yeah like the industry like this the industry be predefined list of 16 options. So those design nuances. Were. Yeah you go fit you go guide on that one there.  
+Me: The self report is for.  
+Them: Then.  
+Me: You. You go if you write that list for me. Is it in the documents? Because me the way.  
+Them: All data documents inside. Of.  
+Me: They do them and how they make cloth extract like the main info for me. Then we go brainstorm on how it flows.  
+Them: How did they flow all the documents inside so the list the list for that.  
+Me: Okay.  
+Them: Be what you get for there so the mbti the work preference the interest test the values assessment. Did they get.  
+Me: Here.  
+Them: Mba mandeep pivots? So. Confirm bb.  
+Me: Okay. So I know what I go do. I go go through the documents again for each of each of them.  
+Them: I will type I will type for you I go type for you today I will add like the bit of context we say it will take add your like if they even query the cuz only the mbtib external test.  
+Me: Yeah.  
+Them: The rest be.  
+Me: So. If you belong, long. Form like questionnaire. We now therefore take the test like we are saying. So I go nowhere that then if it's a short quick three questions answer three selections answer. There are no seduce ones good. But I don't know if what I'm trying to figure out is where are you in this list that we have here? As. I've been identified. Which ones of these bothy be go stay in the chat and which one of these could be here if they all need to be in the chart today. Okay. I know that they all need.  
+Them: No so that'd be what are the what make you use like the the rule of thumb we should use is that all the tests. Would be in the chats. Like the trigger to the test will be in the chat right so the test before tests mbti. Coland which is the interest assessment values assessment the values no data select inside. Right the values assess value this is inside and then so mbti Holland values assessment. And bti. Work preference yes and work preference. So the word preference we do I'm quiz not high the only thing you know they be the values assessment.  
+Me: Okay.  
+Them: The link did it leadership page top so those four tests those four tests kai say the only one way you could do them outside the app entirely be mbti.  
+Me: Yeah. Okay.  
+Them: The rest you could do them inside the app but the the CTA has to be in the chat. So that when I click through then it will open that side by the time I'm done it will save the state too as well so anytime I will come back into the app I won't continue something ego say I do a Midway way a car may back into the upper it will pop up the destiny midway maker continue. As I say make a continuity that experience good day now anything outside of that because some of the things like for example opportunities and threats right if you watch their destinies are opportunities and threats. Seven questions they make like survey so like which countries would you like to work in? That might be multi select up to five countries where do you prefer to work remote in an office hybrid. You they get the point how comfortable are you with career risks now so all those ones like this it'll be literally the the experience where you build with the bottom sheets coming up with a selection the quiz type I think because yes.  
+Me: Grace. Type. Yeah. Okay.  
+Them: All of like this will literally how a good day.  
+Me: Okay.  
+Them: Like.  
+Me: Okay.  
+Them: It gets so at least those four ones there you not say the test the city for did the chat inside everything else will most likely go through this or in a case where it's a simple answer question and answer that one will be literally texting like it wouldn't be with any of these artifacts.  
+Me: All right.  
+Them: Yeah so I will talk plus a book because I'll make we prepare. Back end myself yeah we just go hook up. Just we booked them to the front end.  
+Me: These three deadline to sort this thing out in the media. I have a call to later at seven with Joshua. He said onboarding. What make you look at something.  
+Them: Okay. So one two things in our where this guy where. Every day.  
+Me: All in all portfolio? To me. I'll make free. So the whole point is to do this heavy lifting for all of them. Even Eugene. So that I have these things. Then subsequent.  
+Them: Everything else will fall in place.  
+Me: Yeah. So let me also doubt for them.  
+Them: Okay okay that'd be cool all right.  
+Me: All right, so what I'm saying is I will finish. I have to finish these by end of this week. Then what's the name there? I use one. I will start the conversation with eyes again and see if I can build down this a lot.  
+Them: Yeah. Make you prioritize this one we finished and then we'll do that usual.  
+Me: Okay. All right.  
+Them: Okay.  
+Me: Okay. 
