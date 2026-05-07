@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { Button, Icon, springs, cn } from "@mande/ui"
 import {
@@ -35,13 +35,16 @@ function QuestionScreen({
   onExit: () => void
 }) {
   const [selected, setSelected] = useState<WorkStyleLetter | null>(null)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const question = QUESTIONS[currentQuestion]
   const progressPct = Math.round((currentQuestion / TOTAL_QUESTIONS) * 100)
+
+  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
 
   const handleSelect = (letter: WorkStyleLetter) => {
     if (selected !== null) return
     setSelected(letter)
-    setTimeout(() => {
+    timerRef.current = setTimeout(() => {
       setSelected(null)
       onAnswer(letter)
     }, 380)
@@ -215,7 +218,7 @@ function ResultScreen({
           onClick={onBackToChat}
           className="flex-[2]"
         >
-          Back to chat
+          Back to chat →
         </Button>
       </div>
     </motion.div>
