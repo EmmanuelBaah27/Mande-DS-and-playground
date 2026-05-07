@@ -46,10 +46,10 @@ const ARTIFACT_CONFIGS: Array<{ label: string; payload: InjectableChallenge }> =
     },
   },
   {
-    label: "Quiz",
+    label: "Work preference",
     payload: {
       type: "self-report",
-      artifactType: "quiz",
+      artifactType: "work-preference",
       prompt: "Work preference quiz",
       inputType: "confirm",
     },
@@ -83,12 +83,52 @@ const ARTIFACT_CONFIGS: Array<{ label: string; payload: InjectableChallenge }> =
     },
   },
   {
-    label: "Self-report",
+    label: "Interests (self-reported)",
     payload: {
       type: "self-report",
-      artifactType: "self-report",
-      prompt: "What industries or sectors appeal to you most right now?",
+      artifactType: "interests",
+      prompt: "Which industries or sectors appeal to you most? List your hobbies and the things you obsess about.",
+      inputType: "list",
+      placeholder: "e.g. Fintech, Creative writing, Football analytics…",
+    },
+  },
+  {
+    label: "Values Assessment",
+    payload: {
+      type: "self-report",
+      artifactType: "values",
+      prompt: "Take the values assessment",
+      inputType: "confirm",
+    },
+  },
+  {
+    label: "Opportunities",
+    payload: {
+      type: "self-report",
+      artifactType: "opportunities",
+      prompt: "Where do you want to work? What kind of environment suits you?",
+      inputType: "list",
+      placeholder: "e.g. Ghana, Remote, Open to relocation, Hybrid…",
+    },
+  },
+  {
+    label: "Threats",
+    payload: {
+      type: "self-report",
+      artifactType: "threats",
+      prompt: "How comfortable are you with career risk? What constraints do you face?",
+      inputType: "list",
+      placeholder: "e.g. Financial dependants, Low risk tolerance, Limited savings…",
+    },
+  },
+  {
+    label: "Skills audit",
+    payload: {
+      type: "self-report",
+      artifactType: "skills-audit",
+      prompt: "Paste your resume, LinkedIn summary, or describe your skills and experience so far.",
       inputType: "textarea",
+      placeholder: "Paste resume content or describe your skills, certifications, and coursework…",
     },
   },
   {
@@ -125,7 +165,7 @@ export function DevTriggerPanel({ onInject, placement = "floating" }: DevTrigger
 
   return (
     <div className={cn("z-50 shrink-0", isHeader ? "relative" : "fixed top-4 right-4")}>
-      <DropdownMenu>
+      <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
           <Button
             variant="secondary"
@@ -140,7 +180,7 @@ export function DevTriggerPanel({ onInject, placement = "floating" }: DevTrigger
             Artifacts
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-52">
+        <DropdownMenuContent align="end" className="w-52" onCloseAutoFocus={(e) => e.preventDefault()}>
           <DropdownMenuLabel>
             Inject artifact (dev)
           </DropdownMenuLabel>
