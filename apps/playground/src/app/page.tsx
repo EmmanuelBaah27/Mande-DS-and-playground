@@ -7,10 +7,12 @@ import { motion, AnimatePresence } from "motion/react"
 import { Icon, AppSidebar, cn } from "@mande/ui"
 import type { PillarState, CurriculumSectionConfig } from "@mande/ui"
 import { ChatThread } from "../components/chat-thread"
+import { ValuesAssessmentQuiz } from "../components/values-assessment-quiz"
 import { WelcomeState } from "../components/welcome-state"
+import { CurriculumView } from "../components/curriculum-view"
 import { DevTriggerPanel, type InjectableChallenge } from "../components/dev-trigger-panel"
 import { INITIAL_SESSIONS, CURRICULUM_MODULES, createChallengeData } from "../components/chat-data"
-import type { ChatSession, ChallengeResponseType } from "../components/chat-data"
+import type { ChatSession, ChallengeResponseType, Message } from "../components/chat-data"
 
 // ─── Editable session title ───────────────────────────────────────────────────
 
@@ -75,7 +77,7 @@ function EditableTitle({
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-type View = "welcome" | "thread"
+type View = "welcome" | "thread" | "curriculum"
 
 const NAV_ITEMS = [
   { id: "new-chat", label: "New chat", icon: <Icon name="IconBubbleSparkle" size={20} /> },
@@ -84,27 +86,23 @@ const NAV_ITEMS = [
 ]
 
 function getCurriculumSection(sessions: ChatSession[]): CurriculumSectionConfig {
-  const curriculumSession = sessions.find((session) => session.mode === "curriculum")
-  const totalModules = CURRICULUM_MODULES.length
-  const activeModuleIndex = Math.max(
+  const curriculumSession = sessions.find((s) => s.mode === "curriculum")
+  const activeModule = CURRICULUM_MODULES[0]
+  const totalLessons = activeModule.lessons.length
+  const activeLessonIndex = Math.max(
     0,
-    Math.min(totalModules - 1, (curriculumSession?.progress?.pillarIndex ?? 1) - 1)
+    Math.min(totalLessons - 1, (curriculumSession?.progress?.pillarIndex ?? 1) - 1)
   )
 
-  const pillars = CURRICULUM_MODULES.map((module, index) => {
+  const pillars = activeModule.lessons.map((lesson, index) => {
     let state: PillarState = "locked"
-    if (index < activeModuleIndex) state = "completed"
-    if (index === activeModuleIndex) state = "active"
-
-    return {
-      id: module.id,
-      label: module.label,
-      state,
-    }
+    if (index < activeLessonIndex) state = "completed"
+    if (index === activeLessonIndex) state = "active"
+    return { id: lesson.id, label: lesson.label, state }
   })
 
   return {
-    label: "Career clarity",
+    label: activeModule.label,
     progress: "Active",
     pillars,
   }
@@ -124,6 +122,8 @@ export default function ChatPage() {
   const [sessions, setSessions] = useState<ChatSession[]>(INITIAL_SESSIONS)
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
   const [view, setView] = useState<View>("welcome")
+  const [valuesOpen, setValuesOpen] = useState(false)
+  const [activeValuesMessageId, setActiveValuesMessageId] = useState<string | null>(null)
 
   // ─── Sidebar collapse state ───────────────────────────────────────────────
   const [collapsed, setCollapsed] = useState(false)
@@ -163,7 +163,10 @@ export default function ChatPage() {
 
   // ─── Navigation ──────────────────────────────────────────────────────────
   const activeSession = sessions.find((s) => s.id === activeSessionId) ?? null
-  const activeItem = view === "welcome" ? "new-chat" : (activeSessionId ?? undefined)
+  const activeItem =
+    view === "welcome" ? "new-chat" :
+    view === "curriculum" ? "curriculum" :
+    (activeSessionId ?? undefined)
   const openSessions = sessions.filter((s) => s.mode === "open")
 
   const chatGroups = openSessions.length > 0
@@ -180,7 +183,11 @@ export default function ChatPage() {
       router.push("/overview")
       return
     }
-    if (id === "curriculum") return
+    if (id === "curriculum") {
+      setView("curriculum")
+      setActiveSessionId(null)
+      return
+    }
 
     setActiveSessionId(id)
     setView("thread")
@@ -216,14 +223,51 @@ export default function ChatPage() {
     )
   }
 
+  const handleOpenValues = (messageId: string) => {
+    setActiveValuesMessageId(messageId)
+    setValuesOpen(true)
+  }
+
+  const handleValuesComplete = (topCategories: string[]) => {
+    setValuesOpen(false)
+    if (!activeValuesMessageId || !activeSessionId) {
+      setActiveValuesMessageId(null)
+      return
+    }
+    const summary = topCategories.join(" · ")
+    const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    setSessions((prev) =>
+      prev.map((session) => {
+        if (session.id !== activeSessionId) return session
+        const updatedMessages = session.messages.map((msg) =>
+          msg.id === activeValuesMessageId && msg.challenge
+            ? { ...msg, challenge: createChallengeData({ ...msg.challenge, response: summary }) }
+            : msg
+        )
+        const followUp: Message = {
+          id: `artifact-note-${Date.now()}`,
+          role: "assistant",
+          content: "Good. Your non-negotiables are in. Those shape which paths stay on the table and which come off it.",
+          timestamp,
+        }
+        return { ...session, messages: [...updatedMessages, followUp] }
+      })
+    )
+    setActiveValuesMessageId(null)
+  }
+
   const toResponseType = (artifactType: InjectableChallenge["artifactType"]): ChallengeResponseType => {
     switch (artifactType) {
       case "reflection":
       case "commitment":
         return "reflection"
-      case "quiz":
+      case "work-preference":
       case "holland":
-      case "self-report":
+      case "interests":
+      case "values":
+      case "opportunities":
+      case "threats":
+      case "skills-audit":
         return "structured_list"
       case "mbti":
       case "research-action":
@@ -288,6 +332,15 @@ export default function ChatPage() {
     user: { name: "Angela", initials: "A" },
   }
 
+  if (valuesOpen) {
+    return (
+      <ValuesAssessmentQuiz
+        onComplete={handleValuesComplete}
+        onExit={() => setValuesOpen(false)}
+      />
+    )
+  }
+
   return (
     <div className="flex h-screen bg-neutral-50 overflow-hidden relative">
 
@@ -330,6 +383,9 @@ export default function ChatPage() {
 
           {/* Right zone — bg-neutral-50 masks content scrolling under the header */}
           <div className="flex-1 bg-neutral-50 flex items-center px-3 gap-3 min-w-0 pointer-events-auto">
+            {view === "curriculum" && (
+              <span className="text-base-regular text-neutral-900 px-1">Curriculum</span>
+            )}
             {view === "thread" && activeSession && (
               <EditableTitle
                 title={activeSession.title}
@@ -397,7 +453,9 @@ export default function ChatPage() {
         transition={{ duration: 0.22, ease: EASE_OUT }}
         style={{ paddingTop: HEADER_H }}
       >
-        {view === "welcome" || !activeSession ? (
+        {view === "curriculum" ? (
+          <CurriculumView />
+        ) : view === "welcome" || !activeSession ? (
           <WelcomeState
             userName="Angela"
             resumeSession={sessions.find((s) => s.mode === "curriculum")}
@@ -409,6 +467,7 @@ export default function ChatPage() {
             sessions={sessions}
             activeSessionId={activeSessionId!}
             onSessionsChange={setSessions}
+            onOpenValues={handleOpenValues}
           />
         )}
       </motion.div>
