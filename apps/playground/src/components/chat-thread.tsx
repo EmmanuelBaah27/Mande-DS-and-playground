@@ -29,6 +29,10 @@ import {
   type SessionMode,
   type Message,
 } from "./chat-data"
+import { ChatAssessmentCard } from "./chat-assessment-card"
+import { WorkPreferenceQuiz } from "./work-preference-quiz"
+import { useWorkPreferenceState } from "../lib/assessments/use-work-preference-state"
+import { TOTAL_QUESTIONS, resultLabel, resultSubtitle } from "../lib/assessments/work-preference-data"
 
 
 type ArtifactFlowStep = {
@@ -61,12 +65,12 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
       challengeId: "artifact-quiz-1",
       lessonId: "discovering-your-options-day-1",
       responseType: "structured_list",
-      artifactType: "quiz",
+      artifactType: "work-preference",
       prompt: "Work preference quiz",
       inputType: "confirm",
     },
   },
-  quiz: {
+  "work-preference": {
     id: "artifact-mbti-1",
     assistant:
       "Solid. Let's add your MBTI so we can triangulate this with your preference signal.",
@@ -102,9 +106,25 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
     assistant:
       "Good. That's saved — we can sharpen it further once you've had a chance to send it.",
   },
-  "self-report": {
-    id: "artifact-self-report-done",
-    assistant: "Got it. That context is noted.",
+  interests: {
+    id: "artifact-interests-done",
+    assistant: "Got it. Those are noted — industries, hobbies, and what you obsess about all feed into the picture.",
+  },
+  values: {
+    id: "artifact-values-done",
+    assistant: "Good. Your non-negotiables are in. Those shape which paths stay on the table and which come off it.",
+  },
+  opportunities: {
+    id: "artifact-opportunities-done",
+    assistant: "Got it. Geography and environment preferences are noted.",
+  },
+  threats: {
+    id: "artifact-threats-done",
+    assistant: "Constraints captured. Knowing your limits is half the work.",
+  },
+  "skills-audit": {
+    id: "artifact-skills-audit-done",
+    assistant: "Skills noted. That gives us the raw material to match against real paths.",
   },
   "research-action": {
     id: "artifact-research-action-done",
@@ -175,16 +195,53 @@ function MessageBubble({
   message,
   isActiveArtifact,
   onArtifactComplete,
+  onOpenWorkPreferenceQuiz,
+  workPreferenceCurrentQuestion,
 }: {
   message: Message
   isActiveArtifact: boolean
   onArtifactComplete: (messageId: string, summary: string) => void
+  onOpenWorkPreferenceQuiz: (messageId: string) => void
+  workPreferenceCurrentQuestion: number
 }) {
   if (message.role === "user") {
     return <UserBubble content={message.content} />
   }
 
   if (message.challenge) {
+    if (message.challenge.artifactType === "work-preference") {
+      const challengeState = selectChallengeState(message.challenge)
+      if (challengeState.isCompleted) {
+        const response = challengeState.displayResponse ?? ""
+        const sepIdx = response.indexOf(" · ")
+        const label = sepIdx !== -1 ? response.slice(0, sepIdx) : response
+        const subtitle = sepIdx !== -1 ? response.slice(sepIdx + 3) : undefined
+        return (
+          <ChatAssessmentCard
+            status="completed"
+            totalQuestions={TOTAL_QUESTIONS}
+            resultLabel={label}
+            resultSubtitle={subtitle}
+            resultIcon="🚀"
+            onStart={() => onOpenWorkPreferenceQuiz(message.id)}
+            onContinue={() => onOpenWorkPreferenceQuiz(message.id)}
+            onRetake={() => onOpenWorkPreferenceQuiz(message.id)}
+          />
+        )
+      }
+      const cardStatus = workPreferenceCurrentQuestion > 0 ? "in-progress" : "not-started"
+      return (
+        <ChatAssessmentCard
+          status={cardStatus}
+          totalQuestions={TOTAL_QUESTIONS}
+          currentQuestion={workPreferenceCurrentQuestion}
+          onStart={() => onOpenWorkPreferenceQuiz(message.id)}
+          onContinue={() => onOpenWorkPreferenceQuiz(message.id)}
+          onRetake={() => onOpenWorkPreferenceQuiz(message.id)}
+        />
+      )
+    }
+
     if (message.challenge.artifactType) {
       if (!selectChallengeState(message.challenge).isCompleted) return null
       return <ArtifactSubmittedState challenge={message.challenge} />
@@ -207,10 +264,14 @@ function AssistantGroupRenderer({
   messages,
   activeArtifactId,
   onArtifactComplete,
+  onOpenWorkPreferenceQuiz,
+  workPreferenceCurrentQuestion,
 }: {
   messages: Message[]
   activeArtifactId: string | null
   onArtifactComplete: (messageId: string, summary: string) => void
+  onOpenWorkPreferenceQuiz: (messageId: string) => void
+  workPreferenceCurrentQuestion: number
 }) {
   if (messages.length === 1) {
     return (
@@ -218,6 +279,8 @@ function AssistantGroupRenderer({
         message={messages[0]}
         isActiveArtifact={messages[0].id === activeArtifactId}
         onArtifactComplete={onArtifactComplete}
+        onOpenWorkPreferenceQuiz={onOpenWorkPreferenceQuiz}
+        workPreferenceCurrentQuestion={workPreferenceCurrentQuestion}
       />
     )
   }
@@ -229,6 +292,8 @@ function AssistantGroupRenderer({
           message={msg}
           isActiveArtifact={msg.id === activeArtifactId}
           onArtifactComplete={onArtifactComplete}
+          onOpenWorkPreferenceQuiz={onOpenWorkPreferenceQuiz}
+          workPreferenceCurrentQuestion={workPreferenceCurrentQuestion}
         />
       ))}
     </div>
@@ -549,6 +614,9 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   const [challengeError, setChallengeError] = useState<string | null>(null)
   const [showTopScrollFade, setShowTopScrollFade] = useState(false)
   const [isAtBottom, setIsAtBottom] = useState(true)
+  const quiz = useWorkPreferenceState()
+  const [quizOpen, setQuizOpen] = useState(false)
+  const [quizMessageId, setQuizMessageId] = useState<string | null>(null)
   const isAtBottomRef = useRef(true)
   const sessionInitializedRef = useRef<string | null>(null)
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
@@ -657,6 +725,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   const activeArtifactMsg =
     lastMsg?.role === "assistant" &&
     lastMsg.challenge?.artifactType &&
+    lastMsg.challenge?.artifactType !== "work-preference" &&
     !selectChallengeState(lastMsg.challenge).isCompleted
       ? lastMsg
       : null
@@ -814,84 +883,123 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
     )
   }
 
+  const handleOpenWorkPreferenceQuiz = (messageId: string) => {
+    if (quiz.phase === "idle") quiz.start()
+    setQuizMessageId(messageId)
+    setQuizOpen(true)
+  }
+
+  const handleQuizExit = () => {
+    quiz.exit()
+    setQuizOpen(false)
+  }
+
+  const handleQuizBackToChat = () => {
+    if (quizMessageId && quiz.result) {
+      handleArtifactComplete(quizMessageId, `${resultLabel(quiz.result)} · ${resultSubtitle(quiz.result)}`)
+    }
+    quiz.reset()
+    setQuizOpen(false)
+  }
+
+  const handleQuizRestart = () => {
+    quiz.restart()
+  }
+
   return (
     <div className="flex-1 flex flex-col min-h-0">
-      <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto min-h-0">
-        {showTopScrollFade && (
-          <div className="pointer-events-none sticky top-0 left-0 right-0 h-14 bg-gradient-to-b from-neutral-50 to-transparent z-10" />
-        )}
-        <div ref={scrollOuterRef} className="pt-10 pb-6 px-4">
-          <div className="max-w-3xl mx-auto flex flex-col gap-10">
-            {groups.map((group) => (
-              <div
-                key={group.key}
-                data-message-id={group.kind === "user" ? group.message.id : group.messages[0].id}
-                data-message-role={group.kind}
-              >
-                {group.kind === "user" ? (
-                  <UserBubble content={group.message.content} />
-                ) : (
-                  <AssistantGroupRenderer
-                    messages={group.messages}
-                    activeArtifactId={activeArtifactMsg?.id ?? null}
-                    onArtifactComplete={handleArtifactComplete}
-                  />
-                )}
-              </div>
-            ))}
-            <div ref={sentinelRef} className="h-px" aria-hidden />
-          </div>
-        </div>
-        {!activeChallenge && !activeArtifactMsg && (
-          <div className="pointer-events-none sticky bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-neutral-50 to-transparent" />
-        )}
-        <AnimatePresence>
-          {!isAtBottom && activeSession.messages.at(-1)?.role === "assistant" && !activeChallenge && !activeArtifactMsg && (
-            <motion.div
-              key="scroll-to-bottom"
-              initial={{ opacity: 0, y: 6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 6 }}
-              transition={{ duration: 0.15 }}
-              className="pointer-events-none sticky bottom-4 left-0 right-0 flex justify-center z-10"
-            >
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => {
-                  const container = scrollContainerRef.current
-                  if (!container) return
-                  easeOutScroll(container, container.scrollHeight - container.clientHeight)
-                  isAtBottomRef.current = true
-                  setIsAtBottom(true)
-                }}
-                icon={<Icon name="IconArrowDown" size={16} aria-hidden />}
-                className="pointer-events-auto rounded-full shadow-sm gap-1.5"
-              >
-                Latest message
-              </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-      {activeArtifactMsg ? (
-        <ChatActiveArtifactFooterShell>
-          <ChatActiveArtifactControls
-            challenge={activeArtifactMsg.challenge!}
-            messageId={activeArtifactMsg.id}
-            onArtifactComplete={handleArtifactComplete}
-          />
-        </ChatActiveArtifactFooterShell>
-      ) : (
-      <div className="shrink-0">
-        <MessageInput
-          onSend={handleSend}
-          mode={activeSession.mode}
-          activeChallenge={activeChallenge}
-          onChallengeSubmit={handleChallengeSubmit}
-          challengeError={challengeError}
+      {quizOpen && (quiz.phase === "quiz" || quiz.phase === "result") ? (
+        <WorkPreferenceQuiz
+          phase={quiz.phase}
+          currentQuestion={quiz.currentQuestion}
+          result={quiz.result}
+          onAnswer={quiz.answer}
+          onRestart={handleQuizRestart}
+          onExit={handleQuizExit}
+          onBackToChat={handleQuizBackToChat}
         />
-      </div>
+      ) : (
+        <>
+          <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto min-h-0">
+            {showTopScrollFade && (
+              <div className="pointer-events-none sticky top-0 left-0 right-0 h-14 bg-gradient-to-b from-neutral-50 to-transparent z-10" />
+            )}
+            <div ref={scrollOuterRef} className="pt-10 pb-6 px-4">
+              <div className="max-w-3xl mx-auto flex flex-col gap-10">
+                {groups.map((group) => (
+                  <div
+                    key={group.key}
+                    data-message-id={group.kind === "user" ? group.message.id : group.messages[0].id}
+                    data-message-role={group.kind}
+                  >
+                    {group.kind === "user" ? (
+                      <UserBubble content={group.message.content} />
+                    ) : (
+                      <AssistantGroupRenderer
+                        messages={group.messages}
+                        activeArtifactId={activeArtifactMsg?.id ?? null}
+                        onArtifactComplete={handleArtifactComplete}
+                        onOpenWorkPreferenceQuiz={handleOpenWorkPreferenceQuiz}
+                        workPreferenceCurrentQuestion={quiz.currentQuestion}
+                      />
+                    )}
+                  </div>
+                ))}
+                <div ref={sentinelRef} className="h-px" aria-hidden />
+              </div>
+            </div>
+            {!activeChallenge && !activeArtifactMsg && (
+              <div className="pointer-events-none sticky bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-neutral-50 to-transparent" />
+            )}
+            <AnimatePresence>
+              {!isAtBottom && activeSession.messages.at(-1)?.role === "assistant" && !activeChallenge && !activeArtifactMsg && (
+                <motion.div
+                  key="scroll-to-bottom"
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 6 }}
+                  transition={{ duration: 0.15 }}
+                  className="pointer-events-none sticky bottom-4 left-0 right-0 flex justify-center z-10"
+                >
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => {
+                      const container = scrollContainerRef.current
+                      if (!container) return
+                      easeOutScroll(container, container.scrollHeight - container.clientHeight)
+                      isAtBottomRef.current = true
+                      setIsAtBottom(true)
+                    }}
+                    icon={<Icon name="IconArrowDown" size={16} aria-hidden />}
+                    className="pointer-events-auto rounded-full shadow-sm gap-1.5"
+                  >
+                    Latest message
+                  </Button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+          {activeArtifactMsg ? (
+            <ChatActiveArtifactFooterShell>
+              <ChatActiveArtifactControls
+                challenge={activeArtifactMsg.challenge!}
+                messageId={activeArtifactMsg.id}
+                onArtifactComplete={handleArtifactComplete}
+              />
+            </ChatActiveArtifactFooterShell>
+          ) : (
+            <div className="shrink-0">
+              <MessageInput
+                onSend={handleSend}
+                mode={activeSession.mode}
+                activeChallenge={activeChallenge}
+                onChallengeSubmit={handleChallengeSubmit}
+                challengeError={challengeError}
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   )
