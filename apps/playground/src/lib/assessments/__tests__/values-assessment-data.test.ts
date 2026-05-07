@@ -1,7 +1,6 @@
 import test from "node:test"
 import assert from "node:assert/strict"
 
-// @ts-ignore — node --experimental-strip-types requires the .ts extension at runtime
 import {
   CATEGORIES,
   QUESTIONS,
@@ -9,6 +8,7 @@ import {
   QUESTIONS_BY_CATEGORY,
   computeCategoryScores,
   computeTopCategories,
+// @ts-ignore — node --experimental-strip-types requires the .ts extension at runtime
 } from "../values-assessment-data.ts"
 
 test("has exactly 10 categories", () => {

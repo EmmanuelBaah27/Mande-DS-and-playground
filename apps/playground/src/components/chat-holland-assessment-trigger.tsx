@@ -1,49 +1,78 @@
 "use client"
 
 import * as React from "react"
-import { Button, Card, Icon } from "@mande/ui"
+import { HOLLAND_QUESTIONS, HOLLAND_TYPES } from "./holland-data"
+import { useHollandAssessment } from "./use-holland-assessment"
 import { HollandAssessmentOverlay } from "./holland-assessment-overlay"
+import { ChatAssessmentCard } from "./chat-assessment-card"
 
 export interface ChatHollandAssessmentTriggerProps {
-  onSubmit: (code: string) => void
-  badge?: React.ReactNode
+  isCompleted: boolean
+  completedCode?: string
+  onComplete: (code: string) => void
 }
 
-export function ChatHollandAssessmentTrigger({ onSubmit, badge }: ChatHollandAssessmentTriggerProps) {
+export function ChatHollandAssessmentTrigger({
+  isCompleted,
+  completedCode,
+  onComplete,
+}: ChatHollandAssessmentTriggerProps) {
+  const { state, begin, answer, back, exit, retake } = useHollandAssessment()
   const [overlayOpen, setOverlayOpen] = React.useState(false)
+
+  const handleOpen = () => setOverlayOpen(true)
+
+  const handleRetake = () => {
+    retake()
+    setOverlayOpen(true)
+  }
+
+  const handleClose = () => setOverlayOpen(false)
 
   const handleComplete = (code: string) => {
     setOverlayOpen(false)
-    onSubmit(code)
+    onComplete(code)
   }
+
+  const cardStatus = isCompleted
+    ? "completed"
+    : state.screen === "question"
+    ? "in-progress"
+    : "not-started"
+
+  const resultSubtitle = completedCode
+    ? completedCode
+        .split("")
+        .map((l) => HOLLAND_TYPES[l as keyof typeof HOLLAND_TYPES]?.name)
+        .filter(Boolean)
+        .join(" · ")
+    : undefined
 
   return (
     <>
-      <Card surface="elevated" className="flex flex-col gap-4 overflow-hidden w-full">
-        <div className="px-5 pt-4 flex flex-col gap-3">
-          {badge && <div>{badge}</div>}
-          <div className="flex flex-col gap-1">
-            <p className="text-lg-medium text-foreground">What are your career interests?</p>
-            <p className="text-base-regular text-muted-foreground">42 questions · ~10 mins</p>
-          </div>
-        </div>
-
-        <div className="px-5 pb-4 flex justify-end">
-          <Button
-            variant="primary"
-            icon={<Icon name="IconArrowRight" size={16} />}
-            iconPosition="right"
-            onClick={() => setOverlayOpen(true)}
-          >
-            Take the assessment
-          </Button>
-        </div>
-      </Card>
-
+      <ChatAssessmentCard
+        title={isCompleted ? (completedCode ?? "Holland Code") : "Career Interest"}
+        icon="🧭"
+        duration="42 questions · ~10 min"
+        description="Discover your top career interest types using the Holland RIASEC framework."
+        status={cardStatus}
+        totalQuestions={HOLLAND_QUESTIONS.length}
+        currentQuestion={state.currentIndex}
+        resultSubtitle={resultSubtitle}
+        onStart={handleOpen}
+        onContinue={handleOpen}
+        onRetake={handleRetake}
+      />
       {overlayOpen && (
         <HollandAssessmentOverlay
+          state={state}
+          begin={begin}
+          answer={answer}
+          back={back}
+          exit={exit}
+          retake={retake}
           onComplete={handleComplete}
-          onClose={() => setOverlayOpen(false)}
+          onClose={handleClose}
         />
       )}
     </>

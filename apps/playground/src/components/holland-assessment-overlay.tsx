@@ -6,8 +6,7 @@ import { Button, Icon } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
 import { HOLLAND_QUESTIONS, HOLLAND_TYPES } from "./holland-data"
 import type { HollandType, LikertValue } from "./holland-data"
-import { useHollandAssessment } from "./use-holland-assessment"
-import type { HollandResult } from "./use-holland-assessment"
+import type { HollandResult, HollandAssessmentState } from "./use-holland-assessment"
 
 // ─── Intro screen ─────────────────────────────────────────────────────────────
 
@@ -330,12 +329,26 @@ function HollandResultsScreen({
 // ─── Overlay ──────────────────────────────────────────────────────────────────
 
 export interface HollandAssessmentOverlayProps {
+  state: HollandAssessmentState
+  begin: () => void
+  answer: (value: LikertValue) => void
+  back: () => void
+  exit: () => void
+  retake: () => void
   onComplete: (code: string) => void
   onClose: () => void
 }
 
-export function HollandAssessmentOverlay({ onComplete, onClose }: HollandAssessmentOverlayProps) {
-  const { state, begin, answer, back, exit, retake } = useHollandAssessment()
+export function HollandAssessmentOverlay({
+  state,
+  begin,
+  answer,
+  back,
+  exit,
+  retake,
+  onComplete,
+  onClose,
+}: HollandAssessmentOverlayProps) {
   const [mounted, setMounted] = React.useState(false)
 
   React.useEffect(() => {

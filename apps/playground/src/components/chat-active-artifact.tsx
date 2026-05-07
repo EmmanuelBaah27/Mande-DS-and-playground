@@ -7,7 +7,6 @@ import { ChatReflectionInput } from "./chat-reflection-input"
 import { ChatQuizCard } from "./chat-quiz-card"
 import { ChatCommitmentCard } from "./chat-commitment-card"
 import { ChatMBTIPicker } from "./chat-mbti-picker"
-import { ChatHollandAssessmentTrigger } from "./chat-holland-assessment-trigger"
 import { ChatCraftInput } from "./chat-craft-input"
 import { ChatSelfReportInput } from "./chat-self-report-input"
 import { ChatResearchActionInput } from "./chat-research-action-input"
@@ -232,13 +231,6 @@ export function ChatActiveArtifactControls({
         <ChatMBTIPicker
           onSubmit={(type) => done(type)}
           badge={<ArtifactBadge type="mbti" />}
-        />
-      )
-    case "holland":
-      return (
-        <ChatHollandAssessmentTrigger
-          onSubmit={(code) => done(code)}
-          badge={<ArtifactBadge type="holland" />}
         />
       )
     case "craft":

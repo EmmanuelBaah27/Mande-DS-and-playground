@@ -29,11 +29,9 @@ import {
   type SessionMode,
   type Message,
 } from "./chat-data"
-import { ChatAssessmentCard } from "./chat-assessment-card"
 import { ValuesArtifactCard } from "./values-assessment-quiz"
-import { WorkPreferenceQuiz } from "./work-preference-quiz"
-import { useWorkPreferenceState } from "../lib/assessments/use-work-preference-state"
-import { TOTAL_QUESTIONS, STYLES, resultLabel, resultSubtitle } from "../lib/assessments/work-preference-data"
+import { ChatWorkPreferenceAssessmentTrigger } from "./chat-work-preference-assessment-trigger"
+import { ChatHollandAssessmentTrigger } from "./chat-holland-assessment-trigger"
 
 
 type ArtifactFlowStep = {
@@ -196,15 +194,11 @@ function MessageBubble({
   message,
   isActiveArtifact,
   onArtifactComplete,
-  onOpenWorkPreferenceQuiz,
-  workPreferenceCurrentQuestion,
   onOpenValues,
 }: {
   message: Message
   isActiveArtifact: boolean
   onArtifactComplete: (messageId: string, summary: string) => void
-  onOpenWorkPreferenceQuiz: (messageId: string) => void
-  workPreferenceCurrentQuestion: number
   onOpenValues?: (messageId: string) => void
 }) {
   if (message.role === "user") {
@@ -217,40 +211,21 @@ function MessageBubble({
     }
     if (message.challenge.artifactType === "work-preference") {
       const challengeState = selectChallengeState(message.challenge)
-      if (challengeState.isCompleted) {
-        const response = challengeState.displayResponse ?? ""
-        const sepIdx = response.indexOf(" · ")
-        const label = sepIdx !== -1 ? response.slice(0, sepIdx) : response
-        const subtitle = sepIdx !== -1 ? response.slice(sepIdx + 3) : undefined
-        const icon = Object.values(STYLES).find((s) => label.startsWith(s.name))?.icon ?? "🎯"
-        return (
-          <ChatAssessmentCard
-            title={label}
-            icon={icon}
-            duration={`${TOTAL_QUESTIONS} choices · ~3 min`}
-            description="Discover how you naturally approach tasks, teams, and problems."
-            status="completed"
-            totalQuestions={TOTAL_QUESTIONS}
-            resultSubtitle={subtitle}
-            onStart={() => onOpenWorkPreferenceQuiz(message.id)}
-            onContinue={() => onOpenWorkPreferenceQuiz(message.id)}
-            onRetake={() => onOpenWorkPreferenceQuiz(message.id)}
-          />
-        )
-      }
-      const cardStatus = workPreferenceCurrentQuestion > 0 ? "in-progress" : "not-started"
       return (
-        <ChatAssessmentCard
-          title="Work Preference"
-          icon="🎯"
-          duration={`${TOTAL_QUESTIONS} choices · ~3 min`}
-          description="Discover how you naturally approach tasks, teams, and problems."
-          status={cardStatus}
-          totalQuestions={TOTAL_QUESTIONS}
-          currentQuestion={workPreferenceCurrentQuestion}
-          onStart={() => onOpenWorkPreferenceQuiz(message.id)}
-          onContinue={() => onOpenWorkPreferenceQuiz(message.id)}
-          onRetake={() => onOpenWorkPreferenceQuiz(message.id)}
+        <ChatWorkPreferenceAssessmentTrigger
+          isCompleted={challengeState.isCompleted}
+          completedSummary={challengeState.isCompleted ? (challengeState.displayResponse ?? undefined) : undefined}
+          onComplete={(summary) => onArtifactComplete(message.id, summary)}
+        />
+      )
+    }
+    if (message.challenge.artifactType === "holland") {
+      const challengeState = selectChallengeState(message.challenge)
+      return (
+        <ChatHollandAssessmentTrigger
+          isCompleted={challengeState.isCompleted}
+          completedCode={challengeState.isCompleted ? (challengeState.displayResponse ?? undefined) : undefined}
+          onComplete={(code) => onArtifactComplete(message.id, code)}
         />
       )
     }
@@ -277,15 +252,11 @@ function AssistantGroupRenderer({
   messages,
   activeArtifactId,
   onArtifactComplete,
-  onOpenWorkPreferenceQuiz,
-  workPreferenceCurrentQuestion,
   onOpenValues,
 }: {
   messages: Message[]
   activeArtifactId: string | null
   onArtifactComplete: (messageId: string, summary: string) => void
-  onOpenWorkPreferenceQuiz: (messageId: string) => void
-  workPreferenceCurrentQuestion: number
   onOpenValues?: (messageId: string) => void
 }) {
   if (messages.length === 1) {
@@ -294,8 +265,6 @@ function AssistantGroupRenderer({
         message={messages[0]}
         isActiveArtifact={messages[0].id === activeArtifactId}
         onArtifactComplete={onArtifactComplete}
-        onOpenWorkPreferenceQuiz={onOpenWorkPreferenceQuiz}
-        workPreferenceCurrentQuestion={workPreferenceCurrentQuestion}
         onOpenValues={onOpenValues}
       />
     )
@@ -308,8 +277,6 @@ function AssistantGroupRenderer({
           message={msg}
           isActiveArtifact={msg.id === activeArtifactId}
           onArtifactComplete={onArtifactComplete}
-          onOpenWorkPreferenceQuiz={onOpenWorkPreferenceQuiz}
-          workPreferenceCurrentQuestion={workPreferenceCurrentQuestion}
           onOpenValues={onOpenValues}
         />
       ))}
@@ -632,9 +599,6 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange, onOpen
   const [challengeError, setChallengeError] = useState<string | null>(null)
   const [showTopScrollFade, setShowTopScrollFade] = useState(false)
   const [isAtBottom, setIsAtBottom] = useState(true)
-  const quiz = useWorkPreferenceState()
-  const [quizOpen, setQuizOpen] = useState(false)
-  const [quizMessageId, setQuizMessageId] = useState<string | null>(null)
   const isAtBottomRef = useRef(true)
   const sessionInitializedRef = useRef<string | null>(null)
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
@@ -745,6 +709,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange, onOpen
     lastMsg.challenge?.artifactType &&
     lastMsg.challenge.artifactType !== "work-preference" &&
     lastMsg.challenge.artifactType !== "values" &&
+    lastMsg.challenge.artifactType !== "holland" &&
     !selectChallengeState(lastMsg.challenge).isCompleted
       ? lastMsg
       : null
@@ -902,44 +867,9 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange, onOpen
     )
   }
 
-  const handleOpenWorkPreferenceQuiz = (messageId: string) => {
-    if (quiz.phase === "idle") quiz.start()
-    setQuizMessageId(messageId)
-    setQuizOpen(true)
-  }
-
-  const handleQuizExit = () => {
-    quiz.exit()
-    setQuizOpen(false)
-  }
-
-  const handleQuizBackToChat = () => {
-    if (quizMessageId && quiz.result) {
-      handleArtifactComplete(quizMessageId, `${resultLabel(quiz.result)} · ${resultSubtitle(quiz.result)}`)
-    }
-    quiz.reset()
-    setQuizOpen(false)
-  }
-
-  const handleQuizRestart = () => {
-    quiz.restart()
-  }
-
   return (
     <div className="flex-1 flex flex-col min-h-0">
-      {quizOpen && (quiz.phase === "quiz" || quiz.phase === "result") ? (
-        <WorkPreferenceQuiz
-          phase={quiz.phase}
-          currentQuestion={quiz.currentQuestion}
-          result={quiz.result}
-          onAnswer={quiz.answer}
-          onRestart={handleQuizRestart}
-          onExit={handleQuizExit}
-          onBackToChat={handleQuizBackToChat}
-        />
-      ) : (
-        <>
-          <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto min-h-0">
+      <div ref={scrollContainerRef} className="relative flex-1 overflow-y-auto min-h-0">
             {showTopScrollFade && (
               <div className="pointer-events-none sticky top-0 left-0 right-0 h-14 bg-gradient-to-b from-neutral-50 to-transparent z-10" />
             )}
@@ -958,8 +888,6 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange, onOpen
                         messages={group.messages}
                         activeArtifactId={activeArtifactMsg?.id ?? null}
                         onArtifactComplete={handleArtifactComplete}
-                        onOpenWorkPreferenceQuiz={handleOpenWorkPreferenceQuiz}
-                        workPreferenceCurrentQuestion={quiz.currentQuestion}
                         onOpenValues={onOpenValues}
                       />
                     )}
@@ -1019,8 +947,6 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange, onOpen
               />
             </div>
           )}
-        </>
-      )}
     </div>
   )
 }
