@@ -6,7 +6,24 @@
 
 **Architecture:** A fixed-position React portal overlay contains three screens (intro → questions → results) driven by a `useHollandAssessment` hook that owns all state and localStorage persistence. The existing `ChatHollandPicker` component is replaced by a lightweight trigger card that opens the overlay. On completion the overlay calls the existing `onSubmit` prop with the 3-letter Holland Code, closing itself.
 
-**Tech Stack:** Next.js 15 (app router), React 19, TypeScript, Tailwind v4, `@mande/ui` DS tokens/components, `ReactDOM.createPortal` for overlay mounting.
+**Tech Stack:** Next.js 15 (app router), React 19, TypeScript, Tailwind v4, `@mande/ui` DS tokens and components (`Card`, `Button`, `Icon`), `ReactDOM.createPortal` for overlay mounting.
+
+**Design constraints:**
+- Use DS tokens only — no hardcoded hex values
+- Light mode — `bg-background` (white) as the base surface
+- No lime text — selected states use `text-foreground` / `bg-neutral-900`
+- Neutral fills — progress bars, radio fills, score bars use `bg-neutral-900` / `bg-neutral-200` / `bg-neutral-100`
+- `Button variant="primary"` is fine for CTAs (lime is the DS primary, that's intentional)
+
+**Key token reference (Tailwind classes → DS semantics):**
+- `bg-background` → neutral-white (page surface)
+- `bg-muted` → neutral-100 (subtle fill)
+- `bg-subtle` / `bg-accent` → neutral-50
+- `text-foreground` → neutral-900
+- `text-muted-foreground` → neutral-500
+- `border-border` → neutral-300
+- `border-border-strong` → neutral-400
+- `bg-neutral-50/100/200/900` → direct neutral scale
 
 ---
 
@@ -14,7 +31,7 @@
 
 | Action | File | Responsibility |
 |--------|------|----------------|
-| Create | `apps/playground/src/components/holland-data.ts` | 42 questions + 6 RIASEC type definitions |
+| Create | `apps/playground/src/components/holland-data.ts` | 42 questions + 6 RIASEC type definitions + LikertValue type |
 | Create | `apps/playground/src/components/use-holland-assessment.ts` | State machine, scoring logic, localStorage persistence |
 | Create | `apps/playground/src/components/holland-intro-screen.tsx` | "Before you begin" screen |
 | Create | `apps/playground/src/components/holland-question-screen.tsx` | Single question + 4 Likert options |
@@ -159,8 +176,6 @@ git commit -m "feat(holland): add question data and RIASEC type definitions"
 **Files:**
 - Create: `apps/playground/src/components/use-holland-assessment.ts`
 
-The hook is the single source of truth for the assessment. It owns the screen machine (`intro | question | results`), the 42-slot answers array, scoring, and localStorage persistence.
-
 - [ ] **Create `use-holland-assessment.ts`**
 
 ```ts
@@ -171,8 +186,9 @@ import { useCallback, useEffect, useReducer } from "react"
 import { HOLLAND_QUESTIONS, HOLLAND_TYPES } from "./holland-data"
 import type { HollandType, LikertValue } from "./holland-data"
 
-// ─── Re-export for consumers ──────────────────────────────────────────────────
 export type { LikertValue }
+
+// ─── Types ────────────────────────────────────────────────────────────────────
 
 export interface HollandRankedType {
   type: HollandType
@@ -183,8 +199,8 @@ export interface HollandRankedType {
 }
 
 export interface HollandResult {
-  code: string               // e.g. "SAE"
-  ranked: HollandRankedType[] // top 3, highest score first
+  code: string
+  ranked: HollandRankedType[]
 }
 
 type Screen = "intro" | "question" | "results"
@@ -200,7 +216,6 @@ type Action =
   | { type: "BEGIN" }
   | { type: "ANSWER"; value: LikertValue }
   | { type: "BACK" }
-  | { type: "COMPLETE"; result: HollandResult }
   | { type: "RETAKE" }
   | { type: "RESTORE"; state: State }
 
@@ -209,43 +224,25 @@ type Action =
 const STORAGE_KEY = "mande:holland:progress"
 
 function saveToStorage(state: State) {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-  } catch {}
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)) } catch {}
 }
 
 function loadFromStorage(): State | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return null
-    return JSON.parse(raw) as State
-  } catch {
-    return null
-  }
+    return raw ? (JSON.parse(raw) as State) : null
+  } catch { return null }
 }
 
 function clearStorage() {
-  try {
-    localStorage.removeItem(STORAGE_KEY)
-  } catch {}
-}
-
-// ─── Initial state ────────────────────────────────────────────────────────────
-
-const INITIAL_STATE: State = {
-  screen: "intro",
-  currentIndex: 0,
-  answers: Array(42).fill(null),
-  result: null,
+  try { localStorage.removeItem(STORAGE_KEY) } catch {}
 }
 
 // ─── Scoring ──────────────────────────────────────────────────────────────────
 
 function computeResult(answers: (LikertValue | null)[]): HollandResult {
   const scores: Record<HollandType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 }
-  HOLLAND_QUESTIONS.forEach((q, i) => {
-    scores[q.type] += answers[i] ?? 0
-  })
+  HOLLAND_QUESTIONS.forEach((q, i) => { scores[q.type] += answers[i] ?? 0 })
 
   const ranked = (Object.entries(scores) as [HollandType, number][])
     .sort((a, b) => b[1] - a[1])
@@ -258,13 +255,17 @@ function computeResult(answers: (LikertValue | null)[]): HollandResult {
       likes: HOLLAND_TYPES[type].likes,
     }))
 
-  return {
-    code: ranked.map((r) => r.type).join(""),
-    ranked,
-  }
+  return { code: ranked.map((r) => r.type).join(""), ranked }
 }
 
 // ─── Reducer ──────────────────────────────────────────────────────────────────
+
+const INITIAL_STATE: State = {
+  screen: "intro",
+  currentIndex: 0,
+  answers: Array(42).fill(null),
+  result: null,
+}
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -272,22 +273,17 @@ function reducer(state: State, action: Action): State {
       return { ...state, screen: "question", currentIndex: 0 }
 
     case "ANSWER": {
-      const newAnswers = [...state.answers] as (LikertValue | null)[]
-      newAnswers[state.currentIndex] = action.value
-      const isLast = state.currentIndex === 41
-      if (isLast) {
-        const result = computeResult(newAnswers)
-        return { ...state, answers: newAnswers, result, screen: "results" }
+      const answers = [...state.answers] as (LikertValue | null)[]
+      answers[state.currentIndex] = action.value
+      if (state.currentIndex === 41) {
+        return { ...state, answers, result: computeResult(answers), screen: "results" }
       }
-      return { ...state, answers: newAnswers, currentIndex: state.currentIndex + 1 }
+      return { ...state, answers, currentIndex: state.currentIndex + 1 }
     }
 
     case "BACK":
       if (state.currentIndex === 0) return state
       return { ...state, currentIndex: state.currentIndex - 1 }
-
-    case "COMPLETE":
-      return { ...state, screen: "results", result: action.result }
 
     case "RETAKE":
       return INITIAL_STATE
@@ -305,7 +301,6 @@ function reducer(state: State, action: Action): State {
 export function useHollandAssessment() {
   const [state, dispatch] = useReducer(reducer, INITIAL_STATE)
 
-  // Restore from localStorage on mount
   useEffect(() => {
     const saved = loadFromStorage()
     if (saved && saved.screen !== "results") {
@@ -313,50 +308,26 @@ export function useHollandAssessment() {
     }
   }, [])
 
-  // Persist on every state change (skip completed — clear instead)
   useEffect(() => {
-    if (state.screen === "results") {
-      clearStorage()
-    } else {
-      saveToStorage(state)
-    }
+    if (state.screen === "results") clearStorage()
+    else saveToStorage(state)
   }, [state])
 
-  const begin = useCallback(() => dispatch({ type: "BEGIN" }), [])
-
-  const answer = useCallback((value: LikertValue) => {
-    dispatch({ type: "ANSWER", value })
-  }, [])
-
-  const back = useCallback(() => dispatch({ type: "BACK" }), [])
-
-  const retake = useCallback(() => {
-    clearStorage()
-    dispatch({ type: "RETAKE" })
-  }, [])
-
-  const exit = useCallback(() => {
-    // Caller closes the overlay; state is already persisted via useEffect
-  }, [])
-
-  const progressPercent = Math.round(
-    ((state.currentIndex + (state.screen === "results" ? 1 : 0)) / 42) * 100
-  )
-
-  const currentQuestion = HOLLAND_QUESTIONS[state.currentIndex] ?? null
-  const currentAnswer = state.answers[state.currentIndex] ?? null
+  const begin   = useCallback(() => dispatch({ type: "BEGIN" }), [])
+  const answer  = useCallback((value: LikertValue) => dispatch({ type: "ANSWER", value }), [])
+  const back    = useCallback(() => dispatch({ type: "BACK" }), [])
+  const retake  = useCallback(() => { clearStorage(); dispatch({ type: "RETAKE" }) }, [])
 
   return {
-    screen: state.screen,
-    currentIndex: state.currentIndex,
-    currentQuestion,
-    currentAnswer,
-    result: state.result,
-    progressPercent,
+    screen:           state.screen,
+    currentIndex:     state.currentIndex,
+    currentQuestion:  HOLLAND_QUESTIONS[state.currentIndex] ?? null,
+    currentAnswer:    state.answers[state.currentIndex] ?? null,
+    result:           state.result,
+    progressPercent:  Math.round(((state.currentIndex + (state.screen === "results" ? 1 : 0)) / 42) * 100),
     begin,
     answer,
     back,
-    exit,
     retake,
   }
 }
@@ -384,11 +355,15 @@ git commit -m "feat(holland): add useHollandAssessment hook with state, scoring,
 **Files:**
 - Create: `apps/playground/src/components/holland-intro-screen.tsx`
 
+Uses `bg-background` (white), `text-foreground`, `text-muted-foreground`, `border-border`. The numbered tip badges use `bg-neutral-900 text-white`. The Begin CTA uses DS `Button variant="primary"`.
+
 - [ ] **Create `holland-intro-screen.tsx`**
 
 ```tsx
 // apps/playground/src/components/holland-intro-screen.tsx
 "use client"
+
+import { Button } from "@mande/ui"
 
 const TIPS = [
   "Read each statement and picture yourself doing it.",
@@ -398,39 +373,30 @@ const TIPS = [
 
 export function HollandIntroScreen({ onBegin }: { onBegin: () => void }) {
   return (
-    <div className="flex flex-col min-h-svh bg-[#141613] px-6">
+    <div className="flex flex-col min-h-svh bg-background">
       {/* Top bar */}
-      <div className="pt-5 pb-0">
-        <span className="text-[13px] font-semibold tracking-wide text-[#BFEA4A]">mande</span>
+      <div className="px-6 pt-5 flex-shrink-0">
+        <span className="text-small-semibold text-foreground tracking-wide">mande</span>
       </div>
 
       {/* Content */}
-      <div className="flex-1 flex flex-col justify-center max-w-[480px] w-full mx-auto py-10">
-        <h2
-          className="text-[28px] font-bold text-white mb-6 leading-tight"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-        >
-          Before you begin
-        </h2>
+      <div className="flex-1 flex flex-col justify-center max-w-[480px] w-full mx-auto px-6 py-10">
+        <h2 className="text-H2 text-foreground mb-6">Before you begin</h2>
 
-        <div className="bg-[#1A1C18] border border-[#2E3029] rounded-[18px] p-5 mb-8 flex flex-col gap-4">
+        <div className="bg-muted border border-border rounded-2xl p-5 mb-8 flex flex-col gap-4">
           {TIPS.map((tip, i) => (
             <div key={i} className="flex gap-3 items-start">
-              <span className="flex-shrink-0 w-5 h-5 rounded-full bg-[#BFEA4A] text-[#1A1C18] text-[10px] font-bold flex items-center justify-center mt-0.5">
+              <span className="flex-shrink-0 w-5 h-5 rounded-full bg-neutral-900 text-white text-[10px] font-bold flex items-center justify-center mt-0.5">
                 {i + 1}
               </span>
-              <p className="text-[14px] text-[#B0B3A0] leading-relaxed">{tip}</p>
+              <p className="text-base-regular text-muted-foreground leading-relaxed">{tip}</p>
             </div>
           ))}
         </div>
 
-        <button
-          onClick={onBegin}
-          className="w-full bg-[#BFEA4A] text-[#1A1C18] font-semibold text-[15px] rounded-full py-4 transition-transform active:scale-[0.98]"
-          style={{ boxShadow: "0 0 32px rgba(191,234,74,0.18)" }}
-        >
+        <Button variant="primary" size="lg" className="w-full" onClick={onBegin}>
           Begin
-        </button>
+        </Button>
       </div>
     </div>
   )
@@ -459,7 +425,7 @@ git commit -m "feat(holland): add HollandIntroScreen"
 **Files:**
 - Create: `apps/playground/src/components/holland-question-screen.tsx`
 
-This screen renders one question at a time. Tapping an option calls `onAnswer` immediately — the parent (hook) handles the 320ms advance delay by using `setTimeout` around the state update. The auto-advance effect lives here: when `currentAnswer` changes to non-null, we wait 320ms then call `onAnswer`.
+Selected option: `border-neutral-900 bg-neutral-50` with a filled `bg-neutral-900` radio dot. Progress bar fill: `bg-neutral-900`. Exit and Back use DS `Button variant="ghost"` or `variant="outline"`.
 
 - [ ] **Create `holland-question-screen.tsx`**
 
@@ -468,6 +434,8 @@ This screen renders one question at a time. Tapping an option calls `onAnswer` i
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { Button } from "@mande/ui"
+import { cn } from "@mande/ui/lib/utils"
 import type { HollandQuestion, LikertValue } from "./holland-data"
 
 const LIKERT_OPTIONS: { value: LikertValue; label: string }[] = [
@@ -479,7 +447,7 @@ const LIKERT_OPTIONS: { value: LikertValue; label: string }[] = [
 
 interface HollandQuestionScreenProps {
   question: HollandQuestion
-  currentIndex: number     // 0-based
+  currentIndex: number
   totalQuestions: number
   progressPercent: number
   selectedValue: LikertValue | null
@@ -501,56 +469,47 @@ export function HollandQuestionScreen({
   const [pending, setPending] = useState<LikertValue | null>(null)
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  // Reset pending selection when question changes
   useEffect(() => {
     setPending(null)
     if (timerRef.current) clearTimeout(timerRef.current)
   }, [question.id])
 
   const handleSelect = (value: LikertValue) => {
-    if (pending !== null) return // already selected, waiting to advance
+    if (pending !== null) return
     setPending(value)
-    timerRef.current = setTimeout(() => {
-      onAnswer(value)
-    }, 320)
+    timerRef.current = setTimeout(() => onAnswer(value), 320)
   }
 
-  const displayIndex = currentIndex + 1
-
   return (
-    <div className="flex flex-col min-h-svh bg-[#141613]">
+    <div className="flex flex-col min-h-svh bg-background">
       {/* Top bar */}
       <div className="flex items-center justify-between px-6 pt-5 pb-0 flex-shrink-0">
-        <span className="text-[13px] font-semibold tracking-wide text-[#BFEA4A]">mande</span>
-        <span className="text-[13px] text-[#4A4D42]">{displayIndex} of {totalQuestions}</span>
-        <button
-          onClick={onExit}
-          className="text-[12px] text-[#4A4D42] border border-[#2E3029] rounded-full px-3 py-1.5 font-medium bg-[#1A1C18] hover:border-[#4A4D42] transition-colors"
-        >
+        <span className="text-small-semibold text-foreground tracking-wide">mande</span>
+        <span className="text-small-regular text-muted-foreground">
+          {currentIndex + 1} of {totalQuestions}
+        </span>
+        <Button variant="outline" size="sm" onClick={onExit}>
           Exit
-        </button>
+        </Button>
       </div>
 
       {/* Progress bar */}
-      <div className="px-6 pt-4 pb-0 flex-shrink-0">
-        <div className="h-[2px] bg-[#2A2C28] rounded-full overflow-hidden">
+      <div className="px-6 pt-4 flex-shrink-0">
+        <div className="h-[2px] bg-neutral-200 rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#BFEA4A] rounded-full transition-[width] duration-400"
+            className="h-full bg-neutral-900 rounded-full transition-[width] duration-300 ease-out"
             style={{ width: `${progressPercent}%` }}
           />
         </div>
       </div>
 
       {/* Body */}
-      <div className="flex-1 flex flex-col px-6 pt-10 pb-0 max-w-[480px] w-full mx-auto">
-        <p className="text-[11px] uppercase tracking-[1.1px] text-[#4A4D42] mb-5">
+      <div className="flex-1 flex flex-col px-6 pt-10 max-w-[480px] w-full mx-auto">
+        <p className="text-small-semibold text-muted-foreground uppercase tracking-widest mb-5">
           Career Interest Assessment
         </p>
 
-        <h2
-          className="text-[28px] font-bold text-white leading-[1.25] mb-10"
-          style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-        >
+        <h2 className="text-H2 text-foreground leading-snug mb-10">
           &ldquo;{question.text}&rdquo;
         </h2>
 
@@ -563,41 +522,39 @@ export function HollandQuestionScreen({
                 type="button"
                 onClick={() => handleSelect(value)}
                 disabled={pending !== null}
-                className={[
-                  "flex items-center gap-4 rounded-[14px] px-5 py-[18px] border text-left transition-[border-color,background-color] duration-150",
+                className={cn(
+                  "flex items-center gap-4 rounded-2xl px-5 py-[18px] border text-left transition-[border-color,background-color] duration-150",
                   isSelected
-                    ? "border-[#BFEA4A] bg-[#BFEA4A]/[0.06]"
-                    : "border-[#2A2C28] bg-[#1A1C18] hover:border-[#3A3D30]",
-                ].join(" ")}
+                    ? "border-neutral-900 bg-neutral-50"
+                    : "border-border bg-background hover:bg-muted"
+                )}
               >
                 {/* Radio */}
                 <span
-                  className={[
+                  className={cn(
                     "flex-shrink-0 w-[22px] h-[22px] rounded-full border-2 flex items-center justify-center transition-[background,border-color] duration-150",
-                    isSelected ? "bg-[#BFEA4A] border-[#BFEA4A]" : "border-[#3A3D30]",
-                  ].join(" ")}
-                >
-                  {isSelected && (
-                    <span className="w-2 h-2 rounded-full bg-[#1A1C18]" />
+                    isSelected ? "bg-neutral-900 border-neutral-900" : "border-neutral-300"
                   )}
+                >
+                  {isSelected && <span className="w-2 h-2 rounded-full bg-white" />}
                 </span>
 
                 {/* Label */}
                 <span
-                  className={[
-                    "flex-1 text-[16px] transition-colors duration-150",
-                    isSelected ? "text-white font-medium" : "text-[#8A8D7E]",
-                  ].join(" ")}
+                  className={cn(
+                    "flex-1 text-base-regular transition-colors duration-150",
+                    isSelected ? "text-foreground font-medium" : "text-muted-foreground"
+                  )}
                 >
                   {label}
                 </span>
 
                 {/* Number */}
                 <span
-                  className={[
-                    "text-[12px] transition-colors duration-150",
-                    isSelected ? "text-[#BFEA4A]" : "text-[#3A3D30]",
-                  ].join(" ")}
+                  className={cn(
+                    "text-small-regular transition-colors duration-150",
+                    isSelected ? "text-foreground" : "text-neutral-300"
+                  )}
                 >
                   {value}
                 </span>
@@ -607,15 +564,16 @@ export function HollandQuestionScreen({
         </div>
       </div>
 
-      {/* Bottom */}
-      <div className="px-6 py-6 flex items-center justify-between flex-shrink-0 max-w-[480px] w-full mx-auto">
-        <button
+      {/* Bottom nav */}
+      <div className="px-6 py-6 flex-shrink-0 max-w-[480px] w-full mx-auto">
+        <Button
+          variant="outline"
+          size="sm"
           onClick={onBack}
           disabled={currentIndex === 0}
-          className="text-[13px] text-[#4A4D42] border border-[#2E3029] rounded-full px-5 py-2.5 disabled:opacity-30 hover:border-[#4A4D42] transition-colors"
         >
           ← Back
-        </button>
+        </Button>
       </div>
     </div>
   )
@@ -644,12 +602,16 @@ git commit -m "feat(holland): add HollandQuestionScreen with auto-advance on sel
 **Files:**
 - Create: `apps/playground/src/components/holland-results-screen.tsx`
 
+Holland code: large `text-foreground` (dark). Identity line: `text-muted-foreground`. Rank badge #1: `bg-neutral-900 text-white`. #2, #3: `bg-neutral-100 text-neutral-500`. Score bars: `bg-neutral-900` (#1), `bg-neutral-300` (#2), `bg-neutral-200` (#3). CTAs: DS `Button` primary + outline.
+
 - [ ] **Create `holland-results-screen.tsx`**
 
 ```tsx
 // apps/playground/src/components/holland-results-screen.tsx
 "use client"
 
+import { Button } from "@mande/ui"
+import { cn } from "@mande/ui/lib/utils"
 import type { HollandResult } from "./use-holland-assessment"
 
 interface HollandResultsScreenProps {
@@ -658,7 +620,11 @@ interface HollandResultsScreenProps {
   onRetake: () => void
 }
 
-const SCORE_BAR_COLORS = ["#BFEA4A", "#4A5A30", "#3A4A28"] as const
+const SCORE_BAR_CLASSES = [
+  "bg-neutral-900",
+  "bg-neutral-300",
+  "bg-neutral-200",
+] as const
 
 export function HollandResultsScreen({
   result,
@@ -668,32 +634,26 @@ export function HollandResultsScreen({
   const primary = result.ranked[0]
 
   return (
-    <div className="flex flex-col min-h-svh bg-[#141613]">
+    <div className="flex flex-col min-h-svh bg-background">
       {/* Top bar */}
       <div className="px-6 pt-5 flex-shrink-0">
-        <span className="text-[13px] font-semibold tracking-wide text-[#BFEA4A]">mande</span>
+        <span className="text-small-semibold text-foreground tracking-wide">mande</span>
       </div>
 
       <div className="flex-1 flex flex-col max-w-[480px] w-full mx-auto px-6 pb-8">
         {/* Hero */}
-        <div
-          className="text-center pt-10 pb-7 border-b border-[#2E3029]"
-          style={{ background: "linear-gradient(180deg, rgba(191,234,74,0.05) 0%, transparent 100%)" }}
-        >
-          <p className="text-[11px] uppercase tracking-[1.2px] text-[#4A4D42] mb-4">
+        <div className="text-center pt-10 pb-7 border-b border-border">
+          <p className="text-small-semibold text-muted-foreground uppercase tracking-widest mb-4">
             Your Holland Code
           </p>
 
-          <p
-            className="text-[56px] font-bold text-[#BFEA4A] tracking-[8px] leading-none mb-4"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
+          <p className="text-[52px] font-bold text-foreground tracking-[6px] leading-none mb-4">
             {result.code}
           </p>
 
-          <p className="text-[15px] text-[#B0B3A0]">
+          <p className="text-base-regular text-muted-foreground">
             You are primarily a{" "}
-            <span className="text-white font-semibold">{primary.bracket}</span>
+            <span className="text-foreground font-semibold">{primary.bracket}</span>
           </p>
         </div>
 
@@ -702,45 +662,40 @@ export function HollandResultsScreen({
           {result.ranked.map((item, i) => (
             <div
               key={item.type}
-              className={[
+              className={cn(
                 "flex gap-3.5 py-4",
-                i < result.ranked.length - 1 ? "border-b border-[#2E3029]" : "",
-              ].join(" ")}
+                i < result.ranked.length - 1 && "border-b border-border"
+              )}
             >
               {/* Rank badge */}
               <span
-                className="flex-shrink-0 w-[26px] h-[26px] rounded-full flex items-center justify-center text-[11px] font-bold mt-0.5"
-                style={
+                className={cn(
+                  "flex-shrink-0 w-[26px] h-[26px] rounded-full flex items-center justify-center text-small-semibold mt-0.5",
                   i === 0
-                    ? { background: "#BFEA4A", color: "#1A1C18" }
-                    : { background: "#2A2C28", color: "#6A6D5E" }
-                }
+                    ? "bg-neutral-900 text-white"
+                    : "bg-neutral-100 text-neutral-500"
+                )}
               >
                 {i + 1}
               </span>
 
               <div className="flex-1 min-w-0">
-                {/* Name + bracket */}
-                <p className="text-[15px] font-semibold text-[#D0D3C0] mb-0.5">
+                <p className="text-base-semibold text-foreground mb-0.5">
                   {item.name}{" "}
-                  <span className="text-[11px] font-normal text-[#4A4D42] uppercase tracking-[0.4px] ml-1">
+                  <span className="text-small-regular text-muted-foreground font-normal ml-1 uppercase tracking-wide">
                     {item.bracket}
                   </span>
                 </p>
 
-                {/* Likes copy */}
-                <p className="text-[13px] text-[#6A6D5E] leading-relaxed mb-2.5">
+                <p className="text-small-regular text-muted-foreground leading-relaxed mb-2.5">
                   {item.likes}
                 </p>
 
                 {/* Score bar */}
-                <div className="h-[3px] bg-[#2E3029] rounded-full overflow-hidden">
+                <div className="h-[3px] bg-neutral-100 rounded-full overflow-hidden">
                   <div
-                    className="h-full rounded-full"
-                    style={{
-                      width: `${Math.round((item.score / 28) * 100)}%`,
-                      background: SCORE_BAR_COLORS[i] ?? "#2E3029",
-                    }}
+                    className={cn("h-full rounded-full", SCORE_BAR_CLASSES[i] ?? "bg-neutral-100")}
+                    style={{ width: `${Math.round((item.score / 28) * 100)}%` }}
                   />
                 </div>
               </div>
@@ -750,19 +705,12 @@ export function HollandResultsScreen({
 
         {/* CTAs */}
         <div className="flex flex-col gap-2.5 pt-2">
-          <button
-            onClick={onContinue}
-            className="w-full bg-[#BFEA4A] text-[#1A1C18] font-semibold text-[14px] rounded-full py-4 transition-transform active:scale-[0.98]"
-            style={{ boxShadow: "0 0 32px rgba(191,234,74,0.18)" }}
-          >
+          <Button variant="primary" size="lg" className="w-full" onClick={onContinue}>
             Continue in chat →
-          </button>
-          <button
-            onClick={onRetake}
-            className="w-full text-[14px] text-[#6A6D5E] border border-[#2E3029] rounded-full py-3.5 hover:border-[#4A4D42] transition-colors"
-          >
+          </Button>
+          <Button variant="outline" size="lg" className="w-full" onClick={onRetake}>
             Retake assessment
-          </button>
+          </Button>
         </div>
       </div>
     </div>
@@ -792,7 +740,7 @@ git commit -m "feat(holland): add HollandResultsScreen with code hero and ranked
 **Files:**
 - Create: `apps/playground/src/components/holland-assessment-overlay.tsx`
 
-The overlay mounts via `ReactDOM.createPortal` so it escapes any `overflow: hidden` clipping in the chat layout. It uses `useHollandAssessment` to drive the three screens and calls `onComplete` with the Holland code when the user taps "Continue in chat →".
+Mounts via `ReactDOM.createPortal` at `document.body` so it escapes any `overflow: hidden` in the chat layout. Routes between the three screens driven by `useHollandAssessment`.
 
 - [ ] **Create `holland-assessment-overlay.tsx`**
 
@@ -800,7 +748,7 @@ The overlay mounts via `ReactDOM.createPortal` so it escapes any `overflow: hidd
 // apps/playground/src/components/holland-assessment-overlay.tsx
 "use client"
 
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import { useHollandAssessment } from "./use-holland-assessment"
 import { HollandIntroScreen } from "./holland-intro-screen"
@@ -823,24 +771,12 @@ function OverlayContent({ onComplete, onClose }: HollandAssessmentOverlayProps) 
     begin,
     answer,
     back,
-    exit,
     retake,
   } = useHollandAssessment()
 
-  const handleExit = () => {
-    exit()
-    onClose()
-  }
-
   const handleContinue = () => {
-    if (result) {
-      onComplete(result.code)
-    }
+    if (result) onComplete(result.code)
     onClose()
-  }
-
-  const handleRetake = () => {
-    retake()
   }
 
   if (screen === "intro") {
@@ -857,7 +793,7 @@ function OverlayContent({ onComplete, onClose }: HollandAssessmentOverlayProps) 
         selectedValue={currentAnswer}
         onAnswer={answer}
         onBack={back}
-        onExit={handleExit}
+        onExit={onClose}
       />
     )
   }
@@ -867,7 +803,7 @@ function OverlayContent({ onComplete, onClose }: HollandAssessmentOverlayProps) 
       <HollandResultsScreen
         result={result}
         onContinue={handleContinue}
-        onRetake={handleRetake}
+        onRetake={retake}
       />
     )
   }
@@ -876,21 +812,21 @@ function OverlayContent({ onComplete, onClose }: HollandAssessmentOverlayProps) 
 }
 
 export function HollandAssessmentOverlay(props: HollandAssessmentOverlayProps) {
-  const mountRef = useRef<HTMLDivElement | null>(null)
+  const [mounted, setMounted] = useState(false)
+  const elRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     const el = document.createElement("div")
     el.style.cssText = "position:fixed;inset:0;z-index:50;"
     document.body.appendChild(el)
-    mountRef.current = el
-    return () => {
-      document.body.removeChild(el)
-    }
+    elRef.current = el
+    setMounted(true)
+    return () => { document.body.removeChild(el) }
   }, [])
 
-  if (!mountRef.current) return null
+  if (!mounted || !elRef.current) return null
 
-  return createPortal(<OverlayContent {...props} />, mountRef.current)
+  return createPortal(<OverlayContent {...props} />, elRef.current)
 }
 ```
 
@@ -916,7 +852,7 @@ git commit -m "feat(holland): add HollandAssessmentOverlay portal with screen ro
 **Files:**
 - Create: `apps/playground/src/components/chat-holland-assessment-trigger.tsx`
 
-This replaces `ChatHollandPicker` as the in-chat widget for the `holland` artifact type. It shows a "Take the assessment" card. Tapping opens the overlay. When the overlay calls `onSubmit`, the trigger passes the code up to `ChatActiveArtifact`.
+Uses DS `Card`, `Button`, and `Icon` — same visual pattern as `ChatExternalAssessmentInput` but without the external link row. Opens the overlay on click.
 
 - [ ] **Create `chat-holland-assessment-trigger.tsx`**
 
@@ -957,20 +893,19 @@ export function ChatHollandAssessmentTrigger({
             <p className="text-lg-medium text-foreground mb-1">
               What are your career interests?
             </p>
-            <p className="text-sm text-muted-foreground">42 questions · ~10 mins</p>
+            <p className="text-small-regular text-muted-foreground">42 questions · ~10 mins</p>
           </div>
 
           <div className="flex items-center gap-3 bg-neutral-100 rounded-3 px-3 py-2.5">
             <Icon name="IconBulletList" size={16} className="text-neutral-600 shrink-0" />
-            <div className="flex-1 min-w-0">
-              <span className="text-base-medium text-neutral-900">Career Interest Assessment</span>
-            </div>
+            <span className="text-base-medium text-neutral-900">Career Interest Assessment</span>
           </div>
         </div>
 
-        <div className="px-5 pb-4 flex justify-end">
+        <div className="sticky bottom-0 bg-card px-5 py-3 flex justify-end">
           <Button
             variant="primary"
+            size="default"
             icon={<Icon name="IconArrowRight" size={16} />}
             iconPosition="right"
             onClick={() => setOverlayOpen(true)}
@@ -1013,16 +948,14 @@ git commit -m "feat(holland): add ChatHollandAssessmentTrigger in-chat card"
 **Files:**
 - Modify: `apps/playground/src/components/chat-active-artifact.tsx`
 
-Swap the `holland` case to use the new trigger and remove the old `ChatHollandPicker` import.
+- [ ] **Replace the holland import and case in `chat-active-artifact.tsx`**
 
-- [ ] **In `chat-active-artifact.tsx`, replace the holland import and case**
-
-Remove this import:
+Remove:
 ```tsx
 import { ChatHollandPicker } from "./chat-holland-picker"
 ```
 
-Add this import (alongside the other imports at the top):
+Add (alongside the other imports at the top of the file):
 ```tsx
 import { ChatHollandAssessmentTrigger } from "./chat-holland-assessment-trigger"
 ```
@@ -1080,31 +1013,30 @@ Open http://localhost:3000 in the browser.
 
 - [ ] **Trigger the Holland assessment**
 
-In the dev trigger panel (bottom-right of the playground), select the `holland` artifact type and inject it into the chat. The in-chat trigger card should appear with "What are your career interests?" and the "Take the assessment" button.
+In the dev trigger panel, select the `holland` artifact type and inject it. The in-chat card should appear with "What are your career interests?", "42 questions · ~10 mins", and a "Take the assessment" button.
 
 - [ ] **Test the full happy path**
 
-1. Click "Take the assessment" → overlay opens full-screen
-2. "Before you begin" screen appears with 3 tips and "Begin" button
-3. Click "Begin" → question 1 appears ("I like to work on cars")
-4. Tap any Likert option → it highlights, auto-advances after ~320ms
-5. Tap "← Back" → returns to previous question with prior answer shown
-6. Answer all 42 questions → results screen appears
-7. Results show: 3-letter code (e.g. "SAE"), "You are primarily a Helper", 3 ranked types with score bars
-8. Click "Continue in chat →" → overlay closes, chat receives the Holland code as a submitted artifact response
+1. Click "Take the assessment" → white full-screen overlay opens
+2. "Before you begin" with 3 numbered tips + "Begin" button (dark numbered badges)
+3. Click "Begin" → question 1: "I like to work on cars"
+4. Tap any option → border goes dark (`border-neutral-900`), radio fills dark, auto-advances after 320ms
+5. Progress bar (`bg-neutral-900` fill) increments with each answer
+6. "← Back" returns to previous question, prior answer shown selected
+7. Answer all 42 → results screen: large dark Holland code, identity line, 3 ranked types with dark/grey score bars
+8. "Continue in chat →" closes overlay, chat receives Holland code string as artifact response
 
-- [ ] **Test the exit + resume flow**
+- [ ] **Test exit + resume**
 
-1. Start the assessment, answer ~10 questions, click "Exit"
-2. Overlay closes, chat is visible again
-3. Click "Take the assessment" again → overlay re-opens at question 11 (resumed from localStorage)
+1. Start assessment, answer ~10 questions, click "Exit"
+2. Overlay closes
+3. Click "Take the assessment" again → overlay reopens at question 11
 
 - [ ] **Test retake**
 
-1. Reach the results screen, click "Retake assessment"
-2. Returns to the intro screen, prior answers cleared
+1. Reach results, click "Retake assessment" → returns to intro, state cleared
 
-- [ ] **Final commit if any fixes were made during testing**
+- [ ] **Commit any fixes made during testing**
 
 ```bash
 git add -p
