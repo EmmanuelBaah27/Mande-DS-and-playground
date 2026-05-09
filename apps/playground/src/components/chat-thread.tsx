@@ -37,7 +37,7 @@ import { LessonCompletionPanel } from "./chat-lesson-completion"
 
 type ArtifactFlowStep = {
   id: string
-  assistant: string
+  assistant: string | ((prevSummary: string) => string)
   challenge?: Omit<ChallengeData, "type">
   lessonComplete?: boolean
 }
@@ -46,7 +46,7 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
   commitment: {
     id: "artifact-reflection-1",
     assistant:
-      "Great. Let's start with a short reflection so I can understand your starting point before we get tactical.",
+      "Good. Before we run any assessments, tell me something — what kind of workday gives you energy, and what kind drains you? Three to five sentences.",
     challenge: {
       challengeId: "artifact-reflection-1",
       lessonId: "discovering-your-options-day-1",
@@ -61,7 +61,7 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
   reflection: {
     id: "artifact-quiz-1",
     assistant:
-      "Nice. Next, let's run a quick work-preference check to sharpen your pattern.",
+      "Good starting point. Now let's run a quick work-preference check — it'll tell us how you're wired to operate.",
     challenge: {
       challengeId: "artifact-quiz-1",
       lessonId: "discovering-your-options-day-1",
@@ -73,8 +73,8 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
   },
   "work-preference": {
     id: "artifact-mbti-1",
-    assistant:
-      "Solid. Let's add your MBTI so we can triangulate this with your preference signal.",
+    assistant: (summary) =>
+      `${summary} — that's a useful signal. Let's layer in your personality type to see how it shapes the way you show up at work.`,
     challenge: {
       challengeId: "artifact-mbti-1",
       lessonId: "discovering-your-options-day-1",
@@ -87,7 +87,7 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
   mbti: {
     id: "artifact-holland-1",
     assistant:
-      "Great. One more input: your Holland code, then I'll synthesize what this points to.",
+      "Got it. One more input: your Holland code. This maps the environments and activities you naturally gravitate toward.",
     challenge: {
       challengeId: "artifact-holland-1",
       lessonId: "discovering-your-options-day-1",
@@ -99,8 +99,8 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
   },
   holland: {
     id: "artifact-holland-done",
-    assistant:
-      "All five inputs are in. Let me pull this together and show you what the pattern points to.",
+    assistant: (summary) =>
+      `Your Holland code is ${summary}. All five inputs are in — here's what they point to.`,
     lessonComplete: true,
   },
   craft: {
@@ -138,6 +138,13 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
     assistant:
       "Thanks for bringing those results back. That rounds out the picture.",
   },
+}
+
+const ASSESSMENT_LABELS: Partial<Record<NonNullable<ChallengeData["artifactType"]>, string>> = {
+  "work-preference": "Work style",
+  "mbti": "Personality",
+  "holland": "Holland code",
+  "values": "Values",
 }
 
 // ─── Markdown ─────────────────────────────────────────────────────────────────
@@ -609,6 +616,20 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange, onLess
   const [isLessonComplete, setIsLessonComplete] = useState(false)
   const [completedLessonId, setCompletedLessonId] = useState("")
   const isAtBottomRef = useRef(true)
+
+  const completedAssessments = useMemo(() => {
+    if (!isLessonComplete) return []
+    const session = sessions.find((s) => s.id === activeSessionId)
+    return (session?.messages ?? [])
+      .filter((msg) => msg.challenge?.artifactType && ASSESSMENT_LABELS[msg.challenge.artifactType])
+      .map((msg) => {
+        const state = selectChallengeState(msg.challenge!)
+        return state.isCompleted
+          ? { label: ASSESSMENT_LABELS[msg.challenge!.artifactType!]!, result: state.displayResponse ?? "" }
+          : null
+      })
+      .filter(Boolean) as Array<{ label: string; result: string }>
+  }, [isLessonComplete, sessions, activeSessionId])
   const sessionInitializedRef = useRef<string | null>(null)
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
   // Pixels below the container top where user messages land — clears the nav fade (h-8 = 32px) with breathing room
@@ -866,7 +887,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange, onLess
           {
             id: `artifact-note-${Date.now()}-${nextStep.id}`,
             role: "assistant",
-            content: nextStep.assistant,
+            content: typeof nextStep.assistant === "function" ? nextStep.assistant(summary) : nextStep.assistant,
             timestamp,
           },
         ]
@@ -963,6 +984,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange, onLess
               <LessonCompletionPanel
                 nextLessonLabel={nextLessonLabel ?? "the next lesson"}
                 onContinue={() => onLessonComplete?.(completedLessonId)}
+                completedAssessments={completedAssessments}
               />
             </div>
           ) : (
