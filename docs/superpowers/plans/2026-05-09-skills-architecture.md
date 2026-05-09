@@ -113,9 +113,9 @@ Alpha tokens: `neutral-a4`, `neutral-a8`, `neutral-a16`, `neutral-a20`, `neutral
 | Primary text | `text-foreground` | Body copy, headings |
 | Secondary text | `text-muted-foreground` | Helper text, labels |
 | Inverted text | `text-inverted-foreground` | Text on dark/filled backgrounds |
-| Default border | `border-border` | Dividers, input borders |
-| Subtle border | `border-subtle` | Light separators |
-| Strong border | `border-strong` | Emphasis borders |
+| Default border | `border-border` | Default — neutral-200, cards, inputs, icon CTAs |
+| Subtle border | `border-subtle` | Hairline separators (neutral-a8) |
+| Strong border | `border-strong` | Darker cases — neutral-300 |
 | Primary action bg | `bg-primary` | CTA buttons |
 | Primary text on bg | `text-primary-foreground` | Text on CTA buttons |
 | Overlay/scrim | `bg-overlay` | Modal backdrops |
@@ -172,6 +172,7 @@ Uses Tailwind v4's default 4px multiplier. `p-1` = 4px, `p-2` = 8px, `p-3` = 12p
 | `rounded-1` | 4px | Small UI elements, badges |
 | `rounded-2` | 8px | Inputs, buttons |
 | `rounded-3` | 12px | Cards, modals |
+| `rounded-4` | 16px | Larger cards, panels, sheets |
 | `rounded-full` | 1000px | Pills, avatars |
 
 ---
@@ -179,6 +180,34 @@ Uses Tailwind v4's default 4px multiplier. `p-1` = 4px, `p-2` = 8px, `p-3` = 12p
 ## Shadows
 
 `shadow-2xs` → `shadow-xs` → `shadow-sm` → `shadow-md` → `shadow-lg` → `shadow-xl` (lightest to heaviest).
+```
+
+- [ ] **Step 1b: Append token criteria section to foundations.md**
+
+Add the following section at the end of `docs/design-system/foundations.md`:
+
+```markdown
+---
+
+## When to add a new token
+
+Tokens have a two-sided discipline — too few forces palette fallbacks, too many bloats the semantic layer.
+
+**Add a new semantic + utility token pair when ALL are true:**
+- The colour/style serves a clear, reusable interface role
+- It will appear in 2+ components or contexts
+- It would change in dark mode
+- It's an explicit design intent, not a one-off
+
+**Do NOT add a token when ANY are true:**
+- It's a one-off decorative use that won't repeat
+- An existing token is close enough — adjust the design, not the tokens
+- The role is too component-specific to generalise (e.g. `bg-chat-bubble-hover`)
+- You're adding it speculatively — YAGNI
+
+**The test:** Can you describe the token's role in one sentence that applies to at least two different components? If not, use the named palette fallback.
+
+**Always add as a pair:** semantic alias in `:root` + Tailwind utility in `@theme inline` — never one without the other.
 ```
 
 - [ ] **Step 2: Create motion.md**
@@ -347,8 +376,8 @@ The `<Icon>` wrapper handles stroke weight automatically based on size. Never pa
 
 | Size | Stroke weight | Use for |
 |---|---|---|
-| 12px | 1 | Tight spaces, dense UI |
-| 16px | 1.25 | Inline with `text-small` |
+| 12px | 1.3 | Tight spaces, dense UI |
+| 16px | 1.3 | Inline with `text-small` |
 | 20px | 1.5 | Default — inline with `text-base` |
 | 24px | 2 | Prominent icons, inline with `text-lg` |
 | 32px | 2 | Large feature icons |
@@ -377,11 +406,17 @@ Designer reference for accessibility expectations in the Mande design system. Al
 
 ---
 
+## Compliance baseline
+
+**WCAG 2.2 Level AA** (ISO/IEC 40500:2025) is the minimum bar for all DS components.
+
+---
+
 ## Colour contrast
 
-- Normal text (< 18px regular, < 14px bold): minimum 4.5:1 against background
-- Large text (≥ 18px regular, ≥ 14px bold): minimum 3:1 against background
-- Interactive component boundaries (inputs, buttons): minimum 3:1 against adjacent colour
+- Normal text (< 18px regular, < 14px bold): minimum **4.5:1** against background
+- Large text (≥ 18px regular, ≥ 14px bold): minimum **3:1** against background
+- Interactive component boundaries (inputs, buttons): minimum **3:1** against adjacent colour
 
 The Mande semantic token pairs are designed to meet these ratios. Never introduce a custom colour combination without verifying contrast.
 
@@ -395,7 +430,11 @@ Never convey meaning through colour alone. A red border that signals an error mu
 
 ## Focus states
 
-Every interactive element must have a visible focus ring. Use `ring-ring` and standard `focus-visible:` variants. Never remove focus outlines with `outline-none` without replacing them.
+Every interactive element must have a visible focus ring. WCAG 2.2 AA requirements:
+- Focus indicator must have a **minimum 2px perimeter** around the component
+- The focused state must achieve **at least 3:1 contrast** against the unfocused state
+
+Use `ring-ring` and standard `focus-visible:` variants. Never remove focus outlines with `outline-none` without replacing them.
 
 ---
 
@@ -433,7 +472,7 @@ Use the `useReducedMotion()` hook from `motion/react` in all animated components
 
 ## Touch targets
 
-Minimum touch target size: 44×44px for any interactive element on mobile. This applies even if the visual element is smaller — use padding or a larger hit area.
+WCAG 2.2 AA minimum: **24×24px** for any interactive element (SC 2.5.8). Apple's iOS HIG recommends 44×44px — use 44×44px as the practical target for thumb-sized controls. This applies even if the visual element is smaller — use padding or a larger hit area.
 ```
 
 - [ ] **Step 6: Verify all 5 files exist**
@@ -491,16 +530,64 @@ Figma outputs raw values (hex, oklch, arbitrary px) — never use these directly
 
 Proceed to Step 2 only after every Figma value has been resolved to a utility class name.
 
+## Step 1c — Resolve raw values in user prompts (conditional)
+
+If the user's message contains raw values (px sizes, hex colours, numeric font sizes, weight words like "bold" or "medium", vague descriptions like "the lime colour"), resolve them to DS tokens before writing any code. Treat them identically to Figma raw values.
+
+| User says | Write |
+|---|---|
+| "16px border radius" | `rounded-4` |
+| "14px medium text" | `text-base-medium` |
+| "the lime / primary colour" | `bg-primary` or `text-primary` |
+| "a subtle shadow" | `shadow-xs` or `shadow-sm` |
+| "8px gap" | `gap-2` |
+| "bold" | the appropriate `-semibold` type scale utility |
+
+Never write the raw value the user specified. Always resolve first.
+
 ## Step 2 — Resolve every value to a DS token
 
 Decision hierarchy — follow in order, no exceptions:
 
 ```
 1. Semantic utility    → text-foreground, bg-success-subtle, border-border
-2. Named palette       → bg-neutral-100 (only if no semantic alias exists for this role)
-3. Gap found           → add alias + utility to globals.css first, then use it
+2. Named palette       → bg-neutral-100 (only if use is decorative, one-off, and will never be promoted to DS)
+3. Gap found           → apply criteria below, then add paired tokens to globals.css
 4. Never               → raw hex, oklch, arbitrary px, raw Tailwind color/size utilities
 ```
+
+**When a gap is found — two-sided criteria for adding a new token pair:**
+
+Add a semantic utility token when ALL of these are true:
+- The colour/style serves a clear, reusable interface role (hover state, selected surface, code block)
+- It will appear in 2+ components or contexts
+- It would change in dark mode (even though dark mode is deferred)
+- It represents an explicit design intent, not a one-off
+
+Do NOT add a semantic utility token when ANY of these are true:
+- It's a one-off decorative use that won't repeat
+- An existing semantic token is close enough — adjust the design, not the tokens
+- The role is too component-specific to generalise (`bg-chat-bubble-hover` won't map anywhere else)
+- You're adding it speculatively for future use — YAGNI
+
+**The test:** Can you describe the token's role in one sentence that applies to at least two different components? If not, it doesn't belong in the semantic layer. Use the named palette fallback instead.
+
+**Colour token contrast gate (WCAG 2.2 AA):**
+Before confirming any new foreground/background colour pair, verify it meets the applicable contrast ratio:
+- Text colour on background: 4.5:1 (normal text) or 3:1 (large text / bold ≥ 14px)
+- UI boundary colour (border/outline) against adjacent: 3:1
+
+Do not add a semantic colour alias that fails these ratios. If the raw palette value doesn't pass, choose a passing shade first, then create the alias from that shade.
+
+**Gap resolution — always a paired action:**
+
+When criteria confirm a new token is warranted, add both layers in a single edit to `globals.css`:
+1. Semantic alias in `:root` → `--semantic-{role}: var(--color-{palette}-{shade})`
+2. Tailwind utility in `@theme inline` → `--color-{name}: var(--semantic-{role})`
+
+Never add one without the other. No utility without a semantic alias (exposes primitives). No semantic alias without a utility (unusable in Tailwind).
+
+Then update `docs/design-system/foundations.md` as the designer-facing record.
 
 Flag every gap. Never approximate, never invent. Present the full mapping table + all open questions. Wait for confirmation before writing code.
 
@@ -515,16 +602,18 @@ Polish existing surfaces rather than building parallel APIs.
 
 ## Step 4 — Surface gaps + update globals.css
 
-For any token gap found in Step 2: add the CSS custom property to the appropriate block in `packages/ui/src/tokens/globals.css` first. Only then use it in component code.
+For any token gap confirmed by the Step 2 criteria: add both the semantic alias (`:root`) and the Tailwind utility (`@theme inline`) to `packages/ui/src/tokens/globals.css` as a single paired edit. Then update `docs/design-system/foundations.md`. Only then use the utility in component code.
 
-## Step 5 — Accessibility check
+## Step 5 — Accessibility check (WCAG 2.2 AA)
 
-Before writing JSX, verify the component design covers:
+Compliance baseline: **WCAG 2.2 Level AA** (ISO/IEC 40500:2025). Before writing JSX, verify the component design covers:
 - **Labels** — all interactive elements have accessible labels (aria-label, aria-labelledby, or visible text)
 - **Keyboard** — Tab to focus, Enter/Space to activate, Escape to dismiss (where applicable)
 - **Focus management** — overlays trap focus on open, restore focus to trigger on close
+- **Focus indicators** — visible ring with ≥ 2px perimeter; focused vs unfocused state ≥ 3:1 contrast (SC 2.4.11)
+- **Touch targets** — interactive elements ≥ 24×24px hit area (SC 2.5.8); aim for 44×44px on mobile
 - **Reduced motion** — use `useReducedMotion()` from `motion/react` for any animated component
-- **Colour** — meaning is never conveyed through colour alone
+- **Colour** — meaning is never conveyed through colour alone; contrast ratios verified (4.5:1 text, 3:1 UI boundaries)
 
 ## Step 6 — Promotion check
 
@@ -549,6 +638,7 @@ Wait for user confirmation before doing anything. If confirmed, invoke `promote-
 - **Semantic before palette** — `text-foreground` not `text-neutral-900`; always check for a semantic utility first
 - **No invented tokens** — if it's not in `globals.css`, flag it as a gap and add it there before using it
 - **Icons** — only `@central-icons-react/all` via `<Icon name="..." size={12|16|20|24|32} />`. Zero Lucide. Never pass stroke colour — the wrapper handles it automatically.
+- **Icon button touch target** — all interactive icons must reach a 24×24px hit area (WCAG 2.2 AA SC 2.5.8). Add padding to reach the minimum: `p-[6px]` for 12px icons, `p-1` for 16px, `p-0.5` for 20px (already close), none needed for 24px+. Always pair padding with a matching negative margin (`-m-1`, `-m-[6px]`, etc.) so the hit area sits behind the icon without affecting surrounding layout — the icon appears flush, the touch zone does not.
 - **No `ring-offset-background`** — this token does not exist in Mande
 - **No dark mode** — deferred; never add `dark:` variants
 - **Motion** — `motion` library (v12) for custom animation; `tw-animate-css` for Radix `data-state` overlays. Spring presets in `tokens/motion.ts`. Default to springs; ease-out for duration-based.
@@ -644,7 +734,11 @@ export { ComponentName } from './components/ui/ComponentName'
 export type { ComponentNameProps } from './components/ui/ComponentName'
 ```
 
-## Step 7 — Build
+## Step 7 — Update designer docs
+
+Add the new component to `docs/design-system/components.md` under the correct category in the component inventory.
+
+## Step 8 — Build
 
 ```bash
 export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" && cd packages/ui && pnpm build
@@ -652,17 +746,18 @@ export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" && cd packages/ui && pnp
 
 Fix any TypeScript or build errors before proceeding. Do not skip this step.
 
-## Step 8 — Commit
+## Step 9 — Commit
 
 ```bash
 git add packages/ui/src/components/ui/<ComponentName>.tsx \
         packages/ui/src/components/ui/<ComponentName>.stories.tsx \
         packages/ui/src/index.ts \
-        apps/playground/src/components/<ComponentName>.tsx
+        apps/playground/src/components/<ComponentName>.tsx \
+        docs/design-system/components.md
 git commit -m "feat(ui): promote <ComponentName> to DS"
 ```
 
-## Step 9 — Request review
+## Step 10 — Request review
 
 Invoke `superpowers:requesting-code-review`.
 ```

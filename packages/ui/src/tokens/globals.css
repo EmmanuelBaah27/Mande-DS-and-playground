@@ -388,9 +388,9 @@
   --semantic-neutral-bg: var(--color-neutral-white);
   --semantic-neutral-bg-subtle: var(--color-neutral-50);
   --semantic-neutral-bg-muted: var(--color-neutral-100);
-  --semantic-neutral-border: var(--color-neutral-300);
+  --semantic-neutral-border: var(--color-neutral-200);
   --semantic-neutral-border-subtle: var(--color-neutral-a8);
-  --semantic-neutral-border-strong: var(--color-neutral-400);
+  --semantic-neutral-border-strong: var(--color-neutral-300);
   --semantic-neutral-text: var(--color-neutral-900);
   --semantic-neutral-text-secondary: var(--color-neutral-500);
   --semantic-neutral-text-muted: var(--color-neutral-400);
