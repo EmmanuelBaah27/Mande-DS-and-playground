@@ -3,6 +3,16 @@ name: emil-design-eng
 description: This skill encodes Emil Kowalski's philosophy on UI polish, component design, animation decisions, and the invisible details that make software feel great.
 ---
 
+## Before any animation work
+
+Read these source files first:
+- `packages/ui/src/tokens/globals.css` — duration variables (`--duration-*`) and easing variables (`--ease-*`)
+- `packages/ui/src/tokens/motion.ts` — spring presets (`snappy`, `smooth`, `gentle`, `bouncy`, `crisp`)
+
+Apply the principles below on top of these actual token values. Never invent duration or easing values.
+
+---
+
 # Design Engineering
 
 ## Initial Response
