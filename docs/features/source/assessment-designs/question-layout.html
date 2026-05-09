@@ -1,0 +1,218 @@
+<style>
+  body { background: #1A1C18; font-family: 'DM Sans', -apple-system, sans-serif; }
+  .scene { max-width: 420px; margin: 0 auto; padding: 24px 20px; }
+
+  /* ── shared chrome ── */
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+  .logo { font-size: 13px; font-weight: 600; color: #BFEA4A; letter-spacing: 0.5px; }
+  .step { font-size: 12px; color: #4A4D42; }
+  .progress-bar { height: 2px; background: #2E3029; border-radius: 2px; margin-bottom: 36px; overflow: hidden; }
+  .progress-fill { height: 100%; background: #BFEA4A; border-radius: 2px; transition: width 0.4s ease; }
+
+  /* ── question text ── */
+  .question-text {
+    font-size: 22px; font-weight: 700;
+    font-family: 'Playfair Display', Georgia, serif;
+    color: #FFFFFF; line-height: 1.3;
+    margin-bottom: 32px;
+  }
+
+  /* ──────────────────────────────────────────── */
+  /*  OPTION A — vertical stacked buttons         */
+  /* ──────────────────────────────────────────── */
+  .option-a .option-btn {
+    width: 100%; display: flex; align-items: center; gap: 14px;
+    background: #212318; border: 1px solid #2E3029;
+    border-radius: 14px; padding: 16px 18px;
+    margin-bottom: 10px; cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .option-a .option-btn:hover { border-color: #4A4D42; }
+  .option-a .option-btn.selected { border-color: #BFEA4A; background: rgba(191,234,74,0.06); }
+  .option-a .dot {
+    width: 20px; height: 20px; border-radius: 50%;
+    border: 2px solid #3A3D30; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .option-a .option-btn.selected .dot {
+    background: #BFEA4A; border-color: #BFEA4A;
+  }
+  .option-a .dot-inner { width: 8px; height: 8px; background: #1A1C18; border-radius: 50%; display: none; }
+  .option-a .option-btn.selected .dot-inner { display: block; }
+  .option-a .opt-label { font-size: 15px; color: #D0D3C0; font-weight: 400; }
+  .option-a .opt-num { font-size: 12px; color: #4A4D42; margin-left: auto; }
+
+  /* ──────────────────────────────────────────── */
+  /*  OPTION B — horizontal 4-tile grid           */
+  /* ──────────────────────────────────────────── */
+  .option-b .tile-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .option-b .tile {
+    background: #212318; border: 1px solid #2E3029;
+    border-radius: 12px; padding: 14px 8px;
+    text-align: center; cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+  }
+  .option-b .tile:hover { border-color: #4A4D42; }
+  .option-b .tile.selected { border-color: #BFEA4A; background: rgba(191,234,74,0.08); }
+  .option-b .tile-icon { font-size: 22px; margin-bottom: 8px; }
+  .option-b .tile-label { font-size: 10px; color: #8A8D7E; line-height: 1.3; font-weight: 500; text-transform: uppercase; letter-spacing: 0.4px; }
+  .option-b .tile.selected .tile-label { color: #BFEA4A; }
+
+  /* ──────────────────────────────────────────── */
+  /*  OPTION C — slider / spectrum bar            */
+  /* ──────────────────────────────────────────── */
+  .option-c .spectrum { position: relative; padding: 12px 0 36px; }
+  .option-c .track { height: 4px; background: #2E3029; border-radius: 2px; position: relative; }
+  .option-c .track-fill { position: absolute; left: 0; top: 0; height: 4px; background: #BFEA4A; border-radius: 2px; width: 50%; transition: width 0.2s; }
+  .option-c .knob {
+    position: absolute; top: -10px; width: 24px; height: 24px;
+    background: #BFEA4A; border-radius: 50%;
+    box-shadow: 0 0 16px rgba(191,234,74,0.4);
+    left: calc(50% - 12px);
+    cursor: grab; transition: left 0.15s;
+  }
+  .option-c .spectrum-labels { display: flex; justify-content: space-between; margin-top: 20px; }
+  .option-c .spectrum-labels span { font-size: 11px; color: #4A4D42; }
+  .option-c .pip-row { display: flex; justify-content: space-between; position: absolute; bottom: 8px; left: 0; right: 0; }
+  .option-c .pip { width: 8px; height: 8px; border-radius: 50%; background: #2E3029; cursor: pointer; transition: background 0.15s; }
+  .option-c .pip.active { background: #BFEA4A; }
+  .option-c .selected-label { text-align: center; font-size: 14px; color: #B0B3A0; margin-top: 8px; min-height: 22px; }
+
+  /* ── shared nav ── */
+  .nav-row { display: flex; align-items: center; justify-content: space-between; margin-top: 32px; }
+  .nav-back { background: none; border: 1px solid #2E3029; border-radius: 100px; padding: 11px 20px; color: #6A6D5E; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .nav-next { background: #BFEA4A; border: none; border-radius: 100px; padding: 12px 28px; color: #1A1C18; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .nav-next:disabled { opacity: 0.35; cursor: default; }
+
+  /* ── panel chrome ── */
+  .panel {
+    background: #141613; border: 1px solid #2E3029; border-radius: 20px;
+    padding: 28px 24px; margin-bottom: 40px;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  }
+  .panel-label {
+    font-size: 11px; letter-spacing: 1px; text-transform: uppercase;
+    color: #4A4D42; font-weight: 600; margin-bottom: 6px;
+  }
+
+  /* host wrapper */
+  h2 { color: #FFF; font-size: 18px; font-weight: 600; margin-bottom: 6px; font-family: inherit; }
+  .subtitle-top { color: #6A6D5E; font-size: 14px; margin-bottom: 32px; }
+</style>
+
+<h2>How should each question be presented?</h2>
+<p class="subtitle-top subtitle">Pick the layout that feels most natural for a 42-question Likert assessment on mobile.</p>
+
+<div class="cards">
+
+  <!-- ── OPTION A ─────────────────────────────────── -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 24px 20px; background: #1A1C18; border-radius: 12px 12px 0 0;">
+      <div class="scene" style="padding: 0;">
+        <div class="panel option-a">
+          <div class="panel-label" style="margin-bottom: 12px;">Career Interest Assessment — 7 / 42</div>
+          <div class="progress-bar" style="margin-bottom: 20px;"><div class="progress-fill" style="width:16%"></div></div>
+          <div class="question-text" style="font-size: 17px; margin-bottom: 22px;">"I like to build things"</div>
+          <div>
+            <div class="option-btn" style="margin-bottom:8px; background:#1A1C18; border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; border:1px solid #2E3029;">
+              <div class="dot" style="width:18px;height:18px;border-radius:50%;border:2px solid #3A3D30;flex-shrink:0;"></div>
+              <span style="font-size:14px;color:#8A8D7E;">Not like me at all</span>
+              <span style="font-size:11px;color:#3A3D30;margin-left:auto;">1</span>
+            </div>
+            <div class="option-btn" style="margin-bottom:8px; background:#1A1C18; border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; border:1px solid #2E3029;">
+              <div class="dot" style="width:18px;height:18px;border-radius:50%;border:2px solid #3A3D30;flex-shrink:0;"></div>
+              <span style="font-size:14px;color:#8A8D7E;">Not much like me</span>
+              <span style="font-size:11px;color:#3A3D30;margin-left:auto;">2</span>
+            </div>
+            <div class="option-btn selected" style="margin-bottom:8px; background:rgba(191,234,74,0.07); border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; border:1px solid #BFEA4A;">
+              <div class="dot" style="width:18px;height:18px;border-radius:50%;background:#BFEA4A;border-color:#BFEA4A;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+                <div style="width:7px;height:7px;background:#1A1C18;border-radius:50%;"></div>
+              </div>
+              <span style="font-size:14px;color:#FFFFFF;font-weight:500;">Somewhat like me</span>
+              <span style="font-size:11px;color:#BFEA4A;margin-left:auto;">3</span>
+            </div>
+            <div class="option-btn" style="background:#1A1C18; border-radius:12px; padding:14px 16px; display:flex; align-items:center; gap:12px; border:1px solid #2E3029;">
+              <div class="dot" style="width:18px;height:18px;border-radius:50%;border:2px solid #3A3D30;flex-shrink:0;"></div>
+              <span style="font-size:14px;color:#8A8D7E;">Very much like me</span>
+              <span style="font-size:11px;color:#3A3D30;margin-left:auto;">4</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A — Vertical list</h3>
+      <p>All 4 options as tap-to-select rows. Clear label, auto-advances on tap. Familiar, accessible, works at any text length.</p>
+    </div>
+  </div>
+
+  <!-- ── OPTION B ─────────────────────────────────── -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 24px 20px; background: #1A1C18; border-radius: 12px 12px 0 0;">
+      <div class="panel option-b">
+        <div class="panel-label" style="margin-bottom: 12px;">Career Interest Assessment — 7 / 42</div>
+        <div class="progress-bar" style="margin-bottom: 20px;"><div class="progress-fill" style="width:16%"></div></div>
+        <div class="question-text" style="font-size: 17px; margin-bottom: 22px;">"I like to build things"</div>
+        <div class="tile-grid">
+          <div class="tile" style="background:#1A1C18; border:1px solid #2E3029; border-radius:12px; padding:14px 6px; text-align:center;">
+            <div class="tile-icon">✕</div>
+            <div class="tile-label" style="font-size:9px;color:#4A4D42;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">Not like<br>me at all</div>
+          </div>
+          <div class="tile" style="background:#1A1C18; border:1px solid #2E3029; border-radius:12px; padding:14px 6px; text-align:center;">
+            <div class="tile-icon">–</div>
+            <div class="tile-label" style="font-size:9px;color:#4A4D42;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">Not much<br>like me</div>
+          </div>
+          <div class="tile selected" style="background:rgba(191,234,74,0.08); border:1px solid #BFEA4A; border-radius:12px; padding:14px 6px; text-align:center;">
+            <div class="tile-icon">✓</div>
+            <div class="tile-label" style="font-size:9px;color:#BFEA4A;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">Somewhat<br>like me</div>
+          </div>
+          <div class="tile" style="background:#1A1C18; border:1px solid #2E3029; border-radius:12px; padding:14px 6px; text-align:center;">
+            <div class="tile-icon">↑↑</div>
+            <div class="tile-label" style="font-size:9px;color:#4A4D42;text-transform:uppercase;letter-spacing:0.3px;line-height:1.3;">Very much<br>like me</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B — 4-tile grid</h3>
+      <p>Compact horizontal tiles with icon + label. Fast, thumb-friendly, and visually striking. Label text is tight — works better with icons than words.</p>
+    </div>
+  </div>
+
+  <!-- ── OPTION C ─────────────────────────────────── -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding: 24px 20px; background: #1A1C18; border-radius: 12px 12px 0 0;">
+      <div class="panel option-c">
+        <div class="panel-label" style="margin-bottom: 12px;">Career Interest Assessment — 7 / 42</div>
+        <div class="progress-bar" style="margin-bottom: 20px;"><div class="progress-fill" style="width:16%"></div></div>
+        <div class="question-text" style="font-size: 17px; margin-bottom: 28px;">"I like to build things"</div>
+        <div style="padding: 0 8px;">
+          <div style="position:relative; height: 4px; background:#2E3029; border-radius:2px;">
+            <div style="position:absolute;left:0;top:0;height:4px;width:50%;background:#BFEA4A;border-radius:2px;"></div>
+            <!-- pips -->
+            <div style="position:absolute;top:-6px;left:0;width:16px;height:16px;background:#2E3029;border-radius:50%;"></div>
+            <div style="position:absolute;top:-6px;left:calc(33% - 8px);width:16px;height:16px;background:#2E3029;border-radius:50%;"></div>
+            <div style="position:absolute;top:-6px;left:calc(66% - 8px);width:16px;height:16px;background:#BFEA4A;border-radius:50%;box-shadow:0 0 8px rgba(191,234,74,0.5);"></div>
+            <div style="position:absolute;top:-6px;right:0;width:16px;height:16px;background:#2E3029;border-radius:50%;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:20px;">
+            <span style="font-size:11px;color:#4A4D42;">Not at all</span>
+            <span style="font-size:11px;color:#BFEA4A;font-weight:500;">Somewhat like me</span>
+            <span style="font-size:11px;color:#4A4D42;">Very much</span>
+          </div>
+        </div>
+        <div style="display:flex;justify-content:space-around;margin-top:24px;gap:8px;">
+          <button style="flex:1;background:#1A1C18;border:1px solid #2E3029;border-radius:10px;padding:12px 6px;color:#4A4D42;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;">✕<br><span style="font-size:8px;">Not at all</span></button>
+          <button style="flex:1;background:#1A1C18;border:1px solid #2E3029;border-radius:10px;padding:12px 6px;color:#4A4D42;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;">–<br><span style="font-size:8px;">Not much</span></button>
+          <button style="flex:1;background:rgba(191,234,74,0.08);border:1px solid #BFEA4A;border-radius:10px;padding:12px 6px;color:#BFEA4A;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;">✓<br><span style="font-size:8px;">Somewhat</span></button>
+          <button style="flex:1;background:#1A1C18;border:1px solid #2E3029;border-radius:10px;padding:12px 6px;color:#4A4D42;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;cursor:pointer;">↑↑<br><span style="font-size:8px;">Very much</span></button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Spectrum + tap buttons</h3>
+      <p>A progress track + 4 tap targets below. Visualises the scale spatially. More abstract — better for users who think in spectrums than categories.</p>
+    </div>
+  </div>
+
+</div>
