@@ -42,24 +42,23 @@ export function ChatValuesAssessmentTrigger({
     ? `Top values: ${completedSummary.split(" · ").slice(0, 3).join(", ")}`
     : undefined
 
+  if (overlayOpen) {
+    return <ValuesAssessmentQuiz onComplete={handleComplete} onExit={handleExit} />
+  }
+
   return (
-    <>
-      <ChatAssessmentCard
-        title="Values Assessment"
-        icon="🧭"
-        duration="55 questions · ~8 min"
-        description="Uncover the work values that drive you — what makes a job feel real."
-        status={cardStatus}
-        totalQuestions={totalQuestions}
-        currentQuestion={answeredCount}
-        resultSubtitle={resultSubtitle}
-        onStart={handleOpen}
-        onContinue={handleOpen}
-        onRetake={handleRetake}
-      />
-      {overlayOpen && (
-        <ValuesAssessmentQuiz onComplete={handleComplete} onExit={handleExit} />
-      )}
-    </>
+    <ChatAssessmentCard
+      title="Values Assessment"
+      icon="🧭"
+      duration="55 questions · ~8 min"
+      description="Uncover the work values that drive you — what makes a job feel real."
+      status={cardStatus}
+      totalQuestions={totalQuestions}
+      currentQuestion={answeredCount}
+      resultSubtitle={resultSubtitle}
+      onStart={handleOpen}
+      onContinue={handleOpen}
+      onRetake={handleRetake}
+    />
   )
 }

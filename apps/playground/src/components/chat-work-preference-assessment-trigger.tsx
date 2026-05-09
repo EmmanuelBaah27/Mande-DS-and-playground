@@ -60,32 +60,33 @@ export function ChatWorkPreferenceAssessmentTrigger({
       Object.values(STYLES).find((s) => completedTitle.startsWith(s.name))?.icon ?? "🎯"
   }
 
-  return (
-    <>
-      <ChatAssessmentCard
-        title={isCompleted ? completedTitle : "Work Preference"}
-        icon={isCompleted ? completedIcon : "🎯"}
-        duration={`${TOTAL_QUESTIONS} choices · ~3 min`}
-        description="Discover how you naturally approach tasks, teams, and problems."
-        status={cardStatus}
-        totalQuestions={TOTAL_QUESTIONS}
+  if (overlayOpen && (quiz.phase === "quiz" || quiz.phase === "result")) {
+    return (
+      <WorkPreferenceQuiz
+        phase={quiz.phase}
         currentQuestion={quiz.currentQuestion}
-        resultSubtitle={isCompleted ? completedSubtitle : undefined}
-        onStart={handleOpen}
-        onContinue={handleOpen}
-        onRetake={handleOpen}
+        result={quiz.result}
+        onAnswer={quiz.answer}
+        onRestart={quiz.restart}
+        onExit={handleExit}
+        onBackToChat={handleBackToChat}
       />
-      {overlayOpen && (quiz.phase === "quiz" || quiz.phase === "result") && (
-        <WorkPreferenceQuiz
-          phase={quiz.phase}
-          currentQuestion={quiz.currentQuestion}
-          result={quiz.result}
-          onAnswer={quiz.answer}
-          onRestart={quiz.restart}
-          onExit={handleExit}
-          onBackToChat={handleBackToChat}
-        />
-      )}
-    </>
+    )
+  }
+
+  return (
+    <ChatAssessmentCard
+      title={isCompleted ? completedTitle : "Work Preference"}
+      icon={isCompleted ? completedIcon : "🎯"}
+      duration={`${TOTAL_QUESTIONS} choices · ~3 min`}
+      description="Discover how you naturally approach tasks, teams, and problems."
+      status={cardStatus}
+      totalQuestions={TOTAL_QUESTIONS}
+      currentQuestion={quiz.currentQuestion}
+      resultSubtitle={isCompleted ? completedSubtitle : undefined}
+      onStart={handleOpen}
+      onContinue={handleOpen}
+      onRetake={handleOpen}
+    />
   )
 }

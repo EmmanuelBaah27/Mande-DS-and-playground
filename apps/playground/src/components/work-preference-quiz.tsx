@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useState, useEffect, useRef } from "react"
-import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "motion/react"
 import { Button, Icon, springs, cn } from "@mande/ui"
 import {
@@ -235,12 +234,6 @@ export function WorkPreferenceQuiz({
   onExit,
   onBackToChat,
 }: WorkPreferenceQuizProps) {
-  const [mounted, setMounted] = React.useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" && phase === "quiz") onExit()
@@ -249,14 +242,10 @@ export function WorkPreferenceQuiz({
     return () => document.removeEventListener("keydown", handleKey)
   }, [phase, onExit])
 
-  if (!mounted) return null
-
-  const overlay = (
+  return (
     <div
-      role="dialog"
-      aria-modal="true"
       aria-label="Work Preference Assessment"
-      className="fixed inset-0 z-[200] bg-white flex flex-col overflow-x-hidden"
+      className="rounded-3 border border-neutral-200 bg-white flex flex-col overflow-hidden h-[460px] shadow-sm"
     >
       <AnimatePresence mode="wait">
         {phase === "quiz" ? (
@@ -295,6 +284,4 @@ export function WorkPreferenceQuiz({
       </AnimatePresence>
     </div>
   )
-
-  return createPortal(overlay, document.body)
 }

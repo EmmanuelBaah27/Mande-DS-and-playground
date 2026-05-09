@@ -48,33 +48,34 @@ export function ChatHollandAssessmentTrigger({
         .join(" · ")
     : undefined
 
-  return (
-    <>
-      <ChatAssessmentCard
-        title={isCompleted ? (completedCode ?? "Holland Code") : "Career Interest"}
-        icon="🧭"
-        duration="42 questions · ~10 min"
-        description="Discover your top career interest types using the Holland RIASEC framework."
-        status={cardStatus}
-        totalQuestions={HOLLAND_QUESTIONS.length}
-        currentQuestion={state.currentIndex}
-        resultSubtitle={resultSubtitle}
-        onStart={handleOpen}
-        onContinue={handleOpen}
-        onRetake={handleRetake}
+  if (overlayOpen) {
+    return (
+      <HollandAssessmentOverlay
+        state={state}
+        begin={begin}
+        answer={answer}
+        back={back}
+        exit={exit}
+        retake={retake}
+        onComplete={handleComplete}
+        onClose={handleClose}
       />
-      {overlayOpen && (
-        <HollandAssessmentOverlay
-          state={state}
-          begin={begin}
-          answer={answer}
-          back={back}
-          exit={exit}
-          retake={retake}
-          onComplete={handleComplete}
-          onClose={handleClose}
-        />
-      )}
-    </>
+    )
+  }
+
+  return (
+    <ChatAssessmentCard
+      title={isCompleted ? (completedCode ?? "Holland Code") : "Career Interest"}
+      icon="🧭"
+      duration="42 questions · ~10 min"
+      description="Discover your top career interest types using the Holland RIASEC framework."
+      status={cardStatus}
+      totalQuestions={HOLLAND_QUESTIONS.length}
+      currentQuestion={state.currentIndex}
+      resultSubtitle={resultSubtitle}
+      onStart={handleOpen}
+      onContinue={handleOpen}
+      onRetake={handleRetake}
+    />
   )
 }

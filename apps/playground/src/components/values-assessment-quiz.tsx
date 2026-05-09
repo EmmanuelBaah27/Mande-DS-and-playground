@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useState, useEffect } from "react"
-import { createPortal } from "react-dom"
 import { Button, Icon, cn, springs } from "@mande/ui"
 import { motion } from "motion/react"
 import { ChatAssessmentCard } from "./chat-assessment-card"
@@ -525,12 +524,6 @@ export function ValuesAssessmentQuiz({
   onComplete: (topCategories: string[]) => void
   onExit: () => void
 }) {
-  const [mounted, setMounted] = React.useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onExit()
@@ -539,17 +532,12 @@ export function ValuesAssessmentQuiz({
     return () => document.removeEventListener("keydown", handleKey)
   }, [onExit])
 
-  if (!mounted) return null
-
-  return createPortal(
+  return (
     <div
-      role="dialog"
-      aria-modal="true"
       aria-label="Values Assessment"
-      className="fixed inset-0 z-[200] overflow-hidden"
+      className="rounded-3 border border-neutral-200 overflow-hidden h-[520px] shadow-sm"
     >
       <ValuesAssessmentQuizContent onComplete={onComplete} onExit={onExit} />
-    </div>,
-    document.body
+    </div>
   )
 }

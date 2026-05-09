@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { createPortal } from "react-dom"
 import { Button, Icon } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
 import { HOLLAND_QUESTIONS, HOLLAND_TYPES } from "./holland-data"
@@ -349,12 +348,6 @@ export function HollandAssessmentOverlay({
   onComplete,
   onClose,
 }: HollandAssessmentOverlayProps) {
-  const [mounted, setMounted] = React.useState(false)
-
-  React.useEffect(() => {
-    setMounted(true)
-  }, [])
-
   React.useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
@@ -378,14 +371,10 @@ export function HollandAssessmentOverlay({
     }
   }
 
-  if (!mounted) return null
-
-  const overlay = (
+  return (
     <div
-      role="dialog"
-      aria-modal="true"
       aria-label="Career Interest Assessment"
-      className="fixed inset-0 z-[200] bg-neutral-50 flex flex-col"
+      className="rounded-3 border border-neutral-200 bg-neutral-50 flex flex-col overflow-hidden h-[520px] shadow-sm"
     >
       {state.screen === "intro" && <HollandIntroScreen onBegin={begin} />}
       {state.screen === "question" && (
@@ -406,6 +395,4 @@ export function HollandAssessmentOverlay({
       )}
     </div>
   )
-
-  return createPortal(overlay, document.body)
 }
