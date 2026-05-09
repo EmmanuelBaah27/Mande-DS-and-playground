@@ -55,25 +55,30 @@ docs/
 │   ├── session-report-19.md
 │   └── session-report-20.md
 │
-├── design-system/                         ← NEW folder
-│   ├── for-designers.md
-│   └── for-engineers.md
+├── design-system/                         ← already exists (5 files from skills arch); 2 more moved in
+│   ├── accessibility.md                   ← already exists
+│   ├── components.md                      ← already exists
+│   ├── foundations.md                     ← already exists
+│   ├── icons.md                           ← already exists
+│   ├── motion.md                          ← already exists
+│   ├── for-designers.md                   ← moved from docs/ root
+│   └── for-engineers.md                   ← moved from docs/ root
 │
 └── superpowers/
-    ├── plans/
-    │   └── 2026-05-09-skills-architecture.md       ← only active plan; all others deleted
+    ├── plans/                                       ← empty after all completed plans deleted
     └── specs/
         ├── 2026-05-09-repo-docs-reorganisation-design.md   ← this file
-        └── 2026-05-09-skills-architecture-design.md        ← only other active spec
+        └── 2026-05-09-skills-architecture-design.md        ← kept as reference for skills setup
 ```
 
 ---
 
 ## Files to Delete
 
-### Superseded by `build-component` skill
-- `docs/figma-to-code-prompt.md`
-- `docs/new-component-checklist.md`
+### Already deleted by skills architecture work
+- `docs/figma-to-code-prompt.md` ✓
+- `docs/new-component-checklist.md` ✓
+- `.agents/skills/` directory ✓
 
 ### Superseded by ops docs / no longer relevant
 - `docs/BUILD_LOG.md` — fully duplicated by session reports
@@ -86,7 +91,8 @@ docs/
 ### Input docs for fully implemented features (no longer needed)
 - `docs/product/Discussions/Artifacts convo transcript.txt` (entire `Discussions/` folder)
 
-### Completed plans (all except skills architecture)
+### Completed plans (all, including skills architecture — now executed)
+- `docs/superpowers/plans/2026-05-09-skills-architecture.md`
 - `docs/superpowers/plans/2026-04-09-chat-ui-polish.md`
 - `docs/superpowers/plans/2026-04-19-avatar-redesign.md`
 - `docs/superpowers/plans/2026-04-25-chat-main-page.md`
@@ -171,6 +177,6 @@ All files and folders inside `docs/` use lowercase kebab-case:
 ## What Does NOT Change
 
 - `apps/`, `packages/`, `.storybook/`, `.github/`, `.claude/` — no changes
-- `docs/superpowers/plans/2026-05-09-skills-architecture.md` — active plan, untouched
-- `docs/superpowers/specs/2026-05-09-skills-architecture-design.md` — active spec, untouched
+- `.agents/` — already removed by skills architecture work; nothing to do
+- `docs/superpowers/specs/2026-05-09-skills-architecture-design.md` — kept as reference for current skills setup
 - Feature docs content — only paths and folder names change, no content edits (except OVERVIEW.md rename)
