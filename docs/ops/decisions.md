@@ -161,7 +161,7 @@ Loading `/` shows the welcome-back screen (Mande icon, personalised greeting, re
 
 ## Git workflow — branch/merge/main (Session 21)
 
-**Decision:** Branch-by-topic, merge directly to main without waiting for PR review (solo team, no reviewer available). PRs are still used as a practice to maintain a permanent record and diff view, but they are self-merged.
+**Decision:** Branch-by-topic, merge directly to main. No PRs while working solo — they add friction with no benefit when there's no reviewer. PRs can be reintroduced when the team grows.
 
 **Mental model:**
 - `main` = the published, always-stable version.
@@ -193,13 +193,9 @@ git push origin --delete claude/<topic-slug>   # if it was pushed
 
 **Why `--no-ff`:** Creates a merge commit that marks the boundary of each topic. Makes `git log --graph` readable — each topic is a discrete chapter, not a flat stream of commits.
 
-**Why PRs even without a reviewer:**
-- Permanent record of what changed and why (description lives on GitHub).
-- Forces a deliberate "ready to land" moment.
-- Clean diff view before merging — useful for self-review.
-- When the team grows, no habit change required.
-
 **Merge strategy:** `--merge` (not `--squash`) because each individual commit in the branch is meaningful. Use `--squash` only when the branch has lots of `wip` / `fix typo` noise.
+
+**When PRs come back:** Add them when a second person joins the repo. The workflow above doesn't change — just insert `gh pr create` before step 5 and `gh pr merge` instead of the manual merge.
 
 **Branch naming:** `claude/<topic-slug>` — lowercase, hyphenated, short description of the work unit.
 
