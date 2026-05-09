@@ -10,7 +10,7 @@ import { ChatThread } from "../components/chat-thread"
 import { WelcomeState } from "../components/welcome-state"
 import { CurriculumView } from "../components/curriculum-view"
 import { DevTriggerPanel, type InjectableChallenge } from "../components/dev-trigger-panel"
-import { INITIAL_SESSIONS, CURRICULUM_MODULES, createChallengeData } from "../components/chat-data"
+import { INITIAL_SESSIONS, CURRICULUM_MODULES, CURRICULUM_LESSONS, createChallengeData } from "../components/chat-data"
 import type { ChatSession, ChallengeResponseType } from "../components/chat-data"
 
 // ─── Editable session title ───────────────────────────────────────────────────
@@ -240,6 +240,35 @@ export default function ChatPage() {
     )
   }
 
+  /** API integration point: called when ChatThread signals the active lesson is complete. */
+  const handleLessonComplete = (_lessonId: string) => {
+    setSessions((prev) =>
+      prev.map((s) =>
+        s.id === activeSessionId && s.progress
+          ? {
+              ...s,
+              progress: {
+                ...s.progress,
+                lessonIndex: Math.min(s.progress.lessonIndex + 1, s.progress.totalLessons),
+                percentComplete: Math.round(
+                  ((s.progress.lessonIndex + 1) / s.progress.totalLessons) * 100
+                ),
+              },
+            }
+          : s
+      )
+    )
+  }
+
+  const activeLessonIndex = Math.max(
+    0,
+    Math.min(
+      CURRICULUM_LESSONS.length - 1,
+      (sessions.find((s) => s.mode === "curriculum")?.progress?.lessonIndex ?? 1) - 1
+    )
+  )
+  const nextLessonLabel = CURRICULUM_LESSONS[activeLessonIndex + 1]?.label ?? "the next lesson"
+
   const toResponseType = (artifactType: InjectableChallenge["artifactType"]): ChallengeResponseType => {
     switch (artifactType) {
       case "reflection":
@@ -442,6 +471,8 @@ export default function ChatPage() {
             sessions={sessions}
             activeSessionId={activeSessionId!}
             onSessionsChange={setSessions}
+            onLessonComplete={handleLessonComplete}
+            nextLessonLabel={nextLessonLabel}
           />
         )}
       </motion.div>

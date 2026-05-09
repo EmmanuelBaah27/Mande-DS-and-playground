@@ -32,12 +32,14 @@ import {
 import { ChatValuesAssessmentTrigger } from "./chat-values-assessment-trigger"
 import { ChatWorkPreferenceAssessmentTrigger } from "./chat-work-preference-assessment-trigger"
 import { ChatHollandAssessmentTrigger } from "./chat-holland-assessment-trigger"
+import { LessonCompletionPanel } from "./chat-lesson-completion"
 
 
 type ArtifactFlowStep = {
   id: string
   assistant: string
   challenge?: Omit<ChallengeData, "type">
+  lessonComplete?: boolean
 }
 
 const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, ArtifactFlowStep | null> = {
@@ -99,6 +101,7 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
     id: "artifact-holland-done",
     assistant:
       "All five inputs are in. Let me pull this together and show you what the pattern points to.",
+    lessonComplete: true,
   },
   craft: {
     id: "artifact-craft-done",
@@ -576,6 +579,10 @@ export type ChatThreadProps = {
   sessions: ChatSession[]
   activeSessionId: string
   onSessionsChange: (sessions: ChatSession[]) => void
+  /** Called when the current lesson's final artifact is completed. Backend integration point. */
+  onLessonComplete?: (lessonId: string) => void
+  /** Label of the next lesson to show on the Continue CTA. */
+  nextLessonLabel?: string
 }
 
 function easeOutScroll(container: HTMLElement, target: number, duration = 300) {
@@ -592,13 +599,15 @@ function easeOutScroll(container: HTMLElement, target: number, duration = 300) {
   requestAnimationFrame(step)
 }
 
-export function ChatThread({ sessions, activeSessionId, onSessionsChange }: ChatThreadProps) {
+export function ChatThread({ sessions, activeSessionId, onSessionsChange, onLessonComplete, nextLessonLabel }: ChatThreadProps) {
   const sentinelRef = useRef<HTMLDivElement>(null)
   const scrollOuterRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [challengeError, setChallengeError] = useState<string | null>(null)
   const [showTopScrollFade, setShowTopScrollFade] = useState(false)
   const [isAtBottom, setIsAtBottom] = useState(true)
+  const [isLessonComplete, setIsLessonComplete] = useState(false)
+  const [completedLessonId, setCompletedLessonId] = useState("")
   const isAtBottomRef = useRef(true)
   const sessionInitializedRef = useRef<string | null>(null)
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
@@ -825,6 +834,9 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   }
 
   const handleArtifactComplete = (messageId: string, summary: string) => {
+    let didComplete = false
+    let resolvedLessonId = ""
+
     onSessionsChange(
       sessions.map((s) => {
         if (s.id !== activeSessionId) return s
@@ -843,6 +855,11 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
         const completed = updatedMessages.find((msg) => msg.id === messageId)?.challenge
         const nextStep = completed?.artifactType ? ARTIFACT_FLOW_STEPS[completed.artifactType] : null
         if (!nextStep) return { ...s, messages: updatedMessages }
+
+        if (nextStep.lessonComplete) {
+          didComplete = true
+          resolvedLessonId = completed?.lessonId ?? "lesson-discovering-options"
+        }
 
         const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
         const followUps: Message[] = [
@@ -865,6 +882,12 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
         return { ...s, messages: [...updatedMessages, ...followUps] }
       })
     )
+
+    if (didComplete) {
+      setIsLessonComplete(true)
+      setCompletedLessonId(resolvedLessonId)
+      onLessonComplete?.(resolvedLessonId)
+    }
   }
 
   return (
@@ -935,6 +958,13 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
                 onArtifactComplete={handleArtifactComplete}
               />
             </ChatActiveArtifactFooterShell>
+          ) : isLessonComplete ? (
+            <div className="shrink-0 border-t border-neutral-100">
+              <LessonCompletionPanel
+                nextLessonLabel={nextLessonLabel ?? "the next lesson"}
+                onContinue={() => onLessonComplete?.(completedLessonId)}
+              />
+            </div>
           ) : (
             <div className="shrink-0">
               <MessageInput
