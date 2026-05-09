@@ -7,29 +7,44 @@ import { cn } from "@/lib/utils"
 export type IconName = ComponentProps<typeof CentralIcon>["name"]
 export type IconSize = 12 | 16 | 20 | 24 | 32
 export type IconFill = "filled" | "outlined"
+export type IconRadius = "0" | "1" | "2" | "3"
 
 export interface IconProps {
   name: IconName
   size?: IconSize
   fill?: IconFill
   className?: string
+  stroke?: "1" | "1.5" | "2"
+  radius?: IconRadius
+}
+
+/**
+ * Stroke scales with size for optical balance.
+ * At 24px and above: 2px. At 20px and below: 1.5px.
+ */
+const STROKE_BY_SIZE: Record<IconSize, "1" | "1.5" | "2"> = {
+  12: "1.5",
+  16: "1.5",
+  20: "1.5",
+  24: "2",
+  32: "2",
 }
 
 /**
  * Mande icon wrapper — locked to project standards:
- *   stroke 2 · join round · radius 2
+ *   stroke scales with size · join round · radius 2
  *   sizes: 12 | 16 | 20 | 24 | 32
  *   fill:  filled | outlined
  */
-const Icon = ({ name, size = 20, fill = "outlined", className }: IconProps) => (
+const Icon = ({ name, size = 20, fill = "outlined", className, stroke, radius = "2" }: IconProps) => (
   <span className={cn("inline-flex shrink-0", className)}>
     <CentralIcon
       name={name}
       size={size}
       fill={fill}
-      stroke="2"
+      stroke={stroke ?? STROKE_BY_SIZE[size]}
       join="round"
-      radius="2"
+      radius={radius}
     />
   </span>
 )

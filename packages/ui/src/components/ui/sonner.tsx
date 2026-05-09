@@ -1,63 +1,67 @@
 "use client"
 
-import { useTheme } from "next-themes"
 import { Toaster as Sonner } from "sonner"
 import { CircleNotchIcon } from "@phosphor-icons/react"
 
+import { Icon } from "./icon"
+
 type ToasterProps = React.ComponentProps<typeof Sonner>
 
-/* Inline SVGs for toast status icons — sized at 16px to match sonner defaults */
-const SuccessIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-    <circle cx="8" cy="8" r="7" fill="currentColor" className="text-green-500" />
-    <path d="M4.5 8L7 10.5L11.5 6" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-)
-
-const InfoIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-    <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M8 7v5M8 5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-)
-
-const WarningIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-    <path d="M8 2L14.5 13H1.5L8 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-    <path d="M8 6v4M8 11.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-)
-
-const ErrorIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-    <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.5" />
-    <path d="M5.5 5.5l5 5M10.5 5.5l-5 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-)
-
 const Toaster = ({ ...props }: ToasterProps) => {
-  const { theme = "system" } = useTheme()
-
   return (
     <Sonner
-      theme={theme as ToasterProps["theme"]}
+      theme="light"
       className="toaster group"
+      closeButton
+      style={
+        {
+          "--width": "320px",
+        } as React.CSSProperties
+      }
       icons={{
-        success: <SuccessIcon />,
-        info: <InfoIcon />,
-        warning: <WarningIcon />,
-        error: <ErrorIcon />,
-        loading: <CircleNotchIcon size={16} className="animate-spin" />,
+        info: <Icon name="IconCircleInfo" size={20} />,
+        success: <Icon name="IconCheckCircle2" size={20} />,
+        warning: <Icon name="IconExclamationTriangle" size={20} />,
+        error: <Icon name="IconCircleX" size={20} />,
+        loading: (
+          <CircleNotchIcon
+            size={20}
+            weight="regular"
+            aria-hidden
+            className="animate-spin shrink-0 text-neutral-500"
+          />
+        ),
+        close: <Icon name="IconCrossMedium" size={16} className="text-neutral-500" />,
       }}
       toastOptions={{
         classNames: {
-          toast:
-            "group toast group-[.toaster]:bg-background group-[.toaster]:text-foreground group-[.toaster]:border-border group-[.toaster]:shadow-lg group-[.toaster]:rounded-2",
-          description: "group-[.toast]:text-muted-foreground",
-          actionButton:
-            "group-[.toast]:bg-primary group-[.toast]:text-primary-foreground",
-          cancelButton:
-            "group-[.toast]:bg-muted group-[.toast]:text-muted-foreground",
+          toast: [
+            "group/toast",
+            "!font-sans",
+            "!items-start !gap-2",
+            "!rounded-3 !border",
+            "!border-neutral-a8",
+            "!bg-neutral-white !text-neutral-900",
+            "!shadow-md !px-2.5 !py-2",
+          ].join(" "),
+          content: "flex min-w-0 flex-1 flex-col",
+          title: "!text-base-medium !text-neutral-900",
+          description: "!text-base-regular !text-neutral-900",
+          icon: [
+            "!flex !shrink-0 !items-center",
+            "!m-0 !size-5 !text-neutral-500",
+          ].join(" "),
+          closeButton: [
+            "!static !order-last !size-5 !shrink-0 !inline-flex !items-center !justify-center",
+            "!transform-none !ml-auto",
+            "!rounded-1 !border-0 !bg-transparent !text-neutral-500 !p-0",
+            "transition-[background-color,transform,color] duration-[var(--duration-instant)] ease-[cubic-bezier(0.2,1,0.4,1)]",
+            "hover:!bg-neutral-50 hover:!text-neutral-900",
+            "active:scale-95",
+            "focus-visible:!shadow-none focus-visible:ring-2 focus-visible:ring-ring",
+          ].join(" "),
+          actionButton: "bg-primary text-primary-foreground",
+          cancelButton: "bg-muted text-muted-foreground",
         },
       }}
       {...props}

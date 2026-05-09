@@ -1,0 +1,5 @@
+{"type":"server-started","port":60329,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:60329","screen_dir":"/Users/emmanuelbaah/Mande-DS-and-playground/.superpowers/brainstorm/54078-1777210881/content","state_dir":"/Users/emmanuelbaah/Mande-DS-and-playground/.superpowers/brainstorm/54078-1777210881/state"}
+{"type":"screen-added","file":"/Users/emmanuelbaah/Mande-DS-and-playground/.superpowers/brainstorm/54078-1777210881/content/input-mechanisms.html"}
+{"type":"server-stopped","reason":"idle timeout"}
+{"type":"server-started","port":57916,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:57916","screen_dir":"/Users/emmanuelbaah/Mande-DS-and-playground/.superpowers/brainstorm/54078-1777210881/content","state_dir":"/Users/emmanuelbaah/Mande-DS-and-playground/.superpowers/brainstorm/54078-1777210881/state"}
+fs.watch error: EMFILE: too many open files, watch

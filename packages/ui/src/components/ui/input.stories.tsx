@@ -7,6 +7,7 @@ const meta: Meta<typeof Input> = {
   parameters: { layout: "centered" },
   tags: ["autodocs"],
   argTypes: {
+    size: { control: "inline-radio", options: ["default", "lg"] },
     error: { control: "boolean" },
     disabled: { control: "boolean" },
   },
@@ -33,6 +34,10 @@ export const Error: Story = {
 
 export const Disabled: Story = {
   args: { placeholder: "Disabled input", disabled: true },
+}
+
+export const Large: Story = {
+  args: { placeholder: "Large input (16px body)", size: "lg" },
 }
 
 export const File: Story = {

@@ -10,140 +10,145 @@
 @theme static {
   /* --------------------------------------------------------
      NEUTRAL — synced from Figma Primitives / Color / Grey
-     Light end (50–300) tapers from pure to subtle cool tint;
-     mid/dark (500–900) carry a consistent cool blue-grey hue
+     Light (50–400): pure neutral, no tint — clean backgrounds/borders
+     Dark (500–900): cool blue-black (hue 255) — refined text/surfaces
      -------------------------------------------------------- */
-  --color-neutral-white: oklch(100.0% 0 0);            /* #FFFFFF */
-  --color-neutral-50:  oklch(98.3% 0 0);               /* #FAFAFA */
-  --color-neutral-100: oklch(96.5% 0 0);               /* #F5F5F5 */
-  --color-neutral-200: oklch(92.5% 0 0);               /* #E8E8E8 */
-  --color-neutral-300: oklch(88.7% 0.006 252);         /* #DADDE2 */
-  --color-neutral-400: oklch(60.0% 0.013 254);         /* ~#8A8F9A — AA-large text (≈3.2:1 on white) */
-  --color-neutral-500: oklch(43.5% 0.013 255);         /* #5E636E — AA text, Figma "default" (6:1 on white) */
-  --color-neutral-600: oklch(40.0% 0.011 255);         /* #565A61 */
-  --color-neutral-700: oklch(28.0% 0.010 255);         /* #393C41 */
-  --color-neutral-800: oklch(20.0% 0.005 255);         /* #27282B */
-  --color-neutral-900: oklch(12.5% 0 0);               /* #171717 */
+  --color-neutral-white: oklch(100.0% 0 0);
+  --color-neutral-50:   oklch(98.3%  0    0);
+  --color-neutral-100:  oklch(96.5%  0    0);
+  --color-neutral-200:  oklch(92.5%  0    0);
+  --color-neutral-300:  oklch(88.7%  0    0);
+  --color-neutral-400:  oklch(63.0%  0    0);
+  --color-neutral-500:  oklch(50.0%  0.012 255);
+  --color-neutral-600:  oklch(40.0%  0.010 255);
+  --color-neutral-700:  oklch(30.0%  0.008 255);
+  --color-neutral-800:  oklch(21.0%  0.005 255);
+  --color-neutral-900:  oklch(12.5%  0.003 255);
 
-  /* Transparent neutrals — neutral-900 (#171717) at opacity; a{n} = alpha at n% */
-  --color-neutral-a4:  oklch(12.5% 0 0 / 4%);
-  --color-neutral-a8:  oklch(12.5% 0 0 / 8%);
-  --color-neutral-a16: oklch(12.5% 0 0 / 16%);
-
-  /* --------------------------------------------------------
-     LIME — Seed: #C4E03E
-     Manually crafted with chroma taper
-     -------------------------------------------------------- */
-  --color-lime-50: oklch(98.0% 0.022 120);        /* sRGB-safe */
-  --color-lime-100: oklch(96.0% 0.050 119);
-  --color-lime-200: oklch(93.0% 0.082 119);
-  --color-lime-300: oklch(90.0% 0.115 119);
-  --color-lime-400: oklch(88.0% 0.135 119);       /* primary hover */
-  --color-lime-500: oklch(85.8% 0.152 119);       /* primary */
-  --color-lime-600: oklch(72.0% 0.140 119);
-  --color-lime-700: oklch(58.0% 0.115 119);
-  --color-lime-800: oklch(44.0% 0.088 119);
-  --color-lime-900: oklch(30.0% 0.060 119);
+  /* Transparent neutrals — neutral-900 at opacity; a{n} = alpha at n% */
+  --color-neutral-a4:  oklch(12.5% 0.003 255 / 4%);
+  --color-neutral-a8:  oklch(12.5% 0.003 255 / 8%);
+  --color-neutral-a16: oklch(12.5% 0.003 255 / 16%);
+  --color-neutral-a20: oklch(12.5% 0.003 255 / 20%);
+  --color-neutral-a30: oklch(12.5% 0.003 255 / 30%);
 
   /* --------------------------------------------------------
-     TEAL — Seed: #026A72
-     Harmonized: lightness/chroma curves match other palettes
+     LIME — Primary: oklch(89% 0.252 119) — vivid CTA lime
+     Ramp built around 500 as primary; light shades drift
+     warm (→122°), dark shades drift cool (→118°)
      -------------------------------------------------------- */
-  --color-teal-50: oklch(97.0% 0.014 204);        /* #ECFCFE */
-  --color-teal-100: oklch(93.5% 0.032 204);       /* #CEF5FA */
-  --color-teal-200: oklch(88.0% 0.055 204);       /* #A2E8F1 */
-  --color-teal-300: oklch(80.0% 0.078 204);       /* #6AD4E2 */
-  --color-teal-400: oklch(70.0% 0.085 204);       /* #3DB9C8 */
-  --color-teal-500: oklch(47.8% 0.081 204);       /* #026A72 */
-  --color-teal-600: oklch(40.6% 0.069 203);       /* #01545A */
-  --color-teal-700: oklch(33.9% 0.057 204);       /* #014045 */
-  --color-teal-800: oklch(27.1% 0.046 204);       /* #002D31 */
-  --color-teal-900: oklch(20.3% 0.031 205);       /* #001B1D */
+  --color-lime-50: oklch(98.5% 0.030 122);
+  --color-lime-100: oklch(96.5% 0.065 121);
+  --color-lime-200: oklch(94.0% 0.108 121);
+  --color-lime-300: oklch(92.0% 0.148 120);
+  --color-lime-400: oklch(90.5% 0.184 119);       /* primary hover */
+  --color-lime-500: oklch(89.0% 0.205 119);       /* primary */
+  --color-lime-600: oklch(74.0% 0.171 119);
+  --color-lime-700: oklch(59.0% 0.138 118);
+  --color-lime-800: oklch(44.0% 0.105 118);
+  --color-lime-900: oklch(30.0% 0.069 118);
 
   /* --------------------------------------------------------
-     BLUSH — Seed: #D07BAD
+     TEAL — Seed: #026A72 (+20% chroma)
      -------------------------------------------------------- */
-  --color-blush-50: oklch(96.6% 0.011 339);       /* #F9F1F6 */
-  --color-blush-100: oklch(93.4% 0.020 346);      /* #F4E4EC */
-  --color-blush-200: oklch(87.6% 0.041 346);      /* #EBCCDC */
-  --color-blush-300: oklch(80.9% 0.067 344);      /* #E1B0CB */
-  --color-blush-400: oklch(75.4% 0.090 345);      /* #D998BC */
-  --color-blush-500: oklch(69.0% 0.122 345);      /* #D07BAD */
-  --color-blush-600: oklch(58.6% 0.131 345);      /* #B1598E */
-  --color-blush-700: oklch(47.0% 0.106 344);      /* #834069 */
-  --color-blush-800: oklch(36.4% 0.081 345);      /* #5B2B48 */
-  --color-blush-900: oklch(24.7% 0.055 345);      /* #331527 */
+  --color-teal-50: oklch(97.0% 0.017 204);
+  --color-teal-100: oklch(93.5% 0.038 204);
+  --color-teal-200: oklch(88.0% 0.066 204);
+  --color-teal-300: oklch(80.0% 0.094 204);
+  --color-teal-400: oklch(70.0% 0.102 204);
+  --color-teal-500: oklch(47.8% 0.097 204);
+  --color-teal-600: oklch(40.6% 0.083 203);
+  --color-teal-700: oklch(33.9% 0.068 204);
+  --color-teal-800: oklch(27.1% 0.055 204);
+  --color-teal-900: oklch(20.3% 0.037 205);
 
   /* --------------------------------------------------------
-     ORANGE — Seed: #EA580C
+     BLUSH — Seed: #D07BAD (+20% chroma)
      -------------------------------------------------------- */
-  --color-orange-50: oklch(96.6% 0.016 27);       /* #FFF0EE */
-  --color-orange-100: oklch(92.7% 0.037 28);      /* #FFDED9 */
-  --color-orange-200: oklch(86.1% 0.073 29);      /* #FEC0B6 */
-  --color-orange-300: oklch(78.8% 0.122 32);      /* #FE9C88 */
-  --color-orange-400: oklch(71.7% 0.178 38);      /* #FE744A */
-  --color-orange-500: oklch(64.6% 0.194 41);      /* #EA580C */
-  --color-orange-600: oklch(54.4% 0.164 41);      /* #BA4407 */
-  --color-orange-700: oklch(44.6% 0.134 41);      /* #8E3204 */
-  --color-orange-800: oklch(34.7% 0.104 41);      /* #642102 */
-  --color-orange-900: oklch(24.1% 0.072 41);      /* #3A1001 */
+  --color-blush-50: oklch(96.6% 0.013 339);
+  --color-blush-100: oklch(93.4% 0.024 346);
+  --color-blush-200: oklch(87.6% 0.049 346);
+  --color-blush-300: oklch(80.9% 0.080 344);
+  --color-blush-400: oklch(75.4% 0.108 345);
+  --color-blush-500: oklch(69.0% 0.146 345);
+  --color-blush-600: oklch(58.6% 0.157 345);
+  --color-blush-700: oklch(47.0% 0.127 344);
+  --color-blush-800: oklch(36.4% 0.097 345);
+  --color-blush-900: oklch(24.7% 0.066 345);
 
   /* --------------------------------------------------------
-     BLUE — Seed: #3B82F6
+     ORANGE — Seed: #EA580C (+20% chroma)
+     Light shades anchored at hue 50° (warm peach), flowing
+     into seed at 61° — shifted +20° towards yellow away from red
      -------------------------------------------------------- */
-  --color-blue-50: oklch(97.0% 0.014 255);        /* #EFF6FF */
-  --color-blue-100: oklch(93.2% 0.032 256);       /* #DBEAFE */
-  --color-blue-200: oklch(88.2% 0.057 254);       /* #BFDBFE */
-  --color-blue-300: oklch(80.9% 0.096 252);       /* #93C5FD */
-  --color-blue-400: oklch(71.4% 0.143 255);       /* #60A5FA */
-  --color-blue-500: oklch(62.3% 0.188 260);       /* #3B82F6 */
-  --color-blue-600: oklch(54.6% 0.215 263);       /* #2563EB */
-  --color-blue-700: oklch(48.8% 0.217 264);       /* #1D4ED8 */
-  --color-blue-800: oklch(42.4% 0.181 266);       /* #1E40AF */
-  --color-blue-900: oklch(37.9% 0.138 266);       /* #1E3A8A */
+  --color-orange-50: oklch(96.6% 0.017 70);
+  --color-orange-100: oklch(92.7% 0.039 68);
+  --color-orange-200: oklch(86.1% 0.079 66);
+  --color-orange-300: oklch(78.8% 0.131 64);
+  --color-orange-400: oklch(71.7% 0.192 62);
+  --color-orange-500: oklch(64.6% 0.210 61);
+  --color-orange-600: oklch(54.4% 0.177 61);
+  --color-orange-700: oklch(47.0% 0.150 61);
+  --color-orange-800: oklch(39.0% 0.118 61);
+  --color-orange-900: oklch(30.5% 0.084 61);
 
   /* --------------------------------------------------------
-     RED — Seed: #B81416
+     BLUE — Aligned to current palette ramp (50–900)
      -------------------------------------------------------- */
-  --color-red-50: oklch(97.1% 0.013 17);          /* #FEF2F2 */
-  --color-red-100: oklch(93.6% 0.031 18);         /* #FEE2E2 */
-  --color-red-200: oklch(88.5% 0.059 18);         /* #FECACA */
-  --color-red-300: oklch(80.8% 0.103 20);         /* #FCA5A5 */
-  --color-red-400: oklch(71.1% 0.166 22);         /* #F87171 */
-  --color-red-500: oklch(49.9% 0.194 28);         /* #B81416 */
-  --color-red-600: oklch(42.5% 0.165 28);         /* #940E0F */
-  --color-red-700: oklch(35.2% 0.137 28);         /* #720809 */
-  --color-red-800: oklch(28.9% 0.112 28);         /* #560505 */
-  --color-red-900: oklch(21.7% 0.084 28);         /* #380202 */
+  --color-blue-50: oklch(96.6% 0.017 248);
+  --color-blue-100: oklch(91.4% 0.042 247);
+  --color-blue-200: oklch(81.6% 0.094 247);
+  --color-blue-300: oklch(75.3% 0.128 248);
+  --color-blue-400: oklch(67.5% 0.171 251);
+  --color-blue-500: oklch(58.3% 0.187 255);
+  --color-blue-600: oklch(52.2% 0.167 254);
+  --color-blue-700: oklch(44.5% 0.139 254);
+  --color-blue-800: oklch(34.8% 0.104 253);
+  --color-blue-900: oklch(23.9% 0.065 249);
 
   /* --------------------------------------------------------
-     GREEN — Seed: #227D3C (gamut-safe)
-     Harmonized: lightness/chroma curves match other palettes
+     RED — Seed: #B81416 (+20% chroma)
+     Light shades anchored at hue 33° (warm tomato-red), flowing
+     into seed at 28° — prevents pink drift in the light range
      -------------------------------------------------------- */
-  --color-green-50: oklch(97.0% 0.020 149);       /* #E8FCF0 */
-  --color-green-100: oklch(93.5% 0.048 149);      /* #C4F3D4 */
-  --color-green-200: oklch(88.0% 0.080 149);      /* #93E5B2 */
-  --color-green-300: oklch(80.0% 0.110 149);      /* #5FD08C */
-  --color-green-400: oklch(70.0% 0.125 149);      /* #3BB567 */
-  --color-green-500: oklch(52.0% 0.129 149);      /* #227D3C */
-  --color-green-600: oklch(43.0% 0.107 149);      /* #185F2D */
-  --color-green-700: oklch(35.0% 0.087 149);      /* #0F461F */
-  --color-green-800: oklch(27.0% 0.067 149);      /* #072F13 */
-  --color-green-900: oklch(19.0% 0.047 149);      /* #031907 */
+  --color-red-50: oklch(97.1% 0.026 33);
+  --color-red-100: oklch(93.6% 0.058 32);
+  --color-red-200: oklch(88.5% 0.108 31);
+  --color-red-300: oklch(80.8% 0.162 30);
+  --color-red-400: oklch(71.1% 0.215 29);
+  --color-red-500: oklch(49.9% 0.233 28);
+  --color-red-600: oklch(42.5% 0.198 28);
+  --color-red-700: oklch(35.2% 0.164 28);
+  --color-red-800: oklch(28.9% 0.134 28);
+  --color-red-900: oklch(21.7% 0.101 28);
 
   /* --------------------------------------------------------
-     YELLOW — Seed: #EAB308
+     GREEN — Aligned to current palette ramp (50–900)
      -------------------------------------------------------- */
-  --color-yellow-50: oklch(98.7% 0.026 102);      /* #FEFCE8 */
-  --color-yellow-100: oklch(97.3% 0.069 103);     /* #FEF9C3 */
-  --color-yellow-200: oklch(94.5% 0.124 102);     /* #FEF08A */
-  --color-yellow-300: oklch(90.5% 0.166 98);      /* #FDE047 */
-  --color-yellow-400: oklch(86.1% 0.173 92);      /* #FACC15 */
-  --color-yellow-500: oklch(79.5% 0.162 86);      /* #EAB308 */
-  --color-yellow-600: oklch(68.1% 0.142 76);      /* #CA8A04 */
-  --color-yellow-700: oklch(55.4% 0.121 66);      /* #A16207 */
-  --color-yellow-800: oklch(47.6% 0.103 62);      /* #854D0E */
-  --color-yellow-900: oklch(42.1% 0.090 58);      /* #713F12 */
+  --color-green-50: oklch(96.4% 0.028 149);
+  --color-green-100: oklch(94.1% 0.048 149);
+  --color-green-200: oklch(88.4% 0.097 148);
+  --color-green-300: oklch(83.0% 0.140 147);
+  --color-green-400: oklch(76.2% 0.189 146);
+  --color-green-500: oklch(53.5% 0.172 144);
+  --color-green-600: oklch(43.8% 0.138 145);
+  --color-green-700: oklch(38.2% 0.096 147);
+  --color-green-800: oklch(31.2% 0.060 149);
+  --color-green-900: oklch(25.6% 0.036 150);
+
+  /* --------------------------------------------------------
+     YELLOW — Aligned to current palette ramp (50–900)
+     -------------------------------------------------------- */
+  --color-yellow-50: oklch(98.7% 0.021 95);
+  --color-yellow-100: oklch(96.2% 0.058 96);
+  --color-yellow-200: oklch(92.4% 0.115 96);
+  --color-yellow-300: oklch(87.9% 0.153 92);
+  --color-yellow-400: oklch(83.7% 0.164 84);
+  --color-yellow-500: oklch(74.4% 0.160 70);
+  --color-yellow-600: oklch(62.5% 0.147 59);
+  --color-yellow-700: oklch(50.0% 0.129 50);
+  --color-yellow-800: oklch(34.8% 0.087 48);
+  --color-yellow-900: oklch(25.4% 0.066 46);
 
   /* --------------------------------------------------------
      TYPOGRAPHY
@@ -200,18 +205,19 @@
   --font-weight-small-medium: 500;
   --font-weight-small-semibold: 600;
 
-  --letter-spacing-H1: -0.56px;
-  --letter-spacing-H2: -0.48px;
+  --letter-spacing-H1: -0.52px;
+  --letter-spacing-H2: -0.44px;
   --letter-spacing-H3: -0.4px;
+  --letter-spacing-xl-regular: -0.24px;
   --letter-spacing-xlg-regular: -0.36px;
   --letter-spacing-xlg-medium: -0.36px;
   --letter-spacing-xlg-semibold: -0.36px;
-  --letter-spacing-lg-regular: -0.36px;
-  --letter-spacing-lg-medium: -0.36px;
-  --letter-spacing-lg-semibold: -0.36px;
-  --letter-spacing-base-regular: -0.14px;
-  --letter-spacing-base-medium: -0.14px;
-  --letter-spacing-base-semibold: -0.14px;
+  --letter-spacing-lg-regular: -0.12px;
+  --letter-spacing-lg-medium: -0.12px;
+  --letter-spacing-lg-semibold: -0.12px;
+  --letter-spacing-base-regular: 0.02px;
+  --letter-spacing-base-medium: 0.02px;
+  --letter-spacing-base-semibold: 0.02px;
   --letter-spacing-small-regular: 0px;
   --letter-spacing-small-medium: 0px;
   --letter-spacing-small-semibold: 0px;
@@ -283,6 +289,25 @@
 }
 
 /* --------------------------------------------------------
+   STATUS COLOR UTILITIES
+   Kept outside @theme inline so var() references stay live
+   and pick up the .dark overrides at runtime.
+   -------------------------------------------------------- */
+@theme {
+  --color-info: var(--semantic-info-text);
+  --color-info-subtle: var(--semantic-info-bg-subtle);
+  --color-info-border: var(--semantic-info-border);
+
+  --color-success: var(--semantic-success-text);
+  --color-success-subtle: var(--semantic-success-bg-subtle);
+  --color-success-border: var(--semantic-success-border);
+
+  --color-warning: var(--semantic-warning-text);
+  --color-warning-subtle: var(--semantic-warning-bg-subtle);
+  --color-warning-border: var(--semantic-warning-border);
+}
+
+/* --------------------------------------------------------
    SEMANTIC UTILITY COLORS (shadcn-compatible)
    @theme inline keeps var() references live so dark mode
    switching works at runtime. Generates TW utilities like
@@ -322,15 +347,19 @@
   --color-destructive-hover: var(--semantic-danger-bg-hover);
   --color-subtle: var(--semantic-neutral-bg-subtle);
   --color-inverted-foreground: var(--semantic-neutral-text-inverted);
+
   --color-danger: var(--semantic-danger-text);
   --color-danger-border: var(--semantic-danger-border);
   --color-danger-subtle: var(--semantic-danger-bg-subtle);
+
   --color-accent-subtle: var(--semantic-accent-bg-subtle);
   --color-accent-border: var(--semantic-accent-border);
   --color-border-subtle: var(--semantic-neutral-border-subtle);
   --color-border-strong: var(--semantic-neutral-border-strong);
   --color-disabled: var(--semantic-disabled-bg);
   --color-disabled-foreground: var(--semantic-disabled-text);
+  --color-border-disabled: var(--semantic-disabled-bg);
+  --color-text-tertiary: var(--semantic-neutral-text-muted);
   --color-overlay: var(--semantic-surface-overlay);
 
   --radius: 0.5rem;
@@ -359,9 +388,9 @@
   --semantic-neutral-bg: var(--color-neutral-white);
   --semantic-neutral-bg-subtle: var(--color-neutral-50);
   --semantic-neutral-bg-muted: var(--color-neutral-100);
-  --semantic-neutral-border: var(--color-neutral-300);
+  --semantic-neutral-border: var(--color-neutral-200);
   --semantic-neutral-border-subtle: var(--color-neutral-a8);
-  --semantic-neutral-border-strong: var(--color-neutral-400);
+  --semantic-neutral-border-strong: var(--color-neutral-300);
   --semantic-neutral-text: var(--color-neutral-900);
   --semantic-neutral-text-secondary: var(--color-neutral-500);
   --semantic-neutral-text-muted: var(--color-neutral-400);
@@ -377,26 +406,26 @@
   --semantic-success-bg: var(--color-green-500);
   --semantic-success-bg-subtle: var(--color-green-50);
   --semantic-success-border: var(--color-green-300);
-  --semantic-success-text: var(--color-green-700);
+  --semantic-success-text: var(--color-green-500);
   --semantic-success-text-on-bg: var(--color-neutral-white);
 
-  --semantic-warning-bg: var(--color-yellow-500);
-  --semantic-warning-bg-subtle: var(--color-yellow-50);
-  --semantic-warning-border: var(--color-yellow-300);
-  --semantic-warning-text: var(--color-yellow-800);
-  --semantic-warning-text-on-bg: var(--color-neutral-900);
+  --semantic-warning-bg: var(--color-orange-500);
+  --semantic-warning-bg-subtle: var(--color-orange-50);
+  --semantic-warning-border: var(--color-orange-300);
+  --semantic-warning-text: var(--color-orange-500);
+  --semantic-warning-text-on-bg: var(--color-neutral-white);
 
   --semantic-danger-bg: var(--color-red-500);
   --semantic-danger-bg-subtle: var(--color-red-50);
   --semantic-danger-bg-hover: var(--color-red-600);
   --semantic-danger-border: var(--color-red-300);
-  --semantic-danger-text: var(--color-red-600);
+  --semantic-danger-text: var(--color-red-500);
   --semantic-danger-text-on-bg: var(--color-neutral-white);
 
-  --semantic-info-bg: var(--color-blue-600);
+  --semantic-info-bg: var(--color-blue-500);
   --semantic-info-bg-subtle: var(--color-blue-50);
   --semantic-info-border: var(--color-blue-300);
-  --semantic-info-text: var(--color-blue-700);
+  --semantic-info-text: var(--color-blue-500);
   --semantic-info-text-on-bg: var(--color-neutral-white);
 
   --semantic-accent-bg: var(--color-teal-500);
@@ -463,11 +492,13 @@
   --semantic-success-text: var(--color-green-400);
   --semantic-success-text-on-bg: var(--color-neutral-white);
 
-  --semantic-warning-bg: var(--color-yellow-500);
-  --semantic-warning-bg-subtle: var(--color-yellow-900);
-  --semantic-warning-border: var(--color-yellow-700);
-  --semantic-warning-text: var(--color-yellow-400);
-  --semantic-warning-text-on-bg: var(--color-neutral-900);
+  /* Dark: all status -text tokens use /400 per Figma */
+
+  --semantic-warning-bg: var(--color-orange-500);
+  --semantic-warning-bg-subtle: var(--color-orange-900);
+  --semantic-warning-border: var(--color-orange-700);
+  --semantic-warning-text: var(--color-orange-400);
+  --semantic-warning-text-on-bg: var(--color-neutral-white);
 
   --semantic-danger-bg: var(--color-red-500);
   --semantic-danger-bg-subtle: var(--color-red-900);
@@ -568,6 +599,7 @@
       letter-spacing: var(--letter-spacing-H3);
     }
   }
+  .text-xl-regular,
   .text-xlg-regular,
   .text-xlg-medium,
   .text-xlg-semibold,
@@ -585,6 +617,7 @@
     font-weight: inherit;
     letter-spacing: inherit;
   }
+  .text-xl-regular { font-size: var(--font-size-lg-regular); line-height: var(--line-height-lg-regular); font-weight: var(--font-weight-lg-regular); letter-spacing: var(--letter-spacing-xl-regular); }
   .text-xlg-regular { font-size: var(--font-size-xlg-regular); line-height: var(--line-height-xlg-regular); font-weight: var(--font-weight-xlg-regular); letter-spacing: var(--letter-spacing-xlg-regular); }
   .text-xlg-medium { font-size: var(--font-size-xlg-medium); line-height: var(--line-height-xlg-medium); font-weight: var(--font-weight-xlg-medium); letter-spacing: var(--letter-spacing-xlg-medium); }
   .text-xlg-semibold { font-size: var(--font-size-xlg-semibold); line-height: var(--line-height-xlg-semibold); font-weight: var(--font-weight-xlg-semibold); letter-spacing: var(--letter-spacing-xlg-semibold); }
@@ -599,21 +632,79 @@
   .text-small-semibold { font-size: var(--font-size-small-semibold); line-height: var(--line-height-small-semibold); font-weight: var(--font-weight-small-semibold); letter-spacing: var(--letter-spacing-small-semibold); }
 }
 
+/* --------------------------------------------------------
+   SONNER TOAST OVERRIDES
+   Sonner ships its own font + 400ms transitions; align them
+   to the design system (Inter + 200ms ease-out).
+   -------------------------------------------------------- */
+[data-sonner-toaster] {
+  font-family: var(--font-sans);
+}
+[data-sonner-toast] {
+  transition:
+    transform var(--duration-base) var(--ease-out),
+    opacity var(--duration-base) var(--ease-out),
+    height var(--duration-base) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out) !important;
+}
+
+/* Status icon tints. Put in @layer utilities so the !important here
+   competes with Tailwind's own utility-layer !importants on the same
+   element (the icon also carries `!text-neutral-500` as its fallback).
+   Written as direct descendant rules (not Tailwind group variants)
+   because Tailwind v4 wraps group variants in :where() which zeroes
+   specificity, making them lose to the base !text-* utility. */
+@layer utilities {
+  /* Icon tints: use primitive 500s directly — toast is always light-themed,
+     so semantic tokens (which switch to 400 in dark mode via .dark on <html>)
+     would give the wrong shade when OS is in dark mode. */
+  [data-sonner-toast][data-type="info"] [data-icon]    { color: var(--color-blue-500) !important; }
+  [data-sonner-toast][data-type="success"] [data-icon] { color: var(--color-green-500) !important; }
+  [data-sonner-toast][data-type="warning"] [data-icon] { color: var(--color-orange-500) !important; }
+  [data-sonner-toast][data-type="error"] [data-icon]   { color: var(--color-red-500) !important; }
+
+  /* Title weight: regular for message-only/loading, medium when a description
+     is also present. !text-base-regular in JSX classNames doesn't reliably
+     add !important on custom @layer utilities classes in Tailwind v4. */
+  [data-sonner-toast] [data-title]                          { font-weight: var(--font-weight-base-regular) !important; }
+  [data-sonner-toast]:has([data-description]) [data-title]  { font-weight: var(--font-weight-base-medium) !important; }
+}
+
 @layer base {
+  button,
+  [role="button"],
+  a,
+  label[for],
+  select,
+  summary {
+    cursor: pointer;
+  }
+
+  html {
+    /* Cascade smoothing to all descendants (including Storybook iframes) */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   body {
     font-family: "Inter", system-ui, sans-serif;
+    /* Optical sizing — engages the opsz axis on Inter variable font so stroke
+       contrast adapts per font-size. Prevents medium weight from reading heavy
+       at small sizes by letting the font's own optical adjustments apply. */
+    font-optical-sizing: auto;
+    /* Prevent browser from synthesising bold/italic — variable font handles it */
+    font-synthesis: none;
     /* Inter character variants — matches Figma configuration */
     font-feature-settings:
       "cv01" 1,   /* Alternate one           */
       "cv02" 1,   /* Open four               */
       "cv03" 1,   /* Open six                */
       "cv04" 1,   /* Open nine               */
-      "cv05" 1,   /* Lower-case l with tail  */
+      "cv05" 0,   /* Lower-case l default    */
       "cv06" 1,   /* r with curved tail      */
       "cv07" 1,   /* Alternate German ß      */
-      "cv08" 1,   /* Upper-case I with serif */
+      "cv08" 0,   /* Upper-case I default    */
       "cv09" 1;   /* Flat-top three          */
-    /* Rendering — eliminates subpixel colour fringing */
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

@@ -50,3 +50,6 @@ next-env.d.ts
 .mappd/
 public/mappd-inject.js
 mappd-inject.js
+
+# Superpowers session cache
+.superpowers/brainstorm/

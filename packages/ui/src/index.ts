@@ -1,13 +1,13 @@
 // ── Primitives ────────────────────────────────────────────────────────────────
 export { Icon } from "./components/ui/icon"
-export type { IconProps, IconSize, IconFill, IconName } from "./components/ui/icon"
+export type { IconProps, IconSize, IconFill, IconName, IconRadius } from "./components/ui/icon"
 
 // ── Motion tokens ─────────────────────────────────────────────────────────────
 export { springs, durations, easings } from "./tokens/motion"
 export type { SpringName, DurationName, EasingName } from "./tokens/motion"
 
-export { challengeLabels, challengeColors } from "./tokens/challenges"
-export type { ChallengeType } from "./tokens/challenges"
+export { challengeLabels, challengeColors, artifactLabels } from "./tokens/challenges"
+export type { ChallengeType, ArtifactType } from "./tokens/challenges"
 
 // ── Form ──────────────────────────────────────────────────────────────────────
 export { Button, buttonVariants } from "./components/ui/button"
@@ -15,7 +15,12 @@ export type { ButtonProps } from "./components/ui/button"
 
 export { Input, inputVariants } from "./components/ui/input"
 
-export { Textarea } from "./components/ui/textarea"
+export { Textarea, textareaVariants } from "./components/ui/textarea"
+export type { TextareaProps } from "./components/ui/textarea"
+
+// ── Chat ─────────────────────────────────────────────────────────────────────
+export { ChatInput } from "./components/ui/chat-input"
+export type { ChatInputProps } from "./components/ui/chat-input"
 
 export {
   Select,
@@ -29,6 +34,7 @@ export {
   SelectScrollUpButton,
   SelectScrollDownButton,
 } from "./components/ui/select"
+export type { SelectSize } from "./components/ui/select"
 
 export { Checkbox } from "./components/ui/checkbox"
 export type { CheckboxProps } from "./components/ui/checkbox"
@@ -62,7 +68,7 @@ export {
 } from "./components/ui/form"
 
 // ── Display ───────────────────────────────────────────────────────────────────
-export { Badge, badgeVariants } from "./components/ui/badge"
+export { Badge } from "./components/ui/badge"
 export type { BadgeProps } from "./components/ui/badge"
 
 export { StepIndicator } from "./components/ui/step-indicator"
@@ -75,7 +81,7 @@ export { Chip, chipVariants } from "./components/ui/chip"
 export type { ChipProps } from "./components/ui/chip"
 
 export { Avatar, AvatarImage, AvatarFallback } from "./components/ui/avatar"
-export type { AvatarVariant } from "./components/ui/avatar"
+export type { AvatarSize } from "./components/ui/avatar"
 
 export {
   Card,
@@ -111,6 +117,23 @@ export { ChartContainer, ChartTooltip, ChartTooltipContent, ChartLegend, ChartLe
 export type { ChartConfig } from "./components/ui/chart"
 
 // ── Navigation ────────────────────────────────────────────────────────────────
+export {
+  AppSidebar,
+  SideNavItem,
+  SectionTitle,
+  AccountSelector,
+} from "./components/ui/app-sidebar"
+export type {
+  AppSidebarProps,
+  SideNavItemProps,
+  SectionTitleProps,
+  AccountSelectorProps,
+  NavItem,
+  ChatGroup,
+  LessonState,
+  CurriculumSectionConfig,
+} from "./components/ui/app-sidebar"
+
 export { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/tabs"
 
 export {
@@ -164,32 +187,6 @@ export {
   PaginationPrevious,
 } from "./components/ui/pagination"
 
-export {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupAction,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarInput,
-  SidebarInset,
-  SidebarMenu,
-  SidebarMenuAction,
-  SidebarMenuBadge,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarMenuSkeleton,
-  SidebarMenuSub,
-  SidebarMenuSubButton,
-  SidebarMenuSubItem,
-  SidebarProvider,
-  SidebarRail,
-  SidebarSeparator,
-  SidebarTrigger,
-  useSidebar,
-} from "./components/ui/sidebar"
 
 // ── Overlays ──────────────────────────────────────────────────────────────────
 export {
@@ -276,6 +273,7 @@ export {
   DropdownMenuRadioItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
+  DropdownMenuSearch,
   DropdownMenuShortcut,
   DropdownMenuGroup,
   DropdownMenuPortal,
@@ -298,7 +296,7 @@ export {
 } from "./components/ui/command"
 
 // ── Feedback ──────────────────────────────────────────────────────────────────
-export { Alert, AlertTitle, AlertDescription } from "./components/ui/alert"
+export { Alert, AlertTitle, AlertDescription, AlertAction } from "./components/ui/alert"
 
 export { Toaster } from "./components/ui/sonner"
 

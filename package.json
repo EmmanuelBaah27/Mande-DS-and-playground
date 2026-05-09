@@ -7,7 +7,9 @@
   "scripts": {
     "dev": "turbo run dev",
     "dev:playground": "turbo run dev --filter=@mande/playground",
+    "dev:playground:clean": "turbo run dev:clean --filter=@mande/playground",
     "dev:storybook": "STORYBOOK_DISABLE_TELEMETRY=1 storybook dev -p 6006",
+    "dev:storybook:clean": "rm -rf node_modules/.cache/storybook node_modules/.vite && pnpm dev:storybook",
     "build": "turbo run build",
     "build-storybook": "STORYBOOK_DISABLE_TELEMETRY=1 storybook build",
     "lint": "turbo run lint",
@@ -34,5 +36,8 @@
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
     "mappd": "^0.1.11"
+  },
+  "volta": {
+    "node": "24.14.0"
   }
 }

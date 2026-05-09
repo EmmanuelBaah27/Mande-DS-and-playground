@@ -14,6 +14,9 @@ const meta: Meta<typeof Card> = {
   component: Card,
   parameters: { layout: "centered" },
   tags: ["autodocs"],
+  argTypes: {
+    surface: { control: "inline-radio", options: ["default", "elevated"] },
+  },
 }
 
 export default meta
@@ -35,6 +38,20 @@ export const Default: Story = {
         <Button variant="secondary" size="sm">Cancel</Button>
         <Button size="sm">Confirm</Button>
       </CardFooter>
+    </Card>
+  ),
+}
+
+export const Elevated: Story = {
+  render: () => (
+    <Card surface="elevated" className="w-80">
+      <CardHeader className="p-5 pb-3">
+        <CardTitle>Challenge Prompt</CardTitle>
+        <CardDescription>Use the elevated treatment for lightweight, in-flow task cards.</CardDescription>
+      </CardHeader>
+      <CardContent className="px-5 pb-5 pt-0">
+        <p className="text-lg-regular text-muted-foreground">Describe a workday that gives you energy.</p>
+      </CardContent>
     </Card>
   ),
 }

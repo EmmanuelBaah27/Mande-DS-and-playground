@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s -X PATCH http://localhost:4747/annotations/monguw22-jrs330 -H \"Content-Type: application/json\" -d '{\"status\":\"acknowledged\"}')",
+      "Bash(curl -s -X PATCH http://localhost:4747/annotations/monguw22-jrs330 -H \"Content-Type: application/json\" -d '{\"status\":\"resolved\",\"thread\":[{\"role\":\"agent\",\"content\":\"Reverted body typography from text-base-regular back to text-lg-regular leading-relaxed. The other improvements \\(paragraph spacing, headings, bold, code blocks\\) are preserved.\"}]}')"
+    ]
+  }
+}

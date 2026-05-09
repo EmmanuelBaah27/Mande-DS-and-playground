@@ -1,3 +1,5 @@
+"use client"
+
 import * as React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 
@@ -11,7 +13,7 @@ const chipVariants = cva(
         default:
           "border-neutral-200 bg-white text-neutral-600 hover:border-neutral-300 hover:bg-neutral-50",
         selected:
-          "border-primary-200 bg-primary-50 text-primary-700 hover:bg-primary-100",
+          "border-transparent bg-neutral-200 text-neutral-700 hover:bg-neutral-300",
       },
     },
     defaultVariants: {

@@ -7,6 +7,7 @@ const config: StorybookConfig = {
   stories: [
     "../packages/ui/src/**/*.mdx",
     "../packages/ui/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../apps/playground/src/**/*.stories.@(js|jsx|mjs|ts|tsx)",
   ],
   addons: [
     "@storybook/addon-onboarding",
@@ -57,7 +58,6 @@ const config: StorybookConfig = {
         "@radix-ui/react-slot",
         "@radix-ui/react-switch",
         "@radix-ui/react-tabs",
-        "@radix-ui/react-toast",
         "@radix-ui/react-toggle",
         "@radix-ui/react-toggle-group",
         "@radix-ui/react-tooltip",
