@@ -46,7 +46,7 @@ Decision hierarchy — follow in order, no exceptions:
 ```
 1. Semantic utility    → text-foreground, bg-success-subtle, border-border
 2. Named palette       → bg-neutral-100 (only if use is decorative, one-off, and will never be promoted to DS)
-3. Gap found           → apply criteria below, then add paired tokens to globals.css
+3. Gap found           → flag it, apply criteria below, resolve in Step 4
 4. Never               → raw hex, oklch, arbitrary px, raw Tailwind color/size utilities
 ```
 
