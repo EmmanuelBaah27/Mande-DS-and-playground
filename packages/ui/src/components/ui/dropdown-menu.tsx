@@ -181,6 +181,7 @@ const DropdownMenuSearch = ({
       type="text"
       value={value}
       onChange={(e) => onChange(e.target.value)}
+      onKeyDown={(e) => e.stopPropagation()}
       placeholder={placeholder}
       autoFocus={autoFocus}
       className="w-full px-2 text-base-regular text-foreground placeholder:text-muted-foreground bg-transparent outline-none"

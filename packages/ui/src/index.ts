@@ -130,7 +130,7 @@ export type {
   AccountSelectorProps,
   NavItem,
   ChatGroup,
-  PillarState,
+  LessonState,
   CurriculumSectionConfig,
 } from "./components/ui/app-sidebar"
 

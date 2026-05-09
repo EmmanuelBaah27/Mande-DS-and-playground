@@ -1,4 +1,5 @@
 import type { ChallengeType, ArtifactType } from "@mande/ui"
+export type { ArtifactType }
 
 export type ChallengeInput = "textarea" | "confirm" | "url" | "short-text" | "list"
 
@@ -208,9 +209,9 @@ export function inferAssistantDepth(content: string): AssistantResponseDepth {
 export type SessionMode = "curriculum" | "open"
 
 export type CurriculumProgress = {
-  pillar: string
-  pillarIndex: number
-  totalPillars: number
+  module: string
+  lessonIndex: number
+  totalLessons: number
   step: string
   stepIndex: number
   totalSteps: number
@@ -250,9 +251,9 @@ export const INITIAL_SESSIONS: ChatSession[] = [
     title: "Discovering your options",
     mode: "curriculum",
     progress: {
-      pillar: "Career clarity",
-      pillarIndex: 1,
-      totalPillars: 3,
+      module: "Career clarity",
+      lessonIndex: 1,
+      totalLessons: 3,
       step: "Discovering your options",
       stepIndex: 1,
       totalSteps: 3,
@@ -372,8 +373,112 @@ export const INITIAL_SESSIONS: ChatSession[] = [
   },
 ]
 
-export const CURRICULUM_MODULES = [
-  { id: "curriculum-1", label: "Discovering your options" },
-  { id: "curriculum-finding-clarity", label: "Finding clarity" },
-  { id: "curriculum-making-a-choice", label: "Making a choice" },
+export type CurriculumLessonMeta = {
+  readonly id: string
+  readonly label: string
+  readonly icon: string
+  readonly description: string
+  readonly topics: readonly string[]
+  readonly artifacts: readonly ArtifactType[]
+}
+
+export const CURRICULUM_LESSONS: readonly CurriculumLessonMeta[] = [
+  {
+    id: "lesson-discovering-options",
+    label: "Discovering your options",
+    icon: "IconMagnifyingGlass",
+    description: "Map yourself across personality, interests, values, work preferences, and constraints.",
+    topics: ["PIVOTS assessments", "Work preference", "Holland & MBTI", "Skills audit"],
+    artifacts: [
+      "work-preference",
+      "mbti",
+      "holland",
+      "interests",
+      "values",
+      "opportunities",
+      "threats",
+      "skills-audit",
+    ],
+  },
+  {
+    id: "lesson-finding-clarity",
+    label: "Finding clarity",
+    icon: "IconStar",
+    description: "Match your profile to real roles and verify it through informational interviews.",
+    topics: ["Career report", "Job descriptions", "Cold outreach", "Interviews"],
+    artifacts: [
+      "research-action",
+      "craft",
+    ],
+  },
+  {
+    id: "lesson-making-a-choice",
+    label: "Making the choice",
+    icon: "IconCheckmark2",
+    description: "Choose a path with evidence and build a plan to keep you moving.",
+    topics: ["Path reflection", "Learning plan", "Accountability"],
+    artifacts: [
+      "reflection",
+    ],
+  },
+] as const
+
+export type CurriculumModuleMeta = {
+  readonly id: string
+  readonly label: string
+  readonly icon: string
+  readonly description: string
+  readonly lessons: readonly CurriculumLessonMeta[]
+}
+
+export const CURRICULUM_MODULES: readonly CurriculumModuleMeta[] = [
+  {
+    id: "module-career-clarity",
+    label: "Career clarity",
+    icon: "IconStar",
+    description: "Understand the link between your studies and career opportunities, and find your path.",
+    lessons: CURRICULUM_LESSONS,
+  },
+  {
+    id: "module-practical-skills",
+    label: "Practical skills and experience",
+    icon: "IconSuitcaseWork",
+    description: "Build and demonstrate concrete skills that employers are willing to pay for.",
+    lessons: [],
+  },
+  {
+    id: "module-job-search",
+    label: "Job search skills",
+    icon: "IconMagnifyingGlass",
+    description: "Find roles, write compelling applications, and navigate interviews with confidence.",
+    lessons: [],
+  },
+  {
+    id: "module-initiative",
+    label: "Initiative and proactiveness",
+    icon: "IconArrowUpRight",
+    description: "Build the habit of taking action before being asked — the trait every employer notices.",
+    lessons: [],
+  },
+  {
+    id: "module-visibility",
+    label: "Visibility and social capital",
+    icon: "IconCirclePerson",
+    description: "Grow your network, strengthen your LinkedIn presence, and build relationships that open doors.",
+    lessons: [],
+  },
+  {
+    id: "module-opportunity-openness",
+    label: "Opportunity openness",
+    icon: "IconCompassRound",
+    description: "Expand your lens — the best path forward is often one you haven't considered yet.",
+    lessons: [],
+  },
+  {
+    id: "module-location-access",
+    label: "Location and access",
+    icon: "IconHome",
+    description: "Navigate geography and access-to-market realities to find where your career can thrive.",
+    lessons: [],
+  },
 ] as const

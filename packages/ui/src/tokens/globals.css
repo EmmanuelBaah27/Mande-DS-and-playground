@@ -358,6 +358,8 @@
   --color-border-strong: var(--semantic-neutral-border-strong);
   --color-disabled: var(--semantic-disabled-bg);
   --color-disabled-foreground: var(--semantic-disabled-text);
+  --color-border-disabled: var(--semantic-disabled-bg);
+  --color-text-tertiary: var(--semantic-neutral-text-muted);
   --color-overlay: var(--semantic-surface-overlay);
 
   --radius: 0.5rem;

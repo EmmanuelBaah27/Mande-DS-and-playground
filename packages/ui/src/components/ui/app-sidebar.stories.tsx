@@ -28,7 +28,7 @@ const makeNavItems = () => [
 const CURRICULUM_SECTION = {
   label: "Career clarity",
   progress: "1 of 3",
-  pillars: [
+  lessons: [
     { id: "discovering", label: "Discovering your options", state: "active" as const },
     { id: "finding", label: "Finding clarity", state: "locked" as const },
     { id: "choice", label: "Making a choice", state: "locked" as const },

@@ -39,10 +39,10 @@ export function WelcomeState({
   const curriculumProgress = resumeSession?.progress
   const resumeIconTone =
     curriculumProgress &&
-    curriculumProgress.pillarIndex >= curriculumProgress.totalPillars &&
+    curriculumProgress.lessonIndex >= curriculumProgress.totalLessons &&
     curriculumProgress.stepIndex >= curriculumProgress.totalSteps
-      ? "text-green-500"
-      : "text-blue-500"
+      ? "text-success"
+      : "text-info"
 
   return (
     <div className="flex-1 flex flex-col min-h-0">
@@ -53,7 +53,7 @@ export function WelcomeState({
       >
         <div
           aria-hidden
-          className={`pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-gradient-to-b from-neutral-50 to-transparent transition-opacity duration-150 ${
+          className={`pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-gradient-to-b from-subtle to-transparent transition-opacity duration-150 ${
             showTopScrollFade ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -62,29 +62,29 @@ export function WelcomeState({
             {/* Title group */}
             <div className="flex flex-col gap-2">
               <img src="/mande-ai-icon.svg" alt="Mande" width={28} height={28} />
-              <h1 className="text-H1 text-neutral-900">Welcome back, {userName}</h1>
+              <h1 className="text-H1 text-foreground">Welcome back, {userName}</h1>
             </div>
 
             {/* Resume group — text + card, 8px apart */}
             {resumeSession && (
               <div className="flex flex-col gap-2">
-                <p className="text-small-regular text-neutral-500">Pick up where you left off</p>
+                <p className="text-small-regular text-muted-foreground">Pick up where you left off</p>
                 <button
                   onClick={() => onResumeSession(resumeSession.id)}
-                  className="w-full flex items-center gap-3 px-4 py-3 rounded-4 border border-neutral-200 bg-white hover:border-neutral-300 hover:shadow-sm transition-all text-left"
+                  className="w-full flex items-center gap-3 px-4 py-3 rounded-4 border border-disabled bg-card hover:border-border hover:shadow-sm transition-all text-left"
                 >
                   <div className={`shrink-0 ${resumeIconTone}`}>
                     <Icon name="IconCircleDashed" size={20} />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-base-medium text-neutral-900 truncate">{resumeSession.title}</p>
-                    <p className="text-small-regular text-neutral-500 mt-0.5">
+                    <p className="text-base-medium text-foreground truncate">{resumeSession.title}</p>
+                    <p className="text-small-regular text-muted-foreground mt-0.5">
                       {resumeSession.progress
-                        ? `${resumeSession.progress.pillar} · ${resumeSession.progress.stepIndex}/${resumeSession.progress.totalSteps}`
+                        ? `${resumeSession.progress.module} · ${resumeSession.progress.stepIndex}/${resumeSession.progress.totalSteps}`
                         : "Open chat"}
                     </p>
                   </div>
-                  <Icon name="IconChevronRightSmall" size={20} className="text-neutral-400 shrink-0" />
+                  <Icon name="IconChevronRightSmall" size={20} className="text-tertiary shrink-0" />
                 </button>
               </div>
             )}
@@ -93,7 +93,7 @@ export function WelcomeState({
       </div>
 
       {/* Message bar — outside scroll area, always pinned at bottom */}
-      <div className="px-4 pb-4 bg-neutral-50 shrink-0">
+      <div className="px-4 pb-4 bg-subtle shrink-0">
         <div className="max-w-3xl mx-auto">
           <ChatInput
             value={value}
@@ -117,7 +117,7 @@ export function WelcomeState({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="size-5 flex items-center justify-center text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-1 transition-colors"
+                className="size-5 flex items-center justify-center text-tertiary hover:text-muted-foreground hover:bg-muted rounded-1 transition-colors"
               >
                 <Icon name="IconPaperclip2" size={16} />
               </button>

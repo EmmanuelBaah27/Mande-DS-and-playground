@@ -1,0 +1,248 @@
+MANDE — WORK PREFERENCE ASSESSMENT
+Source: https://mande-work-preference.netlify.app/
+Scaffolded: 2026-05-07
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OVERVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Title:         Work Preference Inventory
+Powered by:    careerperfect.com
+Total items:   24
+Format:        Forced-choice paired comparisons (pick one from each pair)
+Instructions:  "Choose one option from each pair that best describes
+                what you like in your work assignments. There are 24
+                quick choices — trust your gut!"
+
+Question stem (shown above every pair):
+  "I LIKE work assignments which enable me to…"
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCORING MODEL — FOUR WORK STYLES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Each answer choice is tagged to one of four styles (A / B / C / D).
+Every question presents exactly two of the four styles head-to-head.
+The user's score for each style accumulates across all 24 choices.
+The style(s) with the highest score become the result.
+Ties produce a "hybrid" result (two or more styles combined).
+
+Style  Name         Subtitle
+─────  ───────────  ─────────────
+A      Focuser      Self-Starter
+B      Relator      Enthusiastic
+C      Integrator   Finisher
+D      Operator     Detailer
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+QUESTION SET — 24 PAIRED CHOICES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ROUND 1 — "Take action" vs. the other three
+──────────────────────────────────────────────
+Q01.  A: Take action
+      B: Coordinate activities
+
+Q02.  A: Take action
+      C: Gather information
+
+Q03.  A: Take action
+      D: Follow procedures
+
+ROUND 2 — "Coordinate activities" vs. remaining two
+──────────────────────────────────────────────────────
+Q04.  B: Coordinate activities
+      C: Gather information
+
+Q05.  B: Coordinate activities
+      D: Follow procedures
+
+ROUND 3 — C vs. D
+──────────────────
+Q06.  C: Gather information
+      D: Follow procedures
+
+ROUND 4 — "Accomplish tangible results" vs. the other three
+─────────────────────────────────────────────────────────────
+Q07.  A: Accomplish tangible results
+      B: Participate with others
+
+Q08.  A: Accomplish tangible results
+      C: Creatively problem-solve
+
+Q09.  A: Accomplish tangible results
+      D: Analyze facts/data
+
+ROUND 5 — "Participate with others" vs. remaining two
+───────────────────────────────────────────────────────
+Q10.  B: Participate with others
+      C: Creatively problem-solve
+
+Q11.  B: Participate with others
+      D: Analyze facts/data
+
+ROUND 6 — C vs. D
+──────────────────
+Q12.  C: Creatively problem-solve
+      D: Analyze facts/data
+
+ROUND 7 — "Be in charge" vs. the other three
+──────────────────────────────────────────────
+Q13.  A: Be in charge
+      B: Be involved
+
+Q14.  A: Be in charge
+      C: Be self-directed
+
+Q15.  A: Be in charge
+      D: Be systematic
+
+ROUND 8 — "Be involved" vs. remaining two
+───────────────────────────────────────────
+Q16.  B: Be involved
+      C: Be self-directed
+
+Q17.  B: Be involved
+      D: Be systematic
+
+ROUND 9 — C vs. D
+──────────────────
+Q18.  C: Be self-directed
+      D: Be systematic
+
+ROUND 10 — "Know what / cut loose" vs. the other three
+────────────────────────────────────────────────────────
+Q19.  A: Know what needs to be done; then cut loose and do it
+      B: Know who else will be included or affected
+
+Q20.  A: Know what needs to be done; then cut loose and do it
+      C: Know why an assignment is to be done
+
+Q21.  A: Know what needs to be done; then cut loose and do it
+      D: Know how an assignment is to be done
+
+ROUND 11 — "Know who" vs. remaining two
+─────────────────────────────────────────
+Q22.  B: Know who else will be included or affected
+      C: Know why an assignment is to be done
+
+Q23.  B: Know who else will be included or affected
+      D: Know how an assignment is to be done
+
+ROUND 12 — C vs. D
+────────────────────
+Q24.  C: Know why an assignment is to be done
+      D: Know how an assignment is to be done
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PAIRING STRUCTURE (design note)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The 24 questions are structured as 4 rounds of 6 questions each.
+Within each round, every possible pair of the four styles
+(A/B, A/C, A/D, B/C, B/D, C/D) appears exactly once.
+This is a complete balanced paired-comparison design —
+every style is matched against every other style equally.
+
+Round   Questions   Theme
+─────   ─────────   ──────────────────────────────────────────
+1       Q01–Q06     Action vs. collaboration vs. info vs. process
+2       Q07–Q12     Outcomes vs. people vs. creativity vs. analysis
+3       Q13–Q18     Authority vs. involvement vs. autonomy vs. systems
+4       Q19–Q24     Knowing what vs. who vs. why vs. how
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RESULT TYPES — DESCRIPTIONS (verbatim from source)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+── A: FOCUSER (Self-Starter) ──────────────────────────────────
+
+As a Focuser, you thrive on understanding the core of tasks and are
+naturally inclined to take charge and work independently. You excel
+when you have a clear understanding of the objectives and can direct
+your efforts towards practical, tangible outcomes. Your leadership
+style is authoritative, and you value productivity and efficiency.
+Experience is your guide, and you are driven by the influence of
+strong leaders. Clear goals provide you with the direction you need
+to succeed, and you shine when given the authority to execute your
+vision. Hands-on learning is your forte, as you absorb knowledge
+best through direct experience. In essence, you are outcome-focused,
+value practical solutions, and prefer roles where you can leverage
+your independent, self-starting nature to achieve significant results.
+
+── B: RELATOR (Enthusiastic) ──────────────────────────────────
+
+As a Relator, your strength lies in your ability to connect with
+people and focus on the whom. You excel in seeing the big picture
+and enjoy roles that involve coordinating and facilitating teamwork.
+You thrive in environments that emphasize collaboration and democratic
+management, where everyone's participation is valued. Flexibility is
+important to you, and you adapt well to varying situations by
+organizing and fostering group cohesion. You are influenced by the
+collective goals of the team and work best with broad objectives
+that allow for widespread involvement. Your primary focus is on
+fostering participation and creating an inclusive atmosphere where
+everyone can contribute. Influence within the group is key to your
+approach, and you learn most effectively through observing and
+actively participating in group activities. Your enthusiastic nature
+and commitment to teamwork make you a valuable asset in any
+collaborative setting.
+
+── C: INTEGRATOR (Finisher) ──────────────────────────────────
+
+As an Integrator, your passion lies in understanding the deeper
+significance of your work. You excel in roles that involve
+problem-solving and diagnosing, constantly seeking innovative
+solutions. Your approach to management is self-directed and
+methodical, with a strong emphasis on planning. Self-reliance is
+crucial for you, and you thrive when given the autonomy to question
+and explore. Personal reasoning and thoughtful analysis guide your
+decisions, making you adept at working with ideas and input from
+various sources. Your focus is on gathering and integrating insights
+to create meaningful outcomes. You prefer having ample time to
+assess situations and learn best through listening and absorbing
+information. Your analytical mindset and dedication to understanding
+the why behind tasks make you a valuable asset in any environment
+that values innovation and thoroughness.
+
+── D: OPERATOR (Detailer) ─────────────────────────────────────
+
+As an Operator, your expertise lies in understanding the intricacies
+of your work. You excel in roles that involve monitoring and
+analyzing, with a keen eye for details. Your meticulous approach
+ensures that every aspect is documented accurately, and you manage
+with a systematic and controlled style. Accountability is paramount
+for you, and you place high value on compliance and adhering to
+established policies. You thrive in structured environments where
+systems and procedures are well-defined. Your focus is on
+maintaining order and ensuring that boundaries are respected. You
+learn best through repetition, which helps you master processes and
+achieve consistency. Your methodical nature and dedication to
+precision make you indispensable in roles that require thorough
+analysis and detailed execution.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+HYBRID RESULTS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+When two or more styles tie for the highest score, the result is
+presented as a combined type, e.g. "Focuser + Relator".
+Both (or all) winning style descriptions are shown side-by-side.
+Subtitle badges for each winning style are displayed as pills.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+IMPLEMENTATION NOTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- Single-select forced choice per question (no skipping, no neutral).
+- Auto-advances after a short delay (~480 ms) once an option is picked.
+- Progress shown as "Question N of 24" + percentage bar.
+- Score state: { A: 0, B: 0, C: 0, D: 0 } — increment on each pick.
+- Result = style(s) where score === Math.max(...all scores).
+- "Take it again" resets all scores and returns to intro screen.

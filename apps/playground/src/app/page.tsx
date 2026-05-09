@@ -5,7 +5,7 @@ import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
 import { Icon, AppSidebar, cn } from "@mande/ui"
-import type { PillarState, CurriculumSectionConfig } from "@mande/ui"
+import type { LessonState, CurriculumSectionConfig } from "@mande/ui"
 import { ChatThread } from "../components/chat-thread"
 import { WelcomeState } from "../components/welcome-state"
 import { CurriculumView } from "../components/curriculum-view"
@@ -90,11 +90,11 @@ function getCurriculumSection(sessions: ChatSession[]): CurriculumSectionConfig 
   const totalLessons = activeModule.lessons.length
   const activeLessonIndex = Math.max(
     0,
-    Math.min(totalLessons - 1, (curriculumSession?.progress?.pillarIndex ?? 1) - 1)
+    Math.min(totalLessons - 1, (curriculumSession?.progress?.lessonIndex ?? 1) - 1)
   )
 
-  const pillars = activeModule.lessons.map((lesson, index) => {
-    let state: PillarState = "locked"
+  const lessons = activeModule.lessons.map((lesson, index) => {
+    let state: LessonState = "locked"
     if (index < activeLessonIndex) state = "completed"
     if (index === activeLessonIndex) state = "active"
     return { id: lesson.id, label: lesson.label, state }
@@ -103,7 +103,7 @@ function getCurriculumSection(sessions: ChatSession[]): CurriculumSectionConfig 
   return {
     label: activeModule.label,
     progress: "Active",
-    pillars,
+    lessons,
   }
 }
 
@@ -120,6 +120,7 @@ export default function ChatPage() {
   const router = useRouter()
   const [sessions, setSessions] = useState<ChatSession[]>(INITIAL_SESSIONS)
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
+  const [activeLessonId, setActiveLessonId] = useState<string | null>(null)
   const [view, setView] = useState<View>("welcome")
   // ─── Sidebar collapse state ───────────────────────────────────────────────
   const [collapsed, setCollapsed] = useState(false)
@@ -162,7 +163,7 @@ export default function ChatPage() {
   const activeItem =
     view === "welcome" ? "new-chat" :
     view === "curriculum" ? "curriculum" :
-    (activeSessionId ?? undefined)
+    (activeLessonId ?? activeSessionId ?? undefined)
   const openSessions = sessions.filter((s) => s.mode === "open")
 
   const chatGroups = openSessions.length > 0
@@ -173,6 +174,7 @@ export default function ChatPage() {
     if (id === "new-chat") {
       setView("welcome")
       setActiveSessionId(null)
+      setActiveLessonId(null)
       return
     }
     if (id === "overview") {
@@ -182,10 +184,29 @@ export default function ChatPage() {
     if (id === "curriculum") {
       setView("curriculum")
       setActiveSessionId(null)
+      setActiveLessonId(null)
+      return
+    }
+
+    // Direct session id match (open chats)
+    if (sessions.some((s) => s.id === id)) {
+      setActiveSessionId(id)
+      setActiveLessonId(null)
+      setView("thread")
+      return
+    }
+
+    // Curriculum lesson ids — navigate to the curriculum chat session
+    const curriculumSession = sessions.find((s) => s.mode === "curriculum")
+    if (curriculumSession) {
+      setActiveSessionId(curriculumSession.id)
+      setActiveLessonId(id)
+      setView("thread")
       return
     }
 
     setActiveSessionId(id)
+    setActiveLessonId(null)
     setView("thread")
   }
 

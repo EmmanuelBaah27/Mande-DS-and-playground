@@ -200,24 +200,24 @@ export type ChatGroup = {
   items: Array<{ id: string; label: string }>
 }
 
-export type PillarState = "active" | "locked" | "completed"
+export type LessonState = "active" | "locked" | "completed"
 
-export type PillarItem = {
+export type LessonItem = {
   id: string
   label: string
-  state: PillarState
+  state: LessonState
 }
 
 export type CurriculumSectionConfig = {
   label: string
   progress: string
-  pillars: PillarItem[]
+  lessons: LessonItem[]
 }
 
 function CurriculumSection({
   label,
   progress,
-  pillars,
+  lessons,
   activeItem,
   onNavigate,
 }: CurriculumSectionConfig & { activeItem?: string; onNavigate?: (id: string) => void }) {
@@ -233,13 +233,13 @@ function CurriculumSection({
           {progress}
         </Badge>
       </div>
-      {pillars.map((pillar) => {
-        const isActive = pillar.state === "active"
-        const isLocked = pillar.state === "locked"
+      {lessons.map((lesson) => {
+        const isActive = lesson.state === "active"
+        const isLocked = lesson.state === "locked"
         return (
           <SideNavItem
-            key={pillar.id}
-            label={pillar.label}
+            key={lesson.id}
+            label={lesson.label}
             icon={
               <Icon
                 name={isActive ? "IconCircleDashed" : "IconLock"}
@@ -247,8 +247,8 @@ function CurriculumSection({
                 className={isActive ? "text-blue-500" : undefined}
               />
             }
-            selected={isActive && activeItem === pillar.id}
-            onClick={isLocked ? undefined : () => onNavigate?.(pillar.id)}
+            selected={isActive && activeItem === lesson.id}
+            onClick={isLocked ? undefined : () => onNavigate?.(lesson.id)}
             className={isLocked ? "text-neutral-400 pointer-events-none" : undefined}
           />
         )

@@ -48,22 +48,30 @@ export const challengeColors: Record<ChallengeType, string> = {
 export type ArtifactType =
   | "commitment"
   | "reflection"
-  | "quiz"
+  | "work-preference"
   | "mbti"
   | "holland"
+  | "interests"
+  | "values"
+  | "opportunities"
+  | "threats"
+  | "skills-audit"
   | "craft"
-  | "self-report"
   | "research-action"
   | "external-assessment"
 
 export const artifactLabels: Record<ArtifactType, string> = {
   commitment: "Commitment",
   reflection: "Reflection",
-  quiz: "Work preference",
-  mbti: "Personality type",
+  "work-preference": "Work preference",
+  mbti: "Personality (MBTI)",
   holland: "Interest profile",
+  interests: "Industries & hobbies",
+  values: "Values",
+  opportunities: "Opportunities",
+  threats: "Threats",
+  "skills-audit": "Skills audit",
   craft: "Craft",
-  "self-report": "Self-report",
   "research-action": "Research & Action",
   "external-assessment": "External Assessment",
 }
