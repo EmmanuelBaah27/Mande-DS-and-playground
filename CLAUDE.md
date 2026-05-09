@@ -1,76 +1,19 @@
 # Claude Instructions — Mande DS
 
-## Context sourcing
+## Workflow
 
-Whenever you fetch context from a file, doc, or external source to answer a question or make a decision, state it succinctly in one line before responding — e.g. "From `docs/features/modules/career-clarity.md`:" or "From `packages/ui/src/tokens/globals.css`:".
+Use the `ship-discipline` skill for all build work — new ideas, planning, building, shipping, and session close-out. Don't re-derive the workflow; follow the skill.
 
-## After every session / after context compaction
+The skill covers: the two loops (Product Discovery / Topic Execution), the five phases (ELICIT → GROUND → PLAN → BUILD → SHIP), branch-by-topic rules, the four session docs, verification-surface rules (local dev URL + Vercel preview), and skill composition.
 
-Update the following docs **before** ending the session or immediately after a context summary appears:
+**Source of truth:** `~/ship-discipline/` (dedicated repo) → symlinked into `~/.claude/skills/ship-discipline/`. A vendored copy exists at `.claude/skills/ship-discipline/` in this repo for visibility, but **do not edit it there** — it drifts. To change the workflow from any project, run `/update-workflow "<what to change>"` and Claude will edit the source repo, commit, and push.
 
-1. **`docs/sessions/session-report-{N}.md`** — create a new numbered session report covering: what was accomplished, key decisions, problems encountered and solved, current state, what's next
-2. **`docs/ops/learnings.md`** — add any non-obvious technical things discovered (errors, patterns, gotchas, tool quirks)
-3. **`docs/ops/decisions.md`** — update if any architectural or process decisions were made or changed
+### Project-specific overrides
 
-Then **commit and push** the docs in a single commit with message `"Add Session N docs"`.
-
-Do this without being asked. If a context compaction summary appears, treat it as a trigger to write the docs for the work covered in that summary.
-
----
-
-## Push cadence
-
-**Local-first, push after.** Default flow:
-
-1. Make the change (code + commit).
-2. Hand back to the user — don't push yet.
-3. User reviews in their running Storybook / app.
-4. Push only when the user confirms ("looks good", "push it", "ship") or when explicitly asked.
-
-Commits can pile up locally between pushes — that's fine. Each commit should still be a coherent unit (not mid-edit), so the history stays clean when we do push.
-
-Exceptions that do push automatically:
-- End-of-session docs commit (see "After every session" above)
-- User says "push" or asks for a preview URL
-- Any cross-device checkpoint the user requests
-
-Never push broken code, never skip hooks, never batch unrelated changes.
-
----
-
-## Working on a topic
-
-Three phases, in order. Invoke the required skill at the start of each phase — no exceptions.
-
-Non-negotiable process guardrail: always run the full flow in order: Brainstorm → user-reviewed written plan → Build → DS update. No jumping straight to implementation.
-
-### 1. Brainstorm
-Skill: `superpowers:brainstorming`
-
-### 2. Build
-Skills: `superpowers:test-driven-development` · `superpowers:executing-plans` · `superpowers:systematic-debugging` · `superpowers:verification-before-completion`
-
-Work in `apps/playground/` first. Promote to `packages/ui/` when validated — use the `promote-to-ds` skill.
-
-### 3. Update DS
-Skills: `build-component` · `superpowers:requesting-code-review`
-
-### Branch rules
-
-- **Branch by topic, not session.** A topic is a coherent unit of work that ships as one PR.
-- **Naming:** `claude/<topic-slug>` — short, lowercase, hyphenated, descriptive.
-- **Cut procedure:**
-  1. `git checkout main && git pull origin main` — catch up
-  2. `git checkout -b claude/<topic-slug>` — branch off fresh `main`
-  3. Work, commit, push with `git push -u origin claude/<topic-slug>`
-- **Cut a new branch when:** starting a new topic, starting an unplanned-but-shippable fix, or when a session crosses into a different topic mid-flow.
-- **Stay on the current branch when:** continuing, polishing, or responding to review on work in progress, or writing end-of-session docs for the current topic.
-- **Every branch has an open PR (draft is fine) or is being abandoned.** A branch with no PR is invisible work.
-- **After merge:** delete the branch (local + remote).
-
-### Current branch
-
-- `claude/skills-architecture` — skills architecture + repo/docs reorganisation (in progress).
+- **Context sourcing:** Whenever you fetch context from a file, doc, or external source to answer a question or make a decision, state it succinctly in one line before responding — e.g. "From `docs/features/modules/career-clarity.md`:" or "From `packages/ui/src/tokens/globals.css`:".
+- **Plan directory:** `docs/superpowers/plans/<YYYY-MM-DD>-<slug>.md` (not the skill's default `docs/plans/`).
+- **Current topic queue:**
+  - Lesson completion UX → `claude/lesson-completion-ux` (plan written, pending implementation)
 
 ---
 
@@ -94,17 +37,10 @@ Feature-level context lives in separate files — read the relevant one(s) when 
 
 When work spans multiple features, read all relevant files. When a new feature or initiative starts, create a new file in `docs/features/` using the same template structure.
 
-## Before touching components from third-party packages
+## Third-party primitives — known breaking changes
 
-When a component wraps a third-party primitive (shadcn, Radix, etc.), verify the installed package version exports before writing or editing:
+The general rule (verify exports before editing) lives in `ship-discipline`. Specific gotchas already encountered in this repo:
 
-```bash
-node -e "console.log(Object.keys(require('package-name')))"
-```
-
-Breaking API changes (renamed exports, removed props) are common across major versions and won't surface until build time. Check first, especially after `pnpm install` or when a component wasn't authored here.
-
-Known breaking changes already encountered:
 - `react-resizable-panels` v4: `PanelGroup`→`Group`, `PanelResizeHandle`→`Separator`
 - `calendar.tsx` `String.raw` template literals: not supported by Storybook's Babel docgen parser — use regular escaped strings instead
 
