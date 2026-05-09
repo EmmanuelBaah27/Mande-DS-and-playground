@@ -157,3 +157,49 @@ Loading `/` shows the welcome-back screen (Mande icon, personalised greeting, re
 ### pnpm (not npm)
 **Why:** Faster, stricter, native workspace support. Required for Turborepo monorepo.
 
+---
+
+## Git workflow — branch/merge/main (Session 21)
+
+**Decision:** Branch-by-topic, merge directly to main without waiting for PR review (solo team, no reviewer available). PRs are still used as a practice to maintain a permanent record and diff view, but they are self-merged.
+
+**Mental model:**
+- `main` = the published, always-stable version.
+- A branch = a private draft. `main` stays clean while you work.
+- Merge when the topic is complete, CI is green (typecheck passes), and the feature works in the playground.
+
+**Solo merge process:**
+```bash
+# 1. Sync main first
+git checkout main && git pull origin main
+
+# 2. Branch off fresh main for a new topic
+git checkout -b claude/<topic-slug>
+
+# 3. Work, commit, commit…
+
+# 4. If main moved while you were working, integrate it into your branch first
+git merge main   # resolve conflicts here, not on main
+
+# 5. Merge back to main
+git checkout main
+git merge --no-ff claude/<topic-slug> -m "merge(claude/<topic-slug>): short description"
+git push origin main
+
+# 6. Clean up
+git branch -d claude/<topic-slug>
+git push origin --delete claude/<topic-slug>   # if it was pushed
+```
+
+**Why `--no-ff`:** Creates a merge commit that marks the boundary of each topic. Makes `git log --graph` readable — each topic is a discrete chapter, not a flat stream of commits.
+
+**Why PRs even without a reviewer:**
+- Permanent record of what changed and why (description lives on GitHub).
+- Forces a deliberate "ready to land" moment.
+- Clean diff view before merging — useful for self-review.
+- When the team grows, no habit change required.
+
+**Merge strategy:** `--merge` (not `--squash`) because each individual commit in the branch is meaningful. Use `--squash` only when the branch has lots of `wip` / `fix typo` noise.
+
+**Branch naming:** `claude/<topic-slug>` — lowercase, hyphenated, short description of the work unit.
+
