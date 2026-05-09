@@ -41,47 +41,20 @@ Never push broken code, never skip hooks, never batch unrelated changes.
 
 ## Working on a topic
 
-Three phases, in order. Every phase has a required superpowers skill — invoke it before doing anything else in that phase.
+Three phases, in order. Invoke the required skill at the start of each phase — no exceptions.
 
-Non-negotiable process guardrail:
-- Always run the full collaboration flow in order: Brainstorm -> user-reviewed written plan -> Build -> DS update.
-- Do not jump straight to implementation before collaborative brainstorming and explicit plan agreement.
-- Keep periodic checkpoints during execution; when context grows or shifts, pause, restate current status/next step, and realign to the agreed plan before continuing.
+Non-negotiable process guardrail: always run the full flow in order: Brainstorm → user-reviewed written plan → Build → DS update. No jumping straight to implementation.
 
 ### 1. Brainstorm
-
-**Skill: `superpowers:brainstorming`** — invoke before any creative or feature work.
-
-- Run `superpowers:brainstorming` to surface intent, scope, constraints, and the concrete user moment.
-- Pull context from `docs/product/*.md`, Figma, or screenshots the user shares.
-- Output: agreed direction + a written plan in `docs/superpowers/plans/<YYYY-MM-DD>-<slug>.md` using `superpowers:writing-plans`. User reviews the plan before any code.
-- Done when direction is agreed and you know which files you're touching.
+Skill: `superpowers:brainstorming`
 
 ### 2. Build
+Skills: `superpowers:test-driven-development` · `superpowers:executing-plans` · `superpowers:systematic-debugging` · `superpowers:verification-before-completion`
 
-**Skills: `superpowers:test-driven-development` · `superpowers:executing-plans` · `superpowers:systematic-debugging` · `superpowers:verification-before-completion`**
-
-- Cut a branch (`claude/<topic-slug>` off fresh `main`). Use `superpowers:using-git-worktrees` when isolation is needed.
-- Execute the plan task-by-task using `superpowers:executing-plans` (or `superpowers:subagent-driven-development` for independent parallel tasks, `superpowers:dispatching-parallel-agents` for genuinely parallelisable work).
-- Before writing implementation code for any feature or fix, use `superpowers:test-driven-development`.
-- When a bug or test failure appears, use `superpowers:systematic-debugging` before proposing a fix.
-- **Before claiming anything is done**, use `superpowers:verification-before-completion`. Run the build, typecheck, and any tests. Evidence before assertions.
-- Work in `apps/playground/` first. The playground is where you prove the pattern — it should **consume** `@mande/ui` (tokens + shared components), not become the long-term home for reusable styling; see **DS-first for chat and shared UI** below.
-- Start the dev server and check the golden path visually before declaring done.
-- Commit coherent units. Push after user confirms ("looks good", "push it", "ship").
-- Use `superpowers:finishing-a-development-branch` when implementation is complete and you're deciding how to integrate.
+Work in `apps/playground/` first. Promote to `packages/ui/` when validated — use the `promote-to-ds` skill.
 
 ### 3. Update DS
-
-**Skills: `build-component` · `superpowers:requesting-code-review`**
-
-- Promote what validated in the playground into `packages/ui`.
-- Use `build-component` when writing or editing any DS component — it enforces token mapping before code.
-- Token gaps found during build → add alias + utility to `tokens/globals.css` before using.
-- Update or add Storybook stories for every changed or new DS component.
-- Run `pnpm build` in `packages/ui` to verify exports.
-- Use `superpowers:requesting-code-review` before merging DS changes. Use `superpowers:receiving-code-review` when acting on feedback.
-- DS updates can be on the same branch or a follow-up branch — keep it coherent.
+Skills: `build-component` · `superpowers:requesting-code-review`
 
 ### Branch rules
 
@@ -98,7 +71,7 @@ Non-negotiable process guardrail:
 
 ### Current branch
 
-- `build-foundation` — challenge artifact engine (complete); uncommitted DS changes to `app-sidebar`, `badge`, `globals.css` pending review.
+- `claude/skills-architecture` — skills architecture reorganisation (in progress).
 
 ---
 
@@ -108,6 +81,7 @@ Mande Design System — Turborepo monorepo:
 - `packages/ui/` — design system (`@mande/ui`), Radix UI + shadcn + Tailwind v4
 - `apps/playground/` — Next.js prototyping app
 - `.storybook/` — Storybook 8 with Vite builder
+- **pnpm in Bash**: prefix with `export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" &&`
 
 ## Product context
 
@@ -135,15 +109,3 @@ Known breaking changes already encountered:
 - `react-resizable-panels` v4: `PanelGroup`→`Group`, `PanelResizeHandle`→`Separator`
 - `calendar.tsx` `String.raw` template literals: not supported by Storybook's Babel docgen parser — use regular escaped strings instead
 
-## Component and DS work
-
-### DS-first for chat and shared UI
-
-- Prefer **tokens and components in `@mande/ui`** when the change is reusable across surfaces (typography, borders, form control sizes, spacing patterns, shared primitives). Put token work in `packages/ui/src/tokens/globals.css` (and promote or extend shared components there) rather than leaving the design intent only in `apps/playground`.
-- **`apps/playground` proves patterns**; once validated, **promote** styles and components into the DS so Storybook and every consumer stay aligned. Avoid accumulating duplicate raw Tailwind utility stacks in the playground for patterns that should be canonical.
-- **Exception:** playground-only experiments that are **explicitly throwaway** (named or commented as such) may stay local until you decide to promote or delete them.
-
-- **`build-component`** — invoke before writing or editing any DS component. Covers token mapping, icon lookup, gap surfacing, and all hard rules. Single source of truth for component protocol.
-- **`emil-design-eng`** — invoke for design polish, animation decisions, spacing/typography taste, and any "works but doesn't feel right" question.
-
-**pnpm in Bash**: prefix with `export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" &&`
