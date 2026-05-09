@@ -2,7 +2,6 @@
 
 import { useState, useRef } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
 import { Icon, AppSidebar, cn } from "@mande/ui"
 import type { LessonState, CurriculumSectionConfig } from "@mande/ui"
@@ -76,7 +75,7 @@ function EditableTitle({
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-type View = "welcome" | "thread" | "curriculum"
+type View = "welcome" | "thread" | "curriculum" | "overview"
 
 const NAV_ITEMS = [
   { id: "new-chat", label: "New chat", icon: <Icon name="IconBubbleSparkle" size={20} /> },
@@ -117,7 +116,6 @@ const HEADER_CTRL_W = 156  // left zone width when fully collapsed
 const EASE_OUT: [number, number, number, number] = [0.23, 1, 0.32, 1]
 
 export default function ChatPage() {
-  const router = useRouter()
   const [sessions, setSessions] = useState<ChatSession[]>(INITIAL_SESSIONS)
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
   const [activeLessonId, setActiveLessonId] = useState<string | null>(null)
@@ -163,6 +161,7 @@ export default function ChatPage() {
   const activeItem =
     view === "welcome" ? "new-chat" :
     view === "curriculum" ? "curriculum" :
+    view === "overview" ? "overview" :
     (activeLessonId ?? activeSessionId ?? undefined)
   const openSessions = sessions.filter((s) => s.mode === "open")
 
@@ -178,7 +177,9 @@ export default function ChatPage() {
       return
     }
     if (id === "overview") {
-      router.push("/overview")
+      setView("overview")
+      setActiveSessionId(null)
+      setActiveLessonId(null)
       return
     }
     if (id === "curriculum") {
@@ -390,6 +391,9 @@ export default function ChatPage() {
             {view === "curriculum" && (
               <span className="text-base-regular text-neutral-900 px-1">Curriculum</span>
             )}
+            {view === "overview" && (
+              <span className="text-base-regular text-neutral-900 px-1">Overview</span>
+            )}
             {view === "thread" && activeSession && (
               <EditableTitle
                 title={activeSession.title}
@@ -459,6 +463,10 @@ export default function ChatPage() {
       >
         {view === "curriculum" ? (
           <CurriculumView />
+        ) : view === "overview" ? (
+          <div className="flex-1 flex items-center justify-center">
+            <p className="text-base-regular text-neutral-400">Overview — we&apos;ll come back here.</p>
+          </div>
         ) : view === "welcome" || !activeSession ? (
           <WelcomeState
             userName="Angela"
