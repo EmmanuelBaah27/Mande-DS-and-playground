@@ -5,151 +5,135 @@ description: Use when building or editing any component in the Mande Design Syst
 
 # Mande DS — Component Build Protocol
 
-Before writing a single line of code, complete the audit below. No exceptions.
+Before writing a single line of code, complete every step below. No exceptions.
 
 ## Step 1 — Read live sources
 
 Read these files now:
-- `packages/ui/src/tokens/globals.css` — **only** token source Storybook loads (`colors.css` is never imported — ignore it)
+- `packages/ui/src/tokens/globals.css` — all token values (primitives, semantic aliases, utilities). The only token source of truth.
 - `packages/ui/src/stories/icon-categories.js` — available icon names
 - `packages/ui/src/components/ui/` — existing components to reuse or extend
 
-## Step 2 — Resolve every value to a DS token before writing any class
+## Step 1b — If working from a Figma spec (conditional)
 
-**This applies to every class you are about to write — regardless of source.** It doesn't matter whether the value came from Figma, your memory, or what "looks right" in Tailwind. Every color, every size, every weight must resolve to a named DS token. If it doesn't resolve, you haven't finished the lookup.
+Figma outputs raw values (hex, oklch, arbitrary px) — never use these directly. For each design property:
+1. Note the raw value from Figma (e.g. `oklch(93.6% 0.058 32)`, `12px`)
+2. Find the matching primitive in `globals.css` `@theme static` block → identify the token name (e.g. `--color-red-100`)
+3. Follow the chain upward: primitive (`@theme static`) → semantic alias (`:root`) → utility (`@theme inline`)
+4. Record the utility class name — the raw value is only used to find it, never written in code
 
-### Decision hierarchy — follow in order
+Proceed to Step 2 only after every Figma value has been resolved to a utility class name.
+
+## Step 1c — Resolve raw values in user prompts (conditional)
+
+If the user's message contains raw values (px sizes, hex colours, numeric font sizes, weight words like "bold" or "medium", vague descriptions like "the lime colour"), resolve them to DS tokens before writing any code. Treat them identically to Figma raw values.
+
+| User says | Write |
+|---|---|
+| "16px border radius" | `rounded-4` |
+| "14px medium text" | `text-base-medium` |
+| "the lime / primary colour" | `bg-primary` or `text-primary` |
+| "a subtle shadow" | `shadow-xs` or `shadow-sm` |
+| "8px gap" | `gap-2` |
+| "bold" | the appropriate `-semibold` type scale utility |
+
+Never write the raw value the user specified. Always resolve first.
+
+## Step 2 — Resolve every value to a DS token
+
+Decision hierarchy — follow in order, no exceptions:
 
 ```
-1. Semantic utility  →  text-foreground, bg-success-subtle, border-border …
-2. Named palette utility  →  bg-neutral-100, text-neutral-500 … (only if no semantic alias exists)
-3. If neither exists  →  add the alias + utility to globals.css FIRST, then use it
-4. Never  →  raw hex, oklch, arbitrary px, raw Tailwind color/size/weight utilities
+1. Semantic utility    → text-foreground, bg-success-subtle, border-border
+2. Named palette       → bg-neutral-100 (only if use is decorative, one-off, and will never be promoted to DS)
+3. Gap found           → apply criteria below, then add paired tokens to globals.css
+4. Never               → raw hex, oklch, arbitrary px, raw Tailwind color/size utilities
 ```
 
-Semantic utilities must be preferred over palette utilities. Palette utilities are a fallback, not a default.
+**When a gap is found — two-sided criteria for adding a new token pair:**
 
-### Lookup table — before writing any class, match it here
+Add a semantic utility token when ALL of these are true:
+- The colour/style serves a clear, reusable interface role (hover state, selected surface, code block)
+- It will appear in 2+ components or contexts
+- It would change in dark mode (even though dark mode is deferred)
+- It represents an explicit design intent, not a one-off
 
-| Property | Use this | Never this |
-|---|---|---|
-| **Primary text** | `text-foreground` | `text-neutral-900`, `text-black` |
-| **Secondary / helper text** | `text-muted-foreground` | `text-neutral-500`, `text-gray-500` |
-| **Tertiary / label text** | `text-muted-foreground` (or add alias if semantically distinct) | `text-neutral-400` |
-| **Text on dark / filled bg** | `text-inverted-foreground` | `text-white`, `text-neutral-white` |
-| **Page / surface bg** | `bg-background` | `bg-white` |
-| **Subtle fill** | `bg-subtle` | `bg-neutral-50` |
-| **Muted fill** | `bg-muted` | `bg-neutral-100` |
-| **Card surface** | `bg-card` | `bg-white` |
-| **Default border** | `border-border` | `border-neutral-300` |
-| **Subtle border** | `border-subtle` | `border-neutral-a8` |
-| **Strong border** | `border-strong` | `border-neutral-400` |
-| **Focus ring** | `ring-ring` | `ring-blue-500` |
-| **Disabled bg** | `bg-disabled` | `bg-neutral-100` |
-| **Disabled text** | `text-disabled-foreground` | `text-neutral-400` |
-| **Success bg tint** | `bg-success-subtle` | `bg-green-50` |
-| **Success text / icon** | `text-success` | `text-green-500`, `text-green-700` |
-| **Success border** | `border-success-border` | `border-green-300` |
-| **Danger bg tint** | `bg-danger-subtle` | `bg-red-50` |
-| **Danger text / icon** | `text-danger` | `text-red-500`, `text-red-700` |
-| **Danger border** | `border-danger` / `border-danger-border` | `border-red-300` |
-| **Info bg tint** | `bg-info-subtle` | `bg-blue-50` |
-| **Info text / icon** | `text-info` | `text-blue-500` |
-| **Info border** | `border-info-border` | `border-blue-300` |
-| **Warning bg tint** | `bg-warning-subtle` | `bg-orange-50` |
-| **Warning text / icon** | `text-warning` | `text-orange-500` |
-| **Warning border** | `border-warning-border` | `border-orange-300` |
-| **Overlay / scrim** | `bg-overlay` | `bg-black/50`, `bg-neutral-900/50` |
-| **Primary action bg** | `bg-primary` | `bg-lime-500` |
-| **Primary text on bg** | `text-primary-foreground` | `text-neutral-900` (on lime) |
-| **Radius** | `rounded-1`(4px) `rounded-2`(8px) `rounded-3`(12px) `rounded-full` | `rounded-md`, `rounded-[12px]` |
-| **Shadow** | `shadow-2xs` `shadow-xs` `shadow-sm` `shadow-md` `shadow-lg` `shadow-xl` | arbitrary shadows |
-| **Spacing** | Tailwind scale: `p-2`=8px `p-3`=12px `p-4`=16px | `p-[12px]`, `p-[1rem]` |
-| **Duration** | `var(--duration-instant/fast/base/moderate/slow)` | `150ms`, `300ms` |
-| **Typography** | `text-H1/H2/H3` or `text-{xlg\|lg\|base\|small}-{regular\|medium\|semibold}` | `text-sm`, `text-lg`, `font-bold`, `font-semibold`, raw size/weight combos |
+Do NOT add a semantic utility token when ANY of these are true:
+- It's a one-off decorative use that won't repeat
+- An existing semantic token is close enough — adjust the design, not the tokens
+- The role is too component-specific to generalise (`bg-chat-bubble-hover` won't map anywhere else)
+- You're adding it speculatively for future use — YAGNI
 
-**Typography rule:** never combine raw Tailwind size + weight utilities (`text-sm font-semibold`, `text-base font-medium`). These bypass the type scale entirely. The DS typography utilities encode size, weight, and line-height together — use them as the full unit.
+**The test:** Can you describe the token's role in one sentence that applies to at least two different components? If not, it doesn't belong in the semantic layer. Use the named palette fallback instead.
 
-### If a property doesn't resolve
+**Colour token contrast gate (WCAG 2.2 AA):**
+Before confirming any new foreground/background colour pair, verify it meets the applicable contrast ratio:
+- Text colour on background: 4.5:1 (normal text) or 3:1 (large text / bold ≥ 14px)
+- UI boundary colour (border/outline) against adjacent: 3:1
 
-Flag it as a gap. Do not approximate. Do not write `text-green-700` because "it's close enough to success text." Add `--color-success-text-strong: var(--color-green-700)` to `globals.css` and expose a utility, then use that.
+Do not add a semantic colour alias that fails these ratios. If the raw palette value doesn't pass, choose a passing shade first, then create the alias from that shade.
+
+**Gap resolution — always a paired action:**
+
+When criteria confirm a new token is warranted, add both layers in a single edit to `globals.css`:
+1. Semantic alias in `:root` → `--semantic-{role}: var(--color-{palette}-{shade})`
+2. Tailwind utility in `@theme inline` → `--color-{name}: var(--semantic-{role})`
+
+Never add one without the other. No utility without a semantic alias (exposes primitives). No semantic alias without a utility (unusable in Tailwind).
+
+Then update `docs/design-system/foundations.md` as the designer-facing record.
+
+Flag every gap. Never approximate, never invent. Present the full mapping table + all open questions. Wait for confirmation before writing code.
 
 ## Step 3 — Check existing implementations
 
-When modifying a component that already exists:
-- Check what's in `packages/ui/src/components/ui/`, the `index.ts` exports, and story files
-- Check what consumes it before changing the API
-- Polish the existing surface to match Figma rather than building a parallel API
-- Figma component variants (`state`, `mode`, `size`, etc.) map to existing Mande prop conventions — don't add variants the design didn't spec, don't silently keep shadcn variants the new design doesn't cover
+Before building, check:
+- `packages/ui/src/components/ui/` — does this component or a close relative already exist?
+- `packages/ui/src/index.ts` — what's already exported?
+- Existing story files — what variants are already covered?
 
-## Step 4 — Surface gaps before writing code
+Polish existing surfaces rather than building parallel APIs.
 
-Flag anything that doesn't resolve to a named token. **Do not invent. Do not approximate.**
+## Step 4 — Surface gaps + update globals.css
 
-Present the full mapping table + all open questions. Wait for confirmation before writing code.
+For any token gap confirmed by the Step 2 criteria: add both the semantic alias (`:root`) and the Tailwind utility (`@theme inline`) to `packages/ui/src/tokens/globals.css` as a single paired edit. Then update `docs/design-system/foundations.md`. Only then use the utility in component code.
 
----
+## Step 5 — Accessibility check (WCAG 2.2 AA)
 
-## Token system
+Compliance baseline: **WCAG 2.2 Level AA** (ISO/IEC 40500:2025). Before writing JSX, verify the component design covers:
+- **Labels** — all interactive elements have accessible labels (aria-label, aria-labelledby, or visible text)
+- **Keyboard** — Tab to focus, Enter/Space to activate, Escape to dismiss (where applicable)
+- **Focus management** — overlays trap focus on open, restore focus to trigger on close
+- **Focus indicators** — visible ring with ≥ 2px perimeter; focused vs unfocused state ≥ 3:1 contrast (SC 2.4.11)
+- **Touch targets** — interactive elements ≥ 24×24px hit area (SC 2.5.8); aim for 44×44px on mobile
+- **Reduced motion** — use `useReducedMotion()` from `motion/react` for any animated component
+- **Colour** — meaning is never conveyed through colour alone; contrast ratios verified (4.5:1 text, 3:1 UI boundaries)
 
-**Components reference semantic aliases, never primitives directly.** Change the palette once and every component follows.
+## Step 6 — Promotion check
 
-1. **Primitives** (`globals.css` `@theme static`) — raw palette values: `--color-red-500`, `--color-orange-500`. Never reference these directly in component code.
-2. **Semantic aliases** (`globals.css` `:root`) — purpose-named: `--semantic-warning-bg`, `--semantic-success-text`. This is where palette swaps happen.
-3. **Tailwind utilities** (`globals.css` `@theme inline`) — what components actually use: `text-warning`, `bg-success-subtle`, `border-info-border`.
+After playground validation passes (golden path tested visually), assess against all criteria:
+- [ ] Validated in playground — golden path tested visually
+- [ ] All tokens resolve — zero raw utilities anywhere in the component
+- [ ] API is generic — reusable across surfaces, no playground-specific props or assumptions
+- [ ] Accessibility check passes (Step 5 fully met)
 
-The rule is simple: **semantic utility first, palette utility only as a fallback, raw values never.**
+If all criteria pass, prompt the user:
 
-Status utilities: `text-info` / `text-success` / `text-warning` / `text-danger` (text colour); `-subtle` suffix for tinted bg; `-border` suffix for border colour.
+> "This component looks promotion-ready. Want me to promote it to `packages/ui/`?"
 
-When a design introduces a status colour with no utility, add the alias + utility to `globals.css` first, then use it.
+Wait for user confirmation before doing anything. If confirmed, invoke `promote-to-ds`.
 
 ---
 
 ## Hard rules
 
-- **No raw values, ever** — this includes raw Tailwind color utilities (`text-green-700`, `text-white`, `bg-gray-100`), arbitrary values (`text-[14px]`, `p-[12px]`), and raw hex/oklch in style props. If you haven't resolved it to a named DS token, you haven't finished.
-- **No raw typography** — never write `text-sm`, `text-lg`, `font-bold`, `font-semibold`, or any raw size/weight combination. Use the DS type scale: `text-H1/H2/H3`, `text-{xlg|lg|base|small}-{regular|medium|semibold}`.
-- **Semantic before palette** — reaching for `text-neutral-900` when `text-foreground` exists is wrong. Always check for a semantic utility first.
+- **No raw values ever** — no hex, no oklch, no arbitrary `px`, no raw Tailwind color/size utilities (`text-green-700`, `bg-gray-100`, `text-sm`, `font-bold`)
+- **No raw typography** — never combine `text-sm font-semibold`; always use `text-base-semibold`
+- **Semantic before palette** — `text-foreground` not `text-neutral-900`; always check for a semantic utility first
 - **No invented tokens** — if it's not in `globals.css`, flag it as a gap and add it there before using it
-- **Icons** — only `@central-icons-react/all` via `<Icon name="..." size={12|16|20|24|32} />`. Default size 20px. Stroke scales with size (`12→1, 16→1.25, 20→1.5, 24→2, 32→2`); join round; radius 2; outlined by default. Zero Lucide. Never pass stroke colour — the wrapper handles it
-- **No `ring-offset-background`** — token doesn't exist
-- **No dark mode** — deferred; don't add `dark:` variants
-- **Motion** — `motion` library (v12) for custom animation, `tw-animate-css` for Radix `data-state` overlays. Springs in `tokens/motion.ts` (`snappy`, `smooth`, `gentle`, `bouncy`, `crisp`). Default to springs; default to ease-out for duration-based work
-- **Stories** — group as `Components/{Form|Display|Navigation|Overlays|Feedback|Layout}/{Name}`; foundation stories under `Foundations/{Name}`
-
----
-
-## Token quick-ref
-
-```
-Semantic text:   text-foreground · text-muted-foreground · text-inverted-foreground
-                 text-primary · text-destructive · text-danger · text-success
-                 text-info · text-warning · text-disabled-foreground
-
-Semantic bg:     bg-background · bg-subtle · bg-muted · bg-card · bg-primary
-                 bg-success-subtle · bg-danger-subtle · bg-info-subtle
-                 bg-warning-subtle · bg-accent-subtle · bg-overlay · bg-disabled
-
-Semantic border: border-border · border-subtle · border-strong
-                 border-success-border · border-danger · border-info-border
-                 border-warning-border · border-accent-border
-
-Palette (fallback only, when no semantic alias fits):
-                 bg/text/border-{palette}-{shade}
-                 Palettes: neutral · lime · teal · blush · orange · blue · red · green · yellow
-                 Alpha:    neutral-a4 · neutral-a8 · neutral-a16
-
-Radius:    rounded-1 (4px) · rounded-2 (8px) · rounded-3 (12px) · rounded-full
-
-Shadows:   shadow-2xs · shadow-xs · shadow-sm · shadow-md · shadow-lg · shadow-xl
-
-Spacing:   p-2=8px · p-3=12px · p-4=16px · gap-1=4px · gap-2=8px · gap-4=16px
-
-Duration:  var(--duration-instant)=100ms · fast=150 · base=200 · moderate=300 · slow=500
-Easing:    var(--ease-out) · --ease-in-out · --ease-in
-
-Typography: text-H1/H2/H3
-            text-{xlg|lg|base|small}-{regular|medium|semibold}
-            — no raw text-sm/text-lg/font-bold combos, ever
-```
+- **Icons** — only `@central-icons-react/all` via `<Icon name="..." size={12|16|20|24|32} />`. Zero Lucide. Never pass stroke colour — the wrapper handles it automatically. Stroke scales with size (`12→1.3, 16→1.3, 20→1.5, 24→2, 32→2`).
+- **Icon button touch target** — all interactive icons must reach a 24×24px hit area (WCAG 2.2 AA SC 2.5.8). Add padding to reach the minimum: `p-[6px]` for 12px icons, `p-1` for 16px, `p-0.5` for 20px (already close), none needed for 24px+. Always pair padding with a matching negative margin (`-m-1`, `-m-[6px]`, etc.) so the hit area sits behind the icon without affecting surrounding layout — the icon appears flush, the touch zone does not.
+- **No `ring-offset-background`** — this token does not exist in Mande
+- **No dark mode** — deferred; never add `dark:` variants
+- **Motion** — `motion` library (v12) for custom animation; `tw-animate-css` for Radix `data-state` overlays. Spring presets in `tokens/motion.ts`. Default to springs; ease-out for duration-based.
+- **Stories** — group as `Components/{Form|Display|Navigation|Overlays|Feedback|Layout}/{Name}`; foundations as `Foundations/{Name}`
