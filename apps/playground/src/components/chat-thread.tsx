@@ -21,6 +21,7 @@ import { evaluateChallengeSubmission } from "../lib/challenges/evaluate"
 import { validateSubmissionPayload } from "../lib/challenges/schema"
 import {
   createChallengeData,
+  createCommitmentArtifactChallenge,
   type ChallengeSubmission,
   selectChallengeState,
   getLatestChallengeResponse,
@@ -750,12 +751,32 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange, onLess
   )
 
   const handleSend = (text: string) => {
+    const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     const newMsg: Message = {
       id: `m${Date.now()}`,
       role: "user",
       content: text,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      timestamp,
     }
+
+    // In curriculum mode: if no challenges exist yet, inject the commitment artifact
+    if (activeSession.mode === "curriculum") {
+      const hasAnyChallenge = activeSession.messages.some((m) => m.challenge)
+      if (!hasAnyChallenge) {
+        const challengeMsg: Message = {
+          id: `commitment-${Date.now()}`,
+          role: "assistant",
+          content: "",
+          timestamp,
+          challenge: createCommitmentArtifactChallenge(),
+        }
+        onSessionsChange(sessions.map((s) =>
+          s.id === activeSessionId ? { ...s, messages: [...s.messages, newMsg, challengeMsg] } : s
+        ))
+        return
+      }
+    }
+
     onSessionsChange(sessions.map((s) =>
       s.id === activeSessionId ? { ...s, messages: [...s.messages, newMsg] } : s
     ))
