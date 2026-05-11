@@ -247,9 +247,9 @@ function CurriculumSection({
             label={lesson.label}
             icon={
               <Icon
-                name={isActive ? "IconCircleDashed" : isCompleted ? "IconCheckmark2" : "IconLock"}
+                name={isActive ? "IconCircleDashed" : isCompleted ? "IconCheckmark2Small" : "IconLock"}
                 size={20}
-                className={isActive ? "text-blue-500" : "text-muted-foreground"}
+                className={isActive ? "text-blue-500" : isCompleted ? "text-success" : "text-muted-foreground"}
               />
             }
             selected={isActive && activeItem === lesson.id}
