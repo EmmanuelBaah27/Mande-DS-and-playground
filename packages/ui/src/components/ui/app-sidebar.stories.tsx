@@ -161,6 +161,32 @@ export const SectionTitleStory: Story = {
   ),
 }
 
+export const LessonStateStory: Story = {
+  name: "CurriculumSection — lesson states",
+  render: () => {
+    const [active, setActive] = useState("finding")
+    return (
+      <div className="h-[400px]">
+        <AppSidebar
+          activeItem={active}
+          onNavigate={setActive}
+          navItems={makeNavItems()}
+          curriculumSection={{
+            label: "Career clarity",
+            progress: "2 of 3",
+            lessons: [
+              { id: "discovering", label: "Discovering your options", state: "completed" },
+              { id: "finding", label: "Finding clarity", state: "active" },
+              { id: "choice", label: "Making a choice", state: "locked" },
+            ],
+          }}
+          user={USER}
+        />
+      </div>
+    )
+  },
+}
+
 export const AccountSelectorStory: Story = {
   name: "AccountSelector — states",
   render: () => (

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "motion/react"
 import { Icon, AppSidebar, cn } from "@mande/ui"
@@ -17,59 +17,51 @@ import type { ChatSession, ChallengeResponseType } from "../components/chat-data
 function EditableTitle({
   title,
   onTitleChange,
-  isCurriculum,
+  readOnly,
 }: {
   title: string
   onTitleChange: (title: string) => void
-  isCurriculum?: boolean
+  readOnly?: boolean
 }) {
-  const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(title)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const startEdit = () => {
+  useEffect(() => {
     setDraft(title)
-    setEditing(true)
-    requestAnimationFrame(() => inputRef.current?.select())
-  }
+  }, [title])
 
   const save = () => {
-    setEditing(false)
     const trimmed = draft.trim()
-    if (trimmed && trimmed !== title) onTitleChange(trimmed)
+    if (!trimmed) {
+      setDraft(title)
+      return
+    }
+    if (trimmed !== title) onTitleChange(trimmed)
   }
 
-  const displayTitle = title.length > 40 ? title.slice(0, 40) + "…" : title
-
-  const curriculumIcon = isCurriculum ? (
-    <Icon name="IconNewspaper1" size={16} className="text-neutral-500" aria-hidden />
-  ) : null
-
-  return editing ? (
-    <div className="flex min-w-0 max-w-full items-center gap-2">
-      {curriculumIcon}
-      <input
-        ref={inputRef}
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={save}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") save()
-          if (e.key === "Escape") setEditing(false)
-        }}
-        className="text-base-regular text-neutral-900 min-w-0 flex-1 rounded-1 border-none bg-transparent px-1 py-0 outline-none"
-        autoFocus
-      />
-    </div>
-  ) : (
-    <button
-      type="button"
-      onClick={startEdit}
-      className="text-base-regular text-neutral-900 flex max-w-full min-w-0 items-center gap-2 rounded-1 px-1 py-0 text-left transition-colors hover:bg-neutral-100"
-    >
-      {curriculumIcon}
-      <span className="min-w-0 truncate">{displayTitle}</span>
-    </button>
+  return (
+    <input
+      ref={inputRef}
+      value={draft}
+      readOnly={readOnly}
+      maxLength={readOnly ? undefined : 50}
+      onChange={readOnly ? undefined : (e) => setDraft(e.target.value)}
+      onFocus={readOnly ? undefined : (e) => e.target.select()}
+      onBlur={readOnly ? undefined : save}
+      onKeyDown={readOnly ? undefined : (e) => {
+        if (e.key === "Enter") inputRef.current?.blur()
+        if (e.key === "Escape") {
+          setDraft(title)
+          inputRef.current?.blur()
+        }
+      }}
+      className={cn(
+        "text-base-regular text-neutral-900 min-w-0 max-w-[240px] rounded-1 border border-transparent bg-transparent px-1 py-0 outline-none transition-colors",
+        readOnly
+          ? "cursor-default pointer-events-none"
+          : "cursor-default hover:bg-neutral-100 focus:cursor-text focus:bg-transparent focus:border-neutral-400"
+      )}
+    />
   )
 }
 
@@ -85,7 +77,8 @@ const NAV_ITEMS = [
 
 function getCurriculumSection(sessions: ChatSession[]): CurriculumSectionConfig {
   const curriculumSession = sessions.find((s) => s.mode === "curriculum")
-  const activeModule = CURRICULUM_MODULES[0]
+  const moduleIndex = curriculumSession?.progress?.moduleIndex ?? 0
+  const activeModule = CURRICULUM_MODULES[moduleIndex] ?? CURRICULUM_MODULES[0]
   const totalLessons = activeModule.lessons.length
   const activeLessonIndex = Math.max(
     0,
@@ -125,6 +118,17 @@ export default function ChatPage() {
   const [hovering, setHovering] = useState(false)
   const [pinned, setPinned] = useState(false)
   const hoverLeaveTimerRef = useRef<number | null>(null)
+  // ─── Mobile drawer ────────────────────────────────────────────────────────
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < 640 : false
+  )
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640)
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
 
   const startHover = () => {
     if (hoverLeaveTimerRef.current) window.clearTimeout(hoverLeaveTimerRef.current)
@@ -170,6 +174,7 @@ export default function ChatPage() {
     : []
 
   const handleNavigate = (id: string) => {
+    setMobileDrawerOpen(false)
     if (id === "new-chat") {
       setView("welcome")
       setActiveSessionId(null)
@@ -219,7 +224,7 @@ export default function ChatPage() {
   const handleStartNewChat = (firstMessage: string) => {
     const newSession: ChatSession = {
       id: `open-${Date.now()}`,
-      title: firstMessage.slice(0, 40),
+      title: firstMessage.slice(0, 50),
       mode: "open",
       messages: [
         {
@@ -241,7 +246,7 @@ export default function ChatPage() {
     )
   }
 
-  /** API integration point: called when ChatThread signals the active lesson is complete. */
+  /** Fires immediately when a lesson's terminal artifact completes — advances sidebar. */
   const handleLessonComplete = (_lessonId: string) => {
     setSessions((prev) =>
       prev.map((s) =>
@@ -261,14 +266,42 @@ export default function ChatPage() {
     )
   }
 
+  /** Fired when user clicks "Continue" at a module boundary — advances to next module. */
+  const handleNextModule = () => {
+    setSessions((prev) =>
+      prev.map((s) => {
+        if (s.id !== activeSessionId || !s.progress) return s
+        const newModuleIndex = (s.progress.moduleIndex ?? 0) + 1
+        const newModule = CURRICULUM_MODULES[newModuleIndex]
+        return {
+          ...s,
+          progress: {
+            ...s.progress,
+            moduleIndex: newModuleIndex,
+            module: newModule?.label ?? s.progress.module,
+            lessonIndex: 1,
+            totalLessons: newModule?.lessons.length ?? 0,
+            percentComplete: 0,
+          },
+        }
+      })
+    )
+  }
+
+  const curriculumSession = sessions.find((s) => s.mode === "curriculum")
+  const currentModuleIndex = curriculumSession?.progress?.moduleIndex ?? 0
+  const currentModule = CURRICULUM_MODULES[currentModuleIndex] ?? CURRICULUM_MODULES[0]
   const activeLessonIndex = Math.max(
     0,
     Math.min(
-      CURRICULUM_LESSONS.length - 1,
-      (sessions.find((s) => s.mode === "curriculum")?.progress?.lessonIndex ?? 1) - 1
+      currentModule.lessons.length - 1,
+      (curriculumSession?.progress?.lessonIndex ?? 1) - 1
     )
   )
-  const nextLessonLabel = CURRICULUM_LESSONS[activeLessonIndex + 1]?.label ?? "the next lesson"
+  const isLastLesson = activeLessonIndex >= currentModule.lessons.length - 1
+  const nextLesson = currentModule.lessons[activeLessonIndex + 1]
+  const nextModule = CURRICULUM_MODULES[currentModuleIndex + 1]
+  const nextLessonLabel = nextLesson?.label ?? nextModule?.label ?? "the next module"
 
   const toResponseType = (artifactType: InjectableChallenge["artifactType"]): ChallengeResponseType => {
     switch (artifactType) {
@@ -276,7 +309,7 @@ export default function ChatPage() {
       case "commitment":
         return "reflection"
       case "work-preference":
-      case "holland":
+      case "interest-profile":
       case "interests":
       case "values":
       case "opportunities":
@@ -361,24 +394,27 @@ export default function ChatPage() {
         <div className="flex items-stretch py-3 mt-2">
           {/* Left zone — transparent; items only visible when collapsed */}
           <motion.div
-            className="flex items-center justify-between shrink-0 ml-2 pl-4 pr-3"
+            className="flex items-center justify-between shrink-0 ml-2 pl-1 pr-3"
             animate={{ width: collapsed ? HEADER_CTRL_W : SIDEBAR_CARD_W }}
             transition={{ duration: 0.22, ease: EASE_OUT }}
           >
-            <div style={{ pointerEvents: collapsed ? "auto" : "none" }}>
+            <div
+              style={{ pointerEvents: collapsed ? "auto" : "none" }}
+              className="hidden sm:block"
+            >
               {logoLink}
             </div>
             <motion.div
-              animate={{ opacity: collapsed ? 1 : 0 }}
+              animate={{ opacity: isMobile ? 1 : (collapsed ? 1 : 0) }}
               transition={{ duration: collapsed ? 0.1 : 0.08, delay: collapsed ? 0.16 : 0 }}
-              style={{ pointerEvents: collapsed ? "auto" : "none" }}
-              onMouseEnter={collapsed ? startHover : undefined}
-              onMouseLeave={collapsed ? endHover : undefined}
+              style={{ pointerEvents: (isMobile || collapsed) ? "auto" : "none" }}
+              onMouseEnter={(!isMobile && collapsed) ? startHover : undefined}
+              onMouseLeave={(!isMobile && collapsed) ? endHover : undefined}
             >
               <button
                 type="button"
-                onClick={collapsed ? handleTriggerClick : undefined}
-                aria-label={collapsed ? (pinned ? "Expand sidebar" : "Open sidebar") : undefined}
+                onClick={isMobile ? () => setMobileDrawerOpen(true) : (collapsed ? handleTriggerClick : undefined)}
+                aria-label={isMobile ? "Open navigation" : (collapsed ? (pinned ? "Expand sidebar" : "Open sidebar") : undefined)}
                 className="flex items-center justify-center p-1 rounded-2 text-muted-foreground hover:bg-neutral-100 shrink-0 [transition:background-color_var(--duration-moderate)_var(--ease-out)]"
               >
                 <Icon name="IconSidebarSimpleLeftWide" size={20} fill="outlined" />
@@ -387,19 +423,38 @@ export default function ChatPage() {
           </motion.div>
 
           {/* Right zone — bg-neutral-50 masks content scrolling under the header */}
-          <div className="flex-1 bg-neutral-50 flex items-center px-3 gap-3 min-w-0 pointer-events-auto">
+          <div className="flex-1 bg-neutral-50 flex items-center px-3 gap-3 min-w-0 pointer-events-auto relative">
             {view === "curriculum" && (
-              <span className="text-base-regular text-neutral-900 px-1">Curriculum</span>
+              <>
+                <span className="sm:hidden absolute inset-x-4 text-center text-base-regular text-foreground truncate pointer-events-none select-none">
+                  Curriculum
+                </span>
+                <span className="hidden sm:block text-base-regular text-foreground px-1">Curriculum</span>
+              </>
             )}
             {view === "overview" && (
-              <span className="text-base-regular text-neutral-900 px-1">Overview</span>
+              <>
+                <span className="sm:hidden absolute inset-x-4 text-center text-base-regular text-foreground truncate pointer-events-none select-none">
+                  Overview
+                </span>
+                <span className="hidden sm:block text-base-regular text-foreground px-1">Overview</span>
+              </>
             )}
             {view === "thread" && activeSession && (
-              <EditableTitle
-                title={activeSession.title}
-                onTitleChange={handleTitleChange}
-                isCurriculum={activeSession.mode === "curriculum"}
-              />
+              <>
+                {/* Mobile: centered, truncated */}
+                <p className="sm:hidden absolute inset-x-4 text-center text-base-regular text-foreground truncate pointer-events-none select-none">
+                  {activeSession.title}
+                </p>
+                {/* sm+: left-aligned editable */}
+                <div className="hidden sm:block">
+                  <EditableTitle
+                    title={activeSession.title}
+                    onTitleChange={handleTitleChange}
+                    readOnly={activeSession.mode === "curriculum"}
+                  />
+                </div>
+              </>
             )}
             {view === "thread" && activeSession && (
               <div className="ml-auto shrink-0">
@@ -410,9 +465,9 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {/* ── Sidebar body ─────────────────────────────────────────────────── */}
+      {/* ── Desktop sidebar body ─────────────────────────────────────── */}
       <AnimatePresence>
-        {!collapsed && (
+        {!collapsed && !isMobile && (
           <motion.div
             key="sidebar-body"
             className="absolute pt-2 px-2 pb-2 z-[65]"
@@ -436,9 +491,9 @@ export default function ChatPage() {
         )}
       </AnimatePresence>
 
-      {/* ── Floating panel — hover preview when collapsed ────────────── */}
+      {/* ── Desktop floating panel — hover preview when collapsed ──── */}
       <AnimatePresence>
-        {floatingVisible && (
+        {floatingVisible && !isMobile && (
           <motion.div
             key="floating"
             className="absolute px-2 pb-2 z-[65]"
@@ -454,10 +509,44 @@ export default function ChatPage() {
         )}
       </AnimatePresence>
 
+      {/* ── Mobile navigation drawer ─────────────────────────────────── */}
+      <AnimatePresence>
+        {mobileDrawerOpen && (
+          <motion.div
+            key="mobile-backdrop"
+            className="fixed inset-0 z-[64] bg-black/20"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            onClick={() => setMobileDrawerOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {mobileDrawerOpen && (
+          <motion.div
+            key="mobile-drawer"
+            className="fixed inset-y-0 left-0 z-[65] pt-2 px-2 pb-2"
+            style={{ width: SIDEBAR_W }}
+            initial={{ x: -SIDEBAR_W }}
+            animate={{ x: 0 }}
+            exit={{ x: -SIDEBAR_W }}
+            transition={{ duration: 0.22, ease: EASE_OUT }}
+          >
+            <AppSidebar
+              {...sidebarProps}
+              className="shadow-sm h-full"
+              onCollapse={() => setMobileDrawerOpen(false)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Main content ─────────────────────────────────────────────── */}
       <motion.div
         className="relative flex-1 flex flex-col min-w-0 overflow-hidden bg-neutral-50"
-        animate={{ marginLeft: collapsed ? 0 : SIDEBAR_W }}
+        animate={{ marginLeft: (collapsed || isMobile) ? 0 : SIDEBAR_W }}
         transition={{ duration: 0.22, ease: EASE_OUT }}
         style={{ paddingTop: HEADER_H }}
       >
@@ -480,6 +569,8 @@ export default function ChatPage() {
             activeSessionId={activeSessionId!}
             onSessionsChange={setSessions}
             onLessonComplete={handleLessonComplete}
+            onNextModule={handleNextModule}
+            isLastLesson={isLastLesson}
             nextLessonLabel={nextLessonLabel}
           />
         )}

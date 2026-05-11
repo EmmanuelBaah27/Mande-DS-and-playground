@@ -599,6 +599,13 @@
       letter-spacing: var(--letter-spacing-H3);
     }
   }
+  /* Display — decorative icon/emoji size; used on assessment result screens (Holland, Values, Work Preference) */
+  .text-display {
+    font-size: 40px;
+    line-height: 1;
+    font-weight: 400;
+  }
+
   .text-xl-regular,
   .text-xlg-regular,
   .text-xlg-medium,

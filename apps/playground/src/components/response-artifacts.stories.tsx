@@ -4,7 +4,7 @@ import { ChatQuizCard } from "./chat-quiz-card"
 import { ChatReflectionInput } from "./chat-reflection-input"
 import { ChatCommitmentCard } from "./chat-commitment-card"
 import { ChatMBTIPicker } from "./chat-mbti-picker"
-import { ChatHollandPicker } from "./chat-holland-picker"
+import { ChatInterestProfilePicker } from "./chat-interest-profile-picker"
 
 // ─── Wrappers ─────────────────────────────────────────────────────────────────
 
@@ -114,13 +114,13 @@ function MBTIDemo({ mobile = false }: { mobile?: boolean }) {
   )
 }
 
-// ─── Holland ──────────────────────────────────────────────────────────────────
+// ─── Interest profile ──────────────────────────────────────────────────────────────────
 
-function HollandDemo({ mobile = false }: { mobile?: boolean }) {
+function InterestProfileDemo({ mobile = false }: { mobile?: boolean }) {
   const Wrapper = mobile ? MobileWrapper : DesktopWrapper
   return (
     <Wrapper>
-      <ChatHollandPicker onSubmit={() => {}} />
+      <ChatInterestProfilePicker onSubmit={() => {}} />
     </Wrapper>
   )
 }
@@ -133,5 +133,5 @@ export const Commitment: Story         = { render: () => <CommitmentDemo /> }
 export const CommitmentMobile: Story   = { render: () => <CommitmentDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }
 export const MBTIPicker: Story         = { render: () => <MBTIDemo /> }
 export const MBTIPickerMobile: Story   = { render: () => <MBTIDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }
-export const HollandPicker: Story      = { render: () => <HollandDemo /> }
-export const HollandPickerMobile: Story = { render: () => <HollandDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }
+export const InterestProfilePicker: Story      = { render: () => <InterestProfileDemo /> }
+export const InterestProfilePickerMobile: Story = { render: () => <InterestProfileDemo mobile />, parameters: { viewport: { defaultViewport: "mobile1" } } }

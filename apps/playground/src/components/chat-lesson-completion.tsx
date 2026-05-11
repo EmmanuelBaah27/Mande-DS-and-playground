@@ -4,25 +4,35 @@ import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { Button, Icon, springs } from "@mande/ui"
 
-type Phase = "badge" | "badge-exit" | "insight"
+type Phase = "badge" | "badge-exit" | "cta" | "done"
 
 type Props = {
   nextLessonLabel: string
   onContinue: () => void
-  completedAssessments?: Array<{ label: string; result: string }>
+  /** When false, plays badge animation then calls onAnimationComplete — no CTA shown. */
+  showCta?: boolean
+  /** Called after the badge exits when showCta is false. */
+  onAnimationComplete?: () => void
 }
 
-export function LessonCompletionPanel({ nextLessonLabel, onContinue, completedAssessments }: Props) {
+export function LessonCompletionPanel({ nextLessonLabel, onContinue, showCta = true, onAnimationComplete }: Props) {
   const [phase, setPhase] = useState<Phase>("badge")
 
   useEffect(() => {
     const t1 = window.setTimeout(() => setPhase("badge-exit"), 650)
-    const t2 = window.setTimeout(() => setPhase("insight"), 900)
+    const t2 = window.setTimeout(() => {
+      if (showCta) {
+        setPhase("cta")
+      } else {
+        setPhase("done")
+        onAnimationComplete?.()
+      }
+    }, 900)
     return () => {
       window.clearTimeout(t1)
       window.clearTimeout(t2)
     }
-  }, [])
+  }, [showCta, onAnimationComplete])
 
   return (
     <div className="px-4 pb-4 pt-6 bg-neutral-50 relative">
@@ -45,25 +55,14 @@ export function LessonCompletionPanel({ nextLessonLabel, onContinue, completedAs
           )}
         </AnimatePresence>
 
-        {/* Insight card — artifact card styling, fades in after badge exits */}
+        {/* CTA — fades in after badge exits */}
         <AnimatePresence>
-          {phase === "insight" && (
+          {phase === "cta" && (
             <motion.div
-              key="insight"
+              key="cta"
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0, transition: springs.snappy }}
-              className="rounded-3 border border-neutral-200 bg-white shadow-sm p-4 w-full"
             >
-              {completedAssessments && completedAssessments.length > 0 && (
-                <div className="mb-3">
-                  {completedAssessments.map(({ label, result }) => (
-                    <div key={label} className="flex items-center justify-between py-1.5">
-                      <span className="text-small-regular text-muted-foreground">{label}</span>
-                      <span className="text-small-medium text-foreground">{result}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
               <Button
                 variant="primary"
                 className="w-full justify-center"

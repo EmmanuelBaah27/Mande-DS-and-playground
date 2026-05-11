@@ -43,7 +43,7 @@ const FACTORS: PivotFactor[] = [
     id: "personality",
     initial: "P",
     name: "Personality",
-    description: "Discover your work preference style — how you naturally approach tasks, teams, and problems.",
+    description: "Discover your work style — how you naturally approach tasks, teams, and problems.",
     icon: "IconCirclePerson",
     color: "text-blue-700",
     bgColor: "bg-blue-50",

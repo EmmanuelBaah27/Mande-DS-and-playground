@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { motion } from "motion/react"
-import { Button, Icon, springs, cn } from "@mande/ui"
+import { Button, Chip, springs, cn } from "@mande/ui"
 
 export type AssessmentCardStatus = "not-started" | "in-progress" | "completed"
 
@@ -14,10 +14,13 @@ export interface ChatAssessmentCardProps {
   status: AssessmentCardStatus
   totalQuestions: number
   currentQuestion?: number
+  resultTitle?: string
   resultSubtitle?: string
+  resultValues?: string[]
   onStart: () => void
   onContinue: () => void
   onRetake: () => void
+  onViewDetails?: () => void
   className?: string
 }
 
@@ -29,13 +32,22 @@ export function ChatAssessmentCard({
   status,
   totalQuestions,
   currentQuestion = 0,
+  resultTitle,
   resultSubtitle,
+  resultValues,
   onStart,
   onContinue,
   onRetake,
+  onViewDetails,
   className,
 }: ChatAssessmentCardProps) {
   const progressPct = totalQuestions > 0 ? Math.round((currentQuestion / totalQuestions) * 100) : 0
+
+  const iconEl = (
+    <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center shrink-0">
+      <span className="text-H2" aria-hidden="true">{icon}</span>
+    </div>
+  )
 
   return (
     <motion.div
@@ -43,82 +55,83 @@ export function ChatAssessmentCard({
       animate={{ opacity: 1, y: 0 }}
       transition={springs.snappy}
       className={cn(
-        "rounded-3 border border-neutral-200 bg-white shadow-sm p-4 w-full",
+        "rounded-4 border border-border bg-card shadow-xs p-4 w-full",
         className
       )}
     >
       {status === "not-started" && (
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2 bg-neutral-100 flex items-center justify-center text-lg shrink-0">
-              {icon}
-            </div>
-            <div className="min-w-0">
-              <p className="text-base-medium text-foreground leading-tight">{title}</p>
-              <p className="text-small-regular text-muted-foreground">{duration}</p>
+        <div className="flex items-start gap-4">
+          {iconEl}
+          <div className="flex-1 min-w-0 flex flex-col gap-2">
+            <p className="text-base-medium text-foreground leading-tight">{title}</p>
+            <p className="text-small-regular text-muted-foreground">{description}</p>
+            <div className="pt-1">
+              <Button variant="primary" size="sm" onClick={onStart}>
+                Start
+              </Button>
             </div>
           </div>
-          <p className="text-small-regular text-muted-foreground leading-relaxed">
-            {description}
-          </p>
-          <Button variant="primary" size="default" onClick={onStart} className="w-full">
-            Take the test
-          </Button>
         </div>
       )}
 
       {status === "in-progress" && (
-        <div className="flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-3 min-w-0">
-              <div className="w-9 h-9 rounded-2 bg-neutral-100 flex items-center justify-center text-lg shrink-0">
-                {icon}
-              </div>
-              <div className="min-w-0">
-                <p className="text-base-medium text-foreground leading-tight">{title}</p>
-                <p className="text-small-regular text-muted-foreground">In progress</p>
+        <div className="flex items-start gap-4">
+          {iconEl}
+          <div className="flex-1 min-w-0 flex flex-col gap-2">
+            <p className="text-base-medium text-foreground leading-tight">{title}</p>
+            <div className="w-full">
+              <div
+                className="h-1 rounded-full bg-muted overflow-hidden"
+                role="progressbar"
+                aria-valuenow={currentQuestion}
+                aria-valuemin={0}
+                aria-valuemax={totalQuestions}
+                aria-label={`${currentQuestion} of ${totalQuestions} questions answered`}
+              >
+                <div
+                  className="h-full rounded-full bg-foreground transition-all duration-300"
+                  style={{ width: `${progressPct}%` }}
+                />
               </div>
             </div>
-            <span className="text-small-regular text-muted-foreground tabular-nums shrink-0">
-              Q {currentQuestion} / {totalQuestions}
-            </span>
+            <p className="text-small-regular text-muted-foreground">{description}</p>
+            <div className="pt-1">
+              <Button variant="primary" size="sm" onClick={onContinue}>
+                Continue
+              </Button>
+            </div>
           </div>
-          <div className="h-1.5 rounded-full bg-neutral-100 overflow-hidden">
-            <div
-              className="h-full rounded-full bg-foreground transition-all duration-300"
-              style={{ width: `${progressPct}%` }}
-            />
-          </div>
-          <Button variant="primary" size="default" onClick={onContinue} className="w-full">
-            Resume test
-          </Button>
         </div>
       )}
 
       {status === "completed" && (
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-start gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-2 bg-neutral-100 flex items-center justify-center text-lg shrink-0 mt-0.5">
-              {icon}
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <p className="text-base-medium text-foreground leading-tight">{title}</p>
-                <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 border border-green-200 rounded-1 px-1.5 py-0.5 text-xs font-medium leading-none">
-                  <Icon name="IconCheckmark2" size={12} />
-                  Done
-                </span>
+        <div className="flex items-center gap-4">
+          {iconEl}
+          <div className="flex-1 min-w-0 flex flex-col gap-2">
+            <p className="text-base-medium text-foreground leading-tight">
+              {resultTitle ?? title}
+            </p>
+            {resultValues && resultValues.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {resultValues.map((label) => (
+                  <Chip
+                    key={label}
+                    variant="selected"
+                    className="!bg-foreground !text-background !border-transparent cursor-default pointer-events-none"
+                  >
+                    {label}
+                  </Chip>
+                ))}
               </div>
-              {resultSubtitle && (
-                <p className="text-small-regular text-muted-foreground mt-0.5 leading-relaxed">
-                  {resultSubtitle}
-                </p>
-              )}
-            </div>
+            ) : resultSubtitle ? (
+              <p className="text-small-regular text-muted-foreground truncate">{resultSubtitle}</p>
+            ) : null}
           </div>
-          <Button variant="tertiary" size="sm" onClick={onRetake} className="shrink-0">
-            Retake →
-          </Button>
+          {onViewDetails && (
+            <Button variant="secondary" size="sm" onClick={onViewDetails} className="shrink-0">
+              View details
+            </Button>
+          )}
         </div>
       )}
     </motion.div>

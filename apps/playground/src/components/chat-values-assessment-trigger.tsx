@@ -4,16 +4,17 @@ import * as React from "react"
 import { useValuesAssessmentState } from "../lib/assessments/useValuesAssessmentState"
 import { ValuesAssessmentQuiz } from "./values-assessment-quiz"
 import { ChatAssessmentCard } from "./chat-assessment-card"
+import type { TopValue } from "../lib/assessments/values-assessment-data"
 
 export interface ChatValuesAssessmentTriggerProps {
   isCompleted: boolean
-  completedSummary?: string
-  onComplete: (summary: string) => void
+  completedValues?: string[]
+  onComplete: (valueLabels: string[]) => void
 }
 
 export function ChatValuesAssessmentTrigger({
   isCompleted,
-  completedSummary,
+  completedValues,
   onComplete,
 }: ChatValuesAssessmentTriggerProps) {
   const { status, answeredCount, totalQuestions, retake } = useValuesAssessmentState()
@@ -22,9 +23,9 @@ export function ChatValuesAssessmentTrigger({
   const handleOpen = () => setOverlayOpen(true)
   const handleExit = () => setOverlayOpen(false)
 
-  const handleComplete = (topCategories: string[]) => {
+  const handleComplete = (topValues: TopValue[]) => {
     setOverlayOpen(false)
-    onComplete(topCategories.join(" · "))
+    onComplete(topValues.map((v) => v.displayLabel))
   }
 
   const handleRetake = () => {
@@ -38,27 +39,24 @@ export function ChatValuesAssessmentTrigger({
     ? "in-progress"
     : "not-started"
 
-  const resultSubtitle = isCompleted && completedSummary
-    ? `Top values: ${completedSummary.split(" · ").slice(0, 3).join(", ")}`
-    : undefined
-
-  if (overlayOpen) {
-    return <ValuesAssessmentQuiz onComplete={handleComplete} onExit={handleExit} />
-  }
-
   return (
-    <ChatAssessmentCard
-      title="Values Assessment"
-      icon="🧭"
-      duration="55 questions · ~8 min"
-      description="Uncover the work values that drive you — what makes a job feel real."
-      status={cardStatus}
-      totalQuestions={totalQuestions}
-      currentQuestion={answeredCount}
-      resultSubtitle={resultSubtitle}
-      onStart={handleOpen}
-      onContinue={handleOpen}
-      onRetake={handleRetake}
-    />
+    <>
+      <ChatAssessmentCard
+        title="Values assessment"
+        icon="🧭"
+        duration="55 questions · ~8 min"
+        description="Uncover the work values that drive you — what makes a job feel real."
+        status={cardStatus}
+        totalQuestions={totalQuestions}
+        currentQuestion={answeredCount}
+        resultTitle="Your values"
+        resultValues={isCompleted ? completedValues : undefined}
+        onStart={handleOpen}
+        onContinue={handleOpen}
+        onRetake={handleRetake}
+        onViewDetails={isCompleted ? handleOpen : undefined}
+      />
+      {overlayOpen && <ValuesAssessmentQuiz onComplete={handleComplete} onExit={handleExit} />}
+    </>
   )
 }

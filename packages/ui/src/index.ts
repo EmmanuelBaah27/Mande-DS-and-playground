@@ -134,6 +134,9 @@ export type {
   CurriculumSectionConfig,
 } from "./components/ui/app-sidebar"
 
+export { OverlayHeader } from "./components/ui/overlay-header"
+export type { OverlayHeaderProps } from "./components/ui/overlay-header"
+
 export { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/tabs"
 
 export {

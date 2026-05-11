@@ -12,24 +12,31 @@ export type QuizPhase = "idle" | "quiz" | "result"
 export type WorkPreferenceState = {
   phase: QuizPhase
   currentQuestion: number
-  scores: Record<WorkStyleLetter, number>
+  answers: (WorkStyleLetter | null)[]
   result: WorkStyleLetter[] | null
 }
 
 type Action =
   | { type: "start" }
   | { type: "answer"; letter: WorkStyleLetter }
+  | { type: "back" }
   | { type: "restart" }
   | { type: "exit" }
   | { type: "reset" }
 
-const INITIAL_SCORES: Record<WorkStyleLetter, number> = { A: 0, B: 0, C: 0, D: 0 }
-
 const INITIAL_STATE: WorkPreferenceState = {
   phase: "idle",
   currentQuestion: 0,
-  scores: INITIAL_SCORES,
+  answers: Array(TOTAL_QUESTIONS).fill(null),
   result: null,
+}
+
+function tallyScores(answers: (WorkStyleLetter | null)[]): Record<WorkStyleLetter, number> {
+  const scores: Record<WorkStyleLetter, number> = { A: 0, B: 0, C: 0, D: 0 }
+  for (const a of answers) {
+    if (a != null) scores[a]++
+  }
+  return scores
 }
 
 function reducer(state: WorkPreferenceState, action: Action): WorkPreferenceState {
@@ -37,15 +44,20 @@ function reducer(state: WorkPreferenceState, action: Action): WorkPreferenceStat
     case "start":
       return { ...state, phase: "quiz" }
     case "answer": {
-      const nextScores = { ...state.scores, [action.letter]: state.scores[action.letter] + 1 }
+      const newAnswers = [...state.answers] as (WorkStyleLetter | null)[]
+      newAnswers[state.currentQuestion] = action.letter
       const nextQ = state.currentQuestion + 1
       if (nextQ >= TOTAL_QUESTIONS) {
-        return { phase: "result", currentQuestion: nextQ, scores: nextScores, result: computeResult(nextScores) }
+        return { phase: "result", currentQuestion: nextQ, answers: newAnswers, result: computeResult(tallyScores(newAnswers)) }
       }
-      return { ...state, currentQuestion: nextQ, scores: nextScores }
+      return { ...state, currentQuestion: nextQ, answers: newAnswers }
+    }
+    case "back": {
+      const prevQ = Math.max(0, state.currentQuestion - 1)
+      return { ...state, currentQuestion: prevQ }
     }
     case "restart":
-      return { phase: "quiz", currentQuestion: 0, scores: INITIAL_SCORES, result: null }
+      return { phase: "quiz", currentQuestion: 0, answers: Array(TOTAL_QUESTIONS).fill(null), result: null }
     case "exit":
       return { ...state, phase: "idle" }
     case "reset":
@@ -58,6 +70,7 @@ export function useWorkPreferenceState() {
 
   const start = useCallback(() => dispatch({ type: "start" }), [])
   const answer = useCallback((letter: WorkStyleLetter) => dispatch({ type: "answer", letter }), [])
+  const back = useCallback(() => dispatch({ type: "back" }), [])
   const restart = useCallback(() => dispatch({ type: "restart" }), [])
   const exit = useCallback(() => dispatch({ type: "exit" }), [])
   const reset = useCallback(() => dispatch({ type: "reset" }), [])
@@ -65,10 +78,11 @@ export function useWorkPreferenceState() {
   return {
     phase: state.phase,
     currentQuestion: state.currentQuestion,
-    scores: state.scores,
+    answers: state.answers,
     result: state.result,
     start,
     answer,
+    back,
     restart,
     exit,
     reset,

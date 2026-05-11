@@ -1,15 +1,15 @@
 "use client"
 
 import { useState, useRef } from "react"
-import { HOLLAND_QUESTIONS, HOLLAND_TYPES } from "./holland-data"
-import type { HollandType, LikertValue } from "./holland-data"
+import { INTEREST_PROFILE_QUESTIONS, INTEREST_PROFILE_TYPES } from "./interest-profile-data"
+import type { InterestProfileType, LikertValue } from "./interest-profile-data"
 
-const STORAGE_KEY = "mande:holland:progress"
+const STORAGE_KEY = "mande:interest-profile:progress"
 
-export type HollandResult = {
+export type InterestProfileResult = {
   code: string
   ranked: Array<{
-    type: HollandType
+    type: InterestProfileType
     score: number
     name: string
     bracket: string
@@ -17,40 +17,39 @@ export type HollandResult = {
   }>
 }
 
-function computeHollandResult(answers: (LikertValue | null)[]): HollandResult {
-  const scores: Record<HollandType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 }
-  HOLLAND_QUESTIONS.forEach((q, i) => {
+function computeInterestProfileResult(answers: (LikertValue | null)[]): InterestProfileResult {
+  const scores: Record<InterestProfileType, number> = { R: 0, I: 0, A: 0, S: 0, E: 0, C: 0 }
+  INTEREST_PROFILE_QUESTIONS.forEach((q, i) => {
     const a = answers[i]
     if (a != null) scores[q.type] += a
   })
-  const ranked = (Object.entries(scores) as [HollandType, number][])
+  const ranked = (Object.entries(scores) as [InterestProfileType, number][])
     .sort((a, b) => b[1] - a[1])
-    .map(([type, score]) => ({ type, score, ...HOLLAND_TYPES[type] }))
+    .map(([type, score]) => ({ type, score, ...INTEREST_PROFILE_TYPES[type] }))
   return { code: ranked[0].type + ranked[1].type + ranked[2].type, ranked }
 }
 
-export type HollandScreen = "intro" | "question" | "results"
+export type InterestProfileScreen = "intro" | "question" | "results"
 
-export type HollandAssessmentState = {
-  screen: HollandScreen
+export type InterestProfileAssessmentState = {
+  screen: InterestProfileScreen
   currentIndex: number
   answers: (LikertValue | null)[]
-  result: HollandResult | null
+  result: InterestProfileResult | null
 }
 
-const EMPTY_STATE: HollandAssessmentState = {
+const EMPTY_STATE: InterestProfileAssessmentState = {
   screen: "intro",
   currentIndex: 0,
-  answers: Array(HOLLAND_QUESTIONS.length).fill(null),
+  answers: Array(INTEREST_PROFILE_QUESTIONS.length).fill(null),
   result: null,
 }
 
-function loadFromStorage(): HollandAssessmentState {
+function loadFromStorage(): InterestProfileAssessmentState {
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
     if (saved) {
-      const parsed = JSON.parse(saved) as HollandAssessmentState
-      if (parsed.screen === "results") return EMPTY_STATE
+      const parsed = JSON.parse(saved) as InterestProfileAssessmentState
       return parsed
     }
   } catch {
@@ -59,7 +58,7 @@ function loadFromStorage(): HollandAssessmentState {
   return EMPTY_STATE
 }
 
-function saveToStorage(state: HollandAssessmentState) {
+function saveToStorage(state: InterestProfileAssessmentState) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
   } catch {
@@ -75,8 +74,8 @@ function clearStorage() {
   }
 }
 
-export function useHollandAssessment() {
-  const [state, setState] = useState<HollandAssessmentState>(() => {
+export function useInterestProfileAssessment() {
+  const [state, setState] = useState<InterestProfileAssessmentState>(() => {
     if (typeof window === "undefined") return EMPTY_STATE
     return loadFromStorage()
   })
@@ -84,7 +83,7 @@ export function useHollandAssessment() {
   const advancingRef = useRef(false)
 
   const begin = () => {
-    const next: HollandAssessmentState = { ...state, screen: "question" }
+    const next: InterestProfileAssessmentState = { ...state, screen: "question" }
     setState(next)
     saveToStorage(next)
   }
@@ -96,25 +95,25 @@ export function useHollandAssessment() {
     const newAnswers = [...state.answers] as (LikertValue | null)[]
     newAnswers[state.currentIndex] = value
 
-    if (state.currentIndex === HOLLAND_QUESTIONS.length - 1) {
-      const result = computeHollandResult(newAnswers)
-      const next: HollandAssessmentState = {
+    if (state.currentIndex === INTEREST_PROFILE_QUESTIONS.length - 1) {
+      const result = computeInterestProfileResult(newAnswers)
+      const next: InterestProfileAssessmentState = {
         screen: "results",
         currentIndex: state.currentIndex,
         answers: newAnswers,
         result,
       }
       setState(next)
-      clearStorage()
+      saveToStorage(next)
       advancingRef.current = false
     } else {
-      const answered: HollandAssessmentState = { ...state, answers: newAnswers }
+      const answered: InterestProfileAssessmentState = { ...state, answers: newAnswers }
       setState(answered)
       saveToStorage(answered)
 
       setTimeout(() => {
         setState((prev) => {
-          const next: HollandAssessmentState = { ...prev, currentIndex: prev.currentIndex + 1 }
+          const next: InterestProfileAssessmentState = { ...prev, currentIndex: prev.currentIndex + 1 }
           saveToStorage(next)
           return next
         })
@@ -125,11 +124,11 @@ export function useHollandAssessment() {
 
   const back = () => {
     if (state.currentIndex === 0) {
-      const next: HollandAssessmentState = { ...state, screen: "intro" }
+      const next: InterestProfileAssessmentState = { ...state, screen: "intro" }
       setState(next)
       saveToStorage(next)
     } else {
-      const next: HollandAssessmentState = { ...state, currentIndex: state.currentIndex - 1 }
+      const next: InterestProfileAssessmentState = { ...state, currentIndex: state.currentIndex - 1 }
       setState(next)
       saveToStorage(next)
     }

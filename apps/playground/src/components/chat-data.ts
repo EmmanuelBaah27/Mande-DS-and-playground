@@ -192,6 +192,8 @@ export type Message = {
   assistantMeta?: AssistantMessageMeta
   /** Playground: simulated streaming slices `content` until complete. */
   isStreaming?: boolean
+  /** Playground: assistant is thinking — no content yet. */
+  isThinking?: boolean
 }
 
 /** Heuristic depth when `assistantMeta.depth` is omitted (seed history / plain assistants). */
@@ -210,6 +212,7 @@ export type SessionMode = "curriculum" | "open"
 
 export type CurriculumProgress = {
   module: string
+  moduleIndex: number
   lessonIndex: number
   totalLessons: number
   step: string
@@ -252,6 +255,7 @@ export const INITIAL_SESSIONS: ChatSession[] = [
     mode: "curriculum",
     progress: {
       module: "Career clarity",
+      moduleIndex: 0,
       lessonIndex: 1,
       totalLessons: 3,
       step: "Discovering your options",
@@ -388,11 +392,11 @@ export const CURRICULUM_LESSONS: readonly CurriculumLessonMeta[] = [
     label: "Discovering your options",
     icon: "IconMagnifyingGlass",
     description: "Map yourself across personality, interests, values, work preferences, and constraints.",
-    topics: ["PIVOTS assessments", "Work preference", "Holland & MBTI", "Skills audit"],
+    topics: ["PIVOTS assessments", "Work style", "Interest profile & MBTI", "Skills audit"],
     artifacts: [
       "work-preference",
       "mbti",
-      "holland",
+      "interest-profile",
       "interests",
       "values",
       "opportunities",

@@ -221,6 +221,10 @@ function CurriculumSection({
   activeItem,
   onNavigate,
 }: CurriculumSectionConfig & { activeItem?: string; onNavigate?: (id: string) => void }) {
+  const incomplete = lessons.filter((l) => l.state !== "completed")
+  const completed = lessons.filter((l) => l.state === "completed")
+  const sorted = [...incomplete, ...completed]
+
   return (
     <div className="flex flex-col gap-0.5">
       <div className="flex items-center justify-between px-2 py-0.5">
@@ -233,18 +237,19 @@ function CurriculumSection({
           {progress}
         </Badge>
       </div>
-      {lessons.map((lesson) => {
+      {sorted.map((lesson) => {
         const isActive = lesson.state === "active"
         const isLocked = lesson.state === "locked"
+        const isCompleted = lesson.state === "completed"
         return (
           <SideNavItem
             key={lesson.id}
             label={lesson.label}
             icon={
               <Icon
-                name={isActive ? "IconCircleDashed" : "IconLock"}
+                name={isActive ? "IconCircleDashed" : isCompleted ? "IconCheckmark2" : "IconLock"}
                 size={20}
-                className={isActive ? "text-blue-500" : undefined}
+                className={isActive ? "text-blue-500" : "text-muted-foreground"}
               />
             }
             selected={isActive && activeItem === lesson.id}

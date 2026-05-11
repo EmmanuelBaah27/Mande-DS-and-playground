@@ -46,11 +46,11 @@ const ARTIFACT_CONFIGS: Array<{ label: string; payload: InjectableChallenge }> =
     },
   },
   {
-    label: "Work preference",
+    label: "Work style",
     payload: {
       type: "self-report",
       artifactType: "work-preference",
-      prompt: "Work preference quiz",
+      prompt: "Work style quiz",
       inputType: "confirm",
     },
   },
@@ -64,10 +64,10 @@ const ARTIFACT_CONFIGS: Array<{ label: string; payload: InjectableChallenge }> =
     },
   },
   {
-    label: "Holland Picker",
+    label: "Interest profile picker",
     payload: {
       type: "research-action",
-      artifactType: "holland",
+      artifactType: "interest-profile",
       prompt: "What's your Holland code?",
       inputType: "confirm",
     },
@@ -93,7 +93,7 @@ const ARTIFACT_CONFIGS: Array<{ label: string; payload: InjectableChallenge }> =
     },
   },
   {
-    label: "Values Assessment",
+    label: "Values assessment",
     payload: {
       type: "self-report",
       artifactType: "values",

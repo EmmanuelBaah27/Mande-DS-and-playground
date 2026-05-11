@@ -109,6 +109,16 @@ Compliance baseline: **WCAG 2.2 Level AA** (ISO/IEC 40500:2025). Before writing 
 - **Reduced motion** — use `useReducedMotion()` from `motion/react` for any animated component
 - **Colour** — meaning is never conveyed through colour alone; contrast ratios verified (4.5:1 text, 3:1 UI boundaries)
 
+## Step 5b — Copy review (conditional)
+
+If the component contains any user-facing strings — labels, messages, CTAs, placeholders,
+empty state copy, tooltips, error text, or notification content — invoke `mande-copywriter`
+before finalizing. Do not hardcode copy without running it through the skill.
+
+This applies to strings written directly in JSX, passed as props, or defined as constants.
+If the copy already exists and was not written in this session, use `mande-copywriter` to
+review it and flag any violations.
+
 ## Step 6 — Promotion check
 
 After playground validation passes (golden path tested visually), assess against all criteria:

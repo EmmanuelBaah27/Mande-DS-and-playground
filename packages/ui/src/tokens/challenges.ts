@@ -50,7 +50,7 @@ export type ArtifactType =
   | "reflection"
   | "work-preference"
   | "mbti"
-  | "holland"
+  | "interest-profile"
   | "interests"
   | "values"
   | "opportunities"
@@ -65,7 +65,7 @@ export const artifactLabels: Record<ArtifactType, string> = {
   reflection: "Reflection",
   "work-preference": "Work preference",
   mbti: "Personality (MBTI)",
-  holland: "Interest profile",
+  "interest-profile": "Interest profile",
   interests: "Industries & hobbies",
   values: "Values",
   opportunities: "Opportunities",

@@ -49,7 +49,7 @@ export function ChatWorkPreferenceAssessmentTrigger({
     ? "in-progress"
     : "not-started"
 
-  let completedTitle = "Work Preference"
+  let completedTitle = "Work style"
   let completedSubtitle: string | undefined
   let completedIcon = "🎯"
   if (isCompleted && completedSummary) {
@@ -60,33 +60,33 @@ export function ChatWorkPreferenceAssessmentTrigger({
       Object.values(STYLES).find((s) => completedTitle.startsWith(s.name))?.icon ?? "🎯"
   }
 
-  if (overlayOpen && (quiz.phase === "quiz" || quiz.phase === "result")) {
-    return (
-      <WorkPreferenceQuiz
-        phase={quiz.phase}
-        currentQuestion={quiz.currentQuestion}
-        result={quiz.result}
-        onAnswer={quiz.answer}
-        onRestart={quiz.restart}
-        onExit={handleExit}
-        onBackToChat={handleBackToChat}
-      />
-    )
-  }
-
   return (
-    <ChatAssessmentCard
-      title={isCompleted ? completedTitle : "Work Preference"}
-      icon={isCompleted ? completedIcon : "🎯"}
-      duration={`${TOTAL_QUESTIONS} choices · ~3 min`}
-      description="Discover how you naturally approach tasks, teams, and problems."
-      status={cardStatus}
-      totalQuestions={TOTAL_QUESTIONS}
-      currentQuestion={quiz.currentQuestion}
-      resultSubtitle={isCompleted ? completedSubtitle : undefined}
-      onStart={handleOpen}
-      onContinue={handleOpen}
-      onRetake={handleOpen}
-    />
+    <>
+      <ChatAssessmentCard
+        title={isCompleted ? completedTitle : "Work style assessment"}
+        icon={isCompleted ? completedIcon : "🎯"}
+        duration={`${TOTAL_QUESTIONS} choices · ~3 min`}
+        description="Discover how you naturally approach tasks, teams, and problems."
+        status={cardStatus}
+        totalQuestions={TOTAL_QUESTIONS}
+        currentQuestion={quiz.currentQuestion}
+        resultSubtitle={isCompleted ? completedSubtitle : undefined}
+        onStart={handleOpen}
+        onContinue={handleOpen}
+        onRetake={handleOpen}
+      />
+      {overlayOpen && (quiz.phase === "quiz" || quiz.phase === "result") && (
+        <WorkPreferenceQuiz
+          phase={quiz.phase}
+          currentQuestion={quiz.currentQuestion}
+          result={quiz.result}
+          onAnswer={quiz.answer}
+          onBack={quiz.back}
+          onRestart={quiz.restart}
+          onExit={handleExit}
+          onBackToChat={handleBackToChat}
+        />
+      )}
+    </>
   )
 }

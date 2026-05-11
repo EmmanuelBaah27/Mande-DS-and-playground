@@ -91,7 +91,7 @@ function QuizWidget({ onComplete }: { onComplete: (summary: string) => void }) {
   const hasAnswer = Boolean(answers[current.id] || custom.trim())
   const goToNext = () => {
     if (isLast) {
-      onComplete("Completed work preference quiz")
+      onComplete("Completed work style quiz")
       return
     }
     setIndex((i) => i + 1)
