@@ -15,7 +15,7 @@ import {
 export interface ColdEmailArtifactProps {
   initialDraft?: string
   onComplete: (draft: string) => void
-  onExit: () => void
+  onExit: (draft?: string) => void
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -142,7 +142,7 @@ function WriteScreen({
 }: {
   initialDraft?: string
   onComplete: (draft: string) => void
-  onExit: () => void
+  onExit: (draft?: string) => void
 }) {
   const [draft, setDraft] = useState(initialDraft ?? "")
   const [submittedDraft, setSubmittedDraft] = useState<string | null>(
@@ -160,6 +160,14 @@ function WriteScreen({
 
   const passing = allRulesPass(rules)
   const wc = wordCount(draft)
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onExit(draft || undefined)
+    }
+    document.addEventListener("keydown", handleKey)
+    return () => document.removeEventListener("keydown", handleKey)
+  }, [onExit, draft])
 
   function handleSubmit() {
     const results = evaluateColdEmail(draft)
@@ -202,7 +210,7 @@ function WriteScreen({
           {statusBadge}
           <button
             type="button"
-            onClick={onExit}
+            onClick={() => onExit(draft)}
             aria-label="Close"
             className="min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2 text-neutral-400 hover:text-white transition-colors rounded-2"
           >
@@ -289,7 +297,7 @@ function LearnScreen({
   onExit,
 }: {
   onNext: () => void
-  onExit: () => void
+  onExit: (draft?: string) => void
 }) {
   return (
     <div className="min-h-dvh bg-neutral-50 flex flex-col">
@@ -298,7 +306,7 @@ function LearnScreen({
         <span id="cold-email-dialog-title" className="text-small-medium text-white"><span aria-hidden="true">&#9997;&#65039;</span> Cold email</span>
         <button
           type="button"
-          onClick={onExit}
+          onClick={() => onExit()}
           aria-label="Exit"
           className="min-w-[44px] min-h-[44px] flex items-center justify-center -mr-2 text-neutral-400 hover:text-white transition-colors rounded-2"
         >
@@ -411,14 +419,6 @@ export function ColdEmailArtifact({
   useEffect(() => {
     setMounted(true)
   }, [])
-
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onExit()
-    }
-    document.addEventListener("keydown", handleKey)
-    return () => document.removeEventListener("keydown", handleKey)
-  }, [onExit])
 
   if (!mounted) return null
 

@@ -65,10 +65,12 @@ export function ChatColdEmailTrigger({ onComplete }: ChatColdEmailTriggerProps) 
     setOverlayOpen(true)
   }
 
-  const handleExit = () => {
+  const handleExit = (currentDraft?: string) => {
     setOverlayOpen(false)
-    if (draft) {
-      const results = evaluateColdEmail(draft)
+    const draftToEvaluate = currentDraft || draft
+    if (draftToEvaluate) {
+      setDraft(draftToEvaluate)
+      const results = evaluateColdEmail(draftToEvaluate)
       setRules(results)
       setCardStatus(allRulesPass(results) ? "looks-good" : "needs-work")
     }
