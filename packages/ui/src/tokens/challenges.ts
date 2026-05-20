@@ -59,6 +59,7 @@ export type ArtifactType =
   | "craft"
   | "research-action"
   | "external-assessment"
+  | "cold-email"
 
 export const artifactLabels: Record<ArtifactType, string> = {
   commitment: "Commitment",
@@ -74,4 +75,5 @@ export const artifactLabels: Record<ArtifactType, string> = {
   craft: "Craft",
   "research-action": "Research & Action",
   "external-assessment": "External Assessment",
+  "cold-email": "Cold email",
 }
