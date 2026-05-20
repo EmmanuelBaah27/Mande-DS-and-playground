@@ -321,6 +321,7 @@ export default function ChatPage() {
       case "external-assessment":
         return "resource_link"
       case "craft":
+      case "cold-email":
         return "outreach_draft"
     }
   }
@@ -329,6 +330,8 @@ export default function ChatPage() {
     if (!activeSessionId) return
     const now = Date.now()
     const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+
+    setActiveLessonId(injectable.lessonId)
 
     setSessions((prev) =>
       prev.map((session) => {
