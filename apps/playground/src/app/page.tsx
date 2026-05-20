@@ -327,15 +327,23 @@ export default function ChatPage() {
   }
 
   const handleInjectChallenge = (injectable: InjectableChallenge) => {
-    if (!activeSessionId) return
+    const curriculumSession = sessions.find((s) => s.mode === "curriculum")
+    const targetSessionId = curriculumSession?.id ?? activeSessionId
+    if (!targetSessionId) return
+
     const now = Date.now()
     const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
 
-    setActiveLessonId(injectable.lessonId)
+    // Switch to the curriculum thread and highlight the right lesson
+    if (curriculumSession) {
+      setActiveSessionId(curriculumSession.id)
+      setActiveLessonId(injectable.lessonId)
+    }
+    setView("thread")
 
     setSessions((prev) =>
       prev.map((session) => {
-        if (session.id !== activeSessionId) return session
+        if (session.id !== targetSessionId) return session
         return {
           ...session,
           messages: [
@@ -347,7 +355,7 @@ export default function ChatPage() {
               timestamp,
               challenge: createChallengeData({
                 challengeId: `inject-${injectable.artifactType}-${now}`,
-                lessonId: "artifact-dev-flow",
+                lessonId: injectable.lessonId,
                 responseType: toResponseType(injectable.artifactType),
                 artifactType: injectable.artifactType,
                 prompt: injectable.prompt,
@@ -361,7 +369,6 @@ export default function ChatPage() {
         }
       })
     )
-    setView("thread")
   }
 
   const logoLink = (
