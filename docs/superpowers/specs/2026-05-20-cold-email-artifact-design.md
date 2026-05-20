@@ -205,15 +205,72 @@ When all 4 rules pass:
 
 ---
 
+## In-Chat Card States
+
+The cold email challenge appears as a full-width card in the chat thread — same width as messages, no icon circle. Three states:
+
+### Not started
+
+```
+┌────────────────────────────────────┐
+│ ✍ Cold email                       │  ← header row, no badge
+├────────────────────────────────────┤
+│ Write a real email to a            │
+│ professional in your target field. │
+│ I'll tell you when it's ready.     │
+├────────────────────────────────────┤
+│ Craft challenge        [Start →]   │
+└────────────────────────────────────┘
+```
+
+### In progress — needs work
+
+```
+┌────────────────────────────────────┐
+│ ✍ Cold email    [Needs work]       │  ← amber badge in header
+├────────────────────────────────────┤
+│ ↻ Say something about them…        │  ← all 4 rules shown with
+│ ✓ Ask for one thing only           │    dots so student sees
+│ ✓ Keep it under 150 words          │    progress at a glance
+│ ↻ Don't sound desperate            │
+├────────────────────────────────────┤
+│ 2 of 4 rules met      [Continue →] │
+└────────────────────────────────────┘
+```
+
+### Completed — looks good
+
+```
+┌────────────────────────────────────┐
+│ ✍ Cold email    [✓ Looks good]     │  ← green badge in header
+├────────────────────────────────────┤
+│ "Hi Amara, I saw your post on      │  ← first line of approved
+│  building for users who don't…"    │    draft, italic, truncated
+├────────────────────────────────────┤
+│                      [View draft]  │
+└────────────────────────────────────┘
+```
+
+### Details
+
+- **Full width** — spans the message column, no icon circle, no contained widget shell
+- **Badge position** — inline with the title in the card header (not below it, not beside the CTA)
+- **Rules in in-progress state** — all four shown with dots so the student can see exactly where they stand without reopening the overlay. No rule feedback notes — dots only.
+- **Completed footer** — no dot summary, just "View draft" button
+- **"Start" / "Continue"** open the overlay. **"Go to chat →"** inside the overlay closes it and fires `onComplete`, transitioning the card to completed. **"View draft"** re-opens the overlay in read-only mode (approved draft visible, no editing).
+
+---
+
 ## What Changes vs. What Stays
 
 | | Where |
 |---|---|
 | **ADD** `ColdEmailArtifact` overlay component | new file in playground components |
+| **ADD** `ChatColdEmailTrigger` in-chat card component | new file in playground components |
 | **ADD** Learn screen (guidelines + example) | inside `ColdEmailArtifact` |
 | **ADD** Write screen (reactive rules + draft card) | inside `ColdEmailArtifact` |
 | **ADD** `cold-email` artifact type to `ArtifactType` union | `packages/ui/src/tokens` or type file |
-| **WIRE** `craft` challenge type → `ColdEmailArtifact` when `artifactType === "cold-email"` | `chat-active-artifact.tsx` |
+| **WIRE** `craft` challenge type → `ChatColdEmailTrigger` when `artifactType === "cold-email"` | `chat-active-artifact.tsx` |
 | **KEEP** existing `ChatCraftInput` for other craft challenges | unchanged |
 | **KEEP** `outreach_draft` response type in `chat-data.ts` | unchanged |
 
