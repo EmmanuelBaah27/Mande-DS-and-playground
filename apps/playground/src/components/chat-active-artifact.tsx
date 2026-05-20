@@ -247,7 +247,7 @@ export function ChatActiveArtifactControls({
     case "external-assessment":
       return <ExternalAssessmentWidget challenge={challenge} onComplete={done} />
     case "cold-email":
-      return <ChatColdEmailTrigger onComplete={(summary) => done(summary)} />
+      return <ChatColdEmailTrigger onComplete={done} />
     default:
       return null
   }
