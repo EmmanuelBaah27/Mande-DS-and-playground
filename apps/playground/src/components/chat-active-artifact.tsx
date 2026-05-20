@@ -11,6 +11,7 @@ import { ChatCraftInput } from "./chat-craft-input"
 import { ChatSelfReportInput } from "./chat-self-report-input"
 import { ChatResearchActionInput } from "./chat-research-action-input"
 import { ChatExternalAssessmentInput } from "./chat-external-assessment-input"
+import { ChatColdEmailTrigger } from "./chat-cold-email-trigger"
 
 export function ArtifactBadge({ type }: { type: ArtifactType }) {
   return (
@@ -245,6 +246,8 @@ export function ChatActiveArtifactControls({
       return <ResearchActionWidget challenge={challenge} onComplete={done} />
     case "external-assessment":
       return <ExternalAssessmentWidget challenge={challenge} onComplete={done} />
+    case "cold-email":
+      return <ChatColdEmailTrigger onComplete={(summary) => done(summary)} />
     default:
       return null
   }

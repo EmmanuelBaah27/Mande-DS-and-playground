@@ -315,6 +315,21 @@ export const INITIAL_SESSIONS: ChatSession[] = [
           "You've got the landscape. Next, we'll lock in a few concrete inputs so this doesn't stay abstract.\n\nWhen you're ready, send any message here, even a single word is fine, and I'll start you on the first quick exercise.",
         timestamp: "Day 1",
       },
+      {
+        id: "c-cold-email-1",
+        role: "assistant",
+        content:
+          "You've found your three professionals. Now it's time to reach out. Write a cold email to one of them — the goal is a 20-minute call, nothing more.",
+        timestamp: "Day 4",
+        challenge: createChallengeData({
+          challengeId: "finding-clarity-cold-email-1",
+          lessonId: "lesson-finding-clarity",
+          responseType: "outreach_draft",
+          artifactType: "cold-email",
+          prompt: "Write a cold email to one of the professionals you found.",
+          inputType: "textarea",
+        }),
+      },
     ],
   },
   {

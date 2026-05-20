@@ -141,6 +141,11 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
     assistant:
       "Thanks for bringing those results back. That rounds out the picture.",
   },
+  "cold-email": {
+    id: "artifact-cold-email-done",
+    assistant:
+      "That's a sendable email. Now send it — and write the next two yourself.",
+  },
 }
 
 const TRANSITION_META: Partial<Record<NonNullable<ChallengeData["artifactType"]>, { summary: string; rationale: string }>> = {
