@@ -32,7 +32,7 @@ export function getMockOpenChatAssistantReply(userMessage: string): {
     const assistantMeta: AssistantMessageMeta = {
       depth: "deep",
       summary: "Led with strategy, then broke it into three moves",
-      rationale: "You can scan the headline first and only open detail if you need it. The three moves — proof, craft, signal — cover the real bottleneck (portfolio), not just the learning curve. I flagged the target-role question because generalist vs. design systems vs. UX research changes the answer meaningfully.",
+      rationale: "You can scan the headline first and only open detail if you need it. The three moves - proof, craft, signal - cover the real bottleneck (portfolio), not just the learning curve. I flagged the target-role question because generalist vs. design systems vs. UX research changes the answer meaningfully.",
     }
     return {
       content: sanitizeAssistantText(content),

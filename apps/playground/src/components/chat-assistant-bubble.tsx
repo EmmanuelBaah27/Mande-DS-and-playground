@@ -202,11 +202,7 @@ export function AssistantTextBubble({
           <motion.div
             initial={false}
             animate={{ height: isProcessCollapsed ? 0 : "auto" }}
-            transition={
-              isProcessCollapsed
-                ? { duration: durations.base / 1000, ease: easings.out }
-                : { duration: durations.base / 1000, ease: easings.out }
-            }
+            transition={{ duration: durations.base / 1000, ease: easings.out }}
             style={{ overflow: "hidden" }}
           >
             <div className="relative pt-0.5 pb-1">
