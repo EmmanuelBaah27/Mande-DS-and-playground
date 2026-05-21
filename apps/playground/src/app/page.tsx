@@ -119,13 +119,12 @@ export default function ChatPage() {
   const [pinned, setPinned] = useState(false)
   const hoverLeaveTimerRef = useRef<number | null>(null)
   // ─── Mobile drawer ────────────────────────────────────────────────────────
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth < 640 : false
-  )
+  const [isMobile, setIsMobile] = useState(false)
   const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
 
   useEffect(() => {
     const check = () => setIsMobile(window.innerWidth < 640)
+    check()
     window.addEventListener("resize", check)
     return () => window.removeEventListener("resize", check)
   }, [])
