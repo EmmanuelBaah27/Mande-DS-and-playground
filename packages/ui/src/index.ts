@@ -80,6 +80,9 @@ export type { EmptyStateProps } from "./components/ui/empty-state"
 export { Chip, chipVariants } from "./components/ui/chip"
 export type { ChipProps } from "./components/ui/chip"
 
+export { ChipSelectGroup } from "./components/ui/chip-select-group"
+export type { ChipSelectGroupProps } from "./components/ui/chip-select-group"
+
 export { Avatar, AvatarImage, AvatarFallback } from "./components/ui/avatar"
 export type { AvatarSize } from "./components/ui/avatar"
 

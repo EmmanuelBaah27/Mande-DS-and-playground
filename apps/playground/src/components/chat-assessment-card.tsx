@@ -116,7 +116,7 @@ export function ChatAssessmentCard({
                 {resultValues.map((label) => (
                   <Chip
                     key={label}
-                    variant="selected"
+                    state="selected"
                     className="!bg-foreground !text-background !border-transparent cursor-default pointer-events-none"
                   >
                     {label}

@@ -8,7 +8,7 @@ Designer reference for what exists in the design system. Source of truth: `packa
 
 Check Storybook for the current live list. Components are grouped as:
 
-- `Components/Form` — inputs, selects, checkboxes, radio, textarea, switch
+- `Components/Form` — inputs, selects, checkboxes, radio, textarea, switch, chip, chip-select-group
 - `Components/Display` — badge, avatar, card, separator, skeleton
 - `Components/Navigation` — sidebar, tabs, breadcrumb
 - `Components/Overlays` — dialog, popover, dropdown-menu, tooltip, sheet

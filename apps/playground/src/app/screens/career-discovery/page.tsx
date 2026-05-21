@@ -8,6 +8,7 @@ import {
   Progress,
   StepIndicator,
   EmptyState,
+  ChipSelectGroup,
   springs,
 } from "@mande/ui"
 import type { IconName } from "@mande/ui"
@@ -219,6 +220,32 @@ function FactorCard({
   )
 }
 
+// ─── Interests Assessment ─────────────────────────────────────────────────────
+
+const INDUSTRIES = ["Technology", "Healthcare", "Finance", "Education", "Media", "Retail", "Manufacturing", "Government"]
+const HOBBIES = ["Reading", "Music", "Travel", "Sports", "Cooking", "Gaming", "Photography", "Art"]
+
+function InterestsAssessment({ onSave }: { onSave: () => void }) {
+  return (
+    <div className="flex-1 overflow-y-auto">
+      <div className="max-w-lg mx-auto px-6 py-8 w-full">
+        <div className="rounded-2xl border border-border bg-card shadow-xs p-4 flex flex-col gap-5">
+          <p className="text-lg-medium text-foreground">
+            What industries and topics light you up?
+          </p>
+          <div className="flex flex-col gap-5">
+            <ChipSelectGroup label="Industries" options={INDUSTRIES} />
+            <ChipSelectGroup label="Hobbies & Interests" options={HOBBIES} />
+          </div>
+          <div className="flex justify-end pt-1">
+            <Button variant="primary" onClick={onSave}>Done</Button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Factor Detail Panel ──────────────────────────────────────────────────────
 
 function FactorDetail({
@@ -228,6 +255,42 @@ function FactorDetail({
   factor: PivotFactor
   onBack: () => void
 }) {
+  const header = (
+    <div className="p-6 border-b border-neutral-100 shrink-0">
+      <button
+        onClick={onBack}
+        className="flex items-center gap-1 text-sm text-neutral-500 hover:text-neutral-900 transition-colors mb-4 active:scale-[0.98]"
+      >
+        <Icon name="IconChevronLeft" size={16} />
+        Back to PIVOTS
+      </button>
+      <div className="flex items-center gap-3">
+        <div className={cn("h-10 w-10 rounded-2 flex items-center justify-center text-lg font-bold", factor.bgColor, factor.color)}>
+          {factor.initial}
+        </div>
+        <div>
+          <h2 className="text-base-semibold text-neutral-900">{factor.name}</h2>
+          <p className="text-xs text-neutral-500">{factor.description}</p>
+        </div>
+      </div>
+    </div>
+  )
+
+  if (factor.id === "interests") {
+    return (
+      <motion.div
+        key={factor.id}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={springs.smooth}
+        className="flex-1 flex flex-col overflow-hidden"
+      >
+        {header}
+        <InterestsAssessment onSave={onBack} />
+      </motion.div>
+    )
+  }
+
   if (factor.status === "not-started") {
     return (
       <motion.div

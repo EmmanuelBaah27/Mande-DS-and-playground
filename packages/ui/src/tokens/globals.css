@@ -362,6 +362,13 @@
   --color-text-tertiary: var(--semantic-neutral-text-muted);
   --color-overlay: var(--semantic-surface-overlay);
 
+  /* Neutral alpha overlays — neutral-900 at opacity, for hover fills, scrim layers */
+  --color-neutral-a4:  var(--color-neutral-a4);
+  --color-neutral-a8:  var(--color-neutral-a8);
+  --color-neutral-a16: var(--color-neutral-a16);
+  --color-neutral-a20: var(--color-neutral-a20);
+  --color-neutral-a30: var(--color-neutral-a30);
+
   --radius: 0.5rem;
 
   --color-sidebar-ring: var(--sidebar-ring);

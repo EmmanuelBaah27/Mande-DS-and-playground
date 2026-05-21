@@ -47,6 +47,7 @@ const NAV = [
     label: "Display",
     items: [
       { label: "Chip", href: "/components/chip" },
+      { label: "Chip select group", href: "/components/chip-select-group" },
     ],
   },
 ]
