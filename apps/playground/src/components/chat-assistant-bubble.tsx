@@ -3,28 +3,46 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import ReactMarkdown from "react-markdown"
 import { motion, useReducedMotion } from "motion/react"
-import { Button, Icon, springs } from "@mande/ui"
+import { Button, Icon, easings, durations } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
 import type { AssistantMessageMeta } from "./chat-data"
-import { inferAssistantDepth } from "./chat-data"
 
 const THINKING_AUTO_COLLAPSE_MS = 800
 const RESPONSE_EASE_IN_MS = 200
 
 const mdComponents = {
   p: ({ children }: { children?: React.ReactNode }) => (
-    <p className="mb-2 last:mb-0">{children}</p>
+    <p className="mb-4 last:mb-0">{children}</p>
   ),
   strong: ({ children }: { children?: React.ReactNode }) => (
-    <strong className="text-lg-medium">{children}</strong>
+    <strong className="font-semibold">{children}</strong>
+  ),
+  em: ({ children }: { children?: React.ReactNode }) => (
+    <em className="italic">{children}</em>
+  ),
+  h1: ({ children }: { children?: React.ReactNode }) => (
+    <h1 className="text-xl-medium mb-3 mt-5 first:mt-0">{children}</h1>
+  ),
+  h2: ({ children }: { children?: React.ReactNode }) => (
+    <h2 className="text-lg-medium mb-2 mt-4 first:mt-0">{children}</h2>
+  ),
+  h3: ({ children }: { children?: React.ReactNode }) => (
+    <h3 className="text-base-medium mb-1.5 mt-3 first:mt-0">{children}</h3>
   ),
   ol: ({ children }: { children?: React.ReactNode }) => (
-    <ol className="list-decimal pl-5 mb-2 space-y-0.5">{children}</ol>
+    <ol className="list-decimal pl-5 mb-4 space-y-1 last:mb-0">{children}</ol>
   ),
   ul: ({ children }: { children?: React.ReactNode }) => (
-    <ul className="list-disc pl-5 mb-2 space-y-0.5">{children}</ul>
+    <ul className="list-disc pl-5 mb-4 space-y-1 last:mb-0">{children}</ul>
   ),
-  li: ({ children }: { children?: React.ReactNode }) => <li>{children}</li>,
+  li: ({ children }: { children?: React.ReactNode }) => <li className="leading-relaxed">{children}</li>,
+  hr: () => <hr className="my-4 border-neutral-200" />,
+  code: ({ children }: { children?: React.ReactNode }) => (
+    <code className="rounded-1 bg-neutral-100 px-1 py-0.5 text-sm font-mono">{children}</code>
+  ),
+  pre: ({ children }: { children?: React.ReactNode }) => (
+    <pre className="mb-4 overflow-x-auto rounded-3 bg-neutral-100 px-4 py-3 text-sm font-mono last:mb-0">{children}</pre>
+  ),
 }
 
 export function AssistantTextBubble({
@@ -37,23 +55,17 @@ export function AssistantTextBubble({
   assistantMeta?: AssistantMessageMeta
 }) {
   const reduceMotion = useReducedMotion()
-  const depth = assistantMeta?.depth ?? inferAssistantDepth(content)
-  const bodyTypography =
-    depth === "brief" ? "text-xl-regular leading-relaxed" : "text-lg-regular leading-relaxed"
-
-  const hasExplicitThoughtMeta = Boolean(
-    assistantMeta?.rationale?.trim() || assistantMeta?.detailMarkdown?.trim()
-  )
+  const bodyTypography = "text-lg-regular leading-relaxed"
+  const streamTypography = cn("whitespace-pre-wrap text-neutral-900", bodyTypography)
+  const hasExplicitThoughtMeta = Boolean(assistantMeta?.summary)
   const processText = useMemo(() => {
-    const parts = [assistantMeta?.rationale?.trim(), assistantMeta?.detailMarkdown?.trim()].filter(Boolean)
-    const explicit = parts.join("\n\n")
-    if (explicit) return explicit
-    // Show fallback thought copy only during active generation.
-    return isStreaming ? "I'm preparing a clear response based on your latest message." : ""
-  }, [assistantMeta?.detailMarkdown, assistantMeta?.rationale, isStreaming])
+    const rationale = assistantMeta?.rationale?.trim()
+    if (rationale) return rationale
+    return isStreaming ? "Thinking through your message…" : ""
+  }, [assistantMeta?.rationale, isStreaming])
   const hasProcess = hasExplicitThoughtMeta || Boolean(isStreaming && processText)
 
-  const [isProcessCollapsed, setIsProcessCollapsed] = useState(false)
+  const [isProcessCollapsed, setIsProcessCollapsed] = useState(!isStreaming)
   const [hasUserToggled, setHasUserToggled] = useState(false)
   const [showResponse, setShowResponse] = useState(true)
   const [visibleChars, setVisibleChars] = useState(() => (isStreaming ? 0 : content.length))
@@ -101,11 +113,8 @@ export function AssistantTextBubble({
       return
     }
 
-    // Historical: show immediately, collapsed
+    // Historical: show immediately, expanded — auto-collapse only fires during live generation
     setShowResponse(true)
-    if (!hasUserToggled) {
-      setIsProcessCollapsed(true)
-    }
   }, [hasProcess, hasUserToggled, isStreaming])
 
   useEffect(() => {
@@ -127,22 +136,25 @@ export function AssistantTextBubble({
     }
     setVisibleChars((prev) => {
       if (prev >= content.length) return prev
-      return Math.min(content.length, prev + 5)
+      return Math.min(content.length, prev + 3)
     })
   }, [content.length, reduceMotion, showResponse])
 
   useEffect(() => {
     if (!showResponse || reduceMotion || visibleChars >= content.length) return
     const timer = window.setTimeout(() => {
-      setVisibleChars((prev) => Math.min(content.length, prev + 5))
+      setVisibleChars((prev) => Math.min(content.length, prev + 3))
     }, 16)
     return () => window.clearTimeout(timer)
   }, [content.length, reduceMotion, showResponse, visibleChars])
 
   const displayedResponse = showResponse ? content.slice(0, visibleChars) : ""
   const isResponseStreaming = showResponse && visibleChars < content.length
-  const showParsedMarkdown = showResponse && displayedResponse.length > 0
-  const processLabel = isStreaming ? "Thinking" : "Thought briefly"
+  const showParsedMarkdown = showResponse && !isResponseStreaming && displayedResponse.length > 0
+  const hasExpandableBody = Boolean(assistantMeta?.rationale?.trim()) || Boolean(isStreaming && processText)
+  const processLabel = isStreaming
+    ? "Thinking"
+    : assistantMeta?.summary ?? "Thought briefly"
 
   return (
     <div className="space-y-2">
@@ -152,40 +164,49 @@ export function AssistantTextBubble({
             type="button"
             variant="tertiary"
             size="sm"
-            onClick={() => {
+            onClick={hasExpandableBody ? () => {
               setHasUserToggled(true)
               setIsProcessCollapsed((prev) => !prev)
-            }}
-            aria-expanded={!isProcessCollapsed}
-            aria-label={isProcessCollapsed ? "Expand thought details" : "Collapse thought details"}
+            } : undefined}
+            aria-expanded={hasExpandableBody ? !isProcessCollapsed : undefined}
+            aria-label={
+              !hasExpandableBody
+                ? undefined
+                : isProcessCollapsed
+                  ? "Expand thought details"
+                  : "Collapse thought details"
+            }
             className="group h-auto w-auto justify-start rounded-3 px-0 py-0 text-left hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus-visible:bg-transparent focus-visible:outline-none focus-visible:ring-0"
           >
-            <span className="inline-flex min-w-0 items-center gap-1.5 text-left">
-              <span className="text-small-regular text-neutral-500 transition-colors group-hover:text-neutral-700">
+            <span className="inline-flex min-w-0 items-center gap-1 text-left">
+              <span className="text-base-regular text-neutral-500 transition-colors group-hover:text-neutral-700">
                 {processLabel}
               </span>
-              <motion.span
-                animate={{ rotate: isProcessCollapsed ? 0 : 90 }}
-                transition={springs.snappy}
-                className="inline-flex h-4 w-4 shrink-0 items-center justify-center"
-              >
-                <Icon
-                  name="IconChevronRight"
-                  size={12}
-                  stroke="2"
-                  className="text-neutral-600 opacity-0 transition-opacity duration-150 group-hover:opacity-100 group-focus-visible:opacity-100"
-                  aria-hidden
-                />
-              </motion.span>
+              {hasExpandableBody && (
+                <motion.span
+                  animate={{ rotate: isProcessCollapsed ? 0 : 90 }}
+                  transition={{ duration: durations.base / 1000, ease: easings.out }}
+                  className="inline-flex h-4 w-4 shrink-0 items-center justify-center"
+                >
+                  <Icon
+                    name="IconChevronRight"
+                    size={12}
+                    stroke="2"
+                    className="text-neutral-500 transition-colors duration-150 group-hover:text-neutral-700"
+                    aria-hidden
+                  />
+                </motion.span>
+              )}
             </span>
           </Button>
           <motion.div
+            initial={false}
             animate={{ height: isProcessCollapsed ? 0 : "auto" }}
-            transition={springs.snappy}
+            transition={{ duration: durations.base / 1000, ease: easings.out }}
             style={{ overflow: "hidden" }}
           >
-            <div className="relative pb-1">
-              <div className="max-h-28 overflow-hidden whitespace-pre-wrap pr-1 text-small-regular text-neutral-400">
+            <div className="relative pt-0.5 pb-1">
+              <div className="max-h-28 overflow-hidden whitespace-pre-wrap pr-1 text-base-regular text-neutral-400">
                 {processText}
                 {isStreaming && (
                   <span
@@ -207,12 +228,16 @@ export function AssistantTextBubble({
       <motion.div
         initial={reduceMotion ? undefined : { opacity: 0.88, y: 2 }}
         animate={{ opacity: showResponse ? 1 : 0, y: showResponse ? 0 : 2 }}
-        transition={springs.snappy}
+        transition={{ duration: durations.base / 1000, ease: easings.out }}
         className={!showResponse ? "pointer-events-none" : undefined}
       >
-        {showParsedMarkdown && (
+        {showParsedMarkdown ? (
           <div className={cn("text-neutral-900", bodyTypography)}>
             <ReactMarkdown components={mdComponents}>{displayedResponse}</ReactMarkdown>
+          </div>
+        ) : (
+          <div className={streamTypography}>
+            {displayedResponse}
             {isResponseStreaming && (
               <span
                 className="inline-block w-0.5 h-[1.1em] align-[-0.15em] ml-0.5 bg-primary-500 rounded-full motion-safe:animate-pulse"

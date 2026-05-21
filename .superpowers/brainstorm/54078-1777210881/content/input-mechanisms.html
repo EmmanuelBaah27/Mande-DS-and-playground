@@ -1,0 +1,574 @@
+<h2>Chat Input Mechanisms</h2>
+<p class="subtitle">How the message box transforms at each challenge type — Pillar 1 → 2</p>
+
+<style>
+  .phones {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-top: 28px;
+  }
+  .phone {
+    border-radius: 20px;
+    overflow: hidden;
+    background: #0f0f0f;
+    border: 2px solid #2a2a2a;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    position: relative;
+  }
+  .phone-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 6px;
+    padding: 0 2px;
+  }
+  .phone-context {
+    font-size: 10px;
+    color: #666;
+    margin-bottom: 10px;
+    padding: 0 2px;
+    font-style: italic;
+  }
+  .chat-area {
+    padding: 12px;
+    min-height: 72px;
+    background: #0f0f0f;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .bubble-mande {
+    background: #1e1e1e;
+    border-radius: 12px 12px 12px 3px;
+    padding: 7px 10px;
+    font-size: 10.5px;
+    color: #d4d4d4;
+    max-width: 85%;
+    line-height: 1.4;
+  }
+  .bubble-user {
+    background: #2563eb;
+    border-radius: 12px 12px 3px 12px;
+    padding: 7px 10px;
+    font-size: 10.5px;
+    color: #fff;
+    max-width: 75%;
+    align-self: flex-end;
+    line-height: 1.4;
+  }
+  .divider {
+    height: 1px;
+    background: #1f1f1f;
+  }
+  .input-zone {
+    background: #111;
+    padding: 10px 10px 12px;
+  }
+
+  /* 1. Default message box */
+  .default-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #1a1a1a;
+    border-radius: 22px;
+    padding: 8px 10px 8px 14px;
+  }
+  .default-box input {
+    flex: 1;
+    background: none;
+    border: none;
+    color: #555;
+    font-size: 11px;
+    outline: none;
+    font-family: inherit;
+  }
+  .send-btn {
+    width: 28px;
+    height: 28px;
+    background: #2563eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .send-btn svg { width: 14px; height: 14px; }
+
+  /* 2. Reflection input */
+  .reflection-zone {
+    background: #111;
+    padding: 10px 10px 12px;
+  }
+  .challenge-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 7px;
+  }
+  .challenge-label .badge {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #a78bfa;
+    background: rgba(167,139,250,0.12);
+    padding: 2px 7px;
+    border-radius: 20px;
+  }
+  .challenge-prompt {
+    font-size: 10.5px;
+    color: #888;
+    margin-bottom: 7px;
+    line-height: 1.4;
+  }
+  .reflection-box {
+    background: #1a1a1a;
+    border: 1px solid #2d2d2d;
+    border-radius: 12px;
+    padding: 8px 10px;
+    min-height: 56px;
+    font-size: 10.5px;
+    color: #555;
+    font-family: inherit;
+    line-height: 1.5;
+    font-style: italic;
+  }
+  .input-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 7px;
+  }
+  .hint { font-size: 9px; color: #444; }
+  .submit-btn {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 5px 12px;
+    font-size: 10px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  /* 3. Commitment (tap to confirm) */
+  .commit-zone {
+    background: #111;
+    padding: 10px 10px 12px;
+  }
+  .commit-prompt {
+    font-size: 10.5px;
+    color: #888;
+    text-align: center;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+  .commit-actions {
+    display: flex;
+    gap: 7px;
+  }
+  .btn-ghost {
+    flex: 1;
+    background: #1a1a1a;
+    color: #666;
+    border: 1px solid #2a2a2a;
+    border-radius: 10px;
+    padding: 7px;
+    font-size: 10px;
+    font-weight: 500;
+    font-family: inherit;
+    text-align: center;
+  }
+  .btn-primary {
+    flex: 1.6;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 7px;
+    font-size: 10px;
+    font-weight: 600;
+    font-family: inherit;
+    text-align: center;
+  }
+
+  /* 4. In-chat quiz */
+  .quiz-zone {
+    background: #111;
+    padding: 10px 10px 12px;
+  }
+  .quiz-progress {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .progress-bar {
+    flex: 1;
+    height: 3px;
+    background: #1f1f1f;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill { height: 100%; background: #2563eb; border-radius: 2px; }
+  .progress-text { font-size: 9px; color: #555; }
+  .quiz-q {
+    font-size: 10.5px;
+    color: #bbb;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+  .quiz-options { display: flex; flex-direction: column; gap: 5px; }
+  .quiz-opt {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 9px;
+    padding: 6px 10px;
+    font-size: 10px;
+    color: #888;
+    font-family: inherit;
+  }
+  .quiz-opt.selected {
+    background: rgba(37,99,235,0.15);
+    border-color: #2563eb;
+    color: #93b4fd;
+  }
+
+  /* 5. External return */
+  .external-zone {
+    background: #111;
+    padding: 10px 10px 12px;
+  }
+  .external-prompt { font-size: 10.5px; color: #888; margin-bottom: 8px; line-height: 1.4; }
+  .external-link-row {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 8px;
+  }
+  .ext-link {
+    flex: 1;
+    background: rgba(37,99,235,0.1);
+    border: 1px solid rgba(37,99,235,0.25);
+    border-radius: 8px;
+    padding: 5px 8px;
+    font-size: 10px;
+    color: #7ba4f8;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .paste-field {
+    background: #1a1a1a;
+    border: 1px solid #2d2d2d;
+    border-radius: 9px;
+    padding: 7px 10px;
+    font-size: 13px;
+    color: #555;
+    font-family: 'SF Mono', monospace;
+    font-style: italic;
+    letter-spacing: 0.05em;
+    text-align: center;
+  }
+
+  /* 6. Multi-select chips */
+  .chips-zone {
+    background: #111;
+    padding: 10px 10px 12px;
+  }
+  .chips-prompt { font-size: 10.5px; color: #888; margin-bottom: 8px; }
+  .chips-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+  .chip {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 20px;
+    padding: 3px 9px;
+    font-size: 9.5px;
+    color: #777;
+    font-family: inherit;
+  }
+  .chip.on {
+    background: rgba(37,99,235,0.15);
+    border-color: #2563eb;
+    color: #93b4fd;
+  }
+  .chip-done {
+    width: 100%;
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    border-radius: 9px;
+    padding: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    font-family: inherit;
+    text-align: center;
+  }
+
+  /* 7. Tag builder */
+  .tags-zone {
+    background: #111;
+    padding: 10px 10px 12px;
+  }
+  .tags-prompt { font-size: 10.5px; color: #888; margin-bottom: 8px; }
+  .tags-existing {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+  .tag {
+    background: rgba(167,139,250,0.12);
+    border: 1px solid rgba(167,139,250,0.25);
+    border-radius: 20px;
+    padding: 3px 9px;
+    font-size: 9.5px;
+    color: #a78bfa;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .tag-x { font-size: 9px; color: rgba(167,139,250,0.5); }
+  .tag-input-row {
+    display: flex;
+    gap: 5px;
+  }
+  .tag-field {
+    flex: 1;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 9px;
+    padding: 6px 10px;
+    font-size: 10px;
+    color: #555;
+    font-family: inherit;
+    font-style: italic;
+  }
+  .tag-add {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 9px;
+    padding: 6px 10px;
+    font-size: 12px;
+    color: #666;
+    font-family: inherit;
+  }
+
+  /* 8. Doc / link drop */
+  .doc-zone {
+    background: #111;
+    padding: 10px 10px 12px;
+  }
+  .doc-prompt { font-size: 10.5px; color: #888; margin-bottom: 8px; }
+  .doc-options { display: flex; flex-direction: column; gap: 5px; }
+  .doc-opt {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 9px;
+    padding: 7px 10px;
+    font-size: 10px;
+    color: #666;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .doc-icon { font-size: 13px; }
+</style>
+
+<div class="phones">
+
+  <!-- 1. Default -->
+  <div>
+    <div class="phone-label">Default</div>
+    <div class="phone-context">Between challenges — normal conversation</div>
+    <div class="phone">
+      <div class="chat-area">
+        <div class="bubble-mande">That's the third myth cracked. Passion alone isn't a plan — it needs a vehicle.</div>
+        <div class="bubble-user">Makes sense, especially with how competitive things are here</div>
+        <div class="bubble-mande">Exactly. Now let's talk about your actual options as a graduate.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="input-zone">
+        <div class="default-box">
+          <input placeholder="Message Mande..." disabled />
+          <div class="send-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Reflection -->
+  <div>
+    <div class="phone-label">Reflection</div>
+    <div class="phone-context">Pillar 1 challenge — which option resonates</div>
+    <div class="phone">
+      <div class="chat-area">
+        <div class="bubble-mande">9-5, freelancing, entrepreneurship. You've seen how each one works.</div>
+        <div class="bubble-mande">Now I want to hear from you — no right answer.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="reflection-zone">
+        <div class="challenge-label"><span class="badge">✏️ Reflection</span></div>
+        <div class="challenge-prompt">Which option resonates with you right now, and why?</div>
+        <div class="reflection-box">Write your thoughts here…</div>
+        <div class="input-actions">
+          <span class="hint">Aim for 3–5 sentences</span>
+          <button class="submit-btn">Submit →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Commitment -->
+  <div>
+    <div class="phone-label">Commitment</div>
+    <div class="phone-context">Pillar 2 — accept 10-day challenge</div>
+    <div class="phone">
+      <div class="chat-area">
+        <div class="bubble-mande">PIVOTS is the framework we'll use to find your fit. Six factors that matter.</div>
+        <div class="bubble-mande">Ready to commit 10 days to figuring this out properly?</div>
+      </div>
+      <div class="divider"></div>
+      <div class="commit-zone">
+        <div class="commit-prompt">Take the 10-day self-discovery challenge?</div>
+        <div class="commit-actions">
+          <div class="btn-ghost">Not yet</div>
+          <div class="btn-primary">I'm in →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. In-chat quiz -->
+  <div>
+    <div class="phone-label">In-chat Quiz</div>
+    <div class="phone-context">Pillar 2 — work preference test</div>
+    <div class="phone">
+      <div class="chat-area">
+        <div class="bubble-mande">Let's find your work type. 8 quick questions, no overthinking.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="quiz-zone">
+        <div class="quiz-progress">
+          <div class="progress-bar"><div class="progress-fill" style="width:37%"></div></div>
+          <span class="progress-text">3 / 8</span>
+        </div>
+        <div class="quiz-q">When given a complex project, you prefer to:</div>
+        <div class="quiz-options">
+          <div class="quiz-opt selected">Break it into clear steps first</div>
+          <div class="quiz-opt">Collaborate with others first</div>
+          <div class="quiz-opt">See the whole system at once</div>
+          <div class="quiz-opt">Get into execution immediately</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. External return -->
+  <div>
+    <div class="phone-label">External Return</div>
+    <div class="phone-context">Pillar 2 — MBTI / Holland result</div>
+    <div class="phone">
+      <div class="chat-area">
+        <div class="bubble-mande">Take the MBTI at the link below — it takes about 12 minutes.</div>
+        <div class="bubble-mande">Come back and paste your 4-letter result when you're done.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="external-zone">
+        <div class="external-link-row">
+          <a class="ext-link">🔗 Take MBTI test →</a>
+        </div>
+        <div class="paste-field">e.g. INTJ</div>
+        <div class="input-actions" style="margin-top:7px">
+          <span class="hint">Paste your 4-letter code above</span>
+          <button class="submit-btn">Submit →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Multi-select chips -->
+  <div>
+    <div class="phone-label">Multi-select</div>
+    <div class="phone-context">Pillar 2 — preferred industries</div>
+    <div class="phone">
+      <div class="chat-area">
+        <div class="bubble-mande">Which industries genuinely excite you? Pick as many as feel true.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="chips-zone">
+        <div class="chips-prompt">Industries that excite you:</div>
+        <div class="chips-grid">
+          <div class="chip on">Tech</div>
+          <div class="chip">Finance</div>
+          <div class="chip on">Media</div>
+          <div class="chip">Health</div>
+          <div class="chip">Energy</div>
+          <div class="chip">Gov</div>
+          <div class="chip on">Education</div>
+          <div class="chip">Agri</div>
+        </div>
+        <button class="chip-done">Done →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Tag builder -->
+  <div>
+    <div class="phone-label">Tag Builder</div>
+    <div class="phone-context">Pillar 2 — hobbies & obsessions</div>
+    <div class="phone">
+      <div class="chat-area">
+        <div class="bubble-mande">What do you find yourself doing or thinking about in your free time?</div>
+      </div>
+      <div class="divider"></div>
+      <div class="tags-zone">
+        <div class="tags-prompt">Add yours:</div>
+        <div class="tags-existing">
+          <div class="tag">Music <span class="tag-x">×</span></div>
+          <div class="tag">Building things <span class="tag-x">×</span></div>
+          <div class="tag">Writing <span class="tag-x">×</span></div>
+        </div>
+        <div class="tag-input-row">
+          <div class="tag-field">Add one…</div>
+          <div class="tag-add">+</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Doc / link drop -->
+  <div>
+    <div class="phone-label">Doc / Link Drop</div>
+    <div class="phone-context">Pillar 2 — skills audit</div>
+    <div class="phone">
+      <div class="chat-area">
+        <div class="bubble-mande">Let's see where you're at skills-wise. Share whatever you have.</div>
+      </div>
+      <div class="divider"></div>
+      <div class="doc-zone">
+        <div class="doc-prompt">Share your resume, LinkedIn, or portfolio:</div>
+        <div class="doc-options">
+          <div class="doc-opt"><span class="doc-icon">🔗</span> Paste LinkedIn URL</div>
+          <div class="doc-opt"><span class="doc-icon">📄</span> Upload resume / PDF</div>
+          <div class="doc-opt"><span class="doc-icon">📋</span> Paste CV text</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

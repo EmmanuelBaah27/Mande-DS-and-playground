@@ -30,18 +30,12 @@ importers:
       '@storybook/addon-onboarding':
         specifier: 8.6.18
         version: 8.6.18(storybook@8.6.18(prettier@3.8.1))
-      '@storybook/instrumenter':
-        specifier: 8.6.18
-        version: 8.6.18(storybook@8.6.18(prettier@3.8.1))
       '@storybook/react':
         specifier: 8.6.18
         version: 8.6.18(@storybook/test@8.6.18(storybook@8.6.18(prettier@3.8.1)))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(storybook@8.6.18(prettier@3.8.1))(typescript@5.9.3)
       '@storybook/react-vite':
         specifier: 8.6.18
         version: 8.6.18(@storybook/test@8.6.18(storybook@8.6.18(prettier@3.8.1)))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rollup@4.60.1)(storybook@8.6.18(prettier@3.8.1))(typescript@5.9.3)(vite@6.4.1(@types/node@20.19.38)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1))
-      '@storybook/test':
-        specifier: 8.6.18
-        version: 8.6.18(storybook@8.6.18(prettier@3.8.1))
       '@tailwindcss/postcss':
         specifier: ^4.2.2
         version: 4.2.2

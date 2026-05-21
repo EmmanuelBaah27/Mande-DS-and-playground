@@ -1,0 +1,390 @@
+<style>
+  * { box-sizing: border-box; }
+
+  body-override {
+    background: #0a0a0a;
+  }
+
+  .phone-shell {
+    max-width: 420px;
+    margin: 0 auto;
+    background: #0f0f0f;
+    border-radius: 28px;
+    border: 2px solid #222;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    box-shadow: 0 40px 80px rgba(0,0,0,0.6);
+  }
+
+  /* Status bar */
+  .status-bar {
+    background: #0f0f0f;
+    padding: 14px 20px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .status-time { font-size: 13px; font-weight: 600; color: #fff; }
+  .status-icons { font-size: 11px; color: #fff; letter-spacing: 1px; }
+
+  /* Chat header */
+  .chat-header {
+    background: #0f0f0f;
+    border-bottom: 1px solid #1a1a1a;
+    padding: 10px 16px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .back-btn { color: #4b7bf5; font-size: 15px; }
+  .avatar {
+    width: 34px; height: 34px;
+    background: linear-gradient(135deg, #4b7bf5 0%, #7c3aed 100%);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; flex-shrink: 0;
+  }
+  .header-info { flex: 1; }
+  .header-name { font-size: 14px; font-weight: 600; color: #fff; }
+  .header-sub { font-size: 11px; color: #4ade80; margin-top: 1px; }
+  .header-pill {
+    background: rgba(37,99,235,0.15);
+    border: 1px solid rgba(37,99,235,0.3);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 10px;
+    font-weight: 600;
+    color: #7ba4f8;
+    letter-spacing: 0.04em;
+  }
+
+  /* Chat thread */
+  .thread {
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    background: #0a0a0a;
+  }
+
+  /* Lesson dividers */
+  .lesson-marker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 10px 0 6px;
+  }
+  .lesson-line { flex: 1; height: 1px; background: #1e1e1e; }
+  .lesson-tag {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #3a3a3a;
+    white-space: nowrap;
+  }
+
+  /* Bubbles */
+  .row { display: flex; margin-bottom: 2px; }
+  .row.mande { align-items: flex-end; gap: 7px; }
+  .row.user { justify-content: flex-end; }
+
+  .mini-avatar {
+    width: 22px; height: 22px;
+    background: linear-gradient(135deg, #4b7bf5, #7c3aed);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; flex-shrink: 0; margin-bottom: 2px;
+  }
+
+  .bubble {
+    max-width: 82%;
+    padding: 9px 13px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: #e0e0e0;
+    border-radius: 18px;
+  }
+  .bubble.m {
+    background: #1c1c1e;
+    border-radius: 4px 18px 18px 18px;
+    color: #d4d4d4;
+  }
+  .bubble.m.chain {
+    border-radius: 18px 18px 18px 4px;
+    margin-left: 29px;
+    margin-top: 2px;
+  }
+  .bubble.u {
+    background: #1d4ed8;
+    border-radius: 18px 4px 18px 18px;
+    color: #fff;
+    align-self: flex-end;
+  }
+
+  /* Timestamp */
+  .ts {
+    font-size: 10px;
+    color: #333;
+    text-align: center;
+    margin: 12px 0 4px;
+  }
+
+  /* Challenge card */
+  .challenge-divider {
+    margin: 14px 0 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .challenge-line { flex: 1; height: 1px; background: rgba(124,58,237,0.3); }
+  .challenge-label-text {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7c3aed;
+    white-space: nowrap;
+  }
+
+  /* Reflection input zone */
+  .divider-line { height: 1px; background: #1a1a1a; }
+
+  .input-zone {
+    background: #0f0f0f;
+    padding: 12px 14px 16px;
+  }
+  .challenge-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(124,58,237,0.12);
+    border: 1px solid rgba(124,58,237,0.25);
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: #a78bfa;
+    margin-bottom: 8px;
+  }
+  .challenge-prompt-text {
+    font-size: 13px;
+    font-weight: 500;
+    color: #c0c0c0;
+    margin-bottom: 10px;
+    line-height: 1.45;
+  }
+  .reflection-textarea {
+    width: 100%;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 14px;
+    padding: 11px 13px;
+    font-size: 13px;
+    color: #555;
+    font-family: inherit;
+    line-height: 1.5;
+    font-style: italic;
+    resize: none;
+    min-height: 72px;
+  }
+  .input-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 8px;
+  }
+  .word-hint { font-size: 10.5px; color: #3a3a3a; }
+  .submit-btn {
+    background: #1d4ed8;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 7px 16px;
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+  }
+</style>
+
+<div style="padding: 16px 0 24px; background: #0a0a0a; min-height: 100vh;">
+<h2 style="text-align:center; margin-bottom: 6px;">Pillar 1 — Conversation Flow</h2>
+<p class="subtitle" style="text-align:center; margin-bottom: 24px;">Sample run-through: Introduction → Reflection challenge</p>
+
+<div class="phone-shell">
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="status-time">9:41</span>
+    <span class="status-icons">●●● ▲ 🔋</span>
+  </div>
+
+  <!-- Header -->
+  <div class="chat-header">
+    <span class="back-btn">‹</span>
+    <div class="avatar">🤝</div>
+    <div class="header-info">
+      <div class="header-name">Mande</div>
+      <div class="header-sub">● Active now</div>
+    </div>
+    <div class="header-pill">Day 1</div>
+  </div>
+
+  <!-- Thread -->
+  <div class="thread">
+
+    <div class="ts">Today · Career Clarity Curriculum</div>
+
+    <!-- OPENING -->
+    <div class="lesson-marker">
+      <div class="lesson-line"></div>
+      <div class="lesson-tag">Introduction</div>
+      <div class="lesson-line"></div>
+    </div>
+
+    <div class="row mande">
+      <div class="mini-avatar">🤝</div>
+      <div class="bubble m">Your readiness report flagged career clarity as your weakest area. Which, honestly? Is the most common one. And the most fixable.</div>
+    </div>
+    <div class="row mande">
+      <div class="bubble m chain">Before we talk options and plans, there are three things most people believe about careers that just aren't true. Clearing those out first makes everything else click faster.</div>
+    </div>
+    <div class="row mande">
+      <div class="bubble m chain">Ready?</div>
+    </div>
+
+    <div class="row user">
+      <div class="bubble u">Yeah let's go</div>
+    </div>
+
+    <!-- MYTH 1 -->
+    <div class="lesson-marker">
+      <div class="lesson-line"></div>
+      <div class="lesson-tag">Myth 1 of 3</div>
+      <div class="lesson-line"></div>
+    </div>
+
+    <div class="row mande">
+      <div class="mini-avatar">🤝</div>
+      <div class="bubble m">Your degree isn't your career. I know that sounds obvious — but most people are still quietly waiting for their degree to tell them what to do next. It doesn't work that way.</div>
+    </div>
+    <div class="row mande">
+      <div class="bubble m chain">Your degree gives you a credential, sometimes some skills, and a time window. The career is a separate decision — and it's yours to make.</div>
+    </div>
+
+    <div class="row user">
+      <div class="bubble u">Honestly I've been thinking my CS degree would just… lead somewhere automatically</div>
+    </div>
+
+    <div class="row mande">
+      <div class="mini-avatar">🤝</div>
+      <div class="bubble m">That's the myth exactly. And it's not your fault — the whole system kind of sells it that way. But the people who figure things out fastest are the ones who stop waiting for the degree to decide for them.</div>
+    </div>
+
+    <!-- MYTH 2 -->
+    <div class="lesson-marker">
+      <div class="lesson-line"></div>
+      <div class="lesson-tag">Myth 2 of 3</div>
+      <div class="lesson-line"></div>
+    </div>
+
+    <div class="row mande">
+      <div class="mini-avatar">🤝</div>
+      <div class="bubble m">You don't need to have it figured out before you start moving. A lot of people wait for clarity to arrive before they do anything — but clarity doesn't come from thinking. It comes from doing.</div>
+    </div>
+
+    <div class="row user">
+      <div class="bubble u">That's reassuring actually. I've been stuck for months just thinking</div>
+    </div>
+
+    <div class="row mande">
+      <div class="mini-avatar">🤝</div>
+      <div class="bubble m">That's the trap. Thinking feels productive — but it's just recycling the same uncertainty. The goal of what we're doing here isn't to think your way to a career. It's to move in a direction and let the picture sharpen as you go.</div>
+    </div>
+
+    <!-- MYTH 3 -->
+    <div class="lesson-marker">
+      <div class="lesson-line"></div>
+      <div class="lesson-tag">Myth 3 of 3</div>
+      <div class="lesson-line"></div>
+    </div>
+
+    <div class="row mande">
+      <div class="mini-avatar">🤝</div>
+      <div class="bubble m">Last one: passion isn't a plan. "Follow your passion" is genuinely bad advice if that's all you've got. Passion without a vehicle doesn't pay the rent.</div>
+    </div>
+    <div class="row mande">
+      <div class="bubble m chain">What you actually want is the intersection — something you care about, that you're good at, that the world will pay for, that fits your life. We'll map that out together.</div>
+    </div>
+
+    <div class="row user">
+      <div class="bubble u">I love design but people keep saying it's not a serious career in Ghana</div>
+    </div>
+
+    <div class="row mande">
+      <div class="mini-avatar">🤝</div>
+      <div class="bubble m">That's a very common thing to hear, and it's becoming less true every year. But let's not get ahead — we'll run design through the PIVOTS framework later and see what the data actually says.</div>
+    </div>
+
+    <!-- OPTIONS -->
+    <div class="lesson-marker">
+      <div class="lesson-line"></div>
+      <div class="lesson-tag">Your options as a graduate</div>
+      <div class="lesson-line"></div>
+    </div>
+
+    <div class="row mande">
+      <div class="mini-avatar">🤝</div>
+      <div class="bubble m">Myths cleared. Now — as a graduate, you've got three directions in front of you: employment, freelancing, or entrepreneurship. Most people jump straight to having a preference without really knowing what each one means.</div>
+    </div>
+    <div class="row mande">
+      <div class="bubble m chain"><strong style="color:#fff">Employment:</strong> predictable income, structure, mentorship potential. You're trading flexibility for stability and a learning environment. Best entry point for most people.</div>
+    </div>
+    <div class="row mande">
+      <div class="bubble m chain"><strong style="color:#fff">Freelancing:</strong> more control, project-based income that's variable until you build a client base. Great for people who want autonomy and don't mind selling themselves.</div>
+    </div>
+    <div class="row mande">
+      <div class="bubble m chain"><strong style="color:#fff">Entrepreneurship:</strong> you're building something from nothing. Highest upside, highest risk, longest runway before you see returns. Not for everyone — and that's completely fine.</div>
+    </div>
+
+    <div class="row user">
+      <div class="bubble u">Can you mix them? Like freelance while building something on the side?</div>
+    </div>
+
+    <div class="row mande">
+      <div class="mini-avatar">🤝</div>
+      <div class="bubble m">You can — and many people do eventually. But early on, mixing usually means doing none of them fully. The question we're answering right now is simpler: which one is your <em>starting orientation</em>? The one you'd move toward today, with what you have.</div>
+    </div>
+    <div class="row mande">
+      <div class="bubble m chain">Which brings me to your first challenge.</div>
+    </div>
+
+    <!-- CHALLENGE -->
+    <div class="challenge-divider">
+      <div class="challenge-line"></div>
+      <div class="challenge-label-text">Challenge unlocked</div>
+      <div class="challenge-line"></div>
+    </div>
+
+  </div><!-- end thread -->
+
+  <!-- Divider -->
+  <div class="divider-line"></div>
+
+  <!-- Input zone — Reflection -->
+  <div class="input-zone">
+    <div class="challenge-badge">✏️ Reflection</div>
+    <div class="challenge-prompt-text">Which of the three options resonates with you right now — and what makes you say that?</div>
+    <textarea class="reflection-textarea" disabled placeholder="Write your thoughts here…"></textarea>
+    <div class="input-footer">
+      <span class="word-hint">Aim for 3–5 sentences</span>
+      <button class="submit-btn">Submit →</button>
+    </div>
+  </div>
+
+</div><!-- end phone-shell -->
+</div>

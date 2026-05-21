@@ -1,0 +1,177 @@
+MANDE — CAREER INTEREST ASSESSMENT (HOLLAND CODE / RIASEC)
+Source: https://mande-career-interest.netlify.app/
+Scaffolded: 2026-05-07
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OVERVIEW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Title:   Unveil your hidden career interests in minutes.
+Tagline: Ever wondered how your personality maps to the professional
+         world? Whether you're a natural builder, a creative thinker,
+         or a strategic leader, we'll help you decode the environments
+         where you'll actually thrive.
+
+Powered by: Holland Code (RIASEC model)
+Reference:  https://www.ebsco.com/research-starters/economics/hollands-theory-career-choice
+
+Total questions: 42
+Question format: Likert scale — 1 to 4
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+INSTRUCTIONS (shown to user before assessment begins)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Read each statement and picture yourself doing it.
+2. Choose the option that feels most natural — there are no right
+   or wrong answers.
+3. Don't think about salary or qualifications, just how much it
+   feels like you.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LIKERT SCALE (response options per question)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Value 1 — Not like me at all
+Value 2 — Not much like me
+Value 3 — Somewhat like me
+Value 4 — Very much like me
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+QUESTIONS (id · statement · Holland type)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ 1.  I like to work on cars                                    [R]
+ 2.  I like to do puzzles                                      [I]
+ 3.  I am good at working independently                        [A]
+ 4.  I like to work in teams                                   [S]
+ 5.  I am an ambitious person, I set goals for myself          [E]
+ 6.  I like to organize things (files, desks/offices)          [C]
+ 7.  I like to build things                                    [R]
+ 8.  I like to read about art and music                        [A]
+ 9.  I like to have clear instructions to follow               [C]
+10.  I like to try to influence or persuade people             [E]
+11.  I like to do experiments                                  [I]
+12.  I like to teach or train people                           [S]
+13.  I like trying to help people solve their problems         [S]
+14.  I like to take care of animals                            [R]
+15.  I wouldn't mind working 8 hours per day in an office      [C]
+16.  I like selling things                                     [E]
+17.  I enjoy creative writing                                  [A]
+18.  I enjoy science                                           [I]
+19.  I am quick to take on new responsibilities                [E]
+20.  I am interested in healing people                         [S]
+21.  I enjoy trying to figure out how things work              [I]
+22.  I like putting things together or assembling things       [R]
+23.  I am a creative person                                    [A]
+24.  I pay attention to details                                [C]
+25.  I like to do filing or typing                             [C]
+26.  I like to analyze things (problems/situations)            [I]
+27.  I like to play instruments or sing                        [A]
+28.  I enjoy learning about other cultures                     [S]
+29.  I would like to start my own business                     [E]
+30.  I like to cook                                            [R]
+31.  I like acting in plays                                    [A]
+32.  I am a practical person                                   [R]
+33.  I like working with numbers or charts                     [I]
+34.  I like to get into discussions about issues               [S]
+35.  I am good at keeping records of my work                   [C]
+36.  I like to lead                                            [E]
+37.  I like working outdoors                                   [R]
+38.  I would like to work in an office                         [C]
+39.  I'm good at math                                          [I]
+40.  I like helping people                                     [S]
+41.  I like to draw                                            [A]
+42.  I like to give speeches                                   [E]
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+QUESTIONS BY TYPE (for scoring reference)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+R — Realistic (Doers):      1, 7, 14, 22, 30, 32, 37
+I — Investigative (Thinkers): 2, 11, 18, 21, 26, 33, 39
+A — Artistic (Creators):    3, 8, 17, 23, 27, 31, 41
+S — Social (Helpers):       4, 12, 13, 20, 28, 34, 40
+E — Enterprising (Persuaders): 5, 10, 16, 19, 29, 36, 42
+C — Conventional (Organizers): 6, 9, 15, 24, 25, 35, 38
+
+Each type has 7 questions. Max score per type = 28 (7 × 4).
+Top 3 types by total score = the user's Holland Code (e.g. SAE).
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+RESULT TYPE DEFINITIONS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+R — REALISTIC / "Doers"
+  Likes:   Work that involves designing, building, or repairing of
+           equipment, materials, or structures, engaging in physical
+           activity, or working outdoors.
+  Thrives: In environments where hands-on problem solving is valued,
+           where the results of your work are tangible and visible,
+           and where you can engage directly with tools, materials,
+           machines, or the natural world.
+
+I — INVESTIGATIVE / "Thinkers"
+  Likes:   Work that involves studying and researching non-living
+           objects, living organisms, disease or other forms of
+           impairment, or human behavior.
+  Thrives: In environments where curiosity is rewarded, where you
+           are given the space to ask questions, analyse data, and
+           develop evidence-based conclusions, and where intellectual
+           rigour is the standard.
+
+A — ARTISTIC / "Creators"
+  Likes:   Work that involves creating original visual artwork,
+           performances, written works, food, or music for a variety
+           of media, or applying artistic principles to the design
+           of various objects and materials.
+  Thrives: In environments where creative freedom is respected,
+           where original thinking is celebrated over conformity,
+           and where your work has the opportunity to move, inspire,
+           or provoke a response in others.
+
+S — SOCIAL / "Helpers"
+  Likes:   Work that involves helping, teaching, advising, assisting,
+           or providing service to others.
+  Thrives: In environments where human connection is at the centre
+           of the work, where your ability to listen, empathise, and
+           support others is genuinely valued, and where you can see
+           the direct impact of your efforts on the people around you.
+
+E — ENTERPRISING / "Persuaders"
+  Likes:   Work that involves managing, negotiating, marketing, or
+           selling, typically in a business setting, or leading or
+           advising people in political and legal situations.
+  Thrives: In environments where ambition is rewarded, where you
+           have the opportunity to lead, influence, and drive
+           outcomes, and where the stakes are high enough to keep
+           you genuinely engaged.
+
+C — CONVENTIONAL / "Organizers"
+  Likes:   Work that involves following procedures and regulations
+           to organize information or data, typically in a business
+           setting.
+  Thrives: In environments where structure and precision are valued,
+           where clear processes and systems exist to guide your
+           work, and where your ability to maintain order, accuracy,
+           and consistency makes a measurable difference.
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+SCORING LOGIC (from source)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+- Sum all Likert values (1–4) for each Holland type.
+- Rank all 6 types by total score, highest first.
+- The top 3 types form the user's Holland Code (3-letter code).
+- Holland Code is conventionally written in uppercase (e.g. SAE, RIC).
+- Ties: the app presents both type names with equal weight.
+
+Progress bar: 42 steps mapped non-linearly to 0–100% — the bar
+accelerates at first to feel responsive, then slows near the end
+(PROGRESS_MAP array in source).
