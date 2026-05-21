@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Badge, Button, cn } from "@mande/ui"
+import { Badge, Button, Icon, cn } from "@mande/ui"
 import { ColdEmailArtifact } from "./cold-email-artifact"
 import {
   evaluateColdEmail,
@@ -20,18 +20,23 @@ export interface ChatColdEmailTriggerProps {
 // ─── RuleDot ──────────────────────────────────────────────────────────────────
 
 function RuleDot({ status }: { status: ColdEmailRuleResult["status"] }) {
+  if (status === "neutral") {
+    return (
+      <span
+        aria-hidden="true"
+        className="shrink-0 w-[14px] h-[14px] rounded-full bg-neutral-200 flex items-center justify-center text-[8px] font-bold text-neutral-400 leading-none"
+      >
+        ·
+      </span>
+    )
+  }
+  if (status === "pass") {
+    return <Icon name="IconCheckmark2Small" size={16} className="shrink-0 text-green-600" />
+  }
   return (
-    <span
-      aria-hidden="true"
-      className={cn(
-        "shrink-0 w-[14px] h-[14px] rounded-full flex items-center justify-center text-[8px] font-bold leading-none",
-        status === "neutral" && "bg-neutral-200 text-neutral-400",
-        status === "pass" && "bg-green-500 text-white",
-        status === "fail" && "bg-amber-400 text-amber-900"
-      )}
-    >
-      {status === "neutral" ? "·" : status === "pass" ? "✓" : "↻"}
-    </span>
+    <svg aria-hidden="true" className="shrink-0" width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <circle cx="8" cy="8" r="6" stroke="#f97316" strokeWidth="2" strokeDasharray="3 2" />
+    </svg>
   )
 }
 
@@ -91,13 +96,13 @@ export function ChatColdEmailTrigger({ onComplete }: ChatColdEmailTriggerProps) 
     <>
       <div className="border border-border rounded-xl overflow-hidden bg-card w-full">
         {/* Header */}
-        <div className="flex justify-between items-center px-4 py-3 border-b border-border">
-          <span className="text-sm font-semibold">✍ Cold email</span>
+        <div className="flex justify-between items-center px-4 py-2">
+          <span className="text-sm font-semibold">Write a cold email</span>
           <StatusBadge status={cardStatus} />
         </div>
 
         {/* Body */}
-        <div className="px-4 py-3">
+        <div className="px-4 py-2">
           {cardStatus === "not-started" && (
             <p className="text-sm text-muted-foreground leading-relaxed">
               Write a real email to a professional in your target field. I&apos;ll tell you when it&apos;s ready to send.
@@ -109,7 +114,7 @@ export function ChatColdEmailTrigger({ onComplete }: ChatColdEmailTriggerProps) 
               {rules.map((rule) => (
                 <div key={rule.id} className="flex items-center gap-2">
                   <RuleDot status={rule.status} />
-                  <span className="text-xs text-muted-foreground">{rule.label}</span>
+                  <span className="text-sm text-muted-foreground">{rule.label}</span>
                 </div>
               ))}
             </div>
@@ -123,10 +128,10 @@ export function ChatColdEmailTrigger({ onComplete }: ChatColdEmailTriggerProps) 
         </div>
 
         {/* Footer */}
-        <div className="flex justify-between items-center px-4 py-3 border-t border-border">
+        <div className="flex justify-between items-center px-4 py-2">
           <span className="text-xs text-muted-foreground">
             {cardStatus === "not-started" && "Craft challenge"}
-            {cardStatus === "needs-work" && `${passCount} of 4 rules met`}
+            {cardStatus === "needs-work" && `${passCount}/4 passed`}
             {cardStatus === "looks-good" && null}
           </span>
           {cardStatus === "not-started" && (

@@ -1,9 +1,9 @@
 "use client"
 
-import { useState, useRef } from "react"
-import { ChatInput, Icon } from "@mande/ui"
+import { useState } from "react"
+import { Icon } from "@mande/ui"
 import type { ChatSession } from "./chat-data"
-import { AttachmentPreview } from "./shared/attachment-preview"
+import { ChatInputBar } from "./chat-input-bar"
 
 export type WelcomeStateProps = {
   userName: string
@@ -18,23 +18,7 @@ export function WelcomeState({
   onResumeSession,
   onStartNewChat,
 }: WelcomeStateProps) {
-  const [value, setValue] = useState("")
-  const [attachments, setAttachments] = useState<File[]>([])
   const [showTopScrollFade, setShowTopScrollFade] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-
-  const handleSend = () => {
-    if (!value.trim() && attachments.length === 0) return
-    onStartNewChat(value.trim())
-    setValue("")
-    setAttachments([])
-  }
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files ?? [])
-    setAttachments((prev) => [...prev, ...files])
-    e.target.value = ""
-  }
 
   const curriculumProgress = resumeSession?.progress
   const resumeIconTone =
@@ -93,46 +77,7 @@ export function WelcomeState({
       </div>
 
       {/* Message bar — outside scroll area, always pinned at bottom */}
-      <div className="px-4 pb-4 bg-subtle shrink-0">
-        <div className="max-w-3xl mx-auto">
-          <ChatInput
-            value={value}
-            onChange={setValue}
-            onSend={handleSend}
-            placeholder="What's on your mind?"
-            sendDisabled={!value.trim() && attachments.length === 0}
-            hint="Mande is AI and can make mistakes. Please double-check responses."
-            topSlot={
-              attachments.length > 0
-                ? attachments.map((file, i) => (
-                    <AttachmentPreview
-                      key={i}
-                      file={file}
-                      onDismiss={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
-                    />
-                  ))
-                : undefined
-            }
-            actionsSlot={
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="size-5 flex items-center justify-center text-tertiary hover:text-muted-foreground hover:bg-muted rounded-1 transition-colors"
-              >
-                <Icon name="IconPaperclip2" size={16} />
-              </button>
-            }
-          />
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
-            multiple
-            onChange={handleFileChange}
-            className="hidden"
-          />
-        </div>
-      </div>
+      <ChatInputBar placeholder="What's on your mind?" onSend={onStartNewChat} />
     </div>
   )
 }

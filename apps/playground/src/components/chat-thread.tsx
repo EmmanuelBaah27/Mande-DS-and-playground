@@ -13,12 +13,12 @@ import {
   durations,
   challengeLabels,
   challengeColors,
-  ChatInput,
 } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
 import { ChatActiveArtifactFooterShell, ChatActiveArtifactControls, ArtifactBadge } from "./chat-active-artifact"
+import { ChatColdEmailTrigger } from "./chat-cold-email-trigger"
+import { ChatInputBar } from "./chat-input-bar"
 import { AssistantTextBubble } from "./chat-assistant-bubble"
-import { AttachmentPreview } from "./shared/attachment-preview"
 import { evaluateChallengeSubmission } from "../lib/challenges/evaluate"
 import { validateSubmissionPayload } from "../lib/challenges/schema"
 import {
@@ -369,6 +369,12 @@ function MessageBubble({
       )
     }
 
+    if (message.challenge.artifactType === "cold-email") {
+      const challengeState = selectChallengeState(message.challenge)
+      if (challengeState.isCompleted) return <ArtifactSubmittedState challenge={message.challenge} />
+      return <ChatColdEmailTrigger onComplete={(summary) => onArtifactComplete(message.id, summary)} />
+    }
+
     if (message.challenge.artifactType) {
       if (!selectChallengeState(message.challenge).isCompleted) return null
       return <ArtifactSubmittedState challenge={message.challenge} />
@@ -640,46 +646,10 @@ function MessageInput({
   }
 
   return (
-    <div className="px-4 pb-4 bg-neutral-50">
-      <div className="max-w-3xl mx-auto">
-        <ChatInput
-          value={value}
-          onChange={setValue}
-          onSend={handleSend}
-          placeholder={mode === "curriculum" ? "Respond to Mande…" : "Ask anything about your career…"}
-          sendDisabled={!value.trim() && attachments.length === 0}
-          hint="Mande is AI and can make mistakes. Please double-check responses."
-          topSlot={
-            attachments.length > 0
-              ? attachments.map((file, i) => (
-                  <AttachmentPreview
-                    key={i}
-                    file={file}
-                    onDismiss={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
-                  />
-                ))
-              : undefined
-          }
-          actionsSlot={
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="size-8 flex items-center justify-center text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-1 transition-colors"
-            >
-              <Icon name="IconPlusMedium" size={20} />
-            </button>
-          }
-        />
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
-          multiple
-          onChange={handleFileChange}
-          className="hidden"
-        />
-      </div>
-    </div>
+    <ChatInputBar
+      placeholder={mode === "curriculum" ? "Respond to Mande…" : "Ask anything about your career…"}
+      onSend={onSend}
+    />
   )
 }
 
@@ -858,6 +828,7 @@ const sessionInitializedRef = useRef<string | null>(null)
     lastMsg.challenge.artifactType !== "work-preference" &&
     lastMsg.challenge.artifactType !== "values" &&
     lastMsg.challenge.artifactType !== "interest-profile" &&
+    lastMsg.challenge.artifactType !== "cold-email" &&
     !selectChallengeState(lastMsg.challenge).isCompleted
       ? lastMsg
       : null
