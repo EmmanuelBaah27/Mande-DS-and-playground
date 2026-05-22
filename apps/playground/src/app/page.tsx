@@ -9,8 +9,9 @@ import { ChatThread } from "../components/chat-thread"
 import { WelcomeState } from "../components/welcome-state"
 import { CurriculumView } from "../components/curriculum-view"
 import { DevTriggerPanel, type InjectableChallenge } from "../components/dev-trigger-panel"
-import { INITIAL_SESSIONS, CURRICULUM_MODULES, CURRICULUM_LESSONS, createChallengeData } from "../components/chat-data"
-import type { ChatSession, ChallengeResponseType } from "../components/chat-data"
+import { INITIAL_SESSIONS, CURRICULUM_MODULES, CURRICULUM_LESSONS, createChallengeData, LESSON_MESSAGE_SEEDS, deriveCareerProfile } from "../components/chat-data"
+import type { ChatSession, ChallengeResponseType, Message } from "../components/chat-data"
+import { ChatCareerProfile } from "../components/chat-career-profile"
 
 // ─── Editable session title ───────────────────────────────────────────────────
 
@@ -67,11 +68,11 @@ function EditableTitle({
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-type View = "welcome" | "thread" | "curriculum" | "overview"
+type View = "welcome" | "thread" | "curriculum" | "career-profile"
 
 const NAV_ITEMS = [
   { id: "new-chat", label: "New chat", icon: <Icon name="IconBubbleSparkle" size={20} /> },
-  { id: "overview", label: "Overview", icon: <Icon name="IconSquareGridCircle" size={20} /> },
+  { id: "career-profile", label: "Career profile", icon: <Icon name="IconSquareGridCircle" size={20} /> },
   { id: "curriculum", label: "Curriculum", icon: <Icon name="IconNewspaper1" size={20} /> },
 ]
 
@@ -164,7 +165,7 @@ export default function ChatPage() {
   const activeItem =
     view === "welcome" ? "new-chat" :
     view === "curriculum" ? "curriculum" :
-    view === "overview" ? "overview" :
+    view === "career-profile" ? "career-profile" :
     (activeLessonId ?? activeSessionId ?? undefined)
   const openSessions = sessions.filter((s) => s.mode === "open")
 
@@ -180,8 +181,8 @@ export default function ChatPage() {
       setActiveLessonId(null)
       return
     }
-    if (id === "overview") {
-      setView("overview")
+    if (id === "career-profile") {
+      setView("career-profile")
       setActiveSessionId(null)
       setActiveLessonId(null)
       return
@@ -245,24 +246,38 @@ export default function ChatPage() {
     )
   }
 
-  /** Fires immediately when a lesson's terminal artifact completes — advances sidebar. */
-  const handleLessonComplete = (_lessonId: string) => {
+  /** Fires immediately when a lesson's terminal artifact completes — advances sidebar and injects next lesson seeds. */
+  const handleLessonComplete = (lessonId: string) => {
+    const lessonIds = CURRICULUM_LESSONS.map((l) => l.id)
+    const completedIndex = lessonIds.indexOf(lessonId)
+    const nextLessonId = completedIndex >= 0 ? lessonIds[completedIndex + 1] : undefined
+    const seedMessages: Message[] = nextLessonId ? (LESSON_MESSAGE_SEEDS[nextLessonId] ?? []) : []
+
     setSessions((prev) =>
-      prev.map((s) =>
-        s.id === activeSessionId && s.progress
-          ? {
-              ...s,
-              progress: {
-                ...s.progress,
-                lessonIndex: Math.min(s.progress.lessonIndex + 1, s.progress.totalLessons),
-                percentComplete: Math.round(
-                  ((s.progress.lessonIndex + 1) / s.progress.totalLessons) * 100
-                ),
-              },
-            }
-          : s
-      )
+      prev.map((s) => {
+        if (s.id !== activeSessionId || !s.progress) return s
+        return {
+          ...s,
+          progress: {
+            ...s.progress,
+            lessonIndex: Math.min(s.progress.lessonIndex + 1, s.progress.totalLessons),
+            percentComplete: Math.round(
+              ((s.progress.lessonIndex + 1) / s.progress.totalLessons) * 100
+            ),
+          },
+          messages: seedMessages.length > 0 ? [...s.messages, ...seedMessages] : s.messages,
+        }
+      })
     )
+  }
+
+  const handleStartFindingClarity = () => {
+    const cs = sessions.find((s) => s.mode === "curriculum")
+    if (cs) {
+      setActiveSessionId(cs.id)
+      setActiveLessonId(null)
+      setView("thread")
+    }
   }
 
   /** Fired when user clicks "Continue" at a module boundary — advances to next module. */
@@ -309,7 +324,8 @@ export default function ChatPage() {
         return "reflection"
       case "work-preference":
       case "interest-profile":
-      case "interests":
+      case "preferred-industries":
+      case "hobbies":
       case "values":
       case "opportunities":
       case "threats":
@@ -322,6 +338,8 @@ export default function ChatPage() {
       case "craft":
       case "cold-email":
         return "outreach_draft"
+      case "career-profile":
+        return "structured_list"
     }
   }
 
@@ -441,12 +459,12 @@ export default function ChatPage() {
                 <span className="hidden sm:block text-base-regular text-foreground px-1">Curriculum</span>
               </>
             )}
-            {view === "overview" && (
+            {view === "career-profile" && (
               <>
                 <span className="sm:hidden absolute inset-x-4 text-center text-base-regular text-foreground truncate pointer-events-none select-none">
-                  Overview
+                  Career profile
                 </span>
-                <span className="hidden sm:block text-base-regular text-foreground px-1">Overview</span>
+                <span className="hidden sm:block text-base-regular text-foreground px-1">Career profile</span>
               </>
             )}
             {view === "thread" && activeSession && (
@@ -561,10 +579,11 @@ export default function ChatPage() {
       >
         {view === "curriculum" ? (
           <CurriculumView />
-        ) : view === "overview" ? (
-          <div className="flex-1 flex items-center justify-center">
-            <p className="text-base-regular text-neutral-400">Overview — we&apos;ll come back here.</p>
-          </div>
+        ) : view === "career-profile" ? (
+          <ChatCareerProfile
+            profile={deriveCareerProfile(sessions)}
+            onStartFindingClarity={handleStartFindingClarity}
+          />
         ) : view === "welcome" || !activeSession ? (
           <WelcomeState
             userName="Angela"
@@ -578,7 +597,7 @@ export default function ChatPage() {
             activeSessionId={activeSessionId!}
             onSessionsChange={setSessions}
             onLessonComplete={handleLessonComplete}
-            onNextModule={handleNextModule}
+            onNextModule={() => {}}
             isLastLesson={isLastLesson}
             nextLessonLabel={nextLessonLabel}
           />
