@@ -266,7 +266,13 @@ export default function ChatPage() {
               (s.progress.lessonIndex / s.progress.totalLessons) * 100
             ),
           },
-          messages: seedMessages.length > 0 ? [...s.messages, ...seedMessages] : s.messages,
+          messages: (() => {
+            if (!seedMessages.length) return s.messages
+            // Guard against double-injection (React StrictMode fires updaters twice in dev)
+            const firstId = seedMessages[0]?.id
+            if (firstId && s.messages.some((m) => m.id === firstId)) return s.messages
+            return [...s.messages, ...seedMessages]
+          })(),
         }
       })
     )
