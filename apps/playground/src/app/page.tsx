@@ -255,14 +255,15 @@ export default function ChatPage() {
 
     setSessions((prev) =>
       prev.map((s) => {
-        if (s.id !== activeSessionId || !s.progress) return s
+        if (s.mode !== "curriculum" || !s.progress) return s
         return {
           ...s,
           progress: {
             ...s.progress,
+            // lessonIndex is 1-based; old value = completed lesson count → use as numerator
             lessonIndex: Math.min(s.progress.lessonIndex + 1, s.progress.totalLessons),
             percentComplete: Math.round(
-              ((s.progress.lessonIndex + 1) / s.progress.totalLessons) * 100
+              (s.progress.lessonIndex / s.progress.totalLessons) * 100
             ),
           },
           messages: seedMessages.length > 0 ? [...s.messages, ...seedMessages] : s.messages,
@@ -278,28 +279,6 @@ export default function ChatPage() {
       setActiveLessonId(null)
       setView("thread")
     }
-  }
-
-  /** Fired when user clicks "Continue" at a module boundary — advances to next module. */
-  const handleNextModule = () => {
-    setSessions((prev) =>
-      prev.map((s) => {
-        if (s.id !== activeSessionId || !s.progress) return s
-        const newModuleIndex = (s.progress.moduleIndex ?? 0) + 1
-        const newModule = CURRICULUM_MODULES[newModuleIndex]
-        return {
-          ...s,
-          progress: {
-            ...s.progress,
-            moduleIndex: newModuleIndex,
-            module: newModule?.label ?? s.progress.module,
-            lessonIndex: 1,
-            totalLessons: newModule?.lessons.length ?? 0,
-            percentComplete: 0,
-          },
-        }
-      })
-    )
   }
 
   const curriculumSession = sessions.find((s) => s.mode === "curriculum")
