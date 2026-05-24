@@ -9,8 +9,8 @@ import { ChatThread } from "../components/chat-thread"
 import { WelcomeState } from "../components/welcome-state"
 import { CurriculumView } from "../components/curriculum-view"
 import { DevTriggerPanel, type InjectableChallenge } from "../components/dev-trigger-panel"
-import { INITIAL_SESSIONS, CURRICULUM_MODULES, CURRICULUM_LESSONS, createChallengeData, LESSON_MESSAGE_SEEDS, deriveCareerProfile } from "../components/chat-data"
-import type { ChatSession, ChallengeResponseType, Message } from "../components/chat-data"
+import { INITIAL_SESSIONS, CURRICULUM_LESSONS, createChallengeData, deriveCareerProfile } from "../components/chat-data"
+import type { ChatSession, ChallengeResponseType } from "../components/chat-data"
 import { ChatCareerProfile } from "../components/chat-career-profile"
 
 // ─── Editable session title ───────────────────────────────────────────────────
@@ -77,27 +77,11 @@ const NAV_ITEMS = [
 ]
 
 function getCurriculumSection(sessions: ChatSession[]): CurriculumSectionConfig {
-  const curriculumSession = sessions.find((s) => s.mode === "curriculum")
-  const moduleIndex = curriculumSession?.progress?.moduleIndex ?? 0
-  const activeModule = CURRICULUM_MODULES[moduleIndex] ?? CURRICULUM_MODULES[0]
-  const totalLessons = activeModule.lessons.length
-  const activeLessonIndex = Math.max(
-    0,
-    Math.min(totalLessons - 1, (curriculumSession?.progress?.lessonIndex ?? 1) - 1)
-  )
-
-  const lessons = activeModule.lessons.map((lesson, index) => {
-    let state: LessonState = "locked"
-    if (index < activeLessonIndex) state = "completed"
-    if (index === activeLessonIndex) state = "active"
-    return { id: lesson.id, label: lesson.label, state }
+  const lessons = CURRICULUM_LESSONS.map((lesson) => {
+    const session = sessions.find((s) => s.id === lesson.id)
+    return { id: lesson.id, label: lesson.label, state: session?.lessonState ?? "locked" }
   })
-
-  return {
-    label: activeModule.label,
-    progress: "Active",
-    lessons,
-  }
+  return { label: "Career clarity", progress: "Active", lessons }
 }
 
 const SIDEBAR_W = 272      // w-64 (256) + p-2 each side (8+8)
@@ -112,7 +96,6 @@ const EASE_OUT: [number, number, number, number] = [0.23, 1, 0.32, 1]
 export default function ChatPage() {
   const [sessions, setSessions] = useState<ChatSession[]>(INITIAL_SESSIONS)
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
-  const [activeLessonId, setActiveLessonId] = useState<string | null>(null)
   const [view, setView] = useState<View>("welcome")
   // ─── Sidebar collapse state ───────────────────────────────────────────────
   const [collapsed, setCollapsed] = useState(false)
@@ -166,7 +149,7 @@ export default function ChatPage() {
     view === "welcome" ? "new-chat" :
     view === "curriculum" ? "curriculum" :
     view === "career-profile" ? "career-profile" :
-    (activeLessonId ?? activeSessionId ?? undefined)
+    (activeSessionId ?? undefined)
   const openSessions = sessions.filter((s) => s.mode === "open")
 
   const chatGroups = openSessions.length > 0
@@ -178,46 +161,40 @@ export default function ChatPage() {
     if (id === "new-chat") {
       setView("welcome")
       setActiveSessionId(null)
-      setActiveLessonId(null)
       return
     }
     if (id === "career-profile") {
       setView("career-profile")
       setActiveSessionId(null)
-      setActiveLessonId(null)
       return
     }
     if (id === "curriculum") {
       setView("curriculum")
       setActiveSessionId(null)
-      setActiveLessonId(null)
       return
     }
 
-    // Direct session id match (open chats)
-    if (sessions.some((s) => s.id === id)) {
+    // Curriculum lesson sessions — guard locked lessons
+    const session = sessions.find((s) => s.id === id)
+    if (session?.mode === "curriculum") {
+      if (session.lessonState === "locked") return
       setActiveSessionId(id)
-      setActiveLessonId(null)
       setView("thread")
       return
     }
 
-    // Curriculum lesson ids — navigate to the curriculum chat session
-    const curriculumSession = sessions.find((s) => s.mode === "curriculum")
-    if (curriculumSession) {
-      setActiveSessionId(curriculumSession.id)
-      setActiveLessonId(id)
+    // Open chats
+    if (session) {
+      setActiveSessionId(id)
       setView("thread")
-      return
     }
-
-    setActiveSessionId(id)
-    setActiveLessonId(null)
-    setView("thread")
   }
 
   const handleResumeSession = (sessionId: string) => {
-    setActiveSessionId(sessionId)
+    // For curriculum sessions, resume the active (or first active) lesson session
+    const curriculumSessions = sessions.filter((s) => s.mode === "curriculum")
+    const activeLesson = curriculumSessions.find((s) => s.lessonState === "active")
+    setActiveSessionId(activeLesson?.id ?? sessionId)
     setView("thread")
   }
 
@@ -246,61 +223,31 @@ export default function ChatPage() {
     )
   }
 
-  /** Fires immediately when a lesson's terminal artifact completes — advances sidebar and injects next lesson seeds. */
+  /** Fires immediately when a lesson's terminal artifact completes — marks lesson done and unlocks the next. */
   const handleLessonComplete = (lessonId: string) => {
     const lessonIds = CURRICULUM_LESSONS.map((l) => l.id)
-    const completedIndex = lessonIds.indexOf(lessonId)
-    const nextLessonId = completedIndex >= 0 ? lessonIds[completedIndex + 1] : undefined
-    const seedMessages: Message[] = nextLessonId ? (LESSON_MESSAGE_SEEDS[nextLessonId] ?? []) : []
-
+    const nextLessonId = lessonIds[lessonIds.indexOf(lessonId) + 1]
     setSessions((prev) =>
       prev.map((s) => {
-        if (s.mode !== "curriculum" || !s.progress) return s
-        return {
-          ...s,
-          progress: {
-            ...s.progress,
-            // lessonIndex is 1-based; old value = completed lesson count → use as numerator
-            lessonIndex: Math.min(s.progress.lessonIndex + 1, s.progress.totalLessons),
-            percentComplete: Math.round(
-              (s.progress.lessonIndex / s.progress.totalLessons) * 100
-            ),
-          },
-          messages: (() => {
-            if (!seedMessages.length) return s.messages
-            // Guard against double-injection (React StrictMode fires updaters twice in dev)
-            const firstId = seedMessages[0]?.id
-            if (firstId && s.messages.some((m) => m.id === firstId)) return s.messages
-            return [...s.messages, ...seedMessages]
-          })(),
-        }
+        if (s.id === lessonId) return { ...s, lessonState: "completed" as const }
+        if (s.id === nextLessonId) return { ...s, lessonState: "active" as const }
+        return s
       })
     )
   }
 
   const handleStartFindingClarity = () => {
-    const cs = sessions.find((s) => s.mode === "curriculum")
+    const cs = sessions.find((s) => s.id === "lesson-finding-clarity")
     if (cs) {
       setActiveSessionId(cs.id)
-      setActiveLessonId(null)
       setView("thread")
     }
   }
 
-  const curriculumSession = sessions.find((s) => s.mode === "curriculum")
-  const currentModuleIndex = curriculumSession?.progress?.moduleIndex ?? 0
-  const currentModule = CURRICULUM_MODULES[currentModuleIndex] ?? CURRICULUM_MODULES[0]
-  const activeLessonIndex = Math.max(
-    0,
-    Math.min(
-      currentModule.lessons.length - 1,
-      (curriculumSession?.progress?.lessonIndex ?? 1) - 1
-    )
-  )
-  const isLastLesson = activeLessonIndex >= currentModule.lessons.length - 1
-  const nextLesson = currentModule.lessons[activeLessonIndex + 1]
-  const nextModule = CURRICULUM_MODULES[currentModuleIndex + 1]
-  const nextLessonLabel = nextLesson?.label ?? nextModule?.label ?? "the next module"
+  // Derive next lesson label from the currently active lesson session
+  const activeLessonIdx = CURRICULUM_LESSONS.findIndex((l) => l.id === activeSessionId)
+  const nextLesson = CURRICULUM_LESSONS[activeLessonIdx + 1]
+  const nextLessonLabel = nextLesson?.label ?? "the next lesson"
 
   const toResponseType = (artifactType: InjectableChallenge["artifactType"]): ChallengeResponseType => {
     switch (artifactType) {
@@ -329,18 +276,15 @@ export default function ChatPage() {
   }
 
   const handleInjectChallenge = (injectable: InjectableChallenge) => {
-    const curriculumSession = sessions.find((s) => s.mode === "curriculum")
-    const targetSessionId = curriculumSession?.id ?? activeSessionId
+    // Inject into the lesson session matching the injectable's lessonId, or the active session
+    const targetSession = sessions.find((s) => s.id === injectable.lessonId) ?? sessions.find((s) => s.id === activeSessionId)
+    const targetSessionId = targetSession?.id
     if (!targetSessionId) return
 
     const now = Date.now()
     const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
 
-    // Switch to the curriculum thread and highlight the right lesson
-    if (curriculumSession) {
-      setActiveSessionId(curriculumSession.id)
-      setActiveLessonId(injectable.lessonId)
-    }
+    setActiveSessionId(targetSessionId)
     setView("thread")
 
     setSessions((prev) =>
@@ -572,7 +516,7 @@ export default function ChatPage() {
         ) : view === "welcome" || !activeSession ? (
           <WelcomeState
             userName="Angela"
-            resumeSession={sessions.find((s) => s.mode === "curriculum")}
+            resumeSession={sessions.find((s) => s.mode === "curriculum" && s.lessonState === "active")}
             onResumeSession={handleResumeSession}
             onStartNewChat={handleStartNewChat}
           />
@@ -582,8 +526,12 @@ export default function ChatPage() {
             activeSessionId={activeSessionId!}
             onSessionsChange={setSessions}
             onLessonComplete={handleLessonComplete}
-            onNextModule={() => {}}
-            isLastLesson={isLastLesson}
+            onNextModule={() => {
+              if (nextLesson) {
+                setActiveSessionId(nextLesson.id)
+                setView("thread")
+              }
+            }}
             nextLessonLabel={nextLessonLabel}
           />
         )}

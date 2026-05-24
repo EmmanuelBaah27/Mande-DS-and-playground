@@ -42,15 +42,13 @@ export function ChatValuesAssessmentTrigger({
   return (
     <>
       <ChatAssessmentCard
-        title="Values assessment"
-        icon="🧭"
-        duration="55 questions · ~8 min"
+        title={isCompleted ? (completedValues?.[0] ?? "–") : "Values assessment"}
+        assessmentLabel={isCompleted ? "Values assessment" : undefined}
         description="Uncover the work values that drive you — what makes a job feel real."
         status={cardStatus}
         totalQuestions={totalQuestions}
         currentQuestion={answeredCount}
-        resultTitle="Your values"
-        resultValues={isCompleted ? completedValues : undefined}
+        resultSubtitle={isCompleted && completedValues && completedValues.length > 1 ? completedValues.slice(1).join(" · ") : undefined}
         onStart={handleOpen}
         onContinue={handleOpen}
         onRetake={handleRetake}

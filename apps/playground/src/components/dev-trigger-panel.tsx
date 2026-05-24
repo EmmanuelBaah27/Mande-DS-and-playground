@@ -33,6 +33,23 @@ type LessonGroup = {
 
 const LESSON_GROUPS: LessonGroup[] = [
   {
+    lessonId: "lesson-introduction",
+    label: "Introduction",
+    configs: [
+      {
+        label: "Path reflection",
+        payload: {
+          type: "reflection",
+          artifactType: "reflection",
+          lessonId: "lesson-introduction",
+          prompt: "Which of the three paths — 9-5, freelancing, or entrepreneurship — resonates most with you right now, and why?",
+          inputType: "textarea",
+          placeholder: "Right now, [path] calls to me most because...",
+        },
+      },
+    ],
+  },
+  {
     lessonId: "lesson-discovering-options",
     label: "Discovering your options",
     configs: [
@@ -90,14 +107,25 @@ const LESSON_GROUPS: LessonGroup[] = [
         },
       },
       {
-        label: "Interests",
+        label: "Preferred industries",
         payload: {
           type: "self-report",
-          artifactType: "interests",
+          artifactType: "preferred-industries",
           lessonId: "lesson-discovering-options",
-          prompt: "Which industries or sectors appeal to you most? List your hobbies and the things you obsess about.",
+          prompt: "Which industries and sectors call to you most?",
           inputType: "list",
-          placeholder: "e.g. Fintech, Creative writing, Football analytics…",
+          placeholder: "e.g. Fintech, Healthcare, Creative industries…",
+        },
+      },
+      {
+        label: "Hobbies",
+        payload: {
+          type: "self-report",
+          artifactType: "hobbies",
+          lessonId: "lesson-discovering-options",
+          prompt: "What are your hobbies and obsessions? List anything you genuinely enjoy.",
+          inputType: "textarea",
+          placeholder: "Gaming, making music, reading about behavioral economics...",
         },
       },
       {
@@ -188,6 +216,23 @@ const LESSON_GROUPS: LessonGroup[] = [
           lessonId: "lesson-finding-clarity",
           prompt: "What were your results from the values assessment?",
           inputType: "textarea",
+        },
+      },
+    ],
+  },
+  {
+    lessonId: "lesson-making-a-choice",
+    label: "Making the choice",
+    configs: [
+      {
+        label: "Path choice",
+        payload: {
+          type: "reflection",
+          artifactType: "reflection",
+          lessonId: "lesson-making-a-choice",
+          prompt: "Which path are you choosing, and what's the most honest reason you're choosing it?",
+          inputType: "textarea",
+          placeholder: "I'm choosing [path] because...",
         },
       },
     ],

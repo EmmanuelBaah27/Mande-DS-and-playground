@@ -51,9 +51,8 @@ export function ChatInterestProfileTrigger({
   return (
     <>
       <ChatAssessmentCard
-        title={isCompleted ? (completedCode ?? "Interest profile assessment") : "Interest profile assessment"}
-        icon="🧭"
-        duration="~10 min"
+        title={isCompleted ? (completedCode ?? "–") : "Interest profile assessment"}
+        assessmentLabel={isCompleted ? "Interest profile assessment" : undefined}
         description="Discover your top career interest types using the Holland RIASEC framework."
         status={cardStatus}
         totalQuestions={INTEREST_PROFILE_QUESTIONS.length}

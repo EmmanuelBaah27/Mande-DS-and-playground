@@ -38,6 +38,8 @@ import { ChatInterestProfileTrigger } from "./chat-interest-profile-trigger"
 import { LessonCompletionPanel } from "./chat-lesson-completion"
 
 
+type LessonCompletePhase = "idle" | "animating" | "ended"
+
 type ArtifactFlowStep = {
   id: string
   assistant: string | ((prevSummary: string) => string)
@@ -52,7 +54,7 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
       "Good. Before we run any assessments, tell me something — what kind of workday gives you energy, and what kind drains you? Three to five sentences.",
     challenge: {
       challengeId: "artifact-reflection-1",
-      lessonId: "discovering-your-options-day-1",
+      lessonId: "lesson-discovering-options",
       responseType: "reflection",
       artifactType: "reflection",
       prompt:
@@ -67,7 +69,7 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
       "Good starting point. Now let's run a quick work-preference check — it'll tell us how you're wired to operate.",
     challenge: {
       challengeId: "artifact-quiz-1",
-      lessonId: "discovering-your-options-day-1",
+      lessonId: "lesson-discovering-options",
       responseType: "structured_list",
       artifactType: "work-preference",
       prompt: "Work style quiz",
@@ -80,7 +82,7 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
       `${summary} — that's a useful signal. Let's layer in your personality type to see how it shapes the way you show up at work.`,
     challenge: {
       challengeId: "artifact-mbti-1",
-      lessonId: "discovering-your-options-day-1",
+      lessonId: "lesson-discovering-options",
       responseType: "resource_link",
       artifactType: "mbti",
       prompt: "What's your MBTI personality type?",
@@ -93,7 +95,7 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
       "Got it. One more input: your Interest profile. This maps the environments and activities you naturally gravitate toward.",
     challenge: {
       challengeId: "artifact-interest-profile-1",
-      lessonId: "discovering-your-options-day-1",
+      lessonId: "lesson-discovering-options",
       responseType: "structured_list",
       artifactType: "interest-profile",
       prompt: "What's your Interest profile?",
@@ -101,27 +103,86 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
     },
   },
   "interest-profile": {
-    id: "artifact-interest-profile-done",
+    id: "artifact-preferred-industries-1",
     assistant: (summary) =>
-      `Your Interest profile is ${summary}. All five inputs are in — here's what they point to.`,
-    lessonComplete: true,
+      `Your Interest profile is ${summary}. Now let's anchor that to the real world — which industries and sectors actually attract you?`,
+    // TODO: INTEGRATION — replace with API response
+    challenge: {
+      challengeId: "artifact-preferred-industries-1",
+      lessonId: "lesson-discovering-options",
+      responseType: "structured_list",
+      artifactType: "preferred-industries",
+      prompt: "Which industries and sectors call to you most? Add your own if they're missing.",
+      inputType: "list",
+    },
   },
   craft: {
     id: "artifact-craft-done",
     assistant:
       "Good. That's saved — we can sharpen it further once you've had a chance to send it.",
   },
-  interests: {
-    id: "artifact-interests-done",
-    assistant: "Got it. Those are noted — industries, hobbies, and what you obsess about all feed into the picture.",
+  "preferred-industries": {
+    id: "artifact-hobbies-1",
+    assistant:
+      "Got it — industries noted. Now outside of work: what do you actually enjoy? Hobbies, obsessions, things you do for fun or pure curiosity.",
+    // TODO: INTEGRATION — replace with API response
+    challenge: {
+      challengeId: "artifact-hobbies-1",
+      lessonId: "lesson-discovering-options",
+      responseType: "structured_list",
+      artifactType: "hobbies",
+      prompt: "What are your hobbies and obsessions? List anything you genuinely enjoy.",
+      inputType: "textarea",
+      placeholder: "Gaming, making music, reading about behavioral economics...",
+    },
+  },
+  hobbies: {
+    id: "artifact-values-1",
+    assistant:
+      "Good. Now your values — the non-negotiables. What would make a job genuinely wrong for you, even if the pay was great?",
+    // TODO: INTEGRATION — replace with API response
+    challenge: {
+      challengeId: "artifact-values-1",
+      lessonId: "lesson-discovering-options",
+      responseType: "structured_list",
+      artifactType: "values",
+      prompt: "What are your core values and non-negotiables at work?",
+      inputType: "list",
+    },
+  },
+  "career-profile": {
+    id: "artifact-career-profile-done",
+    assistant: "Profile reviewed. Now let's pressure-test it against reality.",
   },
   values: {
-    id: "artifact-values-done",
-    assistant: "Good. Your non-negotiables are in. Those shape which paths stay on the table and which come off it.",
+    id: "artifact-opportunities-1",
+    assistant:
+      "Non-negotiables are in. Last piece: geography and environment. Where can you realistically work, and what kind of setup do you need?",
+    // TODO: INTEGRATION — replace with API response
+    challenge: {
+      challengeId: "artifact-opportunities-1",
+      lessonId: "lesson-discovering-options",
+      responseType: "structured_list",
+      artifactType: "opportunities",
+      prompt: "Where can you work? What work arrangements work for you?",
+      inputType: "textarea",
+      placeholder: "Ghana, open to remote, prefer hybrid...",
+    },
   },
   opportunities: {
-    id: "artifact-opportunities-done",
-    assistant: "Got it. Geography and environment preferences are noted.",
+    id: "artifact-skills-audit-1",
+    assistant:
+      "Constraints captured. Last one — tell me about your skills. What have you actually done? Resume, portfolio, certifications, notable coursework.",
+    // TODO: INTEGRATION — replace with API response
+    challenge: {
+      challengeId: "artifact-skills-audit-1",
+      lessonId: "lesson-discovering-options",
+      responseType: "structured_list",
+      artifactType: "skills-audit",
+      prompt: "List your skills — technical, software, and soft. Include certifications or notable coursework.",
+      inputType: "textarea",
+      placeholder: "Excel, data analysis, public speaking, Google Analytics...",
+    },
   },
   threats: {
     id: "artifact-threats-done",
@@ -129,7 +190,10 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
   },
   "skills-audit": {
     id: "artifact-skills-audit-done",
-    assistant: "Skills noted. That gives us the raw material to match against real paths.",
+    assistant:
+      "All nine inputs are in. That's your full PIVOTS profile. Let me show you what it's pointing toward.",
+    // TODO: INTEGRATION — replace with API response
+    lessonComplete: true,
   },
   "research-action": {
     id: "artifact-research-action-done",
@@ -173,6 +237,47 @@ const TRANSITION_META: Partial<Record<NonNullable<ChallengeData["artifactType"]>
     summary: "Surfaced the top values to anchor the next prompt",
     rationale: "Values are a filter — they tell me which paths survive once preference and personality are already mapped. Without them I'd be recommending options that look right on paper but would hollow out over time. I need to know what they won't compromise on before I can say anything useful about direction.",
   },
+  "preferred-industries": {
+    summary: "Grounded interests in specific sectors",
+    rationale: "Holland code tells me the environment type. Industries tell me the actual market context where those environments live. I need both to say anything useful about fit.",
+  },
+  "hobbies": {
+    summary: "Connected self-directed interests to career signals",
+    rationale: "Hobbies aren't filler — they're honest data about what someone actually spends time on when there's no external pressure. That's often closer to real fit than stated interests.",
+  },
+  "skills-audit": {
+    summary: "Collected the raw material for matching",
+    rationale: "Preference and personality tell me what someone wants. Skills tell me what they can credibly offer. Both sides of the equation matter before I can recommend anything specific.",
+  },
+}
+
+function getArtifactFlowStep(
+  artifactType: NonNullable<ChallengeData["artifactType"]>,
+  lessonId: string
+): ArtifactFlowStep | null {
+  // Lesson-context-aware overrides
+  if (artifactType === "reflection") {
+    if (lessonId === "lesson-introduction") {
+      return {
+        id: "intro-reflection-done",
+        // TODO: INTEGRATION — replace with API response
+        assistant:
+          "That instinct matters. Lean into it. The next ten days are about giving that gut feeling real data to stand on.",
+        lessonComplete: true,
+      }
+    }
+    if (lessonId === "lesson-making-a-choice") {
+      return {
+        id: "choice-reflection-done",
+        // TODO: INTEGRATION — replace with API response
+        assistant:
+          "You've made your choice. That's not a small thing — most people stay stuck in the research phase forever. Let's build a plan to keep you moving.",
+        lessonComplete: true,
+      }
+    }
+    // Default: Lesson 2 post-commitment reflection → work-preference
+  }
+  return ARTIFACT_FLOW_STEPS[artifactType] ?? null
 }
 
 // ─── Markdown ─────────────────────────────────────────────────────────────────
@@ -674,6 +779,36 @@ function groupMessages(messages: Message[]): MessageGroup[] {
   return groups
 }
 
+// ─── LessonEndFooter ──────────────────────────────────────────────────────────
+
+function LessonEndFooter({
+  nextLessonLabel,
+  onContinue,
+}: {
+  nextLessonLabel: string
+  onContinue: () => void
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0, transition: springs.snappy }}
+      className="shrink-0 border-t border-neutral-100 px-4 pb-4 pt-3 bg-neutral-50"
+    >
+      <div className="max-w-3xl mx-auto flex justify-center">
+        <Button
+          variant="primary"
+          className="rounded-full"
+          onClick={onContinue}
+          icon={<Icon name="IconArrowRight" size={16} />}
+          iconPosition="right"
+        >
+          Next: {nextLessonLabel}
+        </Button>
+      </div>
+    </motion.div>
+  )
+}
+
 // ─── ChatThread ───────────────────────────────────────────────────────────────
 
 export type ChatThreadProps = {
@@ -714,7 +849,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange, onLess
   const [challengeError, setChallengeError] = useState<string | null>(null)
   const [showTopScrollFade, setShowTopScrollFade] = useState(false)
   const [isAtBottom, setIsAtBottom] = useState(true)
-  const [isLessonComplete, setIsLessonComplete] = useState(false)
+  const [lessonCompletePhase, setLessonCompletePhase] = useState<LessonCompletePhase>("idle")
   const [completedLessonId, setCompletedLessonId] = useState("")
   const isAtBottomRef = useRef(true)
 
@@ -1022,7 +1157,7 @@ const sessionInitializedRef = useRef<string | null>(null)
     const targetMsg = currentSession?.messages.find((m) => m.id === messageId)
     const artifactType = targetMsg?.challenge?.artifactType
     const lessonId = targetMsg?.challenge?.lessonId ?? "lesson-discovering-options"
-    const nextStep = artifactType ? ARTIFACT_FLOW_STEPS[artifactType] : null
+    const nextStep = artifactType ? getArtifactFlowStep(artifactType, lessonId) : null
 
     const thinkingId = `thinking-${Date.now()}`
 
@@ -1098,7 +1233,7 @@ const sessionInitializedRef = useRef<string | null>(null)
         )
 
         if (nextStep.lessonComplete) {
-          setIsLessonComplete(true)
+          setLessonCompletePhase("animating")
           setCompletedLessonId(lessonId)
           onLessonComplete?.(lessonId)
         }
@@ -1166,7 +1301,7 @@ const sessionInitializedRef = useRef<string | null>(null)
               )}
             </AnimatePresence>
           </div>
-          {activeArtifactMsg ? (
+          {activeArtifactMsg && lessonCompletePhase === "idle" ? (
             <ChatActiveArtifactFooterShell>
               <ChatActiveArtifactControls
                 challenge={activeArtifactMsg.challenge!}
@@ -1174,18 +1309,21 @@ const sessionInitializedRef = useRef<string | null>(null)
                 onArtifactComplete={handleArtifactComplete}
               />
             </ChatActiveArtifactFooterShell>
-          ) : isLessonComplete ? (
+          ) : lessonCompletePhase === "animating" ? (
             <div className="shrink-0 border-t border-neutral-100">
               <LessonCompletionPanel
-                nextLessonLabel={nextLessonLabel ?? "the next module"}
-                showCta={isLastLesson ?? false}
-                onContinue={() => {
-                  onNextModule?.()
-                  setIsLessonComplete(false)
-                }}
-                onAnimationComplete={() => setIsLessonComplete(false)}
+                showCta={false}
+                onAnimationComplete={() => setLessonCompletePhase("ended")}
               />
             </div>
+          ) : lessonCompletePhase === "ended" ? (
+            <LessonEndFooter
+              nextLessonLabel={nextLessonLabel ?? "the next lesson"}
+              onContinue={() => {
+                onNextModule?.()
+                setLessonCompletePhase("idle")
+              }}
+            />
           ) : (
             <div className="shrink-0">
               <MessageInput

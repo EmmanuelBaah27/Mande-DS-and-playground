@@ -12,6 +12,7 @@ import { ChatSelfReportInput } from "./chat-self-report-input"
 import { ChatResearchActionInput } from "./chat-research-action-input"
 import { ChatExternalAssessmentInput } from "./chat-external-assessment-input"
 import { ChatColdEmailTrigger } from "./chat-cold-email-trigger"
+import { ChatInterestsInput } from "./chat-interests-input"
 
 export function ArtifactBadge({ type }: { type: ArtifactType }) {
   return (
@@ -155,7 +156,7 @@ function SelfReportWidget({
       value={value}
       onChange={setValue}
       onSubmit={() => onComplete(value.trim())}
-      badge={<ArtifactBadge type={challenge.artifactType ?? "interests"} />}
+      badge={<ArtifactBadge type={challenge.artifactType ?? "preferred-industries"} />}
     />
   )
 }
@@ -236,7 +237,10 @@ export function ChatActiveArtifactControls({
       )
     case "craft":
       return <CraftWidget challenge={challenge} onComplete={done} />
-    case "interests":
+    case "preferred-industries":
+      return <ChatInterestsInput type="industries" onSubmit={done} />
+    case "hobbies":
+      return <ChatInterestsInput type="hobbies" onSubmit={done} />
     case "values":
     case "opportunities":
     case "threats":

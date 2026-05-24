@@ -1,82 +1,36 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { motion, AnimatePresence } from "motion/react"
-import { Button, Icon, springs } from "@mande/ui"
-
-type Phase = "badge" | "badge-exit" | "cta" | "done"
+import { useEffect } from "react"
+import { motion } from "motion/react"
+import { Icon, springs } from "@mande/ui"
 
 type Props = {
-  nextLessonLabel: string
-  onContinue: () => void
-  /** When false, plays badge animation then calls onAnimationComplete — no CTA shown. */
+  /** When false, plays the bar then calls onAnimationComplete — no CTA shown here. */
   showCta?: boolean
-  /** Called after the badge exits when showCta is false. */
+  /** Called after the bar has been shown (when showCta is false). */
   onAnimationComplete?: () => void
 }
 
-export function LessonCompletionPanel({ nextLessonLabel, onContinue, showCta = true, onAnimationComplete }: Props) {
-  const [phase, setPhase] = useState<Phase>("badge")
-
+export function LessonCompletionPanel({ showCta = true, onAnimationComplete }: Props) {
   useEffect(() => {
-    const t1 = window.setTimeout(() => setPhase("badge-exit"), 650)
-    const t2 = window.setTimeout(() => {
-      if (showCta) {
-        setPhase("cta")
-      } else {
-        setPhase("done")
-        onAnimationComplete?.()
-      }
-    }, 900)
-    return () => {
-      window.clearTimeout(t1)
-      window.clearTimeout(t2)
-    }
+    if (showCta) return
+    const t = window.setTimeout(() => onAnimationComplete?.(), 1400)
+    return () => window.clearTimeout(t)
   }, [showCta, onAnimationComplete])
 
   return (
-    <div className="px-4 pb-4 pt-6 bg-neutral-50 relative">
-      <div className="max-w-3xl mx-auto relative">
-
-        {/* Badge drops in over the dividing line, then exits upward */}
-        <AnimatePresence>
-          {phase === "badge" && (
-            <motion.div
-              key="badge"
-              className="absolute -top-9 left-1/2 -translate-x-1/2 pointer-events-none z-10"
-              initial={{ y: -12, opacity: 0, scale: 0.6 }}
-              animate={{ y: 0, opacity: 1, scale: 1, transition: springs.bouncy }}
-              exit={{ y: -20, opacity: 0, scale: 0.7, transition: { duration: 0.25, ease: [0.4, 0, 1, 1] } }}
-            >
-              <div className="w-11 h-11 rounded-full bg-white border-2 border-neutral-900 flex items-center justify-center shadow-md">
-                <Icon name="IconCheckmark2" size={20} className="text-neutral-900" />
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* CTA — fades in after badge exits */}
-        <AnimatePresence>
-          {phase === "cta" && (
-            <motion.div
-              key="cta"
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0, transition: springs.snappy }}
-            >
-              <Button
-                variant="primary"
-                className="w-full justify-center"
-                onClick={onContinue}
-                icon={<Icon name="IconArrowRight" size={16} />}
-                iconPosition="right"
-              >
-                Continue to {nextLessonLabel}
-              </Button>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={springs.snappy}
+      className="shrink-0 px-4 pb-4 pt-3 bg-neutral-50"
+    >
+      <div className="max-w-3xl mx-auto">
+        <div className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-full border border-neutral-200 bg-neutral-50">
+          <Icon name="IconStar" size={16} className="text-neutral-600" />
+          <span className="text-base-medium text-neutral-700">Lesson complete!</span>
+        </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

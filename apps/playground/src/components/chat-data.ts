@@ -1,5 +1,5 @@
-import type { ChallengeType, ArtifactType } from "@mande/ui"
-export type { ArtifactType }
+import type { ChallengeType, ArtifactType, LessonState } from "@mande/ui"
+export type { ArtifactType, LessonState }
 
 export type ChallengeInput = "textarea" | "confirm" | "url" | "short-text" | "list"
 
@@ -226,6 +226,8 @@ export type ChatSession = {
   title: string
   mode: SessionMode
   messages: Message[]
+  /** Curriculum sessions only — tracks whether this lesson is locked, active, or completed. */
+  lessonState?: LessonState
   progress?: CurriculumProgress
   /**
    * When false, curriculum sessions never auto-append artifact messages from chat heuristics (dev inject still works).
@@ -237,8 +239,8 @@ export type ChatSession = {
 /** Same shape as the curriculum seed / dev “Commitment” inject, single source for inject + conversation-triggered flow. */
 export function createCommitmentArtifactChallenge(): ChallengeData {
   return createChallengeData({
-    challengeId: "discovering-options-reflection-1",
-    lessonId: "discovering-your-options-day-1",
+    challengeId: "discovering-options-commitment-1",
+    lessonId: "lesson-discovering-options",
     responseType: "reflection",
     artifactType: "commitment",
     prompt: "Take the 10-day self-discovery challenge?",
@@ -248,21 +250,186 @@ export function createCommitmentArtifactChallenge(): ChallengeData {
   })
 }
 
-export const INITIAL_SESSIONS: ChatSession[] = [
-  {
-    id: "curriculum-1",
-    title: "Discovering your options",
-    mode: "curriculum",
-    progress: {
-      module: "Career clarity",
-      moduleIndex: 0,
-      lessonIndex: 1,
-      totalLessons: 3,
-      step: "Discovering your options",
-      stepIndex: 1,
-      totalSteps: 3,
-      percentComplete: 33,
+export const LESSON_MESSAGE_SEEDS: Readonly<Record<string, Message[]>> = {
+  "lesson-discovering-options": [
+    {
+      id: "disc-intro-1",
+      role: "assistant",
+      // TODO: INTEGRATION — replace with API response
+      content:
+        "Good. Now the real work begins.\n\nTo find your path, you need to understand yourself — not in a vague, journaling kind of way, but across six concrete factors that actually determine whether a career fits. That framework is called PIVOTS.\n\n**P**ersonality · **I**nterests · **V**alues · **O**pportunities · **T**alents · **S**tyle of working.\n\nOver the next few days, we'll assess each one.",
+      timestamp: "Day 2",
     },
+    {
+      id: "disc-intro-2",
+      role: "assistant",
+      // TODO: INTEGRATION — replace with API response
+      content:
+        "Before we run any assessments, I need you to make a decision.\n\nThis isn't a one-session thing. It's a ten-day self-discovery challenge. Structured, intentional, and designed to leave you with data about yourself that most people never collect.",
+      timestamp: "Day 2",
+      challenge: createChallengeData({
+        challengeId: "discovering-options-commitment-1",
+        lessonId: "lesson-discovering-options",
+        responseType: "reflection",
+        artifactType: "commitment",
+        prompt: "Take the 10-day self-discovery challenge?",
+        description:
+          "School gave you a start. What comes next is on you. Figure out what you want, what you're good at, and how to make that work in the real world.",
+        inputType: "confirm",
+      }),
+    },
+  ],
+
+  "lesson-finding-clarity": [
+    {
+      id: "clarity-intro-1",
+      role: "assistant",
+      // TODO: INTEGRATION — replace with API response
+      content:
+        "Your profile is in. Here's what your inputs are pointing toward.\n\nThree paths kept surfacing across your personality, interests, values, and work style. These aren't random — they're the overlap of what you're wired for, what you care about, and what the market can support.",
+      timestamp: "Day 6",
+      challenge: createChallengeData({
+        challengeId: "finding-clarity-career-report-1",
+        lessonId: "lesson-finding-clarity",
+        responseType: "structured_list",
+        artifactType: "career-profile",
+        // TODO: INTEGRATION — replace with generated career report
+        prompt: "Your career profile is ready. Review the three paths your data points to.",
+        inputType: "confirm",
+      }),
+    },
+    {
+      id: "clarity-intro-2",
+      role: "assistant",
+      // TODO: INTEGRATION — replace with API response
+      content:
+        "Seeing paths on a list is the start, not the answer. To test whether a path is really yours, you need the CIA strategy: **C**uriosity, **I**nsights gathering, **A**gency.\n\nCuriosity means reading job descriptions for paths that interest you — not to apply, just to understand what those people actually do day to day.",
+      timestamp: "Day 6",
+      challenge: createChallengeData({
+        challengeId: "finding-clarity-jd-research-1",
+        lessonId: "lesson-finding-clarity",
+        responseType: "resource_link",
+        artifactType: "research-action",
+        prompt: "Read 3 job descriptions for one of your matched paths and paste the link to one here.",
+        inputType: "url",
+        placeholder: "https://linkedin.com/jobs/...",
+      }),
+    },
+  ],
+
+  "lesson-making-a-choice": [
+    {
+      id: "choice-intro-1",
+      role: "assistant",
+      // TODO: INTEGRATION — replace with API response
+      content:
+        "You've done the interviews. You have real data now, not just hope.\n\nIt's time to call it. The research phase is done. The choice phase starts now.\n\nAnd before you overthink it — choosing a path isn't signing a contract. You can switch. The cost of switching is lower than the cost of staying stuck. What matters is that you move.",
+      timestamp: "Day 10",
+      challenge: createChallengeData({
+        challengeId: "making-choice-path-reflection-1",
+        lessonId: "lesson-making-a-choice",
+        responseType: "reflection",
+        artifactType: "reflection",
+        prompt: "Which path are you choosing, and what's the most honest reason you're choosing it?",
+        inputType: "textarea",
+        placeholder: "I'm choosing [path] because...",
+      }),
+    },
+  ],
+}
+
+export type CareerProfileSection = {
+  mbtiType?: string            // e.g. "ENFJ"
+  workPreferenceType?: string  // e.g. "Focuser"
+  hollandCode?: string         // e.g. "SAE"
+  industries?: string[]        // preferred industries
+  hobbies?: string[]           // hobbies / obsessions
+  values?: string[]            // core values
+  opportunities?: string       // geography/constraints summary
+  skillsSummary?: string       // skills audit summary
+}
+
+export type CareerProfile = {
+  studentId: string
+  completedArtifacts: ArtifactType[]
+  totalPIVOTSArtifacts: number
+  completedPIVOTSCount: number
+  profile: CareerProfileSection
+  pathsUnlocked: boolean       // true after lesson-finding-clarity completes
+}
+
+export function deriveCareerProfile(sessions: ChatSession[]): CareerProfile {
+  const messages = sessions
+    .filter((s) => s.mode === "curriculum")
+    .flatMap((s) => s.messages)
+
+  const completedArtifacts: ArtifactType[] = []
+  const profile: CareerProfileSection = {}
+
+  for (const msg of messages) {
+    if (!msg.challenge?.artifactType) continue
+    const state = selectChallengeState(msg.challenge)
+    if (!state.isCompleted) continue
+    const type = msg.challenge.artifactType
+    completedArtifacts.push(type)
+    const response = state.displayResponse ?? ""
+
+    switch (type) {
+      case "mbti":
+        profile.mbtiType = response
+        break
+      case "work-preference":
+        profile.workPreferenceType = response.split(" · ")[0] ?? response
+        break
+      case "interest-profile":
+        profile.hollandCode = response
+        break
+      case "preferred-industries":
+        profile.industries = response.split(", ").filter(Boolean)
+        break
+      case "hobbies":
+        profile.hobbies = response.split(", ").filter(Boolean)
+        break
+      case "values":
+        profile.values = response.split(", ").filter(Boolean)
+        break
+      case "opportunities":
+        profile.opportunities = response
+        break
+      case "skills-audit":
+        profile.skillsSummary = response
+        break
+    }
+  }
+
+  // All 9 lesson-discovering-options challenges. Commitment counts as the entry gate (step 0).
+  const PIVOTS_ARTIFACTS: ArtifactType[] = [
+    "commitment", "work-preference", "mbti", "interest-profile",
+    "preferred-industries", "hobbies", "values", "opportunities", "skills-audit",
+  ]
+  const completedPIVOTSCount = PIVOTS_ARTIFACTS.filter((a) => completedArtifacts.includes(a)).length
+
+  // Paths unlock after lesson-finding-clarity is completed.
+  const findingClaritySession = sessions.find((s) => s.id === "lesson-finding-clarity")
+  const pathsUnlocked = findingClaritySession?.lessonState === "completed"
+
+  return {
+    studentId: "playground-student",
+    completedArtifacts,
+    totalPIVOTSArtifacts: PIVOTS_ARTIFACTS.length,
+    completedPIVOTSCount,
+    profile,
+    pathsUnlocked,
+  }
+}
+
+export const INITIAL_SESSIONS: ChatSession[] = [
+  // ─── Curriculum: one session per lesson ────────────────────────────────────
+  {
+    id: "lesson-introduction",
+    title: "Introduction",
+    mode: "curriculum",
+    lessonState: "active",
     messages: [
       {
         id: "c1",
@@ -316,22 +483,127 @@ export const INITIAL_SESSIONS: ChatSession[] = [
         timestamp: "Day 1",
       },
       {
-        id: "c-cold-email-1",
+        id: "intro-reflection-1",
         role: "assistant",
+        // TODO: INTEGRATION — replace with API response
         content:
-          "You've found your three professionals. Now it's time to reach out. Write a cold email to one of them — the goal is a 20-minute call, nothing more.",
-        timestamp: "Day 4",
+          "You've seen the landscape. Three paths, three different trade-offs.\n\nBefore we move into the actual self-discovery work, I need your honest gut: which of these three calls to you most? Don't overthink it — gut reactions are data.",
+        timestamp: "Day 1",
         challenge: createChallengeData({
-          challengeId: "finding-clarity-cold-email-1",
-          lessonId: "lesson-finding-clarity",
-          responseType: "outreach_draft",
-          artifactType: "cold-email",
-          prompt: "Write a cold email to one of the professionals you found.",
+          challengeId: "introduction-reflection-1",
+          lessonId: "lesson-introduction",
+          responseType: "reflection",
+          artifactType: "reflection",
+          prompt:
+            "Which of the three paths — 9-5, freelancing, or entrepreneurship — resonates most with you right now, and why?",
           inputType: "textarea",
+          placeholder: "Right now, [path] calls to me most because...",
         }),
       },
     ],
   },
+  {
+    id: "lesson-discovering-options",
+    title: "Discovering your options",
+    mode: "curriculum",
+    lessonState: "locked",
+    messages: [
+      {
+        id: "disc-intro-1",
+        role: "assistant",
+        // TODO: INTEGRATION — replace with API response
+        content:
+          "Good. Now the real work begins.\n\nTo find your path, you need to understand yourself — not in a vague, journaling kind of way, but across six concrete factors that actually determine whether a career fits. That framework is called PIVOTS.\n\n**P**ersonality · **I**nterests · **V**alues · **O**pportunities · **T**alents · **S**tyle of working.\n\nOver the next few days, we'll assess each one.",
+        timestamp: "Day 2",
+      },
+      {
+        id: "disc-intro-2",
+        role: "assistant",
+        // TODO: INTEGRATION — replace with API response
+        content:
+          "Before we run any assessments, I need you to make a decision.\n\nThis isn't a one-session thing. It's a ten-day self-discovery challenge. Structured, intentional, and designed to leave you with data about yourself that most people never collect.",
+        timestamp: "Day 2",
+        challenge: createChallengeData({
+          challengeId: "discovering-options-commitment-1",
+          lessonId: "lesson-discovering-options",
+          responseType: "reflection",
+          artifactType: "commitment",
+          prompt: "Take the 10-day self-discovery challenge?",
+          description:
+            "School gave you a start. What comes next is on you. Figure out what you want, what you're good at, and how to make that work in the real world.",
+          inputType: "confirm",
+        }),
+      },
+    ],
+  },
+  {
+    id: "lesson-finding-clarity",
+    title: "Finding clarity",
+    mode: "curriculum",
+    lessonState: "locked",
+    messages: [
+      {
+        id: "clarity-intro-1",
+        role: "assistant",
+        // TODO: INTEGRATION — replace with API response
+        content:
+          "Your profile is in. Here's what your inputs are pointing toward.\n\nThree paths kept surfacing across your personality, interests, values, and work style. These aren't random — they're the overlap of what you're wired for, what you care about, and what the market can support.",
+        timestamp: "Day 6",
+        challenge: createChallengeData({
+          challengeId: "finding-clarity-career-report-1",
+          lessonId: "lesson-finding-clarity",
+          responseType: "structured_list",
+          artifactType: "career-profile",
+          // TODO: INTEGRATION — replace with generated career report
+          prompt: "Your career profile is ready. Review the three paths your data points to.",
+          inputType: "confirm",
+        }),
+      },
+      {
+        id: "clarity-intro-2",
+        role: "assistant",
+        // TODO: INTEGRATION — replace with API response
+        content:
+          "Seeing paths on a list is the start, not the answer. To test whether a path is really yours, you need the CIA strategy: **C**uriosity, **I**nsights gathering, **A**gency.\n\nCuriosity means reading job descriptions for paths that interest you — not to apply, just to understand what those people actually do day to day.",
+        timestamp: "Day 6",
+        challenge: createChallengeData({
+          challengeId: "finding-clarity-jd-research-1",
+          lessonId: "lesson-finding-clarity",
+          responseType: "resource_link",
+          artifactType: "research-action",
+          prompt: "Read 3 job descriptions for one of your matched paths and paste the link to one here.",
+          inputType: "url",
+          placeholder: "https://linkedin.com/jobs/...",
+        }),
+      },
+    ],
+  },
+  {
+    id: "lesson-making-a-choice",
+    title: "Making the choice",
+    mode: "curriculum",
+    lessonState: "locked",
+    messages: [
+      {
+        id: "choice-intro-1",
+        role: "assistant",
+        // TODO: INTEGRATION — replace with API response
+        content:
+          "You've done the interviews. You have real data now, not just hope.\n\nIt's time to call it. The research phase is done. The choice phase starts now.\n\nAnd before you overthink it — choosing a path isn't signing a contract. You can switch. The cost of switching is lower than the cost of staying stuck. What matters is that you move.",
+        timestamp: "Day 10",
+        challenge: createChallengeData({
+          challengeId: "making-choice-path-reflection-1",
+          lessonId: "lesson-making-a-choice",
+          responseType: "reflection",
+          artifactType: "reflection",
+          prompt: "Which path are you choosing, and what's the most honest reason you're choosing it?",
+          inputType: "textarea",
+          placeholder: "I'm choosing [path] because...",
+        }),
+      },
+    ],
+  },
+  // ─── Open chats ─────────────────────────────────────────────────────────────
   {
     id: "open-1",
     title: "Career switch into product design",
@@ -403,19 +675,28 @@ export type CurriculumLessonMeta = {
 
 export const CURRICULUM_LESSONS: readonly CurriculumLessonMeta[] = [
   {
+    id: "lesson-introduction",
+    label: "Introduction",
+    icon: "IconStar",
+    description: "Clear the myths, understand your options, and commit to the journey.",
+    topics: ["Career myths", "Options as a graduate", "Your starting point"],
+    artifacts: ["reflection"],
+  },
+  {
     id: "lesson-discovering-options",
     label: "Discovering your options",
     icon: "IconMagnifyingGlass",
     description: "Map yourself across personality, interests, values, work preferences, and constraints.",
     topics: ["PIVOTS assessments", "Work style", "Interest profile & MBTI", "Skills audit"],
     artifacts: [
+      "commitment",
       "work-preference",
       "mbti",
       "interest-profile",
-      "interests",
+      "preferred-industries",
+      "hobbies",
       "values",
       "opportunities",
-      "threats",
       "skills-audit",
     ],
   },
@@ -425,10 +706,7 @@ export const CURRICULUM_LESSONS: readonly CurriculumLessonMeta[] = [
     icon: "IconStar",
     description: "Match your profile to real roles and verify it through informational interviews.",
     topics: ["Career report", "Job descriptions", "Cold outreach", "Interviews"],
-    artifacts: [
-      "research-action",
-      "craft",
-    ],
+    artifacts: ["research-action", "craft", "cold-email"],
   },
   {
     id: "lesson-making-a-choice",
@@ -436,9 +714,7 @@ export const CURRICULUM_LESSONS: readonly CurriculumLessonMeta[] = [
     icon: "IconCheckmark2",
     description: "Choose a path with evidence and build a plan to keep you moving.",
     topics: ["Path reflection", "Learning plan", "Accountability"],
-    artifacts: [
-      "reflection",
-    ],
+    artifacts: ["reflection"],
   },
 ] as const
 

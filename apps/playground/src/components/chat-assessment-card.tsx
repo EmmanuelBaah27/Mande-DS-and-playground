@@ -2,21 +2,32 @@
 
 import * as React from "react"
 import { motion } from "motion/react"
-import { Button, Chip, springs, cn } from "@mande/ui"
+import { Button, Icon, springs, cn } from "@mande/ui"
 
 export type AssessmentCardStatus = "not-started" | "in-progress" | "completed"
 
+const ILLUSTRATION_URL = "https://www.figma.com/api/mcp/asset/01dd85e3-eb16-4cef-b025-dc449d3c999b"
+
+function AssessmentIllustration({ className }: { className?: string }) {
+  return (
+    <img
+      src={ILLUSTRATION_URL}
+      alt=""
+      aria-hidden
+      className={cn("h-[72px] w-[88px] object-contain shrink-0", className)}
+    />
+  )
+}
+
 export interface ChatAssessmentCardProps {
   title: string
-  icon?: string
-  duration: string
   description: string
   status: AssessmentCardStatus
   totalQuestions: number
   currentQuestion?: number
-  resultTitle?: string
+  /** Shown as small label above the result value in the done state */
+  assessmentLabel?: string
   resultSubtitle?: string
-  resultValues?: string[]
   onStart: () => void
   onContinue: () => void
   onRetake: () => void
@@ -26,28 +37,17 @@ export interface ChatAssessmentCardProps {
 
 export function ChatAssessmentCard({
   title,
-  icon = "🎯",
-  duration,
   description,
   status,
   totalQuestions,
   currentQuestion = 0,
-  resultTitle,
+  assessmentLabel,
   resultSubtitle,
-  resultValues,
   onStart,
   onContinue,
-  onRetake,
-  onViewDetails,
   className,
 }: ChatAssessmentCardProps) {
   const progressPct = totalQuestions > 0 ? Math.round((currentQuestion / totalQuestions) * 100) : 0
-
-  const iconEl = (
-    <div className="w-11 h-11 rounded-full bg-muted flex items-center justify-center shrink-0">
-      <span className="text-H2" aria-hidden="true">{icon}</span>
-    </div>
-  )
 
   return (
     <motion.div
@@ -55,82 +55,72 @@ export function ChatAssessmentCard({
       animate={{ opacity: 1, y: 0 }}
       transition={springs.snappy}
       className={cn(
-        "rounded-4 border border-border bg-card shadow-xs p-4 w-full",
+        "rounded-4 border border-neutral-200 bg-white shadow-xs p-4 w-full flex flex-col gap-4",
         className
       )}
     >
-      {status === "not-started" && (
-        <div className="flex items-start gap-4">
-          {iconEl}
-          <div className="flex-1 min-w-0 flex flex-col gap-2">
-            <p className="text-base-medium text-foreground leading-tight">{title}</p>
-            <p className="text-small-regular text-muted-foreground">{description}</p>
-            <div className="pt-1">
-              <Button variant="primary" size="sm" onClick={onStart}>
-                Start
-              </Button>
-            </div>
-          </div>
+      {/* Top row: text + illustration */}
+      <div className="flex items-start gap-3">
+        <div className="flex-1 min-w-0 flex flex-col gap-2">
+          {status === "completed" ? (
+            <>
+              {assessmentLabel && (
+                <p className="text-base-medium text-foreground leading-tight">{assessmentLabel}</p>
+              )}
+              <p className="text-xl-medium text-foreground leading-snug">{title}</p>
+              {resultSubtitle && (
+                <p className="text-base-regular text-muted-foreground">{resultSubtitle}</p>
+              )}
+            </>
+          ) : (
+            <>
+              <p className="text-base-medium text-foreground leading-tight">{title}</p>
+              <p className="text-base-regular text-muted-foreground leading-snug">{description}</p>
+            </>
+          )}
         </div>
-      )}
+        <AssessmentIllustration />
+      </div>
 
-      {status === "in-progress" && (
-        <div className="flex items-start gap-4">
-          {iconEl}
-          <div className="flex-1 min-w-0 flex flex-col gap-2">
-            <p className="text-base-medium text-foreground leading-tight">{title}</p>
-            <div className="w-full">
+      {/* Bottom row: CTA + progress (not shown when completed) */}
+      {status !== "completed" && (
+        <div className="flex items-center gap-4">
+          {status === "not-started" && (
+            <Button
+              variant="primary"
+              className="rounded-full"
+              onClick={onStart}
+              icon={<Icon name="IconArrowRight" size={16} />}
+              iconPosition="right"
+            >
+              Start
+            </Button>
+          )}
+          {status === "in-progress" && (
+            <>
+              <Button
+                variant="primary"
+                className="rounded-full"
+                onClick={onContinue}
+                icon={<Icon name="IconArrowRight" size={16} />}
+                iconPosition="right"
+              >
+                Continue
+              </Button>
               <div
-                className="h-1 rounded-full bg-muted overflow-hidden"
+                className="h-1 w-16 rounded-full bg-neutral-200 overflow-hidden"
                 role="progressbar"
                 aria-valuenow={currentQuestion}
                 aria-valuemin={0}
                 aria-valuemax={totalQuestions}
-                aria-label={`${currentQuestion} of ${totalQuestions} questions answered`}
               >
                 <div
-                  className="h-full rounded-full bg-foreground transition-all duration-300"
+                  className="h-full rounded-full bg-neutral-900 transition-all duration-300"
                   style={{ width: `${progressPct}%` }}
                 />
               </div>
-            </div>
-            <p className="text-small-regular text-muted-foreground">{description}</p>
-            <div className="pt-1">
-              <Button variant="primary" size="sm" onClick={onContinue}>
-                Continue
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {status === "completed" && (
-        <div className="flex items-center gap-4">
-          {iconEl}
-          <div className="flex-1 min-w-0 flex flex-col gap-2">
-            <p className="text-base-medium text-foreground leading-tight">
-              {resultTitle ?? title}
-            </p>
-            {resultValues && resultValues.length > 0 ? (
-              <div className="flex flex-wrap gap-1.5">
-                {resultValues.map((label) => (
-                  <Chip
-                    key={label}
-                    state="selected"
-                    className="!bg-foreground !text-background !border-transparent cursor-default pointer-events-none"
-                  >
-                    {label}
-                  </Chip>
-                ))}
-              </div>
-            ) : resultSubtitle ? (
-              <p className="text-small-regular text-muted-foreground truncate">{resultSubtitle}</p>
-            ) : null}
-          </div>
-          {onViewDetails && (
-            <Button variant="secondary" size="sm" onClick={onViewDetails} className="shrink-0">
-              View details
-            </Button>
+              <span className="text-small-medium text-muted-foreground whitespace-nowrap">{progressPct}%</span>
+            </>
           )}
         </div>
       )}

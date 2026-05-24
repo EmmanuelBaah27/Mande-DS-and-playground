@@ -55,8 +55,6 @@ function AssessmentCardsPreview() {
           <p className="text-small-regular text-muted-foreground">Not started</p>
           <ChatAssessmentCard
             title="Work style"
-            icon="🎯"
-            duration="12 choices · ~3 min"
             description="Discover how you naturally approach tasks, teams, and problems."
             status="not-started"
             totalQuestions={12}
@@ -70,8 +68,6 @@ function AssessmentCardsPreview() {
           <p className="text-small-regular text-muted-foreground">In progress</p>
           <ChatAssessmentCard
             title="Work style"
-            icon="🎯"
-            duration="12 choices · ~3 min"
             description="Discover how you naturally approach tasks, teams, and problems."
             status="in-progress"
             totalQuestions={12}
@@ -86,12 +82,10 @@ function AssessmentCardsPreview() {
           <p className="text-small-regular text-muted-foreground">Completed</p>
           <ChatAssessmentCard
             title="Analyst"
-            icon="🔬"
-            duration="12 choices · ~3 min"
+            assessmentLabel="Work style assessment"
             description="Discover how you naturally approach tasks, teams, and problems."
             status="completed"
             totalQuestions={12}
-            resultValues={["Self Starter"]}
             onStart={() => {}}
             onContinue={() => {}}
             onRetake={() => {}}
@@ -102,9 +96,8 @@ function AssessmentCardsPreview() {
         <div className="flex flex-col gap-3">
           <p className="text-small-regular text-muted-foreground">Completed (no view details)</p>
           <ChatAssessmentCard
-            title="Career Interest"
-            icon="🧭"
-            duration="42 questions · ~10 min"
+            title="EIS"
+            assessmentLabel="Career interest assessment"
             description="Discover your top career interest types using the Holland RIASEC framework."
             status="completed"
             totalQuestions={42}

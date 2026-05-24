@@ -51,7 +51,8 @@ export type ArtifactType =
   | "work-preference"
   | "mbti"
   | "interest-profile"
-  | "interests"
+  | "preferred-industries"
+  | "hobbies"
   | "values"
   | "opportunities"
   | "threats"
@@ -60,6 +61,7 @@ export type ArtifactType =
   | "research-action"
   | "external-assessment"
   | "cold-email"
+  | "career-profile"
 
 export const artifactLabels: Record<ArtifactType, string> = {
   commitment: "Commitment",
@@ -67,7 +69,8 @@ export const artifactLabels: Record<ArtifactType, string> = {
   "work-preference": "Work preference",
   mbti: "Personality (MBTI)",
   "interest-profile": "Interest profile",
-  interests: "Industries & hobbies",
+  "preferred-industries": "Industries",
+  hobbies: "Hobbies & obsessions",
   values: "Values",
   opportunities: "Opportunities",
   threats: "Threats",
@@ -76,4 +79,5 @@ export const artifactLabels: Record<ArtifactType, string> = {
   "research-action": "Research & Action",
   "external-assessment": "External Assessment",
   "cold-email": "Cold email",
+  "career-profile": "Career profile",
 }
