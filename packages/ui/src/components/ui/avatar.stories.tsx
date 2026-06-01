@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
+import { Avatar } from "./avatar"
 import type { AvatarSize } from "./avatar"
 
 const meta: Meta<typeof Avatar> = {
@@ -11,20 +11,30 @@ const meta: Meta<typeof Avatar> = {
 export default meta
 type Story = StoryObj<typeof Avatar>
 
-export const WithImage: Story = {
+export const Default: Story = {
+  render: () => <Avatar seed="emmanuel" size={32} />,
+}
+
+export const WithPhoto: Story = {
   render: () => (
-    <Avatar size={32}>
-      <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-      <AvatarFallback>EB</AvatarFallback>
-    </Avatar>
+    <Avatar
+      seed="emmanuel"
+      src="https://github.com/shadcn.png"
+      alt="User"
+      size={32}
+    />
   ),
 }
 
-export const Fallback: Story = {
+export const PhotoFallback: Story = {
+  name: "Photo → Navii fallback",
   render: () => (
-    <Avatar size={32}>
-      <AvatarFallback>EB</AvatarFallback>
-    </Avatar>
+    <Avatar
+      seed="emmanuel"
+      src="https://this-url-does-not-exist.invalid/photo.jpg"
+      alt="User"
+      size={32}
+    />
   ),
 }
 
@@ -35,13 +45,7 @@ export const Sizes: Story = {
     <div className="flex items-end gap-4">
       {sizes.map((size) => (
         <div key={size} className="flex flex-col items-center gap-2">
-          <Avatar size={size}>
-            <AvatarImage src="https://github.com/shadcn.png" alt="User" />
-            <AvatarFallback>EB</AvatarFallback>
-          </Avatar>
-          <Avatar size={size}>
-            <AvatarFallback>EB</AvatarFallback>
-          </Avatar>
+          <Avatar seed="emmanuel" size={size} />
           <span className="text-[10px] text-neutral-400">{size}px</span>
         </div>
       ))}
