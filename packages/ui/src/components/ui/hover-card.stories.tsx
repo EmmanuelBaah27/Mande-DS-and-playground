@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react"
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./hover-card"
-import { Avatar, AvatarFallback, AvatarImage } from "./avatar"
+import { Avatar } from "./avatar"
 
 const meta: Meta = {
   title: "Components/Overlays/HoverCard",
@@ -18,10 +18,7 @@ export const Default: Story = {
       </HoverCardTrigger>
       <HoverCardContent className="w-72">
         <div className="flex gap-4">
-          <Avatar>
-            <AvatarImage src="https://github.com/vercel.png" />
-            <AvatarFallback>MD</AvatarFallback>
-          </Avatar>
+          <Avatar seed="mande_ds" src="https://github.com/vercel.png" alt="Mande Design System" size={32} />
           <div className="space-y-1">
             <h4 className="text-sm font-semibold">Mande Design System</h4>
             <p className="text-sm text-muted-foreground">A scalable design system for modern products.</p>
