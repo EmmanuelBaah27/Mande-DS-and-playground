@@ -83,7 +83,7 @@ export type { ChipProps } from "./components/ui/chip"
 export { ChipSelectGroup } from "./components/ui/chip-select-group"
 export type { ChipSelectGroupProps } from "./components/ui/chip-select-group"
 
-export { Avatar, AvatarImage, AvatarFallback } from "./components/ui/avatar"
+export { Avatar } from "./components/ui/avatar"
 export type { AvatarSize } from "./components/ui/avatar"
 
 export {
