@@ -42,8 +42,10 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         ) : (
           <img
             src={src}
+            width={size - 8}
+            height={size - 8}
             alt={alt}
-            className="w-full h-full object-cover"
+            className="rounded-full object-cover"
             onError={() => setImgError(true)}
           />
         )}
