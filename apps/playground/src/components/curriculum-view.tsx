@@ -75,7 +75,7 @@ export function CurriculumView() {
     <div className="flex flex-col gap-10 px-8 py-8 overflow-y-auto">
       <div className="flex flex-col gap-4">
         <div>
-          <h2 className="text-xlg-semibold text-foreground">Modules</h2>
+          <h2 className="text-xlg-semibold text-foreground">Curriculum</h2>
           <p className="text-small-regular text-muted-foreground mt-0.5">
             Complete each module to build your career clarity from the ground up.
           </p>
