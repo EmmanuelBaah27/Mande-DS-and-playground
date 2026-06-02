@@ -32,20 +32,18 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
       <div
         ref={ref}
         className={cn(
-          "relative flex shrink-0 items-center justify-center rounded-full border border-neutral-200",
+          "relative flex shrink-0 overflow-hidden rounded-full border border-neutral-200",
           sizeClasses[size],
           className
         )}
       >
         {showNavii ? (
-          <Navii seed={seed} size={size - 8} alt={alt} />
+          <Navii seed={seed} size={size} alt={alt} className="w-full h-full" />
         ) : (
           <img
             src={src}
-            width={size - 12}
-            height={size - 12}
             alt={alt}
-            className="rounded-full object-cover"
+            className="w-full h-full object-cover"
             onError={() => setImgError(true)}
           />
         )}
