@@ -85,7 +85,7 @@ export function CurriculumView({ onHeadingVisibilityChange }: { onHeadingVisibil
   }, [onHeadingVisibilityChange])
 
   return (
-    <div className="flex flex-col gap-10 px-8 py-8 overflow-y-auto">
+    <div className="flex flex-col gap-10 px-8 pt-2 pb-8 overflow-y-auto">
       <div className="flex flex-col gap-4">
         <div>
           <h2 ref={headingRef} className="text-xlg-semibold text-foreground">Curriculum</h2>
