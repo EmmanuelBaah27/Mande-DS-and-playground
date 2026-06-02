@@ -38,7 +38,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
         )}
       >
         {showNavii ? (
-          <Navii seed={seed} size={size - 8} alt={alt} />
+          <Navii seed={seed} size={size - 8} alt={alt} background="none" />
         ) : (
           <img
             src={src}
