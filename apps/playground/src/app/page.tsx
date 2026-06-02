@@ -98,6 +98,7 @@ export default function ChatPage() {
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
   const [view, setView] = useState<View>("welcome")
   // ─── Sidebar collapse state ───────────────────────────────────────────────
+  const [curriculumHeadingVisible, setCurriculumHeadingVisible] = useState(true)
   const [collapsed, setCollapsed] = useState(false)
   const [hovering, setHovering] = useState(false)
   const [pinned, setPinned] = useState(false)
@@ -169,6 +170,7 @@ export default function ChatPage() {
       return
     }
     if (id === "curriculum") {
+      setCurriculumHeadingVisible(true)
       setView("curriculum")
       setActiveSessionId(null)
       return
@@ -380,7 +382,7 @@ export default function ChatPage() {
 
           {/* Right zone — bg-neutral-50 masks content scrolling under the header */}
           <div className="flex-1 bg-neutral-50 flex items-center px-3 gap-3 min-w-0 pointer-events-auto relative">
-            {view === "curriculum" && (
+            {view === "curriculum" && !curriculumHeadingVisible && (
               <>
                 <span className="sm:hidden absolute inset-x-4 text-center text-base-regular text-foreground truncate pointer-events-none select-none">
                   Curriculum
@@ -507,7 +509,7 @@ export default function ChatPage() {
         style={{ paddingTop: HEADER_H }}
       >
         {view === "curriculum" ? (
-          <CurriculumView />
+          <CurriculumView onHeadingVisibilityChange={setCurriculumHeadingVisible} />
         ) : view === "career-profile" ? (
           <ChatCareerProfile
             profile={deriveCareerProfile(sessions)}
