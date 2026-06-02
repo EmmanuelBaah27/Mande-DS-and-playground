@@ -4,6 +4,7 @@ import * as React from "react"
 import { AnimatePresence, motion, useReducedMotion } from "motion/react"
 import { Icon } from "@/components/ui/icon"
 import { Badge } from "@/components/ui/badge"
+import { Avatar } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { springs } from "@/tokens/motion"
 
@@ -153,13 +154,12 @@ export function SectionTitle({ label, defaultOpen = true, children }: SectionTit
 
 export type AccountSelectorProps = {
   name: string
-  initials: string
   selected?: boolean
   onClick?: () => void
   className?: string
 }
 
-export function AccountSelector({ name, initials, selected = false, onClick, className }: AccountSelectorProps) {
+export function AccountSelector({ name, selected = false, onClick, className }: AccountSelectorProps) {
   return (
     <button
       type="button"
@@ -171,14 +171,7 @@ export function AccountSelector({ name, initials, selected = false, onClick, cla
         className
       )}
     >
-      <div
-        className="size-5 rounded-full bg-neutral-200 flex items-center justify-center shrink-0 overflow-hidden border border-neutral-200"
-        style={{ borderWidth: "0.5px" }}
-      >
-        <span className="text-small-medium text-neutral-700 leading-none select-none">
-          {initials.slice(0, 2)}
-        </span>
-      </div>
+      <Avatar seed={name} size={32} />
       <div className="flex items-center gap-0.5">
         <span className="text-base-medium text-muted-foreground whitespace-nowrap">{name}</span>
         <Icon name="IconChevronDownSmall" size={16} className="text-muted-foreground" />
@@ -269,7 +262,7 @@ export type AppSidebarProps = {
   curriculumSection?: CurriculumSectionConfig
   chatGroups?: ChatGroup[]
   announcementCard?: React.ReactNode
-  user?: { name: string; initials: string }
+  user?: { name: string }
   logo?: React.ReactNode
   onCollapse?: () => void
   hideHeader?: boolean
@@ -354,7 +347,7 @@ export function AppSidebar({
       {/* Bottom */}
       <div className="shrink-0 px-3 py-2.5 flex flex-col gap-2 items-start">
         {announcementCard}
-        {user && <AccountSelector name={user.name} initials={user.initials} />}
+        {user && <AccountSelector name={user.name} />}
       </div>
     </div>
   )

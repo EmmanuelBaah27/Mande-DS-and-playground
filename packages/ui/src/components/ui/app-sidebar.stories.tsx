@@ -191,8 +191,8 @@ export const AccountSelectorStory: Story = {
   name: "AccountSelector — states",
   render: () => (
     <div className="flex flex-col gap-2 p-3 bg-background w-[220px]">
-      <AccountSelector name="Angela" initials="A" />
-      <AccountSelector name="Angela" initials="A" selected />
+      <AccountSelector name="Angela" />
+      <AccountSelector name="Angela" selected />
     </div>
   ),
 }

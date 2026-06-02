@@ -332,7 +332,7 @@ export default function ChatPage() {
     onNavigate: handleNavigate,
     onCollapse: handleCollapse,
     logo: logoLink,
-    user: { name: "Angela", initials: "A" },
+    user: { name: "Angela" },
   }
 
   return (
