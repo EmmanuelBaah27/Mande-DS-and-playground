@@ -90,7 +90,7 @@ export function CurriculumView({ onHeadingVisibilityChange }: { onHeadingVisibil
         <div>
           <h2 ref={headingRef} className="text-xlg-semibold text-foreground">Curriculum</h2>
           <p className="text-small-regular text-muted-foreground mt-0.5">
-            Know yourself, explore your options, and choose a direction worth committing to.
+            Build the clarity, skills, and presence your career actually needs.
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
