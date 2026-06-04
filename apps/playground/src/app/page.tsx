@@ -72,7 +72,7 @@ type View = "welcome" | "thread" | "curriculum" | "career-profile"
 
 const NAV_ITEMS = [
   { id: "new-chat", label: "New chat", icon: <Icon name="IconBubbleSparkle" size={20} /> },
-  { id: "career-profile", label: "Career profile", icon: <Icon name="IconSquareGridCircle" size={20} /> },
+  { id: "career-profile", label: "Career profile", icon: <Icon name="IconPersona" size={20} /> },
   { id: "curriculum", label: "Curriculum", icon: <Icon name="IconNewspaper1" size={20} /> },
 ]
 
