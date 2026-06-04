@@ -349,6 +349,19 @@ export type CareerProfileSection = {
   skillsSummary?: string       // skills audit summary
 }
 
+export type ReadinessBreakdownRow = { label: string; detail: string }
+
+export type CareerReadiness = {
+  years: number
+  months: number
+  breakdown: ReadinessBreakdownRow[]
+}
+
+export type CareerPersona = {
+  headline: string             // e.g. "Artistic, investigative thinker."
+  summary: string              // full sentence; UI truncates + "Learn more"
+}
+
 export type CareerProfile = {
   studentId: string
   completedArtifacts: ArtifactType[]
@@ -356,6 +369,8 @@ export type CareerProfile = {
   completedPIVOTSCount: number
   profile: CareerProfileSection
   pathsUnlocked: boolean       // true after lesson-finding-clarity completes
+  persona?: CareerPersona      // present once "How you're wired" data exists
+  readiness?: CareerReadiness  // present once profile is ready
 }
 
 export function deriveCareerProfile(sessions: ChatSession[]): CareerProfile {
