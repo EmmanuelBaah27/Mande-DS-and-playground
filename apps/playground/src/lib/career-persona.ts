@@ -1,10 +1,11 @@
+import type { IconName } from "@mande/ui"
 import type { ArtifactType, CareerProfileSection, CareerReadiness } from "../components/chat-data"
 // @ts-expect-error TS5097: explicit .ts import needed for node --test ESM resolution
 import { INTEREST_PROFILE_TYPES, type InterestProfileType } from "../components/interest-profile-data.ts"
 
 export type GroupKey = "wired" | "edge" | "posture"
 
-export type GroupDef = { key: GroupKey; label: string; subtitle: string; icon: string; artifacts: ArtifactType[] }
+export type GroupDef = { key: GroupKey; label: string; subtitle: string; icon: IconName; artifacts: ArtifactType[] }
 
 export const PROFILE_GROUPS: GroupDef[] = [
   {

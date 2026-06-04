@@ -6,7 +6,7 @@ import { Button, Icon, cn } from "@mande/ui"
 import type { IconName } from "@mande/ui"
 import type { CareerProfile, CareerProfileSection } from "./chat-data"
 import { DEMO_CAREER_PATHS, type CareerPath, type CareerPathFit } from "../lib/career-profile-data"
-import { PROFILE_GROUPS, getGroupCompletion, type GroupKey } from "../lib/career-persona"
+import { PROFILE_GROUPS, getGroupCompletion, type GroupKey, type GroupDef } from "../lib/career-persona"
 
 type ChatCareerProfileProps = {
   profile: CareerProfile
@@ -154,10 +154,66 @@ function IdentityHeader({
   )
 }
 
+// ── Collapsible primitive ────────────────────────────────────────────────────
+
+function Collapsible({
+  header,
+  chevronRotation = 90,
+  chevronIcon,
+  chevronIconClassName,
+  chevronWrapperClassName = "inline-flex",
+  buttonClassName,
+  children,
+  defaultOpen = false,
+}: {
+  header: React.ReactNode
+  chevronRotation?: number
+  chevronIcon: IconName
+  chevronIconClassName?: string
+  chevronWrapperClassName?: string
+  buttonClassName: string
+  children: React.ReactNode
+  defaultOpen?: boolean
+}) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className={buttonClassName}
+      >
+        {header}
+        <motion.span
+          animate={{ rotate: open ? chevronRotation : 0 }}
+          transition={{ duration: 0.18 }}
+          className={chevronWrapperClassName}
+        >
+          <Icon name={chevronIcon} size={16} className={chevronIconClassName} />
+        </motion.span>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="collapsible-content"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+            style={{ overflow: "hidden" }}
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
+
 // ── Readiness card ───────────────────────────────────────────────────────────
 
 function ReadinessCard({ readiness }: { readiness: NonNullable<CareerProfile["readiness"]> }) {
-  const [open, setOpen] = useState(false)
   return (
     <div className="rounded-3 border border-neutral-200 bg-gradient-to-br from-blush-50 to-white p-5">
       <div className="flex items-start justify-between gap-4">
@@ -180,39 +236,21 @@ function ReadinessCard({ readiness }: { readiness: NonNullable<CareerProfile["re
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        className="mt-4 w-full flex items-center justify-center gap-1 text-small-medium text-neutral-600 hover:text-foreground"
+      <Collapsible
+        chevronIcon="IconChevronDownSmall"
+        chevronRotation={180}
+        buttonClassName="mt-4 w-full flex items-center justify-center gap-1 text-small-medium text-neutral-600 hover:text-foreground"
+        header="See full result"
       >
-        See full result
-        <motion.span animate={{ rotate: open ? 180 : 0 }} transition={{ duration: 0.18 }} className="inline-flex">
-          <Icon name="IconChevronDownSmall" size={16} />
-        </motion.span>
-      </button>
-
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            key="readiness-detail"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-            style={{ overflow: "hidden" }}
-          >
-            <div className="mt-3 flex flex-col gap-2 border-t border-neutral-200 pt-3">
-              {readiness.breakdown.map((row) => (
-                <div key={row.label} className="flex items-center justify-between gap-4">
-                  <span className="text-small-medium text-neutral-600">{row.label}</span>
-                  <span className="text-small-regular text-neutral-500 text-right">{row.detail}</span>
-                </div>
-              ))}
+        <div className="mt-3 flex flex-col gap-2 border-t border-neutral-200 pt-3">
+          {readiness.breakdown.map((row) => (
+            <div key={row.label} className="flex items-center justify-between gap-4">
+              <span className="text-small-medium text-neutral-600">{row.label}</span>
+              <span className="text-small-regular text-neutral-500 text-right">{row.detail}</span>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          ))}
+        </div>
+      </Collapsible>
     </div>
   )
 }
@@ -234,9 +272,9 @@ function ProfileBreakdown({
       <div className="rounded-3 border border-neutral-200 bg-white overflow-hidden">
         {PROFILE_GROUPS.map((g) =>
           groups[g.key] ? (
-            <BreakdownRevealed key={g.key} groupKey={g.key} label={g.label} subtitle={g.subtitle} icon={g.icon as IconName} section={section} />
+            <BreakdownRevealed key={g.key} group={g} section={section} />
           ) : (
-            <BreakdownBlocked key={g.key} groupKey={g.key} label={g.label} subtitle={g.subtitle} icon={g.icon as IconName} onContinue={onContinueAssessment} />
+            <BreakdownBlocked key={g.key} group={g} onContinue={onContinueAssessment} />
           ),
         )}
       </div>
@@ -244,80 +282,66 @@ function ProfileBreakdown({
   )
 }
 
-function BreakdownRevealed({
-  groupKey,
+function BreakdownRowHeader({
+  icon,
   label,
   subtitle,
-  icon,
-  section,
+  muted,
 }: {
-  groupKey: GroupKey
+  icon: IconName
   label: string
   subtitle: string
-  icon: IconName
+  muted?: boolean
+}) {
+  return (
+    <>
+      <Icon name={icon} size={20} className={cn("shrink-0", muted ? "text-neutral-300" : "text-neutral-500")} />
+      <span className="flex flex-col flex-1 min-w-0">
+        <span className={cn("text-base-regular", muted ? "text-neutral-400" : "text-foreground")}>{label}</span>
+        <span className={cn("text-small-regular", muted ? "text-neutral-400" : "text-neutral-500")}>{subtitle}</span>
+      </span>
+    </>
+  )
+}
+
+function BreakdownRevealed({
+  group,
+  section,
+}: {
+  group: GroupDef
   section: CareerProfileSection
 }) {
-  const [open, setOpen] = useState(false)
   return (
     <div className="border-b border-neutral-100 last:border-b-0">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        className="w-full flex items-center gap-3 px-4 py-4 text-left hover:bg-neutral-50"
+      <Collapsible
+        chevronIcon="IconChevronRight"
+        chevronRotation={90}
+        chevronWrapperClassName="inline-flex shrink-0"
+        chevronIconClassName="text-neutral-400"
+        buttonClassName="w-full flex items-center gap-3 px-4 py-4 text-left hover:bg-neutral-50"
+        header={<BreakdownRowHeader icon={group.icon} label={group.label} subtitle={group.subtitle} />}
       >
-        <Icon name={icon} size={20} className="text-neutral-500 shrink-0" />
-        <span className="flex flex-col flex-1 min-w-0">
-          <span className="text-base-regular text-foreground">{label}</span>
-          <span className="text-small-regular text-neutral-500">{subtitle}</span>
-        </span>
-        <motion.span animate={{ rotate: open ? 90 : 0 }} transition={{ duration: 0.18 }} className="inline-flex shrink-0">
-          <Icon name="IconChevronRight" size={16} className="text-neutral-400" />
-        </motion.span>
-      </button>
-      <AnimatePresence initial={false}>
-        {open && (
-          <motion.div
-            key="content"
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-            style={{ overflow: "hidden" }}
-          >
-            <div className="px-4 pb-4 pl-11">
-              <GroupContent groupKey={groupKey} section={section} />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+        <div className="px-4 pb-4 pl-11">
+          <GroupContent groupKey={group.key} section={section} />
+        </div>
+      </Collapsible>
     </div>
   )
 }
 
 function BreakdownBlocked({
-  groupKey,
-  label,
-  subtitle,
-  icon,
+  group,
   onContinue,
 }: {
-  groupKey: GroupKey
-  label: string
-  subtitle: string
-  icon: IconName
+  group: GroupDef
   onContinue?: (group: GroupKey) => void
 }) {
   return (
     <div className="flex items-center gap-3 px-4 py-4 border-b border-neutral-100 last:border-b-0">
-      <Icon name={icon} size={20} className="text-neutral-300 shrink-0" />
-      <span className="flex flex-col flex-1 min-w-0">
-        <span className="text-base-regular text-neutral-400">{label}</span>
-        <span className="text-small-regular text-neutral-400">{subtitle}</span>
-      </span>
+      <BreakdownRowHeader icon={group.icon} label={group.label} subtitle={group.subtitle} muted />
       <button
         type="button"
-        onClick={() => onContinue?.(groupKey)}
+        onClick={() => onContinue?.(group.key)}
         className="flex items-center gap-1 text-small-medium text-neutral-500 hover:text-foreground shrink-0"
       >
         <Icon name="IconLock" size={16} />
@@ -341,10 +365,12 @@ function GroupContent({ groupKey, section }: { groupKey: GroupKey; section: Care
     )
   }
   if (groupKey === "edge") {
+    if (!section.skillsSummary) return null
     return (
       <p className="text-small-regular text-neutral-600 whitespace-pre-wrap">{section.skillsSummary}</p>
     )
   }
+  if (!section.opportunities) return null
   return (
     <p className="text-small-regular text-neutral-600 whitespace-pre-wrap">{section.opportunities}</p>
   )
