@@ -1,4 +1,5 @@
 import type { ChallengeType, ArtifactType, LessonState } from "@mande/ui"
+import { deriveHeadline, deriveSummary, deriveReadiness, isProfileReady } from "../lib/career-persona"
 export type { ArtifactType, LessonState }
 
 export type ChallengeInput = "textarea" | "confirm" | "url" | "short-text" | "list"
@@ -428,6 +429,11 @@ export function deriveCareerProfile(sessions: ChatSession[]): CareerProfile {
   const findingClaritySession = sessions.find((s) => s.id === "lesson-finding-clarity")
   const pathsUnlocked = findingClaritySession?.lessonState === "completed"
 
+  const headline = deriveHeadline(profile.hollandCode)
+  const summary = deriveSummary(profile)
+  const persona = headline && summary ? { headline, summary } : undefined
+  const readiness = isProfileReady(completedArtifacts) ? deriveReadiness(profile) : undefined
+
   return {
     studentId: "playground-student",
     completedArtifacts,
@@ -435,6 +441,8 @@ export function deriveCareerProfile(sessions: ChatSession[]): CareerProfile {
     completedPIVOTSCount,
     profile,
     pathsUnlocked,
+    persona,
+    readiness,
   }
 }
 
