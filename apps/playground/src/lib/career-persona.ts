@@ -1,4 +1,4 @@
-import type { ArtifactType, CareerProfileSection } from "../components/chat-data"
+import type { ArtifactType, CareerProfileSection, CareerReadiness } from "../components/chat-data"
 // @ts-expect-error TS5097: explicit .ts import needed for node --test ESM resolution
 import { INTEREST_PROFILE_TYPES, type InterestProfileType } from "../components/interest-profile-data.ts"
 
@@ -89,4 +89,30 @@ export function deriveSummary(section: CareerProfileSection): string | undefined
   const verb = LEADS_WITH[verbLetter]
   const topValue = section.values?.[0]?.toLowerCase() ?? "growth"
   return `A ${archetype} who leads with ${verb} and values ${topValue} above all.`
+}
+
+export function deriveReadiness(section: CareerProfileSection): CareerReadiness {
+  const BASE = 42
+  let months = BASE
+  if (section.mbtiType) months -= 2
+  if (section.hollandCode) months -= 2
+  if (section.skillsSummary) months -= 2
+  if (section.opportunities) months -= 2
+
+  const breakdown = [
+    {
+      label: "Self-knowledge",
+      detail: section.mbtiType || section.hollandCode ? "Clear on how you work" : "Still mapping how you work",
+    },
+    {
+      label: "Skills",
+      detail: section.skillsSummary ? "On track for your interests" : "Audit not complete yet",
+    },
+    {
+      label: "Market & context",
+      detail: section.opportunities ? "Grounded in where you are" : "Context not captured yet",
+    },
+  ]
+
+  return { years: Math.floor(months / 12), months: months % 12, breakdown }
 }

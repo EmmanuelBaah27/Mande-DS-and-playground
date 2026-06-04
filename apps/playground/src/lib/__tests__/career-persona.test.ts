@@ -3,6 +3,7 @@ import test from "node:test"
 import assert from "node:assert/strict"
 
 import { getGroupCompletion, isProfileReady, deriveHeadline, deriveSummary } from "../career-persona.ts"
+import { deriveReadiness } from "../career-persona.ts"
 
 const FULL = [
   "work-preference", "mbti", "interest-profile", "preferred-industries",
@@ -53,4 +54,19 @@ test("deriveSummary: composes mbti + holland verb + top value", () => {
 test("deriveSummary: missing mbti or holland -> undefined", () => {
   assert.equal(deriveSummary({ hollandCode: "AI", values: ["Autonomy"] }), undefined)
   assert.equal(deriveSummary({ mbtiType: "INTJ", values: ["Autonomy"] }), undefined)
+})
+
+test("deriveReadiness: full profile -> 2 yrs 10 mo", () => {
+  const r = deriveReadiness({
+    mbtiType: "INTJ", hollandCode: "AI", skillsSummary: "Strong fundamentals", opportunities: "Accra, open to remote",
+  })
+  assert.equal(r.years, 2)
+  assert.equal(r.months, 10)
+  assert.ok(r.breakdown.length >= 3)
+})
+
+test("deriveReadiness: empty profile -> 3 yrs 6 mo", () => {
+  const r = deriveReadiness({})
+  assert.equal(r.years, 3)
+  assert.equal(r.months, 6)
 })
