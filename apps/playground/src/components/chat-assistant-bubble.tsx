@@ -65,7 +65,7 @@ export function AssistantTextBubble({
   }, [assistantMeta?.rationale, isStreaming])
   const hasProcess = hasExplicitThoughtMeta || Boolean(isStreaming && processText)
 
-  const [isProcessCollapsed, setIsProcessCollapsed] = useState(!isStreaming)
+  const [isProcessCollapsed, setIsProcessCollapsed] = useState(true)
   const [hasUserToggled, setHasUserToggled] = useState(false)
   const [showResponse, setShowResponse] = useState(true)
   const [visibleChars, setVisibleChars] = useState(() => (isStreaming ? 0 : content.length))
@@ -205,8 +205,8 @@ export function AssistantTextBubble({
             transition={{ duration: durations.base / 1000, ease: easings.out }}
             style={{ overflow: "hidden" }}
           >
-            <div className="relative pt-0.5 pb-1">
-              <div className="max-h-28 overflow-hidden whitespace-pre-wrap pr-1 text-base-regular text-neutral-400">
+            <div className="pt-0.5 pb-1">
+              <div className="whitespace-pre-wrap pr-1 text-base-regular text-neutral-500">
                 {processText}
                 {isStreaming && (
                   <span
@@ -215,12 +215,6 @@ export function AssistantTextBubble({
                   />
                 )}
               </div>
-              {isStreaming && processText.length > 180 && (
-                <div
-                  aria-hidden
-                  className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-neutral-50/95 to-transparent"
-                />
-              )}
             </div>
           </motion.div>
         </div>

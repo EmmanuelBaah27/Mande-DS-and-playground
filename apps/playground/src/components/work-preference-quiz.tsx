@@ -1,18 +1,18 @@
 "use client"
 
 import * as React from "react"
-import { useState, useEffect, useRef } from "react"
+import { useEffect } from "react"
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "motion/react"
-import { Button, Icon, springs, cn } from "@mande/ui"
+import { Button, Icon, OverlayHeader, springs, cn } from "@mande/ui"
 import {
   QUESTIONS,
   TOTAL_QUESTIONS,
   STYLES,
   resultLabel,
-  resultSubtitle,
   type WorkStyleLetter,
 } from "../lib/assessments/work-preference-data"
+import { AssessmentQuestionScreen } from "./assessment-question-screen"
 
 const QUESTION_STEM = "I LIKE work assignments which enable me to…"
 
@@ -21,6 +21,7 @@ interface WorkPreferenceQuizProps {
   currentQuestion: number
   result: WorkStyleLetter[] | null
   onAnswer: (letter: WorkStyleLetter) => void
+  onBack: () => void
   onRestart: () => void
   onExit: () => void
   onBackToChat: () => void
@@ -29,123 +30,35 @@ interface WorkPreferenceQuizProps {
 function QuestionScreen({
   currentQuestion,
   onAnswer,
+  onBack,
   onExit,
 }: {
   currentQuestion: number
   onAnswer: (letter: WorkStyleLetter) => void
+  onBack: () => void
   onExit: () => void
 }) {
-  const [selected, setSelected] = useState<WorkStyleLetter | null>(null)
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const question = QUESTIONS[currentQuestion]
-  const progressPct = Math.round((currentQuestion / TOTAL_QUESTIONS) * 100)
-
-  useEffect(() => () => { if (timerRef.current) clearTimeout(timerRef.current) }, [])
-
-  const handleSelect = (letter: WorkStyleLetter) => {
-    if (selected !== null) return
-    setSelected(letter)
-    timerRef.current = setTimeout(() => {
-      setSelected(null)
-      onAnswer(letter)
-    }, 380)
-  }
-
   if (!question) return null
 
+  const options = question.options.map((o) => ({ id: o.letter, label: o.text }))
+
   return (
-    <div className="flex flex-col h-full bg-white overflow-x-hidden">
-      {/* Header */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-2 shrink-0">
-        <button
-          type="button"
-          onClick={onExit}
-          aria-label="Exit quiz"
-          className="w-11 h-11 flex items-center justify-center rounded-2 text-muted-foreground hover:bg-neutral-100 transition-colors"
-        >
-          <Icon name="IconChevronLeft" size={20} />
-        </button>
-        <div className="flex flex-col items-center gap-0.5">
-          <span className="text-xs text-muted-foreground font-medium tracking-wide uppercase">
-            Work Preference
-          </span>
-          <span className="text-xs text-muted-foreground tabular-nums">
-            Q {currentQuestion + 1} / {TOTAL_QUESTIONS}
-          </span>
-        </div>
-        <div className="w-11" aria-hidden />
-      </div>
-
-      {/* Progress bar */}
-      <div className="px-4 pb-4 shrink-0">
-        <div className="h-1 rounded-full bg-neutral-100 overflow-hidden">
-          <motion.div
-            className="h-full rounded-full bg-foreground"
-            animate={{ width: `${progressPct}%` }}
-            transition={{ duration: 0.3 }}
-          />
-        </div>
-      </div>
-
-      {/* Question + choices */}
-      <div className="flex-1 overflow-y-auto px-4 pb-8">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentQuestion}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={springs.smooth}
-            className="flex flex-col gap-4"
-          >
-            <p className="text-sm text-muted-foreground italic mt-2">
-              {QUESTION_STEM}
-            </p>
-
-            {/* Option 1 */}
-            <button
-              type="button"
-              onClick={() => handleSelect(question.options[0].letter)}
-              disabled={selected !== null}
-              className={cn(
-                "w-full rounded-3 border-2 px-5 py-5 min-h-[60px] text-center text-base font-medium text-foreground transition-all duration-200",
-                selected === question.options[0].letter
-                  ? "border-foreground bg-neutral-100 scale-[0.98]"
-                  : "border-neutral-200 bg-white hover:border-neutral-400 hover:bg-neutral-50 active:scale-[0.98]"
-              )}
-            >
-              {question.options[0].text}
-            </button>
-
-            {/* OR divider */}
-            <div className="flex items-center gap-3">
-              <div className="flex-1 h-px bg-neutral-100" />
-              <span className="text-xs font-bold text-neutral-300 tracking-widest">OR</span>
-              <div className="flex-1 h-px bg-neutral-100" />
-            </div>
-
-            {/* Option 2 */}
-            <button
-              type="button"
-              onClick={() => handleSelect(question.options[1].letter)}
-              disabled={selected !== null}
-              className={cn(
-                "w-full rounded-3 border-2 px-5 py-5 min-h-[60px] text-center text-base font-medium text-foreground transition-all duration-200",
-                selected === question.options[1].letter
-                  ? "border-foreground bg-neutral-100 scale-[0.98]"
-                  : "border-neutral-200 bg-white hover:border-neutral-400 hover:bg-neutral-50 active:scale-[0.98]"
-              )}
-            >
-              {question.options[1].text}
-            </button>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-    </div>
+    <AssessmentQuestionScreen
+      title="Work style assessment"
+      question={QUESTION_STEM}
+      options={options}
+      currentStep={currentQuestion + 1}
+      totalSteps={TOTAL_QUESTIONS}
+      onSelect={(id) => onAnswer(id as WorkStyleLetter)}
+      onBack={currentQuestion > 0 ? onBack : undefined}
+      onExit={onExit}
+      selectionDelay={380}
+    />
   )
 }
 
-function ResultScreen({
+export function WorkPreferenceResultScreen({
   result,
   onRestart,
   onBackToChat,
@@ -155,7 +68,6 @@ function ResultScreen({
   onBackToChat: () => void
 }) {
   const label = resultLabel(result)
-  const subtitle = resultSubtitle(result)
   const primaryStyle = STYLES[result[0]]
 
   return (
@@ -163,64 +75,44 @@ function ResultScreen({
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={springs.smooth}
-      className="flex flex-col h-full bg-white px-6 py-8 overflow-x-hidden"
+      className="min-h-dvh bg-subtle flex flex-col"
     >
-      <div className="flex-1 flex flex-col items-center justify-center gap-5 text-center overflow-y-auto">
-        <p className="text-xs text-muted-foreground font-semibold tracking-widest uppercase">
-          Your Work Style
-        </p>
+      <OverlayHeader title="Work style assessment" onClose={onBackToChat} closeLabel="Close assessment" />
 
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-5xl">{primaryStyle.icon}</span>
-          <h2 className="text-2xl font-bold text-foreground leading-tight">{label}</h2>
-          <span className="inline-block bg-neutral-100 text-neutral-600 text-xs font-semibold px-3 py-1 rounded-full">
-            {subtitle}
-          </span>
-        </div>
+      {/* Body */}
+      <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-8 sm:py-10">
+        <div className="w-full max-w-lg mx-auto flex flex-col gap-4 sm:gap-6">
 
-        <div className="bg-neutral-50 rounded-3 px-5 py-4 w-full max-w-sm text-left">
-          {result.length === 1 ? (
-            <p className="text-sm text-neutral-600 leading-relaxed">
-              {primaryStyle.description}
-            </p>
-          ) : (
-            <div className="flex flex-col gap-3">
-              {result.map((letter) => (
-                <div key={letter}>
-                  <p className="text-xs font-semibold text-neutral-900 mb-0.5">
-                    {STYLES[letter].icon} {STYLES[letter].name}
-                  </p>
-                  <p className="text-xs text-neutral-600 leading-relaxed">
-                    {STYLES[letter].description}
-                  </p>
-                </div>
-              ))}
+          {/* Primary style — centered, icon on top (matches interest profile layout) */}
+          <div className="flex flex-col items-center gap-5 p-6 text-center">
+            <span className="text-[80px] leading-none" aria-hidden="true">
+              {primaryStyle.icon}
+            </span>
+            <div className="flex flex-col gap-2">
+              <p className="text-small-regular text-muted-foreground">Your work style</p>
+              <h1 className="text-H2 sm:text-H1 text-foreground">{label}</h1>
+              <p className="text-base-regular text-muted-foreground leading-relaxed">
+                {primaryStyle.description}
+              </p>
             </div>
-          )}
-        </div>
-      </div>
+          </div>
 
-      {/* Footer — safe area padding for iOS home indicator */}
-      <div
-        className="flex gap-3 pt-4 shrink-0"
-        style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-      >
-        <Button
-          variant="secondary"
-          size="default"
-          onClick={onRestart}
-          className="flex-1"
-        >
-          Retake
-        </Button>
-        <Button
-          variant="primary"
-          size="default"
-          onClick={onBackToChat}
-          className="flex-[2]"
-        >
-          Back to chat →
-        </Button>
+          {/* CTAs — centered */}
+          <div className="flex gap-3 items-center justify-center py-4">
+            <Button variant="secondary" size="default" onClick={onRestart}>
+              Retake
+            </Button>
+            <Button
+              variant="primary"
+              size="default"
+              onClick={onBackToChat}
+              icon={<Icon name="IconArrowRight" size={16} />}
+              iconPosition="right"
+            >
+              Continue to chat
+            </Button>
+          </div>
+        </div>
       </div>
     </motion.div>
   )
@@ -231,6 +123,7 @@ export function WorkPreferenceQuiz({
   currentQuestion,
   result,
   onAnswer,
+  onBack,
   onRestart,
   onExit,
   onBackToChat,
@@ -256,7 +149,7 @@ export function WorkPreferenceQuiz({
       role="dialog"
       aria-modal="true"
       aria-label="Work Preference Assessment"
-      className="fixed inset-0 z-[200] bg-white flex flex-col overflow-x-hidden"
+      className="fixed inset-0 z-[200] bg-neutral-50 flex flex-col overflow-x-hidden"
     >
       <AnimatePresence mode="wait">
         {phase === "quiz" ? (
@@ -271,6 +164,7 @@ export function WorkPreferenceQuiz({
             <QuestionScreen
               currentQuestion={currentQuestion}
               onAnswer={onAnswer}
+              onBack={onBack}
               onExit={onExit}
             />
           </motion.div>
@@ -284,7 +178,7 @@ export function WorkPreferenceQuiz({
             transition={{ duration: 0.15 }}
           >
             {result && (
-              <ResultScreen
+              <WorkPreferenceResultScreen
                 result={result}
                 onRestart={onRestart}
                 onBackToChat={onBackToChat}

@@ -1,23 +1,23 @@
 "use client"
 
 import * as React from "react"
-import { HOLLAND_QUESTIONS, HOLLAND_TYPES } from "./holland-data"
-import { useHollandAssessment } from "./use-holland-assessment"
-import { HollandAssessmentOverlay } from "./holland-assessment-overlay"
+import { INTEREST_PROFILE_QUESTIONS, INTEREST_PROFILE_TYPES } from "./interest-profile-data"
+import { useInterestProfileAssessment } from "./use-interest-profile-assessment"
+import { InterestProfileOverlay } from "./interest-profile-overlay"
 import { ChatAssessmentCard } from "./chat-assessment-card"
 
-export interface ChatHollandAssessmentTriggerProps {
+export interface ChatInterestProfileTriggerProps {
   isCompleted: boolean
   completedCode?: string
   onComplete: (code: string) => void
 }
 
-export function ChatHollandAssessmentTrigger({
+export function ChatInterestProfileTrigger({
   isCompleted,
   completedCode,
   onComplete,
-}: ChatHollandAssessmentTriggerProps) {
-  const { state, begin, answer, back, exit, retake } = useHollandAssessment()
+}: ChatInterestProfileTriggerProps) {
+  const { state, begin, answer, back, exit, retake } = useInterestProfileAssessment()
   const [overlayOpen, setOverlayOpen] = React.useState(false)
 
   const handleOpen = () => setOverlayOpen(true)
@@ -43,7 +43,7 @@ export function ChatHollandAssessmentTrigger({
   const resultSubtitle = completedCode
     ? completedCode
         .split("")
-        .map((l) => HOLLAND_TYPES[l as keyof typeof HOLLAND_TYPES]?.name)
+        .map((l) => INTEREST_PROFILE_TYPES[l as keyof typeof INTEREST_PROFILE_TYPES]?.name)
         .filter(Boolean)
         .join(" · ")
     : undefined
@@ -51,12 +51,11 @@ export function ChatHollandAssessmentTrigger({
   return (
     <>
       <ChatAssessmentCard
-        title={isCompleted ? (completedCode ?? "Holland Code") : "Career Interest"}
-        icon="🧭"
-        duration="42 questions · ~10 min"
+        title={isCompleted ? (completedCode ?? "–") : "Interest profile assessment"}
+        assessmentLabel={isCompleted ? "Interest profile assessment" : undefined}
         description="Discover your top career interest types using the Holland RIASEC framework."
         status={cardStatus}
-        totalQuestions={HOLLAND_QUESTIONS.length}
+        totalQuestions={INTEREST_PROFILE_QUESTIONS.length}
         currentQuestion={state.currentIndex}
         resultSubtitle={resultSubtitle}
         onStart={handleOpen}
@@ -64,7 +63,7 @@ export function ChatHollandAssessmentTrigger({
         onRetake={handleRetake}
       />
       {overlayOpen && (
-        <HollandAssessmentOverlay
+        <InterestProfileOverlay
           state={state}
           begin={begin}
           answer={answer}

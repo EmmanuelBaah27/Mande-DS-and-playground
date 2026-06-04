@@ -80,7 +80,10 @@ export type { EmptyStateProps } from "./components/ui/empty-state"
 export { Chip, chipVariants } from "./components/ui/chip"
 export type { ChipProps } from "./components/ui/chip"
 
-export { Avatar, AvatarImage, AvatarFallback } from "./components/ui/avatar"
+export { ChipSelectGroup } from "./components/ui/chip-select-group"
+export type { ChipSelectGroupProps } from "./components/ui/chip-select-group"
+
+export { Avatar } from "./components/ui/avatar"
 export type { AvatarSize } from "./components/ui/avatar"
 
 export {
@@ -133,6 +136,9 @@ export type {
   LessonState,
   CurriculumSectionConfig,
 } from "./components/ui/app-sidebar"
+
+export { OverlayHeader } from "./components/ui/overlay-header"
+export type { OverlayHeaderProps } from "./components/ui/overlay-header"
 
 export { Tabs, TabsList, TabsTrigger, TabsContent } from "./components/ui/tabs"
 

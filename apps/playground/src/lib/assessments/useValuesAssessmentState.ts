@@ -105,6 +105,23 @@ export function useValuesAssessmentState() {
     })
   }, [])
 
+  const back = useCallback(() => {
+    setProgress((prev) => {
+      if (prev.questionIndex > 0) {
+        const next = { ...prev, questionIndex: prev.questionIndex - 1 }
+        save(next)
+        return next
+      }
+      if (prev.categoryIndex > 0) {
+        const prevCatQs = QUESTIONS_BY_CATEGORY[prev.categoryIndex - 1]!
+        const next = { ...prev, categoryIndex: prev.categoryIndex - 1, questionIndex: prevCatQs.length - 1 }
+        save(next)
+        return next
+      }
+      return prev
+    })
+  }, [])
+
   const retake = useCallback(() => {
     save(INITIAL)
     setProgress(INITIAL)
@@ -124,6 +141,7 @@ export function useValuesAssessmentState() {
     totalQuestions: 55,
     answer,
     skip,
+    back,
     beginCategory,
     retake,
   }

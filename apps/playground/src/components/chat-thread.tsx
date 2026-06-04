@@ -9,18 +9,21 @@ import {
   Input,
   Textarea,
   springs,
+  easings,
+  durations,
   challengeLabels,
   challengeColors,
-  ChatInput,
 } from "@mande/ui"
 import { cn } from "@mande/ui/lib/utils"
 import { ChatActiveArtifactFooterShell, ChatActiveArtifactControls, ArtifactBadge } from "./chat-active-artifact"
+import { ChatColdEmailTrigger } from "./chat-cold-email-trigger"
+import { ChatInputBar } from "./chat-input-bar"
 import { AssistantTextBubble } from "./chat-assistant-bubble"
-import { AttachmentPreview } from "./shared/attachment-preview"
 import { evaluateChallengeSubmission } from "../lib/challenges/evaluate"
 import { validateSubmissionPayload } from "../lib/challenges/schema"
 import {
   createChallengeData,
+  createCommitmentArtifactChallenge,
   type ChallengeSubmission,
   selectChallengeState,
   getLatestChallengeResponse,
@@ -31,23 +34,27 @@ import {
 } from "./chat-data"
 import { ChatValuesAssessmentTrigger } from "./chat-values-assessment-trigger"
 import { ChatWorkPreferenceAssessmentTrigger } from "./chat-work-preference-assessment-trigger"
-import { ChatHollandAssessmentTrigger } from "./chat-holland-assessment-trigger"
+import { ChatInterestProfileTrigger } from "./chat-interest-profile-trigger"
+import { LessonCompletionPanel } from "./chat-lesson-completion"
 
+
+type LessonCompletePhase = "idle" | "animating" | "ended"
 
 type ArtifactFlowStep = {
   id: string
-  assistant: string
+  assistant: string | ((prevSummary: string) => string)
   challenge?: Omit<ChallengeData, "type">
+  lessonComplete?: boolean
 }
 
 const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, ArtifactFlowStep | null> = {
   commitment: {
     id: "artifact-reflection-1",
     assistant:
-      "Great. Let's start with a short reflection so I can understand your starting point before we get tactical.",
+      "Good. Before we run any assessments, tell me something — what kind of workday gives you energy, and what kind drains you? Three to five sentences.",
     challenge: {
       challengeId: "artifact-reflection-1",
-      lessonId: "discovering-your-options-day-1",
+      lessonId: "lesson-discovering-options",
       responseType: "reflection",
       artifactType: "reflection",
       prompt:
@@ -59,23 +66,23 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
   reflection: {
     id: "artifact-quiz-1",
     assistant:
-      "Nice. Next, let's run a quick work-preference check to sharpen your pattern.",
+      "Good starting point. Now let's run a quick work-preference check — it'll tell us how you're wired to operate.",
     challenge: {
       challengeId: "artifact-quiz-1",
-      lessonId: "discovering-your-options-day-1",
+      lessonId: "lesson-discovering-options",
       responseType: "structured_list",
       artifactType: "work-preference",
-      prompt: "Work preference quiz",
+      prompt: "Work style quiz",
       inputType: "confirm",
     },
   },
   "work-preference": {
     id: "artifact-mbti-1",
-    assistant:
-      "Solid. Let's add your MBTI so we can triangulate this with your preference signal.",
+    assistant: (summary) =>
+      `${summary} — that's a useful signal. Let's layer in your personality type to see how it shapes the way you show up at work.`,
     challenge: {
       challengeId: "artifact-mbti-1",
-      lessonId: "discovering-your-options-day-1",
+      lessonId: "lesson-discovering-options",
       responseType: "resource_link",
       artifactType: "mbti",
       prompt: "What's your MBTI personality type?",
@@ -83,39 +90,99 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
     },
   },
   mbti: {
-    id: "artifact-holland-1",
+    id: "artifact-interest-profile-1",
     assistant:
-      "Great. One more input: your Holland code, then I'll synthesize what this points to.",
+      "Got it. One more input: your Interest profile. This maps the environments and activities you naturally gravitate toward.",
     challenge: {
-      challengeId: "artifact-holland-1",
-      lessonId: "discovering-your-options-day-1",
+      challengeId: "artifact-interest-profile-1",
+      lessonId: "lesson-discovering-options",
       responseType: "structured_list",
-      artifactType: "holland",
-      prompt: "What's your Holland code?",
+      artifactType: "interest-profile",
+      prompt: "What's your Interest profile?",
       inputType: "confirm",
     },
   },
-  holland: {
-    id: "artifact-holland-done",
-    assistant:
-      "All five inputs are in. Let me pull this together and show you what the pattern points to.",
+  "interest-profile": {
+    id: "artifact-preferred-industries-1",
+    assistant: (summary) =>
+      `Your Interest profile is ${summary}. Now let's anchor that to the real world — which industries and sectors actually attract you?`,
+    // TODO: INTEGRATION — replace with API response
+    challenge: {
+      challengeId: "artifact-preferred-industries-1",
+      lessonId: "lesson-discovering-options",
+      responseType: "structured_list",
+      artifactType: "preferred-industries",
+      prompt: "Which industries and sectors call to you most? Add your own if they're missing.",
+      inputType: "list",
+    },
   },
   craft: {
     id: "artifact-craft-done",
     assistant:
       "Good. That's saved — we can sharpen it further once you've had a chance to send it.",
   },
-  interests: {
-    id: "artifact-interests-done",
-    assistant: "Got it. Those are noted — industries, hobbies, and what you obsess about all feed into the picture.",
+  "preferred-industries": {
+    id: "artifact-hobbies-1",
+    assistant:
+      "Got it — industries noted. Now outside of work: what do you actually enjoy? Hobbies, obsessions, things you do for fun or pure curiosity.",
+    // TODO: INTEGRATION — replace with API response
+    challenge: {
+      challengeId: "artifact-hobbies-1",
+      lessonId: "lesson-discovering-options",
+      responseType: "structured_list",
+      artifactType: "hobbies",
+      prompt: "What are your hobbies and obsessions? List anything you genuinely enjoy.",
+      inputType: "textarea",
+      placeholder: "Gaming, making music, reading about behavioral economics...",
+    },
+  },
+  hobbies: {
+    id: "artifact-values-1",
+    assistant:
+      "Good. Now your values — the non-negotiables. What would make a job genuinely wrong for you, even if the pay was great?",
+    // TODO: INTEGRATION — replace with API response
+    challenge: {
+      challengeId: "artifact-values-1",
+      lessonId: "lesson-discovering-options",
+      responseType: "structured_list",
+      artifactType: "values",
+      prompt: "What are your core values and non-negotiables at work?",
+      inputType: "list",
+    },
+  },
+  "career-profile": {
+    id: "artifact-career-profile-done",
+    assistant: "Profile reviewed. Now let's pressure-test it against reality.",
   },
   values: {
-    id: "artifact-values-done",
-    assistant: "Good. Your non-negotiables are in. Those shape which paths stay on the table and which come off it.",
+    id: "artifact-opportunities-1",
+    assistant:
+      "Non-negotiables are in. Last piece: geography and environment. Where can you realistically work, and what kind of setup do you need?",
+    // TODO: INTEGRATION — replace with API response
+    challenge: {
+      challengeId: "artifact-opportunities-1",
+      lessonId: "lesson-discovering-options",
+      responseType: "structured_list",
+      artifactType: "opportunities",
+      prompt: "Where can you work? What work arrangements work for you?",
+      inputType: "textarea",
+      placeholder: "Ghana, open to remote, prefer hybrid...",
+    },
   },
   opportunities: {
-    id: "artifact-opportunities-done",
-    assistant: "Got it. Geography and environment preferences are noted.",
+    id: "artifact-skills-audit-1",
+    assistant:
+      "Constraints captured. Last one — tell me about your skills. What have you actually done? Resume, portfolio, certifications, notable coursework.",
+    // TODO: INTEGRATION — replace with API response
+    challenge: {
+      challengeId: "artifact-skills-audit-1",
+      lessonId: "lesson-discovering-options",
+      responseType: "structured_list",
+      artifactType: "skills-audit",
+      prompt: "List your skills — technical, software, and soft. Include certifications or notable coursework.",
+      inputType: "textarea",
+      placeholder: "Excel, data analysis, public speaking, Google Analytics...",
+    },
   },
   threats: {
     id: "artifact-threats-done",
@@ -123,7 +190,10 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
   },
   "skills-audit": {
     id: "artifact-skills-audit-done",
-    assistant: "Skills noted. That gives us the raw material to match against real paths.",
+    assistant:
+      "All nine inputs are in. That's your full PIVOTS profile. Let me show you what it's pointing toward.",
+    // TODO: INTEGRATION — replace with API response
+    lessonComplete: true,
   },
   "research-action": {
     id: "artifact-research-action-done",
@@ -135,6 +205,79 @@ const ARTIFACT_FLOW_STEPS: Record<NonNullable<ChallengeData["artifactType"]>, Ar
     assistant:
       "Thanks for bringing those results back. That rounds out the picture.",
   },
+  "cold-email": {
+    id: "artifact-cold-email-done",
+    assistant:
+      "That's a sendable email. Now send it — and write the next two yourself.",
+  },
+}
+
+const TRANSITION_META: Partial<Record<NonNullable<ChallengeData["artifactType"]>, { summary: string; rationale: string }>> = {
+  "commitment": {
+    summary: "Opened with an energy question before layering in the assessments",
+    rationale: "They're in. Now before I run any structured assessment, I need something qualitative first — something real. Energy and drain patterns tell me more about fit than stated interests do. Most people know what wrecks them even when they can't name what they want. That's the better starting point.",
+  },
+  "reflection": {
+    summary: "Turned the energy pattern into a structured work-style prompt",
+    rationale: "I have a qualitative read now — what gives them energy, what doesn't. That's good context. But I need a behavioural layer on top: how they actually operate day-to-day, not just how they feel about work. The work-preference quiz gets at that. Running it right after keeps both data points close enough to compare.",
+  },
+  "work-preference": {
+    summary: "Used the work-style result to frame the personality prompt",
+    rationale: "The work-style result shows how they operate under normal conditions. But I want to know the underlying wiring too — what holds when things get harder or more ambiguous. Personality type gives me that. Together, the two start forming a consistent self-model rather than scattered data points.",
+  },
+  "mbti": {
+    summary: "Sequenced toward the final career interest mapping",
+    rationale: "I know how they think and how they relate — that's the MBTI layer. What I'm still missing is the where: the environments and activity types they naturally gravitate toward. Holland answers that. Neither one fully works without the other, and I need both before I can synthesise anything meaningful.",
+  },
+  "interest-profile": {
+    summary: "Closed the input loop and set up the synthesis",
+    rationale: "All five inputs are in — commitment, energy pattern, work-style, personality type, and career interest map. Each one narrowed from a different angle. Now I can look for where they converge. That overlap is the signal. Everything outside it is noise.",
+  },
+  "values": {
+    summary: "Surfaced the top values to anchor the next prompt",
+    rationale: "Values are a filter — they tell me which paths survive once preference and personality are already mapped. Without them I'd be recommending options that look right on paper but would hollow out over time. I need to know what they won't compromise on before I can say anything useful about direction.",
+  },
+  "preferred-industries": {
+    summary: "Grounded interests in specific sectors",
+    rationale: "Holland code tells me the environment type. Industries tell me the actual market context where those environments live. I need both to say anything useful about fit.",
+  },
+  "hobbies": {
+    summary: "Connected self-directed interests to career signals",
+    rationale: "Hobbies aren't filler — they're honest data about what someone actually spends time on when there's no external pressure. That's often closer to real fit than stated interests.",
+  },
+  "skills-audit": {
+    summary: "Collected the raw material for matching",
+    rationale: "Preference and personality tell me what someone wants. Skills tell me what they can credibly offer. Both sides of the equation matter before I can recommend anything specific.",
+  },
+}
+
+function getArtifactFlowStep(
+  artifactType: NonNullable<ChallengeData["artifactType"]>,
+  lessonId: string
+): ArtifactFlowStep | null {
+  // Lesson-context-aware overrides
+  if (artifactType === "reflection") {
+    if (lessonId === "lesson-introduction") {
+      return {
+        id: "intro-reflection-done",
+        // TODO: INTEGRATION — replace with API response
+        assistant:
+          "That instinct matters. Lean into it. The next ten days are about giving that gut feeling real data to stand on.",
+        lessonComplete: true,
+      }
+    }
+    if (lessonId === "lesson-making-a-choice") {
+      return {
+        id: "choice-reflection-done",
+        // TODO: INTEGRATION — replace with API response
+        assistant:
+          "You've made your choice. That's not a small thing — most people stay stuck in the research phase forever. Let's build a plan to keep you moving.",
+        lessonComplete: true,
+      }
+    }
+    // Default: Lesson 2 post-commitment reflection → work-preference
+  }
+  return ARTIFACT_FLOW_STEPS[artifactType] ?? null
 }
 
 // ─── Markdown ─────────────────────────────────────────────────────────────────
@@ -153,6 +296,96 @@ const mdComponents = {
     <ul className="list-disc pl-5 mb-2 space-y-0.5">{children}</ul>
   ),
   li: ({ children }: { children?: React.ReactNode }) => <li>{children}</li>,
+}
+
+// ─── Simulated responses (open mode) ─────────────────────────────────────────
+
+const OPEN_MODE_RESPONSES = [
+  {
+    content: "That's worth unpacking. What's the specific part you'd most want to move on first?",
+    summary: "Narrowed to the most actionable piece",
+    rationale: "There's a lot in what they said. If I try to address all of it at once I'll dilute everything. I need to find the single piece they'd actually move on — that's where momentum starts.",
+  },
+  {
+    content: "Good question to sit with. What's the part that feels most stuck right now?",
+    summary: "Located where the friction actually is",
+    rationale: "The question is good but I can't answer it yet. I need to know where the sticking point is — that determines whether the answer is about clarity, confidence, or just next steps.",
+  },
+  {
+    content: "I hear that. Tell me more — what's the specific move you're trying to make?",
+    summary: "Pushed for the concrete action beneath the question",
+    rationale: "I understand the feeling but not the ask. There's a difference between processing something and trying to do something. I need to know which this is before I respond with anything useful.",
+  },
+]
+
+// ─── ThinkingLabel ────────────────────────────────────────────────────────────
+
+function ThinkingLabel() {
+  const [expanded, setExpanded] = useState(false)
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.2 }}
+      className="rounded-3 bg-neutral-50/70"
+    >
+      <Button
+        type="button"
+        variant="tertiary"
+        size="sm"
+        onClick={() => setExpanded((prev) => !prev)}
+        aria-expanded={expanded}
+        aria-label={expanded ? "Collapse thinking details" : "Expand thinking details"}
+        className="group h-auto w-auto justify-start rounded-3 px-0 py-0 text-left hover:bg-transparent focus:bg-transparent focus:outline-none focus:ring-0 focus-visible:bg-transparent focus-visible:outline-none focus-visible:ring-0"
+      >
+        <span className="inline-flex min-w-0 items-center gap-1 text-left">
+          <span
+            className="text-base-regular"
+            style={{
+              background: "linear-gradient(90deg, #a3a3a3 0%, #525252 35%, #a3a3a3 65%, #a3a3a3 100%)",
+              backgroundSize: "200% auto",
+              backgroundClip: "text",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              animation: "thinking-shimmer 1.8s linear infinite",
+            }}
+          >
+            Thinking
+          </span>
+          <motion.span
+            animate={{ rotate: expanded ? 90 : 0 }}
+            transition={{ duration: durations.base / 1000, ease: easings.out }}
+            className="inline-flex h-4 w-4 shrink-0 items-center justify-center"
+          >
+            <Icon
+              name="IconChevronRight"
+              size={12}
+              stroke="2"
+              className="text-neutral-500 transition-colors duration-150 group-hover:text-neutral-700"
+              aria-hidden
+            />
+          </motion.span>
+        </span>
+      </Button>
+      <motion.div
+        initial={false}
+        animate={{ height: expanded ? "auto" : 0 }}
+        transition={{ duration: durations.base / 1000, ease: easings.out }}
+        style={{ overflow: "hidden" }}
+      >
+        <div className="pt-0.5 pb-1">
+          <div className="whitespace-pre-wrap pr-1 text-base-regular text-neutral-400">
+            Analyzing your profile data…
+            <span
+              className="ml-0.5 inline-block h-[1em] w-0.5 align-[-0.1em] rounded-full bg-primary-500 motion-safe:animate-pulse"
+              aria-hidden
+            />
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
 }
 
 // ─── UserBubble ───────────────────────────────────────────────────────────────
@@ -203,14 +436,20 @@ function MessageBubble({
     return <UserBubble content={message.content} />
   }
 
+  if (message.isThinking) {
+    return <ThinkingLabel />
+  }
+
   if (message.challenge) {
     if (message.challenge.artifactType === "values") {
       const challengeState = selectChallengeState(message.challenge)
       return (
         <ChatValuesAssessmentTrigger
           isCompleted={challengeState.isCompleted}
-          completedSummary={challengeState.isCompleted ? (challengeState.displayResponse ?? undefined) : undefined}
-          onComplete={(summary) => onArtifactComplete(message.id, summary)}
+          completedValues={challengeState.isCompleted && challengeState.displayResponse
+            ? challengeState.displayResponse.split(", ")
+            : undefined}
+          onComplete={(valueLabels) => onArtifactComplete(message.id, valueLabels.join(", "))}
         />
       )
     }
@@ -224,15 +463,21 @@ function MessageBubble({
         />
       )
     }
-    if (message.challenge.artifactType === "holland") {
+    if (message.challenge.artifactType === "interest-profile") {
       const challengeState = selectChallengeState(message.challenge)
       return (
-        <ChatHollandAssessmentTrigger
+        <ChatInterestProfileTrigger
           isCompleted={challengeState.isCompleted}
           completedCode={challengeState.isCompleted ? (challengeState.displayResponse ?? undefined) : undefined}
           onComplete={(code) => onArtifactComplete(message.id, code)}
         />
       )
+    }
+
+    if (message.challenge.artifactType === "cold-email") {
+      const challengeState = selectChallengeState(message.challenge)
+      if (challengeState.isCompleted) return <ArtifactSubmittedState challenge={message.challenge} />
+      return <ChatColdEmailTrigger onComplete={(summary) => onArtifactComplete(message.id, summary)} />
     }
 
     if (message.challenge.artifactType) {
@@ -506,46 +751,10 @@ function MessageInput({
   }
 
   return (
-    <div className="px-4 pb-4 bg-neutral-50">
-      <div className="max-w-3xl mx-auto">
-        <ChatInput
-          value={value}
-          onChange={setValue}
-          onSend={handleSend}
-          placeholder={mode === "curriculum" ? "Respond to Mande…" : "Ask anything about your career…"}
-          sendDisabled={!value.trim() && attachments.length === 0}
-          hint="Mande is AI and can make mistakes. Please double-check responses."
-          topSlot={
-            attachments.length > 0
-              ? attachments.map((file, i) => (
-                  <AttachmentPreview
-                    key={i}
-                    file={file}
-                    onDismiss={() => setAttachments((prev) => prev.filter((_, j) => j !== i))}
-                  />
-                ))
-              : undefined
-          }
-          actionsSlot={
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="size-5 flex items-center justify-center text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-1 transition-colors"
-            >
-              <Icon name="IconPaperclip2" size={16} />
-            </button>
-          }
-        />
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
-          multiple
-          onChange={handleFileChange}
-          className="hidden"
-        />
-      </div>
-    </div>
+    <ChatInputBar
+      placeholder={mode === "curriculum" ? "Respond to Mande…" : "Ask anything about your career…"}
+      onSend={onSend}
+    />
   )
 }
 
@@ -570,12 +779,50 @@ function groupMessages(messages: Message[]): MessageGroup[] {
   return groups
 }
 
+// ─── LessonEndFooter ──────────────────────────────────────────────────────────
+
+function LessonEndFooter({
+  nextLessonLabel,
+  onContinue,
+}: {
+  nextLessonLabel: string
+  onContinue: () => void
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0, transition: springs.snappy }}
+      className="shrink-0 border-t border-neutral-100 px-4 pb-4 pt-3 bg-neutral-50"
+    >
+      <div className="max-w-3xl mx-auto flex justify-center">
+        <Button
+          variant="primary"
+          className="rounded-full"
+          onClick={onContinue}
+          icon={<Icon name="IconArrowRight" size={16} />}
+          iconPosition="right"
+        >
+          Next: {nextLessonLabel}
+        </Button>
+      </div>
+    </motion.div>
+  )
+}
+
 // ─── ChatThread ───────────────────────────────────────────────────────────────
 
 export type ChatThreadProps = {
   sessions: ChatSession[]
   activeSessionId: string
   onSessionsChange: (sessions: ChatSession[]) => void
+  /** Called immediately when the current lesson's final artifact is completed. Backend integration point. */
+  onLessonComplete?: (lessonId: string) => void
+  /** Called when the user clicks "Continue" at a module boundary. */
+  onNextModule?: () => void
+  /** True when the lesson being completed is the last in the current module. */
+  isLastLesson?: boolean
+  /** Label shown on the module-boundary Continue CTA. */
+  nextLessonLabel?: string
 }
 
 function easeOutScroll(container: HTMLElement, target: number, duration = 300) {
@@ -592,15 +839,21 @@ function easeOutScroll(container: HTMLElement, target: number, duration = 300) {
   requestAnimationFrame(step)
 }
 
-export function ChatThread({ sessions, activeSessionId, onSessionsChange }: ChatThreadProps) {
+export function ChatThread({ sessions, activeSessionId, onSessionsChange, onLessonComplete, onNextModule, isLastLesson, nextLessonLabel }: ChatThreadProps) {
+  const sessionsRef = useRef(sessions)
+  sessionsRef.current = sessions
+
   const sentinelRef = useRef<HTMLDivElement>(null)
   const scrollOuterRef = useRef<HTMLDivElement>(null)
   const scrollContainerRef = useRef<HTMLDivElement>(null)
   const [challengeError, setChallengeError] = useState<string | null>(null)
   const [showTopScrollFade, setShowTopScrollFade] = useState(false)
   const [isAtBottom, setIsAtBottom] = useState(true)
+  const [lessonCompletePhase, setLessonCompletePhase] = useState<LessonCompletePhase>("idle")
+  const [completedLessonId, setCompletedLessonId] = useState("")
   const isAtBottomRef = useRef(true)
-  const sessionInitializedRef = useRef<string | null>(null)
+
+const sessionInitializedRef = useRef<string | null>(null)
   const activeSession = sessions.find((s) => s.id === activeSessionId)!
   // Pixels below the container top where user messages land — clears the nav fade (h-8 = 32px) with breathing room
   const USER_MSG_TOP_OFFSET = 40
@@ -709,7 +962,8 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
     lastMsg.challenge?.artifactType &&
     lastMsg.challenge.artifactType !== "work-preference" &&
     lastMsg.challenge.artifactType !== "values" &&
-    lastMsg.challenge.artifactType !== "holland" &&
+    lastMsg.challenge.artifactType !== "interest-profile" &&
+    lastMsg.challenge.artifactType !== "cold-email" &&
     !selectChallengeState(lastMsg.challenge).isCompleted
       ? lastMsg
       : null
@@ -720,15 +974,86 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   )
 
   const handleSend = (text: string) => {
+    const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     const newMsg: Message = {
       id: `m${Date.now()}`,
       role: "user",
       content: text,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      timestamp,
     }
+    const thinkingId = `thinking-${Date.now()}`
+    const thinkingMsg: Message = {
+      id: thinkingId,
+      role: "assistant",
+      content: "",
+      timestamp,
+      isThinking: true,
+    }
+
+    if (activeSession.mode === "curriculum") {
+      const hasAnyChallenge = activeSession.messages.some((m) => m.challenge)
+      if (!hasAnyChallenge) {
+        // First curriculum message → thinking → commitment artifact
+        onSessionsChange(sessions.map((s) =>
+          s.id === activeSessionId ? { ...s, messages: [...s.messages, newMsg, thinkingMsg] } : s
+        ))
+        window.setTimeout(() => {
+          const challengeMsg: Message = {
+            id: `commitment-${Date.now()}`,
+            role: "assistant",
+            content: "",
+            timestamp,
+            challenge: createCommitmentArtifactChallenge(),
+          }
+          onSessionsChange(sessionsRef.current.map((s) =>
+            s.id !== activeSessionId
+              ? s
+              : { ...s, messages: s.messages.map((m) => (m.id === thinkingId ? challengeMsg : m)) }
+          ))
+        }, 1400)
+      } else {
+        // Subsequent curriculum messages — no AI response in prototype
+        onSessionsChange(sessions.map((s) =>
+          s.id === activeSessionId ? { ...s, messages: [...s.messages, newMsg] } : s
+        ))
+      }
+      return
+    }
+
+    // Open mode: thinking → simulated response → streaming clears
     onSessionsChange(sessions.map((s) =>
-      s.id === activeSessionId ? { ...s, messages: [...s.messages, newMsg] } : s
+      s.id === activeSessionId ? { ...s, messages: [...s.messages, newMsg, thinkingMsg] } : s
     ))
+    window.setTimeout(() => {
+      const responseId = `response-${Date.now()}`
+      const picked = OPEN_MODE_RESPONSES[Math.floor(Math.random() * OPEN_MODE_RESPONSES.length)]
+      onSessionsChange(sessionsRef.current.map((s) =>
+        s.id !== activeSessionId
+          ? s
+          : {
+              ...s,
+              messages: s.messages.map((m) =>
+                m.id === thinkingId
+                  ? {
+                      id: responseId,
+                      role: "assistant" as const,
+                      content: picked.content,
+                      timestamp,
+                      isStreaming: true,
+                      assistantMeta: { summary: picked.summary, rationale: picked.rationale },
+                    }
+                  : m
+              ),
+            }
+      ))
+      window.setTimeout(() => {
+        onSessionsChange(sessionsRef.current.map((s) =>
+          s.id !== activeSessionId
+            ? s
+            : { ...s, messages: s.messages.map((m) => (m.id === responseId ? { ...m, isStreaming: false } : m)) }
+        ))
+      }, 700)
+    }, 1400)
   }
 
   const handleChallengeSubmit = (response: string) => {
@@ -825,46 +1150,95 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
   }
 
   const handleArtifactComplete = (messageId: string, summary: string) => {
+    const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+
+    // Resolve the next step from current (pre-update) state
+    const currentSession = sessions.find((s) => s.id === activeSessionId)
+    const targetMsg = currentSession?.messages.find((m) => m.id === messageId)
+    const artifactType = targetMsg?.challenge?.artifactType
+    const lessonId = targetMsg?.challenge?.lessonId ?? "lesson-discovering-options"
+    const nextStep = artifactType ? getArtifactFlowStep(artifactType, lessonId) : null
+
+    const thinkingId = `thinking-${Date.now()}`
+
+    // Mark artifact complete and add thinking message in one update
     onSessionsChange(
       sessions.map((s) => {
         if (s.id !== activeSessionId) return s
         const updatedMessages = s.messages.map((msg) =>
           msg.id === messageId && msg.challenge
-            ? {
-                ...msg,
-                challenge: createChallengeData({
-                  ...msg.challenge,
-                  response: summary,
-                }),
-              }
+            ? { ...msg, challenge: createChallengeData({ ...msg.challenge, response: summary }) }
             : msg
         )
-
-        const completed = updatedMessages.find((msg) => msg.id === messageId)?.challenge
-        const nextStep = completed?.artifactType ? ARTIFACT_FLOW_STEPS[completed.artifactType] : null
         if (!nextStep) return { ...s, messages: updatedMessages }
-
-        const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-        const followUps: Message[] = [
-          {
-            id: `artifact-note-${Date.now()}-${nextStep.id}`,
-            role: "assistant",
-            content: nextStep.assistant,
-            timestamp,
-          },
-        ]
-        if (nextStep.challenge) {
-          followUps.push({
-            id: `artifact-challenge-${Date.now()}-${nextStep.id}`,
-            role: "assistant",
-            content: "",
-            timestamp,
-            challenge: createChallengeData(nextStep.challenge),
-          })
-        }
-        return { ...s, messages: [...updatedMessages, ...followUps] }
+        const thinkingMsg: Message = { id: thinkingId, role: "assistant", content: "", timestamp, isThinking: true }
+        return { ...s, messages: [...updatedMessages, thinkingMsg] }
       })
     )
+
+    if (!nextStep) return
+
+    // After thinking delay: replace with streaming note (challenge added after streaming finishes)
+    window.setTimeout(() => {
+      const noteId = `note-${Date.now()}`
+      const noteContent =
+        typeof nextStep.assistant === "function" ? nextStep.assistant(summary) : nextStep.assistant
+
+      onSessionsChange(
+        sessionsRef.current.map((s) =>
+          s.id !== activeSessionId
+            ? s
+            : {
+                ...s,
+                messages: [
+                  ...s.messages.filter((m) => m.id !== thinkingId),
+                  {
+                    id: noteId,
+                    role: "assistant" as const,
+                    content: noteContent,
+                    timestamp,
+                    isStreaming: true,
+                    assistantMeta: artifactType && TRANSITION_META[artifactType]
+                      ? TRANSITION_META[artifactType]
+                      : { summary: "Processed response", rationale: "Reviewed your input and queued the next step." },
+                  },
+                ],
+              }
+        )
+      )
+
+      // After streaming: stop streaming and add challenge card in one update
+      window.setTimeout(() => {
+        onSessionsChange(
+          sessionsRef.current.map((s) => {
+            if (s.id !== activeSessionId) return s
+            const updatedMessages = s.messages.map((m) =>
+              m.id === noteId ? { ...m, isStreaming: false } : m
+            )
+            if (!nextStep.challenge) return { ...s, messages: updatedMessages }
+            return {
+              ...s,
+              messages: [
+                ...updatedMessages,
+                {
+                  id: `challenge-${Date.now()}`,
+                  role: "assistant" as const,
+                  content: "",
+                  timestamp,
+                  challenge: createChallengeData(nextStep.challenge!),
+                },
+              ],
+            }
+          })
+        )
+
+        if (nextStep.lessonComplete) {
+          setLessonCompletePhase("animating")
+          setCompletedLessonId(lessonId)
+          onLessonComplete?.(lessonId)
+        }
+      }, 700)
+    }, 1400)
   }
 
   return (
@@ -927,7 +1301,7 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
               )}
             </AnimatePresence>
           </div>
-          {activeArtifactMsg ? (
+          {activeArtifactMsg && lessonCompletePhase === "idle" ? (
             <ChatActiveArtifactFooterShell>
               <ChatActiveArtifactControls
                 challenge={activeArtifactMsg.challenge!}
@@ -935,6 +1309,21 @@ export function ChatThread({ sessions, activeSessionId, onSessionsChange }: Chat
                 onArtifactComplete={handleArtifactComplete}
               />
             </ChatActiveArtifactFooterShell>
+          ) : lessonCompletePhase === "animating" ? (
+            <div className="shrink-0 border-t border-neutral-100">
+              <LessonCompletionPanel
+                showCta={false}
+                onAnimationComplete={() => setLessonCompletePhase("ended")}
+              />
+            </div>
+          ) : lessonCompletePhase === "ended" ? (
+            <LessonEndFooter
+              nextLessonLabel={nextLessonLabel ?? "the next lesson"}
+              onContinue={() => {
+                onNextModule?.()
+                setLessonCompletePhase("idle")
+              }}
+            />
           ) : (
             <div className="shrink-0">
               <MessageInput

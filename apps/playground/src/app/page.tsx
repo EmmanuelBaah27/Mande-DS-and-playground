@@ -1,8 +1,7 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
 import { motion, AnimatePresence } from "motion/react"
 import { Icon, AppSidebar, cn } from "@mande/ui"
 import type { LessonState, CurriculumSectionConfig } from "@mande/ui"
@@ -10,101 +9,79 @@ import { ChatThread } from "../components/chat-thread"
 import { WelcomeState } from "../components/welcome-state"
 import { CurriculumView } from "../components/curriculum-view"
 import { DevTriggerPanel, type InjectableChallenge } from "../components/dev-trigger-panel"
-import { INITIAL_SESSIONS, CURRICULUM_MODULES, createChallengeData } from "../components/chat-data"
+import { INITIAL_SESSIONS, CURRICULUM_LESSONS, createChallengeData, deriveCareerProfile } from "../components/chat-data"
 import type { ChatSession, ChallengeResponseType } from "../components/chat-data"
+import { ChatCareerProfile } from "../components/chat-career-profile"
 
 // ─── Editable session title ───────────────────────────────────────────────────
 
 function EditableTitle({
   title,
   onTitleChange,
-  isCurriculum,
+  readOnly,
 }: {
   title: string
   onTitleChange: (title: string) => void
-  isCurriculum?: boolean
+  readOnly?: boolean
 }) {
-  const [editing, setEditing] = useState(false)
   const [draft, setDraft] = useState(title)
   const inputRef = useRef<HTMLInputElement>(null)
 
-  const startEdit = () => {
+  useEffect(() => {
     setDraft(title)
-    setEditing(true)
-    requestAnimationFrame(() => inputRef.current?.select())
-  }
+  }, [title])
 
   const save = () => {
-    setEditing(false)
     const trimmed = draft.trim()
-    if (trimmed && trimmed !== title) onTitleChange(trimmed)
+    if (!trimmed) {
+      setDraft(title)
+      return
+    }
+    if (trimmed !== title) onTitleChange(trimmed)
   }
 
-  const displayTitle = title.length > 40 ? title.slice(0, 40) + "…" : title
-
-  const curriculumIcon = isCurriculum ? (
-    <Icon name="IconNewspaper1" size={16} className="text-neutral-500" aria-hidden />
-  ) : null
-
-  return editing ? (
-    <div className="flex min-w-0 max-w-full items-center gap-2">
-      {curriculumIcon}
-      <input
-        ref={inputRef}
-        value={draft}
-        onChange={(e) => setDraft(e.target.value)}
-        onBlur={save}
-        onKeyDown={(e) => {
-          if (e.key === "Enter") save()
-          if (e.key === "Escape") setEditing(false)
-        }}
-        className="text-base-regular text-neutral-900 min-w-0 flex-1 rounded-1 border-none bg-transparent px-1 py-0 outline-none"
-        autoFocus
-      />
-    </div>
-  ) : (
-    <button
-      type="button"
-      onClick={startEdit}
-      className="text-base-regular text-neutral-900 flex max-w-full min-w-0 items-center gap-2 rounded-1 px-1 py-0 text-left transition-colors hover:bg-neutral-100"
-    >
-      {curriculumIcon}
-      <span className="min-w-0 truncate">{displayTitle}</span>
-    </button>
+  return (
+    <input
+      ref={inputRef}
+      value={draft}
+      readOnly={readOnly}
+      maxLength={readOnly ? undefined : 50}
+      onChange={readOnly ? undefined : (e) => setDraft(e.target.value)}
+      onFocus={readOnly ? undefined : (e) => e.target.select()}
+      onBlur={readOnly ? undefined : save}
+      onKeyDown={readOnly ? undefined : (e) => {
+        if (e.key === "Enter") inputRef.current?.blur()
+        if (e.key === "Escape") {
+          setDraft(title)
+          inputRef.current?.blur()
+        }
+      }}
+      className={cn(
+        "text-base-regular text-neutral-900 min-w-0 max-w-[240px] rounded-1 border border-transparent bg-transparent px-1 py-0 outline-none transition-colors",
+        readOnly
+          ? "cursor-default pointer-events-none"
+          : "cursor-default hover:bg-neutral-100 focus:cursor-text focus:bg-transparent focus:border-neutral-400"
+      )}
+    />
   )
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
-type View = "welcome" | "thread" | "curriculum"
+type View = "welcome" | "thread" | "curriculum" | "career-profile"
 
 const NAV_ITEMS = [
   { id: "new-chat", label: "New chat", icon: <Icon name="IconBubbleSparkle" size={20} /> },
-  { id: "overview", label: "Overview", icon: <Icon name="IconSquareGridCircle" size={20} /> },
+  { id: "career-profile", label: "Career profile", icon: <Icon name="IconSquareGridCircle" size={20} /> },
   { id: "curriculum", label: "Curriculum", icon: <Icon name="IconNewspaper1" size={20} /> },
 ]
 
 function getCurriculumSection(sessions: ChatSession[]): CurriculumSectionConfig {
-  const curriculumSession = sessions.find((s) => s.mode === "curriculum")
-  const activeModule = CURRICULUM_MODULES[0]
-  const totalLessons = activeModule.lessons.length
-  const activeLessonIndex = Math.max(
-    0,
-    Math.min(totalLessons - 1, (curriculumSession?.progress?.lessonIndex ?? 1) - 1)
-  )
-
-  const lessons = activeModule.lessons.map((lesson, index) => {
-    let state: LessonState = "locked"
-    if (index < activeLessonIndex) state = "completed"
-    if (index === activeLessonIndex) state = "active"
-    return { id: lesson.id, label: lesson.label, state }
+  const lessons = CURRICULUM_LESSONS.map((lesson) => {
+    const session = sessions.find((s) => s.id === lesson.id)
+    return { id: lesson.id, label: lesson.label, state: session?.lessonState ?? "locked" }
   })
-
-  return {
-    label: activeModule.label,
-    progress: "Active",
-    lessons,
-  }
+  return { label: "Career clarity", progress: "Active", lessons }
 }
 
 const SIDEBAR_W = 272      // w-64 (256) + p-2 each side (8+8)
@@ -117,16 +94,25 @@ const HEADER_CTRL_W = 156  // left zone width when fully collapsed
 const EASE_OUT: [number, number, number, number] = [0.23, 1, 0.32, 1]
 
 export default function ChatPage() {
-  const router = useRouter()
   const [sessions, setSessions] = useState<ChatSession[]>(INITIAL_SESSIONS)
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
-  const [activeLessonId, setActiveLessonId] = useState<string | null>(null)
   const [view, setView] = useState<View>("welcome")
   // ─── Sidebar collapse state ───────────────────────────────────────────────
+  const [curriculumHeadingVisible, setCurriculumHeadingVisible] = useState(true)
   const [collapsed, setCollapsed] = useState(false)
   const [hovering, setHovering] = useState(false)
   const [pinned, setPinned] = useState(false)
   const hoverLeaveTimerRef = useRef<number | null>(null)
+  // ─── Mobile drawer ────────────────────────────────────────────────────────
+  const [isMobile, setIsMobile] = useState(false)
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 640)
+    check()
+    window.addEventListener("resize", check)
+    return () => window.removeEventListener("resize", check)
+  }, [])
 
   const startHover = () => {
     if (hoverLeaveTimerRef.current) window.clearTimeout(hoverLeaveTimerRef.current)
@@ -163,7 +149,8 @@ export default function ChatPage() {
   const activeItem =
     view === "welcome" ? "new-chat" :
     view === "curriculum" ? "curriculum" :
-    (activeLessonId ?? activeSessionId ?? undefined)
+    view === "career-profile" ? "career-profile" :
+    (activeSessionId ?? undefined)
   const openSessions = sessions.filter((s) => s.mode === "open")
 
   const chatGroups = openSessions.length > 0
@@ -171,54 +158,52 @@ export default function ChatPage() {
     : []
 
   const handleNavigate = (id: string) => {
+    setMobileDrawerOpen(false)
     if (id === "new-chat") {
       setView("welcome")
       setActiveSessionId(null)
-      setActiveLessonId(null)
       return
     }
-    if (id === "overview") {
-      router.push("/overview")
+    if (id === "career-profile") {
+      setView("career-profile")
+      setActiveSessionId(null)
       return
     }
     if (id === "curriculum") {
+      setCurriculumHeadingVisible(true)
       setView("curriculum")
       setActiveSessionId(null)
-      setActiveLessonId(null)
       return
     }
 
-    // Direct session id match (open chats)
-    if (sessions.some((s) => s.id === id)) {
+    // Curriculum lesson sessions — guard locked lessons
+    const session = sessions.find((s) => s.id === id)
+    if (session?.mode === "curriculum") {
+      if (session.lessonState === "locked") return
       setActiveSessionId(id)
-      setActiveLessonId(null)
       setView("thread")
       return
     }
 
-    // Curriculum lesson ids — navigate to the curriculum chat session
-    const curriculumSession = sessions.find((s) => s.mode === "curriculum")
-    if (curriculumSession) {
-      setActiveSessionId(curriculumSession.id)
-      setActiveLessonId(id)
+    // Open chats
+    if (session) {
+      setActiveSessionId(id)
       setView("thread")
-      return
     }
-
-    setActiveSessionId(id)
-    setActiveLessonId(null)
-    setView("thread")
   }
 
   const handleResumeSession = (sessionId: string) => {
-    setActiveSessionId(sessionId)
+    // For curriculum sessions, resume the active (or first active) lesson session
+    const curriculumSessions = sessions.filter((s) => s.mode === "curriculum")
+    const activeLesson = curriculumSessions.find((s) => s.lessonState === "active")
+    setActiveSessionId(activeLesson?.id ?? sessionId)
     setView("thread")
   }
 
   const handleStartNewChat = (firstMessage: string) => {
     const newSession: ChatSession = {
       id: `open-${Date.now()}`,
-      title: firstMessage.slice(0, 40),
+      title: firstMessage.slice(0, 50),
       mode: "open",
       messages: [
         {
@@ -240,14 +225,41 @@ export default function ChatPage() {
     )
   }
 
+  /** Fires immediately when a lesson's terminal artifact completes — marks lesson done and unlocks the next. */
+  const handleLessonComplete = (lessonId: string) => {
+    const lessonIds = CURRICULUM_LESSONS.map((l) => l.id)
+    const nextLessonId = lessonIds[lessonIds.indexOf(lessonId) + 1]
+    setSessions((prev) =>
+      prev.map((s) => {
+        if (s.id === lessonId) return { ...s, lessonState: "completed" as const }
+        if (s.id === nextLessonId) return { ...s, lessonState: "active" as const }
+        return s
+      })
+    )
+  }
+
+  const handleStartFindingClarity = () => {
+    const cs = sessions.find((s) => s.id === "lesson-finding-clarity")
+    if (cs) {
+      setActiveSessionId(cs.id)
+      setView("thread")
+    }
+  }
+
+  // Derive next lesson label from the currently active lesson session
+  const activeLessonIdx = CURRICULUM_LESSONS.findIndex((l) => l.id === activeSessionId)
+  const nextLesson = CURRICULUM_LESSONS[activeLessonIdx + 1]
+  const nextLessonLabel = nextLesson?.label ?? "the next lesson"
+
   const toResponseType = (artifactType: InjectableChallenge["artifactType"]): ChallengeResponseType => {
     switch (artifactType) {
       case "reflection":
       case "commitment":
         return "reflection"
       case "work-preference":
-      case "holland":
-      case "interests":
+      case "interest-profile":
+      case "preferred-industries":
+      case "hobbies":
       case "values":
       case "opportunities":
       case "threats":
@@ -258,18 +270,28 @@ export default function ChatPage() {
       case "external-assessment":
         return "resource_link"
       case "craft":
+      case "cold-email":
         return "outreach_draft"
+      case "career-profile":
+        return "structured_list"
     }
   }
 
   const handleInjectChallenge = (injectable: InjectableChallenge) => {
-    if (!activeSessionId) return
+    // Inject into the lesson session matching the injectable's lessonId, or the active session
+    const targetSession = sessions.find((s) => s.id === injectable.lessonId) ?? sessions.find((s) => s.id === activeSessionId)
+    const targetSessionId = targetSession?.id
+    if (!targetSessionId) return
+
     const now = Date.now()
     const timestamp = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
 
+    setActiveSessionId(targetSessionId)
+    setView("thread")
+
     setSessions((prev) =>
       prev.map((session) => {
-        if (session.id !== activeSessionId) return session
+        if (session.id !== targetSessionId) return session
         return {
           ...session,
           messages: [
@@ -281,7 +303,7 @@ export default function ChatPage() {
               timestamp,
               challenge: createChallengeData({
                 challengeId: `inject-${injectable.artifactType}-${now}`,
-                lessonId: "artifact-dev-flow",
+                lessonId: injectable.lessonId,
                 responseType: toResponseType(injectable.artifactType),
                 artifactType: injectable.artifactType,
                 prompt: injectable.prompt,
@@ -295,7 +317,6 @@ export default function ChatPage() {
         }
       })
     )
-    setView("thread")
   }
 
   const logoLink = (
@@ -313,7 +334,7 @@ export default function ChatPage() {
     onNavigate: handleNavigate,
     onCollapse: handleCollapse,
     logo: logoLink,
-    user: { name: "Angela", initials: "A" },
+    user: { name: "Angela" },
   }
 
   return (
@@ -331,24 +352,27 @@ export default function ChatPage() {
         <div className="flex items-stretch py-3 mt-2">
           {/* Left zone — transparent; items only visible when collapsed */}
           <motion.div
-            className="flex items-center justify-between shrink-0 ml-2 pl-4 pr-3"
+            className="flex items-center justify-between shrink-0 ml-2 pl-1 pr-3"
             animate={{ width: collapsed ? HEADER_CTRL_W : SIDEBAR_CARD_W }}
             transition={{ duration: 0.22, ease: EASE_OUT }}
           >
-            <div style={{ pointerEvents: collapsed ? "auto" : "none" }}>
+            <div
+              style={{ pointerEvents: collapsed ? "auto" : "none" }}
+              className="hidden sm:block"
+            >
               {logoLink}
             </div>
             <motion.div
-              animate={{ opacity: collapsed ? 1 : 0 }}
+              animate={{ opacity: isMobile ? 1 : (collapsed ? 1 : 0) }}
               transition={{ duration: collapsed ? 0.1 : 0.08, delay: collapsed ? 0.16 : 0 }}
-              style={{ pointerEvents: collapsed ? "auto" : "none" }}
-              onMouseEnter={collapsed ? startHover : undefined}
-              onMouseLeave={collapsed ? endHover : undefined}
+              style={{ pointerEvents: (isMobile || collapsed) ? "auto" : "none" }}
+              onMouseEnter={(!isMobile && collapsed) ? startHover : undefined}
+              onMouseLeave={(!isMobile && collapsed) ? endHover : undefined}
             >
               <button
                 type="button"
-                onClick={collapsed ? handleTriggerClick : undefined}
-                aria-label={collapsed ? (pinned ? "Expand sidebar" : "Open sidebar") : undefined}
+                onClick={isMobile ? () => setMobileDrawerOpen(true) : (collapsed ? handleTriggerClick : undefined)}
+                aria-label={isMobile ? "Open navigation" : (collapsed ? (pinned ? "Expand sidebar" : "Open sidebar") : undefined)}
                 className="flex items-center justify-center p-1 rounded-2 text-muted-foreground hover:bg-neutral-100 shrink-0 [transition:background-color_var(--duration-moderate)_var(--ease-out)]"
               >
                 <Icon name="IconSidebarSimpleLeftWide" size={20} fill="outlined" />
@@ -357,16 +381,38 @@ export default function ChatPage() {
           </motion.div>
 
           {/* Right zone — bg-neutral-50 masks content scrolling under the header */}
-          <div className="flex-1 bg-neutral-50 flex items-center px-3 gap-3 min-w-0 pointer-events-auto">
-            {view === "curriculum" && (
-              <span className="text-base-regular text-neutral-900 px-1">Curriculum</span>
+          <div className="flex-1 bg-neutral-50 flex items-center px-3 gap-3 min-w-0 pointer-events-auto relative">
+            {view === "curriculum" && !curriculumHeadingVisible && (
+              <>
+                <span className="sm:hidden absolute inset-x-4 text-center text-base-regular text-foreground truncate pointer-events-none select-none">
+                  Curriculum
+                </span>
+                <span className="hidden sm:block text-base-regular text-foreground px-1">Curriculum</span>
+              </>
+            )}
+            {view === "career-profile" && (
+              <>
+                <span className="sm:hidden absolute inset-x-4 text-center text-base-regular text-foreground truncate pointer-events-none select-none">
+                  Career profile
+                </span>
+                <span className="hidden sm:block text-base-regular text-foreground px-1">Career profile</span>
+              </>
             )}
             {view === "thread" && activeSession && (
-              <EditableTitle
-                title={activeSession.title}
-                onTitleChange={handleTitleChange}
-                isCurriculum={activeSession.mode === "curriculum"}
-              />
+              <>
+                {/* Mobile: centered, truncated */}
+                <p className="sm:hidden absolute inset-x-4 text-center text-base-regular text-foreground truncate pointer-events-none select-none">
+                  {activeSession.title}
+                </p>
+                {/* sm+: left-aligned editable */}
+                <div className="hidden sm:block">
+                  <EditableTitle
+                    title={activeSession.title}
+                    onTitleChange={handleTitleChange}
+                    readOnly={activeSession.mode === "curriculum"}
+                  />
+                </div>
+              </>
             )}
             {view === "thread" && activeSession && (
               <div className="ml-auto shrink-0">
@@ -377,9 +423,9 @@ export default function ChatPage() {
         </div>
       </div>
 
-      {/* ── Sidebar body ─────────────────────────────────────────────────── */}
+      {/* ── Desktop sidebar body ─────────────────────────────────────── */}
       <AnimatePresence>
-        {!collapsed && (
+        {!collapsed && !isMobile && (
           <motion.div
             key="sidebar-body"
             className="absolute pt-2 px-2 pb-2 z-[65]"
@@ -403,9 +449,9 @@ export default function ChatPage() {
         )}
       </AnimatePresence>
 
-      {/* ── Floating panel — hover preview when collapsed ────────────── */}
+      {/* ── Desktop floating panel — hover preview when collapsed ──── */}
       <AnimatePresence>
-        {floatingVisible && (
+        {floatingVisible && !isMobile && (
           <motion.div
             key="floating"
             className="absolute px-2 pb-2 z-[65]"
@@ -421,19 +467,58 @@ export default function ChatPage() {
         )}
       </AnimatePresence>
 
+      {/* ── Mobile navigation drawer ─────────────────────────────────── */}
+      <AnimatePresence>
+        {mobileDrawerOpen && (
+          <motion.div
+            key="mobile-backdrop"
+            className="fixed inset-0 z-[64] bg-black/20"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.18 }}
+            onClick={() => setMobileDrawerOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+      <AnimatePresence>
+        {mobileDrawerOpen && (
+          <motion.div
+            key="mobile-drawer"
+            className="fixed inset-y-0 left-0 z-[65] pt-2 px-2 pb-2"
+            style={{ width: SIDEBAR_W }}
+            initial={{ x: -SIDEBAR_W }}
+            animate={{ x: 0 }}
+            exit={{ x: -SIDEBAR_W }}
+            transition={{ duration: 0.22, ease: EASE_OUT }}
+          >
+            <AppSidebar
+              {...sidebarProps}
+              className="shadow-sm h-full"
+              onCollapse={() => setMobileDrawerOpen(false)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Main content ─────────────────────────────────────────────── */}
       <motion.div
         className="relative flex-1 flex flex-col min-w-0 overflow-hidden bg-neutral-50"
-        animate={{ marginLeft: collapsed ? 0 : SIDEBAR_W }}
+        animate={{ marginLeft: (collapsed || isMobile) ? 0 : SIDEBAR_W }}
         transition={{ duration: 0.22, ease: EASE_OUT }}
         style={{ paddingTop: HEADER_H }}
       >
         {view === "curriculum" ? (
-          <CurriculumView />
+          <CurriculumView onHeadingVisibilityChange={setCurriculumHeadingVisible} />
+        ) : view === "career-profile" ? (
+          <ChatCareerProfile
+            profile={deriveCareerProfile(sessions)}
+            onStartFindingClarity={handleStartFindingClarity}
+          />
         ) : view === "welcome" || !activeSession ? (
           <WelcomeState
             userName="Angela"
-            resumeSession={sessions.find((s) => s.mode === "curriculum")}
+            resumeSession={sessions.find((s) => s.mode === "curriculum" && s.lessonState === "active")}
             onResumeSession={handleResumeSession}
             onStartNewChat={handleStartNewChat}
           />
@@ -442,6 +527,14 @@ export default function ChatPage() {
             sessions={sessions}
             activeSessionId={activeSessionId!}
             onSessionsChange={setSessions}
+            onLessonComplete={handleLessonComplete}
+            onNextModule={() => {
+              if (nextLesson) {
+                setActiveSessionId(nextLesson.id)
+                setView("thread")
+              }
+            }}
+            nextLessonLabel={nextLessonLabel}
           />
         )}
       </motion.div>

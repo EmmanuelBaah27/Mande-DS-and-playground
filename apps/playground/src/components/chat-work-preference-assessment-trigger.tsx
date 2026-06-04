@@ -3,7 +3,6 @@
 import * as React from "react"
 import {
   TOTAL_QUESTIONS,
-  STYLES,
   resultLabel,
   resultSubtitle,
 } from "../lib/assessments/work-preference-data"
@@ -49,23 +48,19 @@ export function ChatWorkPreferenceAssessmentTrigger({
     ? "in-progress"
     : "not-started"
 
-  let completedTitle = "Work Preference"
+  let completedTitle = "Work style"
   let completedSubtitle: string | undefined
-  let completedIcon = "🎯"
   if (isCompleted && completedSummary) {
     const sepIdx = completedSummary.indexOf(" · ")
     completedTitle = sepIdx !== -1 ? completedSummary.slice(0, sepIdx) : completedSummary
     completedSubtitle = sepIdx !== -1 ? completedSummary.slice(sepIdx + 3) : undefined
-    completedIcon =
-      Object.values(STYLES).find((s) => completedTitle.startsWith(s.name))?.icon ?? "🎯"
   }
 
   return (
     <>
       <ChatAssessmentCard
-        title={isCompleted ? completedTitle : "Work Preference"}
-        icon={isCompleted ? completedIcon : "🎯"}
-        duration={`${TOTAL_QUESTIONS} choices · ~3 min`}
+        title={isCompleted ? completedTitle : "Work style assessment"}
+        assessmentLabel={isCompleted ? "Work style" : undefined}
         description="Discover how you naturally approach tasks, teams, and problems."
         status={cardStatus}
         totalQuestions={TOTAL_QUESTIONS}
@@ -81,6 +76,7 @@ export function ChatWorkPreferenceAssessmentTrigger({
           currentQuestion={quiz.currentQuestion}
           result={quiz.result}
           onAnswer={quiz.answer}
+          onBack={quiz.back}
           onRestart={quiz.restart}
           onExit={handleExit}
           onBackToChat={handleBackToChat}

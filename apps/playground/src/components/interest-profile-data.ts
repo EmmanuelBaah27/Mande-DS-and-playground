@@ -1,21 +1,22 @@
-export type HollandType = "R" | "I" | "A" | "S" | "E" | "C"
+export type InterestProfileType = "R" | "I" | "A" | "S" | "E" | "C"
 
 export type LikertValue = 1 | 2 | 3 | 4
 
-export interface HollandQuestion {
+export interface InterestProfileQuestion {
   id: number
   text: string
-  type: HollandType
+  type: InterestProfileType
 }
 
-export interface HollandTypeDefinition {
+export interface InterestProfileTypeDefinition {
   name: string
   bracket: string
+  icon: string
   likes: string
   thrives: string
 }
 
-export const HOLLAND_QUESTIONS: HollandQuestion[] = [
+export const INTEREST_PROFILE_QUESTIONS: InterestProfileQuestion[] = [
   { id: 1,  text: "I like to work on cars",                                    type: "R" },
   { id: 2,  text: "I like to do puzzles",                                      type: "I" },
   { id: 3,  text: "I am good at working independently",                        type: "A" },
@@ -60,40 +61,46 @@ export const HOLLAND_QUESTIONS: HollandQuestion[] = [
   { id: 42, text: "I like to give speeches",                                   type: "E" },
 ]
 
-export const HOLLAND_TYPES: Record<HollandType, HollandTypeDefinition> = {
+export const INTEREST_PROFILE_TYPES: Record<InterestProfileType, InterestProfileTypeDefinition> = {
   R: {
     name: "Realistic",
-    bracket: "Doers",
+    bracket: "Doer",
+    icon: "🔧",
     likes: "You like work that involves designing, building, or repairing of equipment, materials, or structures, engaging in physical activity, or working outdoors.",
     thrives: "You will thrive in environments where hands-on problem solving is valued, where the results of your work are tangible and visible, and where you can engage directly with tools, materials, machines, or the natural world.",
   },
   I: {
     name: "Investigative",
-    bracket: "Thinkers",
+    bracket: "Thinker",
+    icon: "🔬",
     likes: "You like work that involves studying and researching non-living objects, living organisms, disease or other forms of impairment, or human behavior.",
     thrives: "You will thrive in environments where curiosity is rewarded, where you are given the space to ask questions, analyse data, and develop evidence-based conclusions, and where intellectual rigour is the standard.",
   },
   A: {
     name: "Artistic",
-    bracket: "Creators",
+    bracket: "Creator",
+    icon: "🎨",
     likes: "You like work that involves creating original visual artwork, performances, written works, food, or music for a variety of media, or applying artistic principles to the design of various objects and materials.",
     thrives: "You will thrive in environments where creative freedom is respected, where original thinking is celebrated over conformity, and where your work has the opportunity to move, inspire, or provoke a response in others.",
   },
   S: {
     name: "Social",
-    bracket: "Helpers",
+    bracket: "Helper",
+    icon: "🤝",
     likes: "You like work that involves helping, teaching, advising, assisting, or providing service to others.",
     thrives: "You will thrive in environments where human connection is at the centre of the work, where your ability to listen, empathise, and support others is genuinely valued, and where you can see the direct impact of your efforts on the people around you.",
   },
   E: {
     name: "Enterprising",
-    bracket: "Persuaders",
+    bracket: "Persuader",
+    icon: "🎯",
     likes: "You like work that involves managing, negotiating, marketing, or selling, typically in a business setting, or leading or advising people in political and legal situations.",
     thrives: "You will thrive in environments where ambition is rewarded, where you have the opportunity to lead, influence, and drive outcomes, and where the stakes are high enough to keep you genuinely engaged.",
   },
   C: {
     name: "Conventional",
-    bracket: "Organizers",
+    bracket: "Organizer",
+    icon: "📋",
     likes: "You like work that involves following procedures and regulations to organize information or data, typically in a business setting.",
     thrives: "You will thrive in environments where structure and precision are valued, where clear processes and systems exist to guide your work, and where your ability to maintain order, accuracy, and consistency makes a measurable difference.",
   },

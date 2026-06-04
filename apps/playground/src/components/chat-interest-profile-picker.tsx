@@ -20,25 +20,25 @@ const SLOTS = [
   { key: "tertiary"  as const, label: "Tertiary"  },
 ]
 
-type HollandState = { primary: string; secondary: string; tertiary: string }
+type InterestProfilePickerState = { primary: string; secondary: string; tertiary: string }
 
-export interface ChatHollandPickerProps {
+export interface ChatInterestProfilePickerProps {
   onSubmit: (code: [string, string, string]) => void
   badge?: React.ReactNode
   className?: string
 }
 
-export function ChatHollandPicker({ onSubmit, badge, className }: ChatHollandPickerProps) {
-  const [values, setValues] = React.useState<HollandState>({
+export function ChatInterestProfilePicker({ onSubmit, badge, className }: ChatInterestProfilePickerProps) {
+  const [values, setValues] = React.useState<InterestProfilePickerState>({
     primary: "",
     secondary: "",
     tertiary: "",
   })
 
-  const set = (slot: keyof HollandState) => (val: string) =>
+  const set = (slot: keyof InterestProfilePickerState) => (val: string) =>
     setValues((prev) => ({ ...prev, [slot]: val }))
 
-  const availableFor = (slot: keyof HollandState) => {
+  const availableFor = (slot: keyof InterestProfilePickerState) => {
     const others = SLOTS.filter((s) => s.key !== slot).map((s) => values[s.key])
     return RIASEC.filter((r) => !others.includes(r.id))
   }

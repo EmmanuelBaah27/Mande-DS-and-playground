@@ -40,11 +40,11 @@ export default function SettingsScreen() {
           Interests
         </h2>
         <div className="flex flex-wrap gap-sm">
-          <Chip variant="selected">Design</Chip>
-          <Chip variant="selected">Engineering</Chip>
+          <Chip state="selected">Design</Chip>
+          <Chip state="selected">Engineering</Chip>
           <Chip>Marketing</Chip>
           <Chip>Product</Chip>
-          <Chip variant="selected">AI</Chip>
+          <Chip state="selected">AI</Chip>
           <Chip>Sales</Chip>
         </div>
       </section>

@@ -3,16 +3,15 @@
 import * as React from "react"
 import { useState, useEffect } from "react"
 import { createPortal } from "react-dom"
-import { Button, Icon, cn, springs } from "@mande/ui"
-import { motion } from "motion/react"
-import { ChatAssessmentCard } from "./chat-assessment-card"
+import { Badge, Button, Icon, OverlayHeader, cn } from "@mande/ui"
 import { useValuesAssessmentState } from "../lib/assessments/useValuesAssessmentState"
+import { AssessmentQuestionScreen } from "./assessment-question-screen"
 import {
   CATEGORIES,
   QUESTIONS_BY_CATEGORY,
   SCALE,
-  computeCategoryScores,
-  type CategoryScore,
+  computeTopValues,
+  type TopValue,
 } from "../lib/assessments/values-assessment-data"
 
 const TOTAL = 55
@@ -23,9 +22,9 @@ const STORAGE_KEY = "mande:assessment:values:progress"
 function ProgressBar({ answered, total }: { answered: number; total: number }) {
   const pct = total > 0 ? Math.round((answered / total) * 100) : 0
   return (
-    <div className="h-1 w-full bg-neutral-200 rounded-full overflow-hidden">
+    <div className="h-0.5 w-full bg-neutral-200 rounded-full overflow-hidden">
       <div
-        className="h-full bg-neutral-900 rounded-full transition-all duration-300"
+        className="h-full bg-neutral-700 rounded-full transition-all duration-300"
         style={{ width: `${pct}%` }}
       />
     </div>
@@ -42,7 +41,7 @@ function ExitButton({ onClick }: { onClick: () => void }) {
       aria-label="Exit assessment"
       className="min-w-[44px] min-h-[44px] flex items-center justify-center -ml-2 text-muted-foreground hover:text-foreground transition-colors rounded-2"
     >
-      <Icon name="IconX" size={20} />
+      <Icon name="IconCrossMedium" size={16} />
     </button>
   )
 }
@@ -83,14 +82,12 @@ function QuizShell({
 function IntroScreen({ onBegin, onExit }: { onBegin: () => void; onExit: () => void }) {
   return (
     <div className="min-h-dvh bg-neutral-50 flex flex-col">
-      <div className="shrink-0 px-4 sm:px-6 pt-4 pb-3 flex items-center">
-        <ExitButton onClick={onExit} />
-      </div>
+      <OverlayHeader title="Values assessment" onClose={onExit} closeLabel="Exit assessment" />
       <div className="flex-1 flex flex-col px-4 sm:px-6 py-6 w-full max-w-lg mx-auto">
         <div className="flex flex-col gap-6 flex-1 justify-center">
           <div className="flex flex-col gap-3">
             <p className="text-small-medium text-muted-foreground uppercase tracking-wide">
-              Values Assessment
+              Values assessment
             </p>
             <h1 className="text-2xl sm:text-3xl font-semibold text-foreground leading-tight">
               Know What You&apos;re Really Working For
@@ -108,59 +105,6 @@ function IntroScreen({ onBegin, onExit }: { onBegin: () => void; onExit: () => v
           <div className="mt-auto pt-6">
             <Button variant="primary" size="default" onClick={onBegin} className="w-full sm:w-auto">
               Ready? Let&apos;s find out →
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── ResumeScreen ─────────────────────────────────────────────────────────────
-
-function ResumeScreen({
-  categoryIndex,
-  answeredCount,
-  onContinue,
-  onStartOver,
-  onExit,
-}: {
-  categoryIndex: number
-  answeredCount: number
-  onContinue: () => void
-  onStartOver: () => void
-  onExit: () => void
-}) {
-  const pct = Math.round((answeredCount / TOTAL) * 100)
-  const catName = CATEGORIES[categoryIndex]?.name ?? ""
-
-  return (
-    <div className="min-h-dvh bg-neutral-50 flex flex-col">
-      <div className="shrink-0 px-4 sm:px-6 pt-4 pb-3 flex items-center">
-        <ExitButton onClick={onExit} />
-      </div>
-      <div className="flex-1 flex flex-col px-4 sm:px-6 py-6 w-full max-w-lg mx-auto">
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-col gap-2">
-            <h1 className="text-2xl sm:text-3xl font-semibold text-foreground leading-tight">
-              Pick up where you left off
-            </h1>
-            <p className="text-base-regular text-muted-foreground">
-              {catName} · Category {categoryIndex + 1} of {CATEGORIES.length} · {pct}% complete
-            </p>
-          </div>
-          <div className="h-1.5 w-full bg-neutral-200 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-neutral-900 rounded-full transition-all duration-300"
-              style={{ width: `${pct}%` }}
-            />
-          </div>
-          <div className="flex flex-col sm:flex-row gap-3 pt-2">
-            <Button variant="primary" size="default" onClick={onContinue} className="w-full sm:w-auto">
-              Continue →
-            </Button>
-            <Button variant="secondary" size="default" onClick={onStartOver} className="w-full sm:w-auto">
-              Start over
             </Button>
           </div>
         </div>
@@ -221,12 +165,19 @@ function CategoryTransitionScreen({
 
 // ─── QuestionScreen ───────────────────────────────────────────────────────────
 
+const VALUES_OPTIONS = SCALE.map((s) => ({
+  id: s.score,
+  label: s.label,
+  icon: s.icon,
+}))
+
 function QuestionScreen({
   catIndex,
   questionIndex,
   answeredCount,
   onAnswer,
   onSkip,
+  onBack,
   onExit,
 }: {
   catIndex: number
@@ -234,159 +185,108 @@ function QuestionScreen({
   answeredCount: number
   onAnswer: (questionName: string, score: number) => void
   onSkip: () => void
+  onBack: () => void
   onExit: () => void
 }) {
-  const [selected, setSelected] = useState<number | null>(null)
   const catQs = QUESTIONS_BY_CATEGORY[catIndex]!
   const question = catQs[questionIndex]!
 
-  useEffect(() => {
-    setSelected(null)
-  }, [catIndex, questionIndex])
-
-  const handleSelect = (score: number) => {
-    if (selected !== null) return
-    setSelected(score)
-    setTimeout(() => {
-      onAnswer(question.name, score)
-    }, 320)
-  }
-
   return (
-    <QuizShell
-      answeredCount={answeredCount}
-      topLeft={<ExitButton onClick={onExit} />}
-      topRight={
-        <span className="text-small-regular text-muted-foreground tabular-nums text-right">
-          {CATEGORIES[catIndex]!.name} · {questionIndex + 1} / {catQs.length}
-        </span>
-      }
-    >
-      <div className="flex flex-col gap-6 flex-1">
-        <p className="text-base-regular sm:text-lg-regular text-foreground leading-relaxed pt-2">
-          {question.q}
-        </p>
-
-        <div className="grid grid-cols-2 gap-3">
-          {SCALE.map((option) => {
-            const isSelected = selected === option.score
-            return (
-              <button
-                key={option.score}
-                type="button"
-                onClick={() => handleSelect(option.score)}
-                disabled={selected !== null}
-                className={cn(
-                  "flex flex-col items-start gap-2 p-4 rounded-3 border text-left transition-all",
-                  "min-h-[80px] sm:min-h-[96px]",
-                  "active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-900",
-                  isSelected
-                    ? "border-neutral-900 bg-neutral-100"
-                    : "border-neutral-200 bg-white hover:border-neutral-400 hover:bg-neutral-50"
-                )}
-              >
-                <span className="text-xl leading-none" aria-hidden>{option.icon}</span>
-                <span className={cn(
-                  "text-small-regular leading-snug",
-                  isSelected ? "text-foreground font-medium" : "text-neutral-600"
-                )}>
-                  {option.label}
-                </span>
-              </button>
-            )
-          })}
-        </div>
-
-        <div className="flex justify-end mt-auto pt-2 pb-4">
-          <button
-            type="button"
-            onClick={onSkip}
-            disabled={selected !== null}
-            className="text-small-regular text-muted-foreground underline-offset-2 hover:underline min-h-[44px] px-2 flex items-center disabled:opacity-40"
-          >
-            Skip this one
-          </button>
-        </div>
-      </div>
-    </QuizShell>
+    <AssessmentQuestionScreen
+      title="Values assessment"
+      question={question.q}
+      options={VALUES_OPTIONS}
+      currentStep={answeredCount}
+      totalSteps={TOTAL}
+      onSelect={(id) => onAnswer(question.name, id as number)}
+      onBack={onBack}
+      onSkip={onSkip}
+      onExit={onExit}
+      selectionDelay={320}
+    />
   )
 }
 
 // ─── ResultsScreen ────────────────────────────────────────────────────────────
 
-function ResultsScreen({
-  scores,
-  onBackToChat,
+export function ValuesResultsScreen({
+  topValues,
+  answers,
+  onContinue,
   onRetake,
 }: {
-  scores: CategoryScore[]
-  onBackToChat: () => void
+  topValues: TopValue[]
+  answers: Record<string, number>
+  onContinue: () => void
   onRetake: () => void
 }) {
-  const sorted = [...scores].sort((a, b) => b.pct - a.pct)
-  const top3Names = new Set(sorted.slice(0, 3).map((s) => s.name))
-
   return (
     <div className="min-h-dvh bg-neutral-50 flex flex-col">
       <div className="flex-1 overflow-y-auto px-4 sm:px-6 py-10">
         <div className="w-full max-w-lg mx-auto flex flex-col gap-8">
           <div className="flex flex-col gap-2">
-            <p className="text-small-medium text-muted-foreground uppercase tracking-wide">
+            <p className="text-small-medium text-muted-foreground">
               Your Results
             </p>
-            <h1 className="text-2xl sm:text-3xl font-semibold text-foreground leading-tight">
+            <h1 className="text-H2 text-foreground">
               Here&apos;s what you&apos;re really working for.
             </h1>
-            <p className="text-base-regular text-neutral-600 leading-relaxed">
-              These are your work values — the things that need to be present for you to feel
-              genuinely fulfilled in your career. Use this as your compass, not a cage.
-              You&apos;re allowed to grow.
+            <p className="text-base-regular text-muted-foreground leading-relaxed">
+              Use this as your compass, not a cage. You&apos;re allowed to grow.
             </p>
           </div>
 
-          <div className="flex flex-col gap-4">
-            {sorted.map((cat, i) => {
-              const isTop3 = top3Names.has(cat.name)
-              const barPct = cat.answeredCount === 0 ? 0 : Math.round(cat.pct * 100)
+          <div className="flex flex-col rounded-3 border border-border overflow-hidden">
+            {topValues.map((tv, i) => {
+              const cat = CATEGORIES.find((c) => c.name === tv.categoryName)
+              const catIndex = CATEGORIES.findIndex((c) => c.name === tv.categoryName)
+              const top2Pills = (QUESTIONS_BY_CATEGORY[catIndex] ?? [])
+                .filter((q) => answers[q.name] !== undefined)
+                .sort((a, b) => (answers[b.name] ?? 0) - (answers[a.name] ?? 0))
+                .slice(0, 2)
               return (
-                <div key={cat.catIndex} className="flex flex-col gap-1.5">
+                <div
+                  key={tv.categoryName}
+                  className={cn(
+                    "bg-card px-4 py-4 flex flex-col gap-3",
+                    i < topValues.length - 1 && "border-b border-border"
+                  )}
+                >
                   <div className="flex items-center justify-between gap-3">
-                    <span className={cn(
-                      "text-small-regular leading-tight min-w-0",
-                      isTop3 ? "text-foreground font-medium" : "text-neutral-500"
-                    )}>
-                      {i < 3 && (
-                        <span className="text-neutral-400 mr-1.5 tabular-nums">{i + 1}.</span>
-                      )}
-                      {cat.name}
+                    <span className="text-base-medium text-foreground">
+                      {cat?.displayName ?? tv.categoryName}
                     </span>
-                    <span className={cn(
-                      "text-small-regular tabular-nums shrink-0",
-                      isTop3 ? "text-foreground font-medium" : "text-neutral-400"
-                    )}>
-                      {barPct}%
+                    <span className="w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center text-small-regular text-muted-foreground shrink-0">
+                      {i + 1}
                     </span>
                   </div>
-                  <div className="h-1.5 w-full bg-neutral-200 rounded-full overflow-hidden">
-                    <div
-                      className={cn(
-                        "h-full rounded-full transition-all duration-500",
-                        isTop3 ? "bg-neutral-900" : "bg-neutral-400"
-                      )}
-                      style={{ width: `${barPct}%` }}
-                    />
+                  <div className="flex flex-wrap gap-2">
+                    {top2Pills.map((q) => (
+                      <Badge key={q.name} appearance="outline" color="neutral" showIcon={false}>
+                        {q.displayLabel}
+                      </Badge>
+                    ))}
                   </div>
+                  <p className="text-small-regular text-muted-foreground leading-relaxed">
+                    {tv.interpretation}
+                  </p>
                 </div>
               )
             })}
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-2 pb-8">
-            <Button variant="primary" size="default" onClick={onBackToChat} className="w-full sm:w-auto">
-              Back to chat →
-            </Button>
-            <Button variant="secondary" size="default" onClick={onRetake} className="w-full sm:w-auto">
+          <div className="flex gap-3 pt-2 pb-8 justify-center">
+            <Button variant="secondary" size="default" onClick={onRetake}>
               Retake
+            </Button>
+            <Button
+              variant="primary"
+              size="default"
+              onClick={onContinue}
+              icon={<Icon name="IconArrowRight" size={16} />}
+              iconPosition="right"
+            >
+              Continue to chat
             </Button>
           </div>
         </div>
@@ -397,13 +297,13 @@ function ResultsScreen({
 
 // ─── ValuesAssessmentQuiz ─────────────────────────────────────────────────────
 
-type QuizScreen = "intro" | "resume" | "category-transition" | "question" | "results"
+type QuizScreen = "intro" | "category-transition" | "question" | "results"
 
 function ValuesAssessmentQuizContent({
   onComplete,
   onExit,
 }: {
-  onComplete: (topCategories: string[]) => void
+  onComplete: (topValues: TopValue[]) => void
   onExit: () => void
 }) {
   const state = useValuesAssessmentState()
@@ -414,7 +314,7 @@ function ValuesAssessmentQuizContent({
     if (state.status === "completed") {
       setScreen("results")
     } else if (state.status === "in-progress") {
-      setScreen(state.questionIndex === -1 ? "category-transition" : "resume")
+      setScreen(state.questionIndex === -1 ? "category-transition" : "question")
     } else {
       setScreen("intro")
     }
@@ -454,35 +354,15 @@ function ValuesAssessmentQuizContent({
     setScreen("question")
   }
 
-  const handleContinue = () => {
-    setScreen(state.questionIndex === -1 ? "category-transition" : "question")
-  }
-
-  const handleStartOver = () => {
-    state.retake()
-    setScreen("intro")
-  }
-
   const handleRetake = () => {
     state.retake()
     setScreen("intro")
   }
 
-  const scores = computeCategoryScores(state.answers)
+  const topValues = computeTopValues(state.answers)
 
   if (screen === "intro") {
     return <IntroScreen onBegin={() => setScreen("category-transition")} onExit={onExit} />
-  }
-  if (screen === "resume") {
-    return (
-      <ResumeScreen
-        categoryIndex={state.categoryIndex}
-        answeredCount={state.answeredCount}
-        onContinue={handleContinue}
-        onStartOver={handleStartOver}
-        onExit={onExit}
-      />
-    )
   }
   if (screen === "category-transition") {
     return (
@@ -502,15 +382,20 @@ function ValuesAssessmentQuizContent({
         answeredCount={state.answeredCount}
         onAnswer={handleAnswer}
         onSkip={handleSkip}
+        onBack={() => {
+          state.back()
+          setScreen("question")
+        }}
         onExit={onExit}
       />
     )
   }
   // results
   return (
-    <ResultsScreen
-      scores={scores}
-      onBackToChat={() => onComplete(state.topCategories)}
+    <ValuesResultsScreen
+      topValues={topValues}
+      answers={state.answers}
+      onContinue={() => onComplete(topValues)}
       onRetake={handleRetake}
     />
   )
@@ -522,7 +407,7 @@ export function ValuesAssessmentQuiz({
   onComplete,
   onExit,
 }: {
-  onComplete: (topCategories: string[]) => void
+  onComplete: (topValues: TopValue[]) => void
   onExit: () => void
 }) {
   const [mounted, setMounted] = React.useState(false)
@@ -545,7 +430,7 @@ export function ValuesAssessmentQuiz({
     <div
       role="dialog"
       aria-modal="true"
-      aria-label="Values Assessment"
+      aria-label="Values assessment"
       className="fixed inset-0 z-[200] overflow-hidden"
     >
       <ValuesAssessmentQuizContent onComplete={onComplete} onExit={onExit} />
