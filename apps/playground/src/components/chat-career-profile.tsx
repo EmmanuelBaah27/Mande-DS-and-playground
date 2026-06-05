@@ -78,6 +78,7 @@ function BuildingView({
           section={section}
           groups={groups}
           onContinueAssessment={onContinueAssessment}
+          framed={false}
         />
       </div>
     </div>
@@ -261,23 +262,30 @@ function ProfileBreakdown({
   section,
   groups,
   onContinueAssessment,
+  framed = true,
 }: {
   section: CareerProfileSection
   groups: Record<GroupKey, boolean>
   onContinueAssessment?: (group: GroupKey) => void
+  framed?: boolean
 }) {
+  const rows = PROFILE_GROUPS.map((g) =>
+    groups[g.key] ? (
+      <BreakdownRevealed key={g.key} group={g} section={section} framed={framed} />
+    ) : (
+      <BreakdownBlocked key={g.key} group={g} onContinue={onContinueAssessment} framed={framed} />
+    ),
+  )
+
+  // Building state: a plain flush list — no label, no card.
+  if (!framed) {
+    return <div className="flex flex-col">{rows}</div>
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <p className="text-small-medium text-neutral-400">Your profile breakdown</p>
-      <div className="rounded-3 border border-neutral-200 bg-white overflow-hidden">
-        {PROFILE_GROUPS.map((g) =>
-          groups[g.key] ? (
-            <BreakdownRevealed key={g.key} group={g} section={section} />
-          ) : (
-            <BreakdownBlocked key={g.key} group={g} onContinue={onContinueAssessment} />
-          ),
-        )}
-      </div>
+      <div className="rounded-3 border border-neutral-200 bg-white overflow-hidden">{rows}</div>
     </div>
   )
 }
@@ -307,9 +315,11 @@ function BreakdownRowHeader({
 function BreakdownRevealed({
   group,
   section,
+  framed = true,
 }: {
   group: GroupDef
   section: CareerProfileSection
+  framed?: boolean
 }) {
   return (
     <div className="border-b border-neutral-100 last:border-b-0">
@@ -318,10 +328,10 @@ function BreakdownRevealed({
         chevronRotation={90}
         chevronWrapperClassName="inline-flex shrink-0"
         chevronIconClassName="text-neutral-400"
-        buttonClassName="w-full flex items-center gap-3 px-4 py-4 text-left hover:bg-neutral-50"
+        buttonClassName={cn("w-full flex items-center gap-3 py-4 text-left hover:bg-neutral-50", framed ? "px-4" : "px-0")}
         header={<BreakdownRowHeader icon={group.icon} label={group.label} subtitle={group.subtitle} />}
       >
-        <div className="px-4 pb-4 pl-11">
+        <div className={cn("pb-4 pl-8", framed && "px-4 pl-11")}>
           <GroupContent groupKey={group.key} section={section} />
         </div>
       </Collapsible>
@@ -332,12 +342,14 @@ function BreakdownRevealed({
 function BreakdownBlocked({
   group,
   onContinue,
+  framed = true,
 }: {
   group: GroupDef
   onContinue?: (group: GroupKey) => void
+  framed?: boolean
 }) {
   return (
-    <div className="flex items-center gap-3 px-4 py-4 border-b border-neutral-100 last:border-b-0">
+    <div className={cn("flex items-center gap-3 py-4 border-b border-neutral-100 last:border-b-0", framed ? "px-4" : "px-0")}>
       <BreakdownRowHeader icon={group.icon} label={group.label} subtitle={group.subtitle} muted />
       <button
         type="button"
