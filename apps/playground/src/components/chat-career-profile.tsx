@@ -142,8 +142,8 @@ function IdentityHeader({
 }) {
   return (
     <div className="flex flex-col gap-3">
-      <span className="text-[40px] leading-none" aria-hidden>{PROFILE_EMOJI}</span>
-      <h1 className="text-display-small-medium text-foreground">{persona.headline}</h1>
+      <span className="text-display" aria-hidden>{PROFILE_EMOJI}</span>
+      <h1 className="text-H1 text-foreground">{persona.headline}</h1>
       <p className="text-base-regular text-neutral-500">
         {persona.summary}{" "}
         <button type="button" onClick={onLearnMore} className="text-base-medium text-foreground underline-offset-2 hover:underline">
@@ -229,9 +229,9 @@ function ReadinessCard({ readiness }: { readiness: NonNullable<CareerProfile["re
           </div>
         </div>
         <div className="flex items-baseline gap-1 shrink-0">
-          <span className="text-display-small-medium text-foreground tabular-nums">{readiness.years}</span>
+          <span className="text-H1 text-foreground tabular-nums">{readiness.years}</span>
           <span className="text-small-regular text-neutral-500">yrs</span>
-          <span className="text-display-small-medium text-foreground tabular-nums ml-1">{readiness.months}</span>
+          <span className="text-H1 text-foreground tabular-nums ml-1">{readiness.months}</span>
           <span className="text-small-regular text-neutral-500">mo</span>
         </div>
       </div>
@@ -297,8 +297,8 @@ function BreakdownRowHeader({
     <>
       <Icon name={icon} size={20} className={cn("shrink-0", muted ? "text-neutral-300" : "text-neutral-500")} />
       <span className="flex flex-col flex-1 min-w-0">
-        <span className={cn("text-base-regular", muted ? "text-neutral-400" : "text-foreground")}>{label}</span>
-        <span className={cn("text-small-regular", muted ? "text-neutral-400" : "text-neutral-500")}>{subtitle}</span>
+        <span className="text-base-regular text-foreground">{label}</span>
+        <span className="text-small-regular text-neutral-500">{subtitle}</span>
       </span>
     </>
   )
