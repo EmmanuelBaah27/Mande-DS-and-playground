@@ -81,7 +81,7 @@ function getCurriculumSection(sessions: ChatSession[]): CurriculumSectionConfig 
     const session = sessions.find((s) => s.id === lesson.id)
     return { id: lesson.id, label: lesson.label, state: session?.lessonState ?? "locked" }
   })
-  return { label: "Career clarity", progress: "Active", lessons }
+  return { label: "Career clarity", progress: "In progress", lessons }
 }
 
 const SIDEBAR_W = 272      // w-64 (256) + p-2 each side (8+8)
@@ -388,14 +388,6 @@ export default function ChatPage() {
                   Curriculum
                 </span>
                 <span className="hidden sm:block text-base-regular text-foreground px-1">Curriculum</span>
-              </>
-            )}
-            {view === "career-profile" && (
-              <>
-                <span className="sm:hidden absolute inset-x-4 text-center text-base-regular text-foreground truncate pointer-events-none select-none">
-                  Career profile
-                </span>
-                <span className="hidden sm:block text-base-regular text-foreground px-1">Career profile</span>
               </>
             )}
             {view === "thread" && activeSession && (

@@ -59,7 +59,7 @@ function BuildingView({
 }) {
   return (
     <div className="flex flex-col h-full bg-neutral-50 overflow-y-auto">
-      <div className="mx-auto w-full max-w-[600px] px-4 py-8 flex flex-col gap-6">
+      <div className="mx-auto w-full max-w-[640px] px-4 py-8 flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <h1 className="text-lg-medium text-foreground">We&apos;re building your profile</h1>
           <p className="text-base-regular text-neutral-500">
@@ -95,7 +95,7 @@ function ReadyView({
   return (
     <div className="flex flex-col h-full bg-neutral-50">
       <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-[600px] px-4 py-8 flex flex-col gap-6">
+        <div className="mx-auto w-full max-w-[640px] px-4 py-8 flex flex-col gap-6">
           {persona && <IdentityHeader persona={persona} onLearnMore={onLearnMore} />}
           {readiness && <ReadinessCard readiness={readiness} />}
 
@@ -305,13 +305,13 @@ function BreakdownRevealed({
   framed?: boolean
 }) {
   return (
-    <div className="border-b border-neutral-100 last:border-b-0">
+    <div className={cn(framed && "border-b border-neutral-100 last:border-b-0")}>
       <Collapsible
         chevronIcon="IconChevronRight"
         chevronRotation={90}
         chevronWrapperClassName="inline-flex shrink-0"
         chevronIconClassName="text-neutral-400"
-        buttonClassName={cn("w-full flex items-center gap-3 py-4 text-left hover:bg-neutral-50", framed ? "px-4" : "px-0")}
+        buttonClassName={cn("w-full flex items-center gap-3 text-left hover:bg-neutral-50", framed ? "px-4 py-4" : "px-0 py-2.5")}
         header={<BreakdownRowHeader icon={group.icon} label={group.label} subtitle={group.subtitle} />}
       >
         <div className={cn("pb-4 pl-8", framed && "px-4 pl-11")}>
@@ -330,7 +330,7 @@ function BreakdownBlocked({
   framed?: boolean
 }) {
   return (
-    <div className={cn("flex items-center gap-3 py-4 border-b border-neutral-100 last:border-b-0", framed ? "px-4" : "px-0")}>
+    <div className={cn("flex items-center gap-3", framed ? "px-4 py-4 border-b border-neutral-100 last:border-b-0" : "px-0 py-2.5")}>
       <BreakdownRowHeader icon={group.icon} label={group.label} subtitle={group.subtitle} />
     </div>
   )
@@ -429,7 +429,7 @@ function PathCard({ path }: { path: CareerPath }) {
 function UnlockPathsCta({ onStartFindingClarity }: { onStartFindingClarity?: () => void }) {
   return (
     <div className="shrink-0 px-4 pb-4 pt-2 bg-neutral-50">
-      <div className="mx-auto w-full max-w-[600px] rounded-3 border border-neutral-200 bg-white p-4 flex items-center justify-between gap-4">
+      <div className="mx-auto w-full max-w-[640px] rounded-3 border border-neutral-200 bg-white p-4 flex items-center justify-between gap-4">
         <span className="flex items-center gap-3 min-w-0">
           <span className="flex h-9 w-9 items-center justify-center rounded-2 bg-primary-100 shrink-0">
             <Icon name="IconStar" size={20} className="text-primary-700" />
