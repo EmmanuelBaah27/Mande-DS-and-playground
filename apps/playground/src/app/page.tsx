@@ -246,6 +246,25 @@ export default function ChatPage() {
     }
   }
 
+  // Open the discovery curriculum from the Career Profile building state:
+  // the active lesson if any, else the Introduction lesson, else the first curriculum lesson.
+  const handleDiscover = () => {
+    const curriculum = sessions.filter((s) => s.mode === "curriculum")
+    const target =
+      curriculum.find((s) => s.lessonState === "active") ??
+      curriculum.find((s) => s.id === "lesson-introduction") ??
+      curriculum[0]
+    if (target) {
+      setActiveSessionId(target.id)
+      setView("thread")
+    }
+  }
+
+  // Discovery has started once the user has sent a prompt in the Introduction lesson.
+  const discoveryStarted = (sessions.find((s) => s.id === "lesson-introduction")?.messages ?? []).some(
+    (m) => m.role === "user",
+  )
+
   // Derive next lesson label from the currently active lesson session
   const activeLessonIdx = CURRICULUM_LESSONS.findIndex((l) => l.id === activeSessionId)
   const nextLesson = CURRICULUM_LESSONS[activeLessonIdx + 1]
@@ -506,6 +525,8 @@ export default function ChatPage() {
           <ChatCareerProfile
             profile={deriveCareerProfile(sessions)}
             onStartFindingClarity={handleStartFindingClarity}
+            onDiscover={handleDiscover}
+            discoveryStarted={discoveryStarted}
           />
         ) : view === "welcome" || !activeSession ? (
           <WelcomeState

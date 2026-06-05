@@ -12,6 +12,10 @@ type ChatCareerProfileProps = {
   profile: CareerProfile
   onStartFindingClarity?: () => void
   onLearnMore?: () => void
+  /** Open the discovery curriculum (Introduction lesson) from the building state. */
+  onDiscover?: () => void
+  /** True once the user has started the curriculum (first prompt in Introduction). */
+  discoveryStarted?: boolean
 }
 
 type ProfileTab = "profile" | "paths"
@@ -27,13 +31,22 @@ export function ChatCareerProfile({
   profile,
   onStartFindingClarity,
   onLearnMore,
+  onDiscover,
+  discoveryStarted = false,
 }: ChatCareerProfileProps) {
   const { profile: section, completedArtifacts, pathsUnlocked, persona, readiness } = profile
   const groups = getGroupCompletion(completedArtifacts)
   const ready = groups.wired && groups.edge && groups.posture
 
   if (!ready) {
-    return <BuildingView section={section} groups={groups} />
+    return (
+      <BuildingView
+        section={section}
+        groups={groups}
+        onDiscover={onDiscover}
+        discoveryStarted={discoveryStarted}
+      />
+    )
   }
 
   return (
@@ -53,20 +66,29 @@ export function ChatCareerProfile({
 function BuildingView({
   section,
   groups,
+  onDiscover,
+  discoveryStarted,
 }: {
   section: CareerProfileSection
   groups: Record<GroupKey, boolean>
+  onDiscover?: () => void
+  discoveryStarted?: boolean
 }) {
   return (
     <div className="flex flex-col h-full bg-neutral-50 overflow-y-auto">
-      <div className="mx-auto w-full max-w-[640px] px-4 py-8 flex flex-col gap-6">
+      <div className="mx-auto w-full max-w-[640px] px-4 pt-2 pb-8 flex flex-col gap-4">
         <div className="flex flex-col gap-2">
-          <h1 className="text-lg-medium text-foreground">We&apos;re building your profile</h1>
+          <h1 className="text-H3 text-foreground">We&apos;re building your profile</h1>
           <p className="text-base-regular text-neutral-500">
             This fills in as you complete each assessment. Check back when it&apos;s done.
           </p>
         </div>
         <ProfileBreakdown section={section} groups={groups} framed={false} />
+        <div>
+          <Button variant="secondary" onClick={onDiscover}>
+            {discoveryStarted ? "Continue discovery" : "Discover yourself"}
+          </Button>
+        </div>
       </div>
     </div>
   )

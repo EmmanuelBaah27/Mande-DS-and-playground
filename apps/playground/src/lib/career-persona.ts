@@ -12,7 +12,7 @@ export const PROFILE_GROUPS: GroupDef[] = [
     key: "wired",
     label: "How you're wired",
     subtitle: "Interests, personality & values",
-    icon: "IconHeart2",
+    icon: "IconHead",
     artifacts: ["work-preference", "mbti", "interest-profile", "preferred-industries", "hobbies", "values"],
   },
   {
@@ -26,7 +26,7 @@ export const PROFILE_GROUPS: GroupDef[] = [
     key: "posture",
     label: "Career posture",
     subtitle: "Growing on your own terms",
-    icon: "IconArrowPathUp",
+    icon: "IconIncrease",
     artifacts: ["opportunities"],
   },
 ]
