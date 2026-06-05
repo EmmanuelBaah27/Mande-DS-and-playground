@@ -12,6 +12,11 @@ import { DevTriggerPanel, type InjectableChallenge } from "../components/dev-tri
 import { INITIAL_SESSIONS, CURRICULUM_LESSONS, createChallengeData, deriveCareerProfile } from "../components/chat-data"
 import type { ChatSession, ChallengeResponseType } from "../components/chat-data"
 import { ChatCareerProfile } from "../components/chat-career-profile"
+import {
+  CareerProfileDevPanel,
+  buildMockCareerProfile,
+  type CareerProfileDevState,
+} from "../components/career-profile-dev-panel"
 
 // ─── Editable session title ───────────────────────────────────────────────────
 
@@ -97,6 +102,8 @@ export default function ChatPage() {
   const [sessions, setSessions] = useState<ChatSession[]>(INITIAL_SESSIONS)
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
   const [view, setView] = useState<View>("welcome")
+  // Dev-only: force a Career Profile state (null = live data derived from sessions)
+  const [careerProfileDevState, setCareerProfileDevState] = useState<CareerProfileDevState | null>(null)
   // ─── Sidebar collapse state ───────────────────────────────────────────────
   const [curriculumHeadingVisible, setCurriculumHeadingVisible] = useState(true)
   const [collapsed, setCollapsed] = useState(false)
@@ -409,6 +416,15 @@ export default function ChatPage() {
                 <span className="hidden sm:block text-base-regular text-foreground px-1">Curriculum</span>
               </>
             )}
+            {view === "career-profile" && (
+              <div className="ml-auto shrink-0">
+                <CareerProfileDevPanel
+                  value={careerProfileDevState}
+                  onSelect={setCareerProfileDevState}
+                  placement="header"
+                />
+              </div>
+            )}
             {view === "thread" && activeSession && (
               <>
                 {/* Mobile: centered, truncated */}
@@ -523,7 +539,11 @@ export default function ChatPage() {
           <CurriculumView onHeadingVisibilityChange={setCurriculumHeadingVisible} />
         ) : view === "career-profile" ? (
           <ChatCareerProfile
-            profile={deriveCareerProfile(sessions)}
+            profile={
+              careerProfileDevState
+                ? buildMockCareerProfile(careerProfileDevState)
+                : deriveCareerProfile(sessions)
+            }
             onStartFindingClarity={handleStartFindingClarity}
             onDiscover={handleDiscover}
             discoveryStarted={discoveryStarted}
