@@ -11,7 +11,6 @@ import { PROFILE_GROUPS, getGroupCompletion, type GroupKey, type GroupDef } from
 type ChatCareerProfileProps = {
   profile: CareerProfile
   onStartFindingClarity?: () => void
-  onContinueAssessment?: (group: GroupKey) => void
   onLearnMore?: () => void
 }
 
@@ -27,7 +26,6 @@ const PROFILE_EMOJI = "🧰"
 export function ChatCareerProfile({
   profile,
   onStartFindingClarity,
-  onContinueAssessment,
   onLearnMore,
 }: ChatCareerProfileProps) {
   const { profile: section, completedArtifacts, pathsUnlocked, persona, readiness } = profile
@@ -35,9 +33,7 @@ export function ChatCareerProfile({
   const ready = groups.wired && groups.edge && groups.posture
 
   if (!ready) {
-    return (
-      <BuildingView section={section} groups={groups} onContinueAssessment={onContinueAssessment} />
-    )
+    return <BuildingView section={section} groups={groups} />
   }
 
   return (
@@ -57,29 +53,20 @@ export function ChatCareerProfile({
 function BuildingView({
   section,
   groups,
-  onContinueAssessment,
 }: {
   section: CareerProfileSection
   groups: Record<GroupKey, boolean>
-  onContinueAssessment?: (group: GroupKey) => void
 }) {
-  const doneCount = PROFILE_GROUPS.filter((g) => groups[g.key]).length
   return (
     <div className="flex flex-col h-full bg-neutral-50 overflow-y-auto">
       <div className="mx-auto w-full max-w-[600px] px-4 py-8 flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <h1 className="text-lg-medium text-foreground">We&apos;re building your profile</h1>
-          <p className="text-small-regular text-neutral-500">
+          <p className="text-base-regular text-neutral-500">
             This fills in as you complete each assessment. Check back when it&apos;s done.
           </p>
-          <p className="mt-1 text-small-medium text-neutral-400 tabular-nums">{doneCount} of 3 complete</p>
         </div>
-        <ProfileBreakdown
-          section={section}
-          groups={groups}
-          onContinueAssessment={onContinueAssessment}
-          framed={false}
-        />
+        <ProfileBreakdown section={section} groups={groups} framed={false} />
       </div>
     </div>
   )
@@ -261,19 +248,17 @@ function ReadinessCard({ readiness }: { readiness: NonNullable<CareerProfile["re
 function ProfileBreakdown({
   section,
   groups,
-  onContinueAssessment,
   framed = true,
 }: {
   section: CareerProfileSection
   groups: Record<GroupKey, boolean>
-  onContinueAssessment?: (group: GroupKey) => void
   framed?: boolean
 }) {
   const rows = PROFILE_GROUPS.map((g) =>
     groups[g.key] ? (
       <BreakdownRevealed key={g.key} group={g} section={section} framed={framed} />
     ) : (
-      <BreakdownBlocked key={g.key} group={g} onContinue={onContinueAssessment} framed={framed} />
+      <BreakdownBlocked key={g.key} group={g} framed={framed} />
     ),
   )
 
@@ -294,16 +279,14 @@ function BreakdownRowHeader({
   icon,
   label,
   subtitle,
-  muted,
 }: {
   icon: IconName
   label: string
   subtitle: string
-  muted?: boolean
 }) {
   return (
     <>
-      <Icon name={icon} size={20} className={cn("shrink-0", muted ? "text-neutral-300" : "text-neutral-500")} />
+      <Icon name={icon} size={20} className="shrink-0 text-neutral-500" />
       <span className="flex flex-col flex-1 min-w-0">
         <span className="text-base-regular text-foreground">{label}</span>
         <span className="text-small-regular text-neutral-500">{subtitle}</span>
@@ -341,24 +324,14 @@ function BreakdownRevealed({
 
 function BreakdownBlocked({
   group,
-  onContinue,
   framed = true,
 }: {
   group: GroupDef
-  onContinue?: (group: GroupKey) => void
   framed?: boolean
 }) {
   return (
     <div className={cn("flex items-center gap-3 py-4 border-b border-neutral-100 last:border-b-0", framed ? "px-4" : "px-0")}>
-      <BreakdownRowHeader icon={group.icon} label={group.label} subtitle={group.subtitle} muted />
-      <button
-        type="button"
-        onClick={() => onContinue?.(group.key)}
-        className="flex items-center gap-1 text-small-medium text-neutral-500 hover:text-foreground shrink-0"
-      >
-        <Icon name="IconLock" size={16} />
-        Continue
-      </button>
+      <BreakdownRowHeader icon={group.icon} label={group.label} subtitle={group.subtitle} />
     </div>
   )
 }
