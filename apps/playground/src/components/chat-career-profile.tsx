@@ -243,7 +243,7 @@ function Collapsible({
 
 function ReadinessCard({ readiness }: { readiness: NonNullable<CareerProfile["readiness"]> }) {
   return (
-    <div className="rounded-4 border border-neutral-200 bg-gradient-to-br from-blush-50 to-white p-5">
+    <div className="rounded-4 border border-neutral-200 bg-gradient-to-br from-blush-50 to-white p-4">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col gap-3">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blush-100">
@@ -464,7 +464,7 @@ function PathsUnlockSection({
     <div className="flex flex-col gap-4">
       <div className="grid gap-3 md:grid-cols-2 md:items-stretch">
         {/* Offer card */}
-        <div className="flex flex-col gap-4 rounded-4 bg-muted p-5">
+        <div className="flex flex-col gap-4 rounded-4 bg-muted px-4 py-3">
           <span className="flex h-9 w-9 items-center justify-center rounded-3 bg-lime-300">
             <Icon name="IconLock" size={20} className="text-neutral-900" />
           </span>
@@ -504,7 +504,7 @@ function PathsUnlockSection({
         chevronIcon="IconChevronRight"
         chevronRotation={90}
         chevronIconClassName="text-neutral-400"
-        buttonClassName="flex items-center gap-1.5 py-1 text-base-medium text-neutral-600 hover:text-foreground"
+        buttonClassName="flex items-center gap-1.5 py-1 text-left text-base-medium text-neutral-600 hover:text-foreground"
         header="What happens after you unlock your paths"
       >
         <div className="mt-4 flex flex-col gap-4">
@@ -535,7 +535,7 @@ function UnlockMethodRow({
     <button
       type="button"
       onClick={onClick}
-      className="flex items-center gap-3 rounded-4 border border-border bg-card p-4 text-left transition-colors hover:bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      className="flex items-center gap-3 rounded-4 border border-border bg-card px-4 py-3 text-left transition-colors hover:bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
     >
       <Icon name={icon} size={24} stroke="1.5" className="shrink-0 text-neutral-500" aria-hidden />
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">

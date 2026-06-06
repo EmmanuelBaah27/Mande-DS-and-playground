@@ -24,7 +24,7 @@ export function SponsorShareActions() {
 
       {/* Share actions */}
       <div className="flex flex-col gap-2.5">
-        <div className="flex gap-2.5">
+        <div className="flex flex-col gap-2.5">
           <Button
             variant="secondary"
             className="flex-1"
