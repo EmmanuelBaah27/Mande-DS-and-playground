@@ -109,14 +109,28 @@ All icons verified present in `@central-icons-react/all@1.1.178`.
 - **Mobile-first:** validate at mobile width first; the modal should remain centered and
   comfortable on wider viewports (DS `Dialog` default `max-w-lg`, narrower is fine).
 
+## Unlock behaviour (owned outside this modal)
+
+Confirmed: the modal deliberately carries no status. When the sponsor pays:
+
+- The **triggering screen** updates to show the now-unlocked **career paths** (this is where the
+  "your paths open automatically" promise is fulfilled).
+- An **email** is sent to the user notifying them their paths are unlocked.
+
+This modal's only job is to get the link shared; everything post-payment lives elsewhere.
+
+## Platforms
+
+There is both a **web** version and a **mobile app** version of this flow. The design is
+mobile-first precisely because it must hold up natively in the app as well as on web. Keep the
+modal layout/behaviour portable — no web-only assumptions beyond the share mechanics
+(`wa.me`, `mailto:`, clipboard), which map to native equivalents in the app.
+
 ## Open questions
 
-1. **The "no chasing / automatically" promise** implies the triggering screen surfaces live
-   status when the sponsor pays. That status was deliberately removed from the modal — confirm
-   the triggering screen owns it, so the promise isn't hollow.
-2. **Prefilled share message** copy — draft during build (mande-copywriter).
-3. **Where this lands long-term** — prototype lives in playground; promotion to DS or into the
-   real p4m app is a later decision.
+1. **Prefilled share message** copy — draft during build (mande-copywriter).
+2. **Where this lands long-term** — prototype lives in playground; promotion to DS or into the
+   real p4m web/app is a later decision.
 
 ## Verification surface
 
