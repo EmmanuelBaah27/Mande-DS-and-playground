@@ -116,7 +116,7 @@ test("PAYMENT_LINK is a non-empty https url", () => {
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" && node --test apps/playground/src/components/sponsor-link-share/__tests__/share-links.test.ts`
+Run: `export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" && npx tsx --test apps/playground/src/components/sponsor-link-share/__tests__/share-links.test.ts`
 Expected: FAIL — cannot find module `../share-links`.
 
 - [ ] **Step 3: Implement the module**
@@ -151,7 +151,7 @@ export function buildMailtoUrl(link: string): string {
 
 - [ ] **Step 4: Run the test to verify it passes**
 
-Run: `export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" && node --test apps/playground/src/components/sponsor-link-share/__tests__/share-links.test.ts`
+Run: `export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" && npx tsx --test apps/playground/src/components/sponsor-link-share/__tests__/share-links.test.ts`
 Expected: PASS — `pass 4 / fail 0`.
 
 - [ ] **Step 5: Commit**
@@ -514,7 +514,7 @@ Narrow the viewport (DevTools device toolbar) below 768px and reload. Confirm:
 
 - [ ] **Step 4: Re-run the unit tests**
 
-Run: `export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" && node --test apps/playground/src/components/sponsor-link-share/__tests__/share-links.test.ts`
+Run: `export NVM_DIR="$HOME/.nvm" && source "$NVM_DIR/nvm.sh" && npx tsx --test apps/playground/src/components/sponsor-link-share/__tests__/share-links.test.ts`
 Expected: PASS — `pass 4 / fail 0`.
 
 - [ ] **Step 5: Final commit (if any tweaks were needed)**
