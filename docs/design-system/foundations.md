@@ -102,7 +102,9 @@ Never combine raw Tailwind size + weight utilities. Always use the DS type scale
 | `text-small-medium` | 12px | 500 | Caption emphasis |
 | `text-small-semibold` | 12px | 600 | Caption strong |
 
-Headings are responsive (mobile → tablet → desktop sizes). Body and label sizes are fixed.
+Headings are responsive (mobile → tablet → desktop sizes). Body and label sizes are fixed
+across breakpoints. For scaling rules — including the platform-specific base-size floor (14px
+web / 16px mobile app) — see [`typography.md`](./typography.md).
 
 ---
 

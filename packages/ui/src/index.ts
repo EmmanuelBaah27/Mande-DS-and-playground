@@ -305,6 +305,7 @@ export {
 export { Alert, AlertTitle, AlertDescription, AlertAction } from "./components/ui/alert"
 
 export { Toaster } from "./components/ui/sonner"
+export { toast } from "sonner"
 
 // ── Layout ────────────────────────────────────────────────────────────────────
 export { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "./components/ui/accordion"
@@ -326,3 +327,4 @@ export type { CarouselApi } from "./components/ui/carousel"
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 export { cn } from "./lib/utils"
+export { useIsMobile } from "./hooks/use-mobile"
