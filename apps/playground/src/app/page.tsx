@@ -247,7 +247,7 @@ export default function ChatPage() {
 
   const handleStartFindingClarity = () => {
     const cs = sessions.find((s) => s.id === "lesson-finding-clarity")
-    if (cs) {
+    if (cs && cs.lessonState !== "locked") {
       setActiveSessionId(cs.id)
       setView("thread")
     }

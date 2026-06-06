@@ -155,10 +155,15 @@ function IdentityHeader({
       <span className="text-display" aria-hidden>{PROFILE_EMOJI}</span>
       <h1 className="text-H1 text-foreground">{persona.headline}</h1>
       <p className="text-base-regular text-neutral-500">
-        {persona.summary}{" "}
-        <button type="button" onClick={onLearnMore} className="text-base-medium text-foreground underline-offset-2 hover:underline">
-          Learn more
-        </button>
+        {persona.summary}
+        {onLearnMore && (
+          <>
+            {" "}
+            <button type="button" onClick={onLearnMore} className="text-base-medium text-foreground underline-offset-2 hover:underline">
+              Learn more
+            </button>
+          </>
+        )}
       </p>
     </div>
   )

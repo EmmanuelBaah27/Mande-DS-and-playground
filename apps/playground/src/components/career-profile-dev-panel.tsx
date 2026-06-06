@@ -3,6 +3,7 @@
 import {
   Button,
   Icon,
+  cn,
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
@@ -10,7 +11,6 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@mande/ui"
-import { cn } from "@mande/ui/lib/utils"
 import type { ArtifactType, CareerProfile, CareerProfileSection } from "./chat-data"
 import { deriveHeadline, deriveSummary, deriveReadiness, isProfileReady } from "../lib/career-persona"
 
@@ -29,7 +29,7 @@ const WIRED_ARTIFACTS: ArtifactType[] = [
   "hobbies",
   "values",
 ]
-const ALL_ARTIFACTS: ArtifactType[] = [...WIRED_ARTIFACTS, "skills-audit", "opportunities"]
+const ALL_ARTIFACTS: ArtifactType[] = [...WIRED_ARTIFACTS, "skills-audit", "opportunities", "commitment"]
 
 const FULL_SECTION: CareerProfileSection = {
   mbtiType: "INTJ",
