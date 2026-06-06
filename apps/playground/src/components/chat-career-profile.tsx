@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from "motion/react"
 import { Button, Icon, cn } from "@mande/ui"
 import type { IconName } from "@mande/ui"
 import type { CareerProfile, CareerProfileSection } from "./chat-data"
+import { CouponRedeemModal } from "./coupon-redeem/coupon-redeem-modal"
+import { SponsorLinkShare } from "./sponsor-link-share/sponsor-link-share"
 import { DEMO_CAREER_PATHS, type CareerPath, type CareerPathFit } from "../lib/career-profile-data"
 import { PROFILE_GROUPS, getGroupCompletion, type GroupKey, type GroupDef } from "../lib/career-persona"
 
@@ -76,7 +78,7 @@ function BuildingView({
 }) {
   return (
     <div className="flex flex-col h-full bg-neutral-50 overflow-y-auto">
-      <div className="mx-auto w-full max-w-[640px] px-4 pt-2 pb-8 flex flex-col gap-4">
+      <div className="mx-auto w-full max-w-3xl px-4 pt-2 pb-8 flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <h1 className="text-H3 text-foreground">We&apos;re building your profile</h1>
           <p className="text-base-regular text-neutral-500">
@@ -112,12 +114,16 @@ function ReadyView({
   onLearnMore?: () => void
 }) {
   const [activeTab, setActiveTab] = useState<ProfileTab>("profile")
+  const [couponOpen, setCouponOpen] = useState(false)
+  const [sponsorOpen, setSponsorOpen] = useState(false)
+  const [couponUnlocked, setCouponUnlocked] = useState(false)
+  const unlocked = pathsUnlocked || couponUnlocked
   const allGroups: Record<GroupKey, boolean> = { wired: true, edge: true, posture: true }
 
   return (
     <div className="flex flex-col h-full bg-neutral-50">
       <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto w-full max-w-[640px] px-4 py-8 flex flex-col gap-6">
+        <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:py-8 flex flex-col gap-5 sm:gap-6">
           {persona && <IdentityHeader persona={persona} onLearnMore={onLearnMore} />}
           {readiness && <ReadinessCard readiness={readiness} />}
 
@@ -128,15 +134,27 @@ function ReadyView({
 
           {activeTab === "profile" ? (
             <ProfileBreakdown section={section} groups={allGroups} />
-          ) : pathsUnlocked ? (
+          ) : unlocked ? (
             <PathsBody />
           ) : (
-            <PathsLockedTeaser />
+            <PathsUnlockSection
+              onUnlock={onStartFindingClarity}
+              onUseCoupon={() => setCouponOpen(true)}
+              onAskSomeone={() => setSponsorOpen(true)}
+            />
           )}
         </div>
       </div>
-
-      {!pathsUnlocked && <UnlockPathsCta onStartFindingClarity={onStartFindingClarity} />}
+      <CouponRedeemModal
+        open={couponOpen}
+        onOpenChange={setCouponOpen}
+        onRedeemed={() => setCouponUnlocked(true)}
+      />
+      <SponsorLinkShare
+        trigger={<span className="hidden" aria-hidden />}
+        open={sponsorOpen}
+        onOpenChange={setSponsorOpen}
+      />
     </div>
   )
 }
@@ -225,7 +243,7 @@ function Collapsible({
 
 function ReadinessCard({ readiness }: { readiness: NonNullable<CareerProfile["readiness"]> }) {
   return (
-    <div className="rounded-3 border border-neutral-200 bg-gradient-to-br from-blush-50 to-white p-5">
+    <div className="rounded-4 border border-neutral-200 bg-gradient-to-br from-blush-50 to-white p-5">
       <div className="flex items-start justify-between gap-4">
         <div className="flex flex-col gap-3">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blush-100">
@@ -414,14 +432,118 @@ function PathsBody() {
   )
 }
 
-function PathsLockedTeaser() {
+// ── Paths unlock section (locked tab state) ──────────────────────────────────
+
+const UNLOCK_METHODS: { id: "sponsor" | "coupon" | "pay"; icon: IconName; title: string; subtitle: string }[] = [
+  { id: "sponsor", icon: "IconPeople", title: "Ask someone to pay", subtitle: "Share a link with a family, mentor or sponsor" },
+  { id: "coupon", icon: "IconTicket", title: "Use a coupon", subtitle: "From a school, program or partner" },
+  { id: "pay", icon: "IconCash", title: "Pay now", subtitle: "Mobile money, card or bank transfer" },
+]
+
+const UNLOCK_NEXT_STEPS = [
+  {
+    label: "Next · Make your decision",
+    body: "With your paths in hand, we help you pick one with confidence, weighing trade-offs, timeline, and what fits your life right now.",
+  },
+  {
+    label: "Then · Build your roadmap",
+    body: "A structured plan to close your skills gaps: what to learn, in what order, and where, without wasting time or money.",
+  },
+]
+
+function PathsUnlockSection({
+  onUnlock,
+  onUseCoupon,
+  onAskSomeone,
+}: {
+  onUnlock?: () => void
+  onUseCoupon?: () => void
+  onAskSomeone?: () => void
+}) {
   return (
-    <div className="rounded-3 border border-dashed border-neutral-200 bg-white px-4 py-10 flex flex-col items-center gap-2 text-center">
-      <Icon name="IconLock" size={24} className="text-neutral-300" />
-      <p className="text-small-regular text-neutral-500 max-w-[280px]">
-        Unlock your paths to see 5 ranked career options generated from your profile.
-      </p>
+    <div className="flex flex-col gap-4">
+      <div className="grid gap-3 md:grid-cols-2 md:items-stretch">
+        {/* Offer card */}
+        <div className="flex flex-col gap-4 rounded-4 bg-muted p-5">
+          <span className="flex h-9 w-9 items-center justify-center rounded-3 bg-lime-300">
+            <Icon name="IconLock" size={20} className="text-neutral-900" />
+          </span>
+          <div className="flex flex-col gap-2">
+            <h2 className="text-xlg-medium text-foreground">Unlock your career paths</h2>
+            <p className="text-base-regular text-neutral-500">
+              5 career paths built from your whole profile, each ranked by how ready you are, with why it fits, the skills gap, and a first step for this week.
+            </p>
+          </div>
+          <p className="mt-auto flex items-baseline gap-1.5 pt-2">
+            <span className="text-H1 text-foreground">$30</span>
+            <span className="text-small-regular text-neutral-500">one-time</span>
+          </p>
+        </div>
+
+        {/* Payment methods */}
+        <div className="flex flex-col gap-3">
+          {UNLOCK_METHODS.map((method) => (
+            <UnlockMethodRow
+              key={method.title}
+              icon={method.icon}
+              title={method.title}
+              subtitle={method.subtitle}
+              onClick={
+                method.id === "coupon"
+                  ? onUseCoupon
+                  : method.id === "sponsor"
+                    ? onAskSomeone
+                    : onUnlock
+              }
+            />
+          ))}
+        </div>
+      </div>
+
+      <Collapsible
+        chevronIcon="IconChevronRight"
+        chevronRotation={90}
+        chevronIconClassName="text-neutral-400"
+        buttonClassName="flex items-center gap-1.5 py-1 text-base-medium text-neutral-600 hover:text-foreground"
+        header="What happens after you unlock your paths"
+      >
+        <div className="mt-4 flex flex-col gap-4">
+          {UNLOCK_NEXT_STEPS.map((step) => (
+            <div key={step.label} className="flex flex-col gap-1">
+              <span className="text-small-medium text-neutral-500">{step.label}</span>
+              <p className="text-base-medium text-neutral-700">{step.body}</p>
+            </div>
+          ))}
+        </div>
+      </Collapsible>
     </div>
+  )
+}
+
+function UnlockMethodRow({
+  icon,
+  title,
+  subtitle,
+  onClick,
+}: {
+  icon: IconName
+  title: string
+  subtitle: string
+  onClick?: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex items-center gap-3 rounded-4 border border-border bg-card p-4 text-left transition-colors hover:bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+    >
+      <Icon name={icon} size={24} stroke="1.5" className="shrink-0 text-neutral-500" aria-hidden />
+      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <span className="text-base-medium text-foreground">{title}</span>
+        <span className="text-small-regular text-neutral-500">{subtitle}</span>
+      </span>
+      <Icon name="IconChevronRight" size={16} className="shrink-0 text-neutral-400" aria-hidden />
+    </button>
   )
 }
 
@@ -442,29 +564,6 @@ function PathCard({ path }: { path: CareerPath }) {
       <p className="text-small-regular text-neutral-400">
         {path.alignments} alignment{path.alignments === 1 ? "" : "s"} · {path.conflicts} conflict{path.conflicts === 1 ? "" : "s"}
       </p>
-    </div>
-  )
-}
-
-// ── Unlock CTA (bottom-pinned) ───────────────────────────────────────────────
-
-function UnlockPathsCta({ onStartFindingClarity }: { onStartFindingClarity?: () => void }) {
-  return (
-    <div className="shrink-0 px-4 pb-4 pt-2 bg-neutral-50">
-      <div className="mx-auto w-full max-w-[640px] rounded-3 border border-neutral-200 bg-white p-4 flex items-center justify-between gap-4">
-        <span className="flex items-center gap-3 min-w-0">
-          <span className="flex h-9 w-9 items-center justify-center rounded-2 bg-primary-100 shrink-0">
-            <Icon name="IconStar" size={20} className="text-primary-700" />
-          </span>
-          <span className="flex flex-col min-w-0">
-            <span className="text-base-medium text-foreground">You&apos;re ready to see your paths.</span>
-            <span className="text-small-regular text-neutral-500 truncate">Generate 5 ranked career paths from your profile.</span>
-          </span>
-        </span>
-        <Button variant="primary" onClick={onStartFindingClarity} icon={<Icon name="IconLock" size={16} />} className="shrink-0">
-          Unlock paths
-        </Button>
-      </div>
     </div>
   )
 }
