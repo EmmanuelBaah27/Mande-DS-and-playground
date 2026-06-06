@@ -48,7 +48,7 @@ export function CopyLinkButton() {
               className="inline-flex"
             >
               {/* size is explicit on purpose: the icon sits under motion.span, outside Button's [&>svg] sizing selector */}
-              <Icon name={copied ? "IconCheckmark1" : "IconChainLink4"} size={20} />
+              <Icon name={copied ? "IconCheckmark1Small" : "IconChainLink4"} size={20} className="text-neutral-500" />
             </motion.span>
           </AnimatePresence>
         }
