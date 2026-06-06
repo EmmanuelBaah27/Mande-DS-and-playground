@@ -156,6 +156,7 @@
   --font-sans: "Inter", system-ui, sans-serif;
   --font-family-sans: "Inter", system-ui, sans-serif;
   --font-family-inter: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   --font-size-H1: 28px;
   --font-size-H2: 24px;
@@ -362,12 +363,12 @@
   --color-text-tertiary: var(--semantic-neutral-text-muted);
   --color-overlay: var(--semantic-surface-overlay);
 
-  /* Neutral alpha overlays — neutral-900 at opacity, for hover fills, scrim layers */
-  --color-neutral-a4:  var(--color-neutral-a4);
-  --color-neutral-a8:  var(--color-neutral-a8);
-  --color-neutral-a16: var(--color-neutral-a16);
-  --color-neutral-a20: var(--color-neutral-a20);
-  --color-neutral-a30: var(--color-neutral-a30);
+  /* Neutral alpha overlays (neutral-a4..a30) are static colors defined in the
+     @theme static block above — they must NOT be re-declared here. A self-
+     referential `--color-neutral-a8: var(--color-neutral-a8)` in @theme inline
+     suppresses the variable's emission to :root, leaving it undefined so every
+     `*-neutral-a8` utility falls back to black. They don't switch with dark
+     mode, so they belong only in @theme static. */
 
   --radius: 0.5rem;
 
@@ -475,6 +476,7 @@
    DARK MODE
    -------------------------------------------------------- */
 .dark {
+  color-scheme: dark;
   --semantic-neutral-bg: var(--color-neutral-900);
   --semantic-neutral-bg-subtle: var(--color-neutral-800);
   --semantic-neutral-bg-muted: var(--color-neutral-700);
@@ -695,6 +697,11 @@
   }
 
   html {
+    /* Declare the page as light by default so the browser doesn't apply its
+       own dark treatment to native UI (scrollbars, inputs, form controls,
+       dialog/toast compositing) when the OS is in dark mode. The .dark block
+       opts back into dark when the theme is explicitly enabled. */
+    color-scheme: light;
     /* Cascade smoothing to all descendants (including Storybook iframes) */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
