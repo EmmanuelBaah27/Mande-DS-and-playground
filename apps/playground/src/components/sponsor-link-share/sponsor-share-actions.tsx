@@ -22,9 +22,8 @@ export function SponsorShareActions() {
         </span>
       </div>
 
-      {/* Share via */}
+      {/* Share actions */}
       <div className="flex flex-col gap-2.5">
-        <span className="text-base-medium text-muted-foreground">Share via</span>
         <div className="flex gap-2.5">
           <Button
             variant="secondary"
