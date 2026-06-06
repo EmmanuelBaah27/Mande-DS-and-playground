@@ -46,8 +46,9 @@ A single-column layout, mobile-first, rendered inside the responsive container a
 1. **Close (X)** — desktop modal only, top-right. Provided automatically by `DialogContent`
    (`IconCrossMedium`). On the mobile bottom sheet there is no X (drag/scrim dismiss).
 2. **Title** (`DialogTitle`, rendered as visual h3, kept large): "Ask someone to pay for you."
-3. **Subtitle** (`DialogDescription`): "Send your link to whoever's backing you — a parent,
-   a mentor, a big sis. The moment they pay, your paths open automatically."
+3. **Subtitle** (`DialogDescription`, **base** type — `text-base-regular`, 14px web / 16px
+   mobile app): "Send your link to whoever's backing you — a parent, a mentor, a big sis.
+   The moment they pay, your paths open automatically."
 4. **Meta row** — a slim line with a top hairline rule, space-between:
    - left: "Unlock your paths"
    - right: **$30** one-time
