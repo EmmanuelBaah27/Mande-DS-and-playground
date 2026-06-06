@@ -21,6 +21,7 @@ const NAV = [
       { label: "Tabs", href: "/components/tabs" },
       { label: "Modal", href: "/components/modal" },
       { label: "Sheet", href: "/components/sheet" },
+      { label: "Sponsor link share", href: "/components/sponsor-link-share" },
       { label: "Progress", href: "/components/progress" },
       { label: "Step indicator", href: "/components/step-indicator" },
     ],
