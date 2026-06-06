@@ -6,6 +6,7 @@ import { Button, Icon, durations, easings } from "@mande/ui"
 import { PAYMENT_LINK } from "./share-links"
 
 const REVERT_MS = 1500
+const TRANSITION = { duration: durations.fast / 1000, ease: easings.out }
 
 export function CopyLinkButton() {
   const [copied, setCopied] = React.useState(false)
@@ -29,41 +30,43 @@ export function CopyLinkButton() {
     timeoutRef.current = setTimeout(() => setCopied(false), REVERT_MS)
   }
 
-  const transition = { duration: durations.fast / 1000, ease: easings.out }
-
   return (
-    <Button
-      variant="secondary"
-      className="w-full"
-      onClick={handleCopy}
-      aria-live="polite"
-      iconPosition="left"
-      icon={
+    <>
+      <Button
+        variant="secondary"
+        className="w-full"
+        onClick={handleCopy}
+        iconPosition="left"
+        icon={
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={copied ? "check" : "link"}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={TRANSITION}
+              className="inline-flex"
+            >
+              <Icon name={copied ? "IconCheckmark1" : "IconChainLink2"} size={20} />
+            </motion.span>
+          </AnimatePresence>
+        }
+      >
         <AnimatePresence mode="wait" initial={false}>
           <motion.span
-            key={copied ? "check" : "link"}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={transition}
-            className="inline-flex"
+            key={copied ? "copied" : "default"}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={TRANSITION}
           >
-            <Icon name={copied ? "IconCheckmark1" : "IconChainLink2"} size={20} />
+            {copied ? "Link copied" : "Copy payment link"}
           </motion.span>
         </AnimatePresence>
-      }
-    >
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.span
-          key={copied ? "copied" : "default"}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={transition}
-        >
-          {copied ? "Link copied" : "Copy payment link"}
-        </motion.span>
-      </AnimatePresence>
-    </Button>
+      </Button>
+      <span className="sr-only" aria-live="polite">
+        {copied ? "Link copied" : ""}
+      </span>
+    </>
   )
 }
