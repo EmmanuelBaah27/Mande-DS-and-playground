@@ -2,7 +2,7 @@
 
 import { Button, Icon } from "@mande/ui"
 import { CopyLinkButton } from "./copy-link-button"
-import { PAYMENT_LINK, buildMailtoUrl, buildWhatsappUrl } from "./share-links"
+import { PAYMENT_LINK, PRICE, buildMailtoUrl, buildWhatsappUrl } from "./share-links"
 
 export function SponsorShareActions() {
   const openWhatsapp = () => {
@@ -18,7 +18,7 @@ export function SponsorShareActions() {
       <div className="flex items-baseline justify-between gap-2 border-t border-border-subtle pt-3.5">
         <span className="text-base-medium text-foreground">Unlock your paths</span>
         <span className="text-base-regular text-muted-foreground">
-          <span className="text-foreground">$30</span> one-time
+          <span className="text-foreground">{PRICE}</span> one-time
         </span>
       </div>
 
