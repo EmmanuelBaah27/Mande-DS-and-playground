@@ -1,0 +1,52 @@
+"use client"
+
+import { Button, Icon } from "@mande/ui"
+import { CopyLinkButton } from "./copy-link-button"
+import { PAYMENT_LINK, buildMailtoUrl, buildWhatsappUrl } from "./share-links"
+
+export function SponsorShareActions() {
+  const openWhatsapp = () => {
+    window.open(buildWhatsappUrl(PAYMENT_LINK), "_blank", "noopener,noreferrer")
+  }
+  const openEmail = () => {
+    window.location.href = buildMailtoUrl(PAYMENT_LINK)
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      {/* Meta row: what you get + price */}
+      <div className="flex items-baseline justify-between gap-2 border-t border-border-subtle pt-3.5">
+        <span className="text-base-medium text-foreground">Unlock your paths</span>
+        <span className="text-base-regular text-muted-foreground">
+          <span className="text-foreground">$30</span> one-time
+        </span>
+      </div>
+
+      {/* Share via */}
+      <div className="flex flex-col gap-2.5">
+        <span className="text-base-medium text-muted-foreground">Share via</span>
+        <div className="flex gap-2.5">
+          <Button
+            variant="secondary"
+            className="flex-1"
+            iconPosition="left"
+            icon={<Icon name="IconWhatsapp" size={20} />}
+            onClick={openWhatsapp}
+          >
+            WhatsApp
+          </Button>
+          <Button
+            variant="secondary"
+            className="flex-1"
+            iconPosition="left"
+            icon={<Icon name="IconEmail1" size={20} />}
+            onClick={openEmail}
+          >
+            Email
+          </Button>
+        </div>
+        <CopyLinkButton />
+      </div>
+    </div>
+  )
+}
