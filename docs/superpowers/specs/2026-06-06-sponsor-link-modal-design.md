@@ -28,11 +28,23 @@ Replace the full-page screen with a focused **modal** triggered from the sponsor
 The modal does one thing — share the payment link — and nothing else. All secondary paths
 (pay-it-myself, coupon, wallet, cancel) live on the **triggering screen**, not in the modal.
 
+## Responsive container
+
+The same content renders in two containers depending on viewport:
+
+- **Mobile** → **bottom sheet** (DS `Drawer`), anchored to the bottom edge with a grab handle.
+  No X — dismiss via drag-down or scrim tap (native sheet behaviour).
+- **Desktop / wider** → **centered modal** (DS `Dialog`) with the X close, top-right.
+
+Switch via a viewport check at the breakpoint boundary (mobile-first; see Typography platform
+note). Body content is identical in both.
+
 ## Layout (top → bottom)
 
-A single-column modal, mobile-first, built on the DS `Dialog`:
+A single-column layout, mobile-first, rendered inside the responsive container above:
 
-1. **Close (X)** — top-right. Provided automatically by `DialogContent` (`IconCrossMedium`).
+1. **Close (X)** — desktop modal only, top-right. Provided automatically by `DialogContent`
+   (`IconCrossMedium`). On the mobile bottom sheet there is no X (drag/scrim dismiss).
 2. **Title** (`DialogTitle`, rendered as visual h3, kept large): "Ask someone to pay for you."
 3. **Subtitle** (`DialogDescription`): "Send your link to whoever's backing you — a parent,
    a mentor, a big sis. The moment they pay, your paths open automatically."
@@ -89,8 +101,10 @@ channel buttons are channel labels (not verb-first CTAs) because they sit under 
 
 ## Components used (`@mande/ui`)
 
-- `Dialog`, `DialogContent`, `DialogHeader`, `DialogTitle`, `DialogDescription` — modal shell
-  (`DialogContent` ships the X close automatically).
+- `Dialog`, `DialogContent`, `DialogHeader`, `DialogTitle`, `DialogDescription` — desktop modal
+  shell (`DialogContent` ships the X close automatically).
+- `Drawer`, `DrawerContent`, `DrawerHeader`, `DrawerTitle`, `DrawerDescription` — mobile bottom
+  sheet (grab handle, drag/scrim dismiss, no X).
 - `Button` with `variant="secondary"`, `icon={<Icon .../>}`, `iconPosition="left"` — all three
   share/copy buttons.
 - `Icon` — `IconWhatsapp`, `IconEmail1`, `IconChainLink2`, `IconCheckmark1` (copied state);
@@ -125,6 +139,9 @@ There is both a **web** version and a **mobile app** version of this flow. The d
 mobile-first precisely because it must hold up natively in the app as well as on web. Keep the
 modal layout/behaviour portable — no web-only assumptions beyond the share mechanics
 (`wa.me`, `mailto:`, clipboard), which map to native equivalents in the app.
+
+Type follows the DS platform floor (see [`typography.md`](../../design-system/typography.md)):
+**14px base on web, 16px on the mobile app** — body/label text never below that floor.
 
 ## Open questions
 
