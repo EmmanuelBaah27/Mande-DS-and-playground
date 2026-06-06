@@ -34,7 +34,7 @@ export function SponsorLinkShare({ trigger, open, onOpenChange }: SponsorLinkSha
         <DrawerTrigger asChild>{trigger}</DrawerTrigger>
         <DrawerContent className="px-5 pb-8">
           <DrawerHeader className="px-0 text-left">
-            <DrawerTitle className="text-H3">{SHARE_TITLE}</DrawerTitle>
+            <DrawerTitle>{SHARE_TITLE}</DrawerTitle>
             <DrawerDescription className="text-base-regular text-muted-foreground">
               {SHARE_DESCRIPTION}
             </DrawerDescription>
@@ -50,7 +50,7 @@ export function SponsorLinkShare({ trigger, open, onOpenChange }: SponsorLinkSha
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent className="sm:max-w-[420px]">
         <DialogHeader>
-          <DialogTitle className="text-H3">{SHARE_TITLE}</DialogTitle>
+          <DialogTitle>{SHARE_TITLE}</DialogTitle>
           <DialogDescription className="text-base-regular text-muted-foreground">
             {SHARE_DESCRIPTION}
           </DialogDescription>

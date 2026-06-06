@@ -13,7 +13,7 @@ export function SponsorShareActions() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 rounded-4 bg-neutral-50 p-4">
       {/* Meta row: what you get + price */}
       <div className="flex items-baseline justify-between gap-2 border-t border-neutral-200 pt-3.5">
         <span className="text-base-medium text-foreground">Unlock your paths</span>
