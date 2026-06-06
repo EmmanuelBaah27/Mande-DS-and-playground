@@ -44,7 +44,9 @@ A single-column modal, mobile-first, built on the DS `Dialog`:
    - WhatsApp (`IconWhatsapp`)
    - Email (`IconEmail1`)
 7. **Copy button** — full-width `secondary` button on its own row:
-   - "Copy payment link" (`IconChainLink2`)
+   - Default: "Copy payment link" (`IconChainLink2`)
+   - On click (copied state): "Link copied" (`IconCheckmark1`), holds ~1.5s, then reverts
+     to default. **Monochrome** — no color change; only the icon + label swap.
 
 ### Removed from the original screen
 - "Awaiting sponsor" status pill
@@ -65,8 +67,8 @@ A single-column modal, mobile-first, built on the DS `Dialog`:
 | Label | Share via |
 | Channel button 1 | WhatsApp |
 | Channel button 2 | Email |
-| Full-width button | Copy payment link |
-| Copy confirmation toast | (toast.success) "Payment link copied" |
+| Full-width button (default) | Copy payment link |
+| Full-width button (copied) | Link copied |
 
 Voice notes: sentence case throughout; "big sis" intentionally culturally grounded;
 channel buttons are channel labels (not verb-first CTAs) because they sit under a
@@ -77,7 +79,10 @@ channel buttons are channel labels (not verb-first CTAs) because they sit under 
 - **WhatsApp** → opens a WhatsApp share (`https://wa.me/?text=<encoded message + link>`)
   with a prefilled message.
 - **Email** → opens `mailto:` with a prefilled subject + body containing the link.
-- **Copy payment link** → `navigator.clipboard.writeText(link)`, then `toast.success("Payment link copied")`.
+- **Copy payment link** → `navigator.clipboard.writeText(link)`, then the button swaps in place
+  to a checkmark (`IconCheckmark1`) + "Link copied" for ~1.5s and reverts to default. Monochrome,
+  no color shift. Transition built via the `motion` skill at build time (gentle icon/label
+  crossfade). No toast.
 - **Close (X)** → dismisses the modal, returns to the triggering screen.
 - The prefilled WhatsApp/email message text should itself be on-brand (short, warm) — to be
   written via mande-copywriter during build.
@@ -88,9 +93,10 @@ channel buttons are channel labels (not verb-first CTAs) because they sit under 
   (`DialogContent` ships the X close automatically).
 - `Button` with `variant="secondary"`, `icon={<Icon .../>}`, `iconPosition="left"` — all three
   share/copy buttons.
-- `Icon` — `IconWhatsapp`, `IconEmail1`, `IconChainLink2` (close uses `IconCrossMedium` internally).
-- `Toaster` + `toast` (sonner) — copy confirmation. `<Toaster />` must be mounted once in the
-  page/layout hosting the demo.
+- `Icon` — `IconWhatsapp`, `IconEmail1`, `IconChainLink2`, `IconCheckmark1` (copied state);
+  close uses `IconCrossMedium` internally.
+- Copy confirmation is an **inline button state-swap** (no toast / sonner): local `copied`
+  state + timeout reverts after ~1.5s.
 
 All icons verified present in `@central-icons-react/all@1.1.178`.
 
