@@ -326,3 +326,4 @@ export type { CarouselApi } from "./components/ui/carousel"
 
 // ── Utilities ─────────────────────────────────────────────────────────────────
 export { cn } from "./lib/utils"
+export { useIsMobile } from "./hooks/use-mobile"
