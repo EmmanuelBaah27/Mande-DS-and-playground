@@ -16,8 +16,7 @@ import { deriveHeadline, deriveSummary, deriveReadiness, isProfileReady } from "
 
 /** Dev-only forced states for the Career Profile surface. `null` = live data from sessions. */
 export type CareerProfileDevState =
-  | "building-empty"
-  | "building-partial"
+  | "building"
   | "ready-locked"
   | "ready-unlocked"
 
@@ -32,12 +31,12 @@ const WIRED_ARTIFACTS: ArtifactType[] = [
 const ALL_ARTIFACTS: ArtifactType[] = [...WIRED_ARTIFACTS, "skills-audit", "opportunities", "commitment"]
 
 const FULL_SECTION: CareerProfileSection = {
-  mbtiType: "INTJ",
+  mbtiType: "INTP",
   workPreferenceType: "Focuser",
-  hollandCode: "AI",
+  hollandCode: "AIS",
   industries: ["Technology", "Design"],
   hobbies: ["Reading", "Music"],
-  values: ["Autonomy", "Impact"],
+  values: ["Autonomy", "Mastery", "Creativity", "Intellectual challenge", "Impact"],
   opportunities: "Accra · open to remote",
   skillsSummary: "Strong product and engineering fundamentals, with a portfolio of shipped work.",
 }
@@ -59,11 +58,7 @@ export function buildMockCareerProfile(state: CareerProfileDevState): CareerProf
   let pathsUnlocked = false
 
   switch (state) {
-    case "building-empty":
-      section = {}
-      completedArtifacts = []
-      break
-    case "building-partial":
+    case "building":
       section = WIRED_SECTION
       completedArtifacts = WIRED_ARTIFACTS
       break
@@ -96,8 +91,7 @@ export function buildMockCareerProfile(state: CareerProfileDevState): CareerProf
 }
 
 const STATE_OPTIONS: { value: CareerProfileDevState; label: string }[] = [
-  { value: "building-empty", label: "Building — empty" },
-  { value: "building-partial", label: "Building — partial" },
+  { value: "building", label: "Building" },
   { value: "ready-locked", label: "Ready — paths locked" },
   { value: "ready-unlocked", label: "Ready — paths unlocked" },
 ]

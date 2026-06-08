@@ -1,14 +1,22 @@
 "use client"
 
-import { useState } from "react"
-import { motion, AnimatePresence } from "motion/react"
-import { Button, Icon, cn } from "@mande/ui"
+import { useEffect, useRef, useState } from "react"
+import { motion, AnimatePresence, useReducedMotion } from "motion/react"
+import { Badge, Button, Icon, cn } from "@mande/ui"
 import type { IconName } from "@mande/ui"
-import type { CareerProfile, CareerProfileSection } from "./chat-data"
+import type { CareerProfile, CareerProfileSection, ReadinessBreakdownRow, ReadinessDimensionKey } from "./chat-data"
 import { CouponRedeemModal } from "./coupon-redeem/coupon-redeem-modal"
 import { SponsorLinkShare } from "./sponsor-link-share/sponsor-link-share"
 import { DEMO_CAREER_PATHS, type CareerPath, type CareerPathFit } from "../lib/career-profile-data"
-import { PROFILE_GROUPS, getGroupCompletion, type GroupKey, type GroupDef } from "../lib/career-persona"
+import {
+  PROFILE_GROUPS,
+  getGroupCompletion,
+  hollandRanked,
+  mbtiBreakdown,
+  valuesWithDescriptions,
+  type GroupKey,
+  type GroupDef,
+} from "../lib/career-persona"
 
 type ChatCareerProfileProps = {
   profile: CareerProfile
@@ -28,6 +36,10 @@ const PATHS_TABS: { id: CareerPathFit; label: string }[] = [
 ]
 
 const PROFILE_EMOJI = "🧰"
+
+// Top scroll-fade: container content is transparent (alpha 0) at the very top,
+// easing to fully opaque 40px down — items fade out as they scroll past the edge.
+const TOP_FADE_MASK = "linear-gradient(to bottom, transparent 0, #000 40px)"
 
 export function ChatCareerProfile({
   profile,
@@ -120,9 +132,36 @@ function ReadyView({
   const unlocked = pathsUnlocked || couponUnlocked
   const allGroups: Record<GroupKey, boolean> = { wired: true, edge: true, posture: true }
 
+  // Sticky unlock footer: floats at the bottom with a shadow while scrolling,
+  // and rests flush at the end of the list (sentinel in view = at the bottom).
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const sentinelRef = useRef<HTMLDivElement>(null)
+  const [unlockStuck, setUnlockStuck] = useState(false)
+  const showUnlockCard = activeTab === "profile" && !unlocked
+
+  useEffect(() => {
+    if (!showUnlockCard) {
+      setUnlockStuck(false)
+      return
+    }
+    const root = scrollRef.current
+    const sentinel = sentinelRef.current
+    if (!root || !sentinel) return
+    const observer = new IntersectionObserver(
+      ([entry]) => setUnlockStuck(!entry.isIntersecting),
+      { root },
+    )
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+  }, [showUnlockCard])
+
   return (
     <div className="flex flex-col h-full bg-neutral-50">
-      <div className="flex-1 overflow-y-auto">
+      <div
+        ref={scrollRef}
+        className="flex-1 overflow-y-auto"
+        style={{ maskImage: TOP_FADE_MASK, WebkitMaskImage: TOP_FADE_MASK }}
+      >
         <div className="mx-auto w-full max-w-3xl px-4 py-6 sm:py-8 flex flex-col gap-5 sm:gap-6">
           {persona && <IdentityHeader persona={persona} onLearnMore={onLearnMore} />}
           {readiness && <ReadinessCard readiness={readiness} />}
@@ -133,7 +172,15 @@ function ReadyView({
           </div>
 
           {activeTab === "profile" ? (
-            <ProfileBreakdown section={section} groups={allGroups} />
+            <div className="flex flex-col gap-3">
+              <ProfileBreakdown section={section} groups={allGroups} />
+              {showUnlockCard && (
+                <>
+                  <UnlockPathsCard onUnlock={() => setActiveTab("paths")} stuck={unlockStuck} />
+                  <div ref={sentinelRef} aria-hidden className="h-px" />
+                </>
+              )}
+            </div>
           ) : unlocked ? (
             <PathsBody />
           ) : (
@@ -209,6 +256,7 @@ function Collapsible({
   defaultOpen?: boolean
 }) {
   const [open, setOpen] = useState(defaultOpen)
+  const reduceMotion = useReducedMotion()
   return (
     <>
       <button
@@ -220,7 +268,7 @@ function Collapsible({
         {header}
         <motion.span
           animate={{ rotate: open ? chevronRotation : 0 }}
-          transition={{ duration: 0.18 }}
+          transition={{ duration: reduceMotion ? 0 : 0.18 }}
           className={chevronWrapperClassName}
         >
           <Icon name={chevronIcon} size={16} className={chevronIconClassName} />
@@ -233,7 +281,7 @@ function Collapsible({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.4, 0, 0.2, 1] }}
             style={{ overflow: "hidden" }}
           >
             {children}
@@ -246,22 +294,41 @@ function Collapsible({
 
 // ── Readiness card ───────────────────────────────────────────────────────────
 
+const READINESS_DIMENSION_ICONS: Record<ReadinessDimensionKey, IconName> = {
+  clarity: "IconLightbulbGlow",
+  skills: "IconToolbox",
+  jobSearch: "IconLightning",
+  initiative: "IconInboxEmpty",
+  visibility: "IconMegaphone",
+  openness: "IconGlobe",
+  location: "IconMapPin",
+}
+
+/** Bar color by score: red (low), orange (mid), green (strong). */
+function readinessBarColor(score: number): string {
+  if (score < 0.25) return "bg-red-500"
+  if (score < 0.55) return "bg-orange-400"
+  return "bg-green-500"
+}
+
 function ReadinessCard({ readiness }: { readiness: NonNullable<CareerProfile["readiness"]> }) {
+  const [open, setOpen] = useState(false)
+  const reduceMotion = useReducedMotion()
   return (
-    <div className="rounded-4 border border-neutral-200 bg-gradient-to-br from-blush-50 to-white p-4">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex flex-col gap-3">
+    <div className="rounded-4 bg-neutral-100 p-4 sm:p-5">
+      <div className="flex items-start justify-between gap-3 sm:gap-4">
+        <div className="flex min-w-0 flex-col gap-3">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blush-100">
             <Icon name="IconClock" size={20} className="text-blush-700" />
           </span>
           <div className="flex flex-col gap-1">
             <h2 className="text-base-medium text-foreground">How soon you might find a job</h2>
-            <p className="text-small-regular text-neutral-500 max-w-[340px]">
-              Based on your responses and the current job market, this is how long it&apos;d take today. The paths ahead can speed that up.
+            <p className="text-small-regular text-neutral-500">
+              Based on your responses and the current job market
             </p>
           </div>
         </div>
-        <div className="flex items-baseline gap-1 shrink-0">
+        <div className="flex shrink-0 items-baseline gap-1">
           <span className="text-H1 text-foreground tabular-nums">{readiness.years}</span>
           <span className="text-small-regular text-neutral-500">yrs</span>
           <span className="text-H1 text-foreground tabular-nums ml-1">{readiness.months}</span>
@@ -269,21 +336,84 @@ function ReadinessCard({ readiness }: { readiness: NonNullable<CareerProfile["re
         </div>
       </div>
 
-      <Collapsible
-        chevronIcon="IconChevronDownSmall"
-        chevronRotation={180}
-        buttonClassName="mt-4 w-full flex items-center justify-center gap-1 text-small-medium text-neutral-600 hover:text-foreground"
-        header="See full result"
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="mt-4 w-full text-center text-base-medium text-foreground transition-colors hover:text-neutral-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-2"
       >
-        <div className="mt-3 flex flex-col gap-2 border-t border-neutral-200 pt-3">
-          {readiness.breakdown.map((row) => (
-            <div key={row.label} className="flex items-center justify-between gap-4">
-              <span className="text-small-medium text-neutral-600">{row.label}</span>
-              <span className="text-small-regular text-neutral-500 text-right">{row.detail}</span>
+        {open ? "Hide details" : "See details"}
+      </button>
+
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="readiness-details"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.4, 0, 0.2, 1] }}
+            style={{ overflow: "hidden" }}
+          >
+            <div className="mt-3 flex flex-col rounded-3 border border-neutral-200 bg-white p-4 sm:p-5">
+              <span className="mb-2 text-base-medium text-foreground">Your assessment overview</span>
+              {readiness.breakdown.map((row, i) => (
+                <AssessmentRow key={row.key} row={row} defaultOpen={i === 0} />
+              ))}
             </div>
-          ))}
-        </div>
-      </Collapsible>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+function AssessmentRow({ row, defaultOpen = false }: { row: ReadinessBreakdownRow; defaultOpen?: boolean }) {
+  const [open, setOpen] = useState(defaultOpen)
+  const reduceMotion = useReducedMotion()
+  const pct = Math.max(4, Math.round(row.score * 100))
+  return (
+    <div className="py-3">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-expanded={open}
+        className="flex w-full items-start gap-3 text-left"
+      >
+        <Icon name={READINESS_DIMENSION_ICONS[row.key]} size={20} className="mt-0.5 shrink-0 text-foreground" />
+        <span className="flex min-w-0 flex-1 flex-col gap-2">
+          <span className="flex items-center justify-between gap-3">
+            <span className="text-base-medium text-foreground">{row.label}</span>
+            <motion.span
+              animate={{ rotate: open ? 180 : 0 }}
+              transition={{ duration: reduceMotion ? 0 : 0.18 }}
+              className="inline-flex shrink-0"
+            >
+              <Icon name="IconChevronDownMedium" size={16} className="text-neutral-400" />
+            </motion.span>
+          </span>
+          <span className="block h-1.5 w-full rounded-full bg-neutral-200">
+            <span
+              className={cn("block h-1.5 rounded-full", readinessBarColor(row.score))}
+              style={{ width: `${pct}%` }}
+            />
+          </span>
+        </span>
+      </button>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="dimension-desc"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: reduceMotion ? 0 : 0.22, ease: [0.4, 0, 0.2, 1] }}
+            style={{ overflow: "hidden" }}
+          >
+            <p className="pl-8 pt-3 text-small-regular text-neutral-500">{row.description}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
@@ -307,17 +437,8 @@ function ProfileBreakdown({
     ),
   )
 
-  // Building state: a plain flush list — no label, no card.
-  if (!framed) {
-    return <div className="flex flex-col">{rows}</div>
-  }
-
-  return (
-    <div className="flex flex-col gap-2">
-      <p className="text-small-medium text-neutral-400">Your profile breakdown</p>
-      <div className="rounded-3 border border-neutral-200 bg-white overflow-hidden">{rows}</div>
-    </div>
-  )
+  // Building state: a plain flush list. Ready state: a stack of separate cards.
+  return <div className={cn("flex flex-col", framed ? "gap-3" : "")}>{rows}</div>
 }
 
 function BreakdownRowHeader({
@@ -333,7 +454,7 @@ function BreakdownRowHeader({
     <>
       <Icon name={icon} size={20} className="shrink-0 text-neutral-500" />
       <span className="flex flex-col flex-1 min-w-0">
-        <span className="text-base-regular text-foreground">{label}</span>
+        <span className="text-base-medium text-foreground">{label}</span>
         <span className="text-small-regular text-neutral-500">{subtitle}</span>
       </span>
     </>
@@ -350,16 +471,17 @@ function BreakdownRevealed({
   framed?: boolean
 }) {
   return (
-    <div className={cn(framed && "border-b border-neutral-100 last:border-b-0")}>
+    <div className={cn(framed && "rounded-4 border border-neutral-200 bg-white overflow-hidden")}>
       <Collapsible
-        chevronIcon="IconChevronRight"
-        chevronRotation={90}
+        chevronIcon="IconChevronDownMedium"
+        chevronRotation={180}
         chevronWrapperClassName="inline-flex shrink-0"
         chevronIconClassName="text-neutral-400"
+        defaultOpen={group.key === "wired"}
         buttonClassName={cn("w-full flex items-center gap-3 text-left hover:bg-neutral-50", framed ? "px-4 py-4" : "px-0 py-2.5")}
         header={<BreakdownRowHeader icon={group.icon} label={group.label} subtitle={group.subtitle} />}
       >
-        <div className={cn("pb-4 pl-8", framed && "px-4 pl-11")}>
+        <div className={cn("pb-4", framed ? "px-4" : "")}>
           <GroupContent groupKey={group.key} section={section} />
         </div>
       </Collapsible>
@@ -384,13 +506,10 @@ function BreakdownBlocked({
 function GroupContent({ groupKey, section }: { groupKey: GroupKey; section: CareerProfileSection }) {
   if (groupKey === "wired") {
     return (
-      <div className="flex flex-col gap-3">
-        {section.mbtiType && <ProfileRow label="Personality (MBTI)" value={section.mbtiType} />}
-        {section.workPreferenceType && <ProfileRow label="Work style" value={section.workPreferenceType} />}
-        {section.hollandCode && <ProfileRow label="Interest profile" value={section.hollandCode} />}
-        {(section.industries?.length ?? 0) > 0 && <ChipRow label="Industries" items={section.industries!} />}
-        {(section.hobbies?.length ?? 0) > 0 && <ChipRow label="Hobbies" items={section.hobbies!} />}
-        {(section.values?.length ?? 0) > 0 && <ChipRow label="Values" items={section.values!} />}
+      <div className="flex flex-col gap-2">
+        <InterestProfileSection code={section.hollandCode} />
+        <PersonalitySection mbtiType={section.mbtiType} />
+        <ValuesSection values={section.values} />
       </div>
     )
   }
@@ -469,7 +588,7 @@ function PathsUnlockSection({
     <div className="flex flex-col gap-4">
       <div className="grid gap-3 md:grid-cols-2 md:items-stretch">
         {/* Offer card */}
-        <div className="flex flex-col gap-4 rounded-4 bg-muted px-4 py-3">
+        <div className="flex flex-col gap-4 rounded-3 border border-neutral-100 bg-neutral-50 px-4 py-3">
           <span className="flex h-9 w-9 items-center justify-center rounded-3 bg-lime-300">
             <Icon name="IconLock" size={20} className="text-neutral-900" />
           </span>
@@ -573,25 +692,157 @@ function PathCard({ path }: { path: CareerPath }) {
   )
 }
 
+// ── "How you're wired" sub-sections ──────────────────────────────────────────
+
+/** Light nested card with a small label, used inside the "wired" accordion. */
+function ProfileSubCard({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-3 border border-neutral-100 bg-neutral-50 p-4 flex flex-col gap-3">
+      <span className="text-small-medium text-neutral-400">{label}</span>
+      {children}
+    </div>
+  )
+}
+
+/** Square badge holding a single letter or number. */
+function SquareBadge({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="flex size-8 shrink-0 items-center justify-center rounded-3 border border-neutral-200 bg-white text-base-medium text-foreground">
+      {children}
+    </span>
+  )
+}
+
+function RankPill({ isTop, children }: { isTop: boolean; children: React.ReactNode }) {
+  return (
+    <Badge
+      color={isTop ? "success" : "neutral"}
+      appearance={isTop ? "muted" : "subtle"}
+      size="sm"
+      showIcon={false}
+      className="shrink-0"
+    >
+      {children}
+    </Badge>
+  )
+}
+
+function InterestProfileSection({ code }: { code?: string }) {
+  const rows = hollandRanked(code)
+  if (rows.length === 0) return null
+  return (
+    <ProfileSubCard label="Interest profile">
+      <div className="flex flex-col gap-3">
+        {rows.map((row) => (
+          <div key={row.letter} className="flex items-start gap-3">
+            <SquareBadge>{row.letter}</SquareBadge>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-baseline justify-between gap-2">
+                <span className="text-base-medium text-foreground">{row.name}</span>
+                <RankPill isTop={row.isTop}>{row.rank}</RankPill>
+              </div>
+              <p className="mt-0.5 text-small-regular text-neutral-500">{row.summary}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </ProfileSubCard>
+  )
+}
+
+function PersonalitySection({ mbtiType }: { mbtiType?: string }) {
+  const mb = mbtiBreakdown(mbtiType)
+  if (!mb) return null
+  return (
+    <ProfileSubCard label="Personality">
+      <div className="flex flex-col gap-1">
+        <h3 className="text-lg-medium text-foreground">
+          {mbtiType!.toUpperCase()} · {mb.archetype}
+        </h3>
+        <p className="text-small-regular text-neutral-500">{mb.description}</p>
+      </div>
+      <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+        {mb.dimensions.map((d) => (
+          <div key={d.letter} className="flex items-center gap-2">
+            <SquareBadge>{d.letter}</SquareBadge>
+            <span className="text-base-regular text-foreground">{d.label}</span>
+          </div>
+        ))}
+      </div>
+    </ProfileSubCard>
+  )
+}
+
+function ValuesSection({ values }: { values?: string[] }) {
+  const rows = valuesWithDescriptions(values)
+  if (rows.length === 0) return null
+  return (
+    <ProfileSubCard label="Values">
+      <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+        {rows.map((value, i) => (
+          <div key={value.name} className="flex items-start gap-3">
+            <SquareBadge>{i + 1}</SquareBadge>
+            <div className="flex-1 min-w-0">
+              <span className="text-base-medium text-foreground">{value.name}</span>
+              {value.description && (
+                <p className="mt-0.5 text-small-regular text-neutral-500">{value.description}</p>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    </ProfileSubCard>
+  )
+}
+
+// ── Unlock paths CTA (Profile tab, locked) ───────────────────────────────────
+
+function UnlockPathsCard({ onUnlock, stuck = false }: { onUnlock: () => void; stuck?: boolean }) {
+  return (
+    // Sticky wrapper docks at the bottom. While floating, a gradient above the card
+    // eases the list out (instead of a hard cut), and the 12px neutral-50 band below
+    // masks content beneath — doubling as bottom spacing at rest.
+    <div className="sticky bottom-0 z-10">
+      <div
+        aria-hidden
+        className={cn(
+          "pointer-events-none absolute inset-x-0 bottom-full h-8 bg-gradient-to-b from-transparent to-neutral-50 transition-opacity duration-200",
+          stuck ? "opacity-100" : "opacity-0",
+        )}
+      />
+      <div className="bg-neutral-50 pb-3">
+        <div
+          className={cn(
+            "flex flex-col gap-4 rounded-4 border border-neutral-200 bg-white p-4 transition-shadow",
+            stuck && "shadow-sm",
+          )}
+        >
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-3 bg-lime-300">
+          <Icon name="IconLocation" size={20} className="text-lime-800" aria-hidden />
+        </span>
+        <div className="flex items-end justify-between gap-3">
+          <div className="flex min-w-0 flex-col gap-1">
+            <h2 className="text-base-medium text-foreground">You&apos;re ready to see your paths.</h2>
+            <p className="text-small-regular text-neutral-500">
+              Five paths, ranked by how ready you are — built from your whole profile.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onUnlock}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full bg-lime-300 px-4 py-2 text-base-medium text-neutral-900 transition-colors hover:bg-lime-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <Icon name="IconLock" size={16} aria-hidden />
+            Unlock paths
+          </button>
+        </div>
+      </div>
+      </div>
+    </div>
+  )
+}
+
 // ── Shared bits ──────────────────────────────────────────────────────────────
-
-function ProfileRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between py-1.5">
-      <span className="text-small-regular text-neutral-500">{label}</span>
-      <span className="text-small-medium text-foreground">{value}</span>
-    </div>
-  )
-}
-
-function ChipRow({ label, items }: { label: string; items: string[] }) {
-  return (
-    <div className="flex flex-col gap-2">
-      <span className="text-small-medium text-neutral-500">{label}</span>
-      <div className="flex flex-wrap gap-1.5">{items.map((i) => <Chip key={i}>{i}</Chip>)}</div>
-    </div>
-  )
-}
 
 function Chip({ children }: { children: React.ReactNode }) {
   return (

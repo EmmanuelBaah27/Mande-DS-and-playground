@@ -350,7 +350,21 @@ export type CareerProfileSection = {
   skillsSummary?: string       // skills audit summary
 }
 
-export type ReadinessBreakdownRow = { label: string; detail: string }
+export type ReadinessDimensionKey =
+  | "clarity"
+  | "skills"
+  | "jobSearch"
+  | "initiative"
+  | "visibility"
+  | "openness"
+  | "location"
+
+export type ReadinessBreakdownRow = {
+  key: ReadinessDimensionKey
+  label: string
+  description: string
+  score: number // 0–1 — drives bar length and color
+}
 
 export type CareerReadiness = {
   years: number
