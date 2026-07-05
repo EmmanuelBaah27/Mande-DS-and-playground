@@ -104,13 +104,15 @@ UnlockPathsCard (only when !unlocked)         ← CP lime badge + copy + lime "U
 
 ## Done criteria
 
-- [ ] Ready Profile tab matches screenshot: separate accordion cards, down-chevrons, three nested sections in "How you're wired".
-- [ ] Interest profile shows ranked letters + descriptions + green "1st" pill.
-- [ ] Personality shows archetype + description + 4-letter dimension grid.
-- [ ] Values shows numbered 2-col grid with descriptions.
-- [ ] "Unlock paths" card appears when locked and switches to Paths tab; hidden when unlocked.
-- [ ] IdentityHeader + ReadinessCard + tabs visually unchanged.
-- [ ] Building states still render; no TS/lint/build errors; all tokens (no raw hex).
+- [x] Ready Profile tab matches screenshot: separate accordion cards, down-chevrons, three nested sections in "How you're wired".
+- [x] Interest profile shows ranked letters + descriptions + green "1st" pill.
+- [x] Personality shows archetype + description + 4-letter dimension grid.
+- [x] Values shows numbered 2-col grid with descriptions.
+- [x] "Unlock paths" card appears when locked and switches to Paths tab; hidden when unlocked.
+- [x] IdentityHeader + ReadinessCard + tabs visually unchanged.
+- [x] Building states still render; no TS/lint/build errors; all tokens (no raw hex).
+
+**Verified 2026-07-05:** dev-panel "States" dropdown → Building / Ready-locked / Ready-unlocked, desktop + 375px mobile. `npx tsc --noEmit` clean, `career-persona.test.ts` 11/11 pass. Unlock card confirmed hidden in unlocked state and switches to Paths tab in locked state.
 
 ## Skills to compose
 
