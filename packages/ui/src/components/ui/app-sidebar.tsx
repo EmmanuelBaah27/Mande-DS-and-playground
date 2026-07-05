@@ -242,7 +242,7 @@ function CurriculumSection({
               <Icon
                 name={isActive ? "IconCircleDashed" : isCompleted ? "IconCheckmark2Small" : "IconLock"}
                 size={20}
-                className={isActive ? "text-blue-500" : isCompleted ? "text-success" : "text-muted-foreground"}
+                className={isActive ? "text-blue-500" : isCompleted ? "text-success" : "text-neutral-400"}
               />
             }
             selected={isActive && activeItem === lesson.id}

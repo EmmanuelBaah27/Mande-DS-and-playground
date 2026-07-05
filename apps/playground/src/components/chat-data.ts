@@ -1,4 +1,5 @@
 import type { ChallengeType, ArtifactType, LessonState } from "@mande/ui"
+import { deriveHeadline, deriveSummary, deriveReadiness, isProfileReady } from "../lib/career-persona"
 export type { ArtifactType, LessonState }
 
 export type ChallengeInput = "textarea" | "confirm" | "url" | "short-text" | "list"
@@ -349,6 +350,33 @@ export type CareerProfileSection = {
   skillsSummary?: string       // skills audit summary
 }
 
+export type ReadinessDimensionKey =
+  | "clarity"
+  | "skills"
+  | "jobSearch"
+  | "initiative"
+  | "visibility"
+  | "openness"
+  | "location"
+
+export type ReadinessBreakdownRow = {
+  key: ReadinessDimensionKey
+  label: string
+  description: string
+  score: number // 0–1 — drives bar length and color
+}
+
+export type CareerReadiness = {
+  years: number
+  months: number
+  breakdown: ReadinessBreakdownRow[]
+}
+
+export type CareerPersona = {
+  headline: string             // e.g. "Artistic, investigative thinker."
+  summary: string              // full sentence; UI truncates + "Learn more"
+}
+
 export type CareerProfile = {
   studentId: string
   completedArtifacts: ArtifactType[]
@@ -356,6 +384,8 @@ export type CareerProfile = {
   completedPIVOTSCount: number
   profile: CareerProfileSection
   pathsUnlocked: boolean       // true after lesson-finding-clarity completes
+  persona?: CareerPersona      // present once "How you're wired" data exists
+  readiness?: CareerReadiness  // present once profile is ready
 }
 
 export function deriveCareerProfile(sessions: ChatSession[]): CareerProfile {
@@ -413,6 +443,11 @@ export function deriveCareerProfile(sessions: ChatSession[]): CareerProfile {
   const findingClaritySession = sessions.find((s) => s.id === "lesson-finding-clarity")
   const pathsUnlocked = findingClaritySession?.lessonState === "completed"
 
+  const headline = deriveHeadline(profile.hollandCode)
+  const summary = deriveSummary(profile)
+  const persona = headline && summary ? { headline, summary } : undefined
+  const readiness = isProfileReady(completedArtifacts) ? deriveReadiness(profile) : undefined
+
   return {
     studentId: "playground-student",
     completedArtifacts,
@@ -420,6 +455,8 @@ export function deriveCareerProfile(sessions: ChatSession[]): CareerProfile {
     completedPIVOTSCount,
     profile,
     pathsUnlocked,
+    persona,
+    readiness,
   }
 }
 

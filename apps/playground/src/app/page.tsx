@@ -12,6 +12,11 @@ import { DevTriggerPanel, type InjectableChallenge } from "../components/dev-tri
 import { INITIAL_SESSIONS, CURRICULUM_LESSONS, createChallengeData, deriveCareerProfile } from "../components/chat-data"
 import type { ChatSession, ChallengeResponseType } from "../components/chat-data"
 import { ChatCareerProfile } from "../components/chat-career-profile"
+import {
+  CareerProfileDevPanel,
+  buildMockCareerProfile,
+  type CareerProfileDevState,
+} from "../components/career-profile-dev-panel"
 
 // ─── Editable session title ───────────────────────────────────────────────────
 
@@ -72,7 +77,7 @@ type View = "welcome" | "thread" | "curriculum" | "career-profile"
 
 const NAV_ITEMS = [
   { id: "new-chat", label: "New chat", icon: <Icon name="IconBubbleSparkle" size={20} /> },
-  { id: "career-profile", label: "Career profile", icon: <Icon name="IconSquareGridCircle" size={20} /> },
+  { id: "career-profile", label: "Career profile", icon: <Icon name="IconPersona" size={20} /> },
   { id: "curriculum", label: "Curriculum", icon: <Icon name="IconNewspaper1" size={20} /> },
 ]
 
@@ -81,7 +86,7 @@ function getCurriculumSection(sessions: ChatSession[]): CurriculumSectionConfig 
     const session = sessions.find((s) => s.id === lesson.id)
     return { id: lesson.id, label: lesson.label, state: session?.lessonState ?? "locked" }
   })
-  return { label: "Career clarity", progress: "Active", lessons }
+  return { label: "Career clarity", progress: "In progress", lessons }
 }
 
 const SIDEBAR_W = 272      // w-64 (256) + p-2 each side (8+8)
@@ -97,6 +102,8 @@ export default function ChatPage() {
   const [sessions, setSessions] = useState<ChatSession[]>(INITIAL_SESSIONS)
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null)
   const [view, setView] = useState<View>("welcome")
+  // Dev-only: force a Career Profile state (null = live data derived from sessions)
+  const [careerProfileDevState, setCareerProfileDevState] = useState<CareerProfileDevState | null>(null)
   // ─── Sidebar collapse state ───────────────────────────────────────────────
   const [curriculumHeadingVisible, setCurriculumHeadingVisible] = useState(true)
   const [collapsed, setCollapsed] = useState(false)
@@ -240,11 +247,30 @@ export default function ChatPage() {
 
   const handleStartFindingClarity = () => {
     const cs = sessions.find((s) => s.id === "lesson-finding-clarity")
-    if (cs) {
+    if (cs && cs.lessonState !== "locked") {
       setActiveSessionId(cs.id)
       setView("thread")
     }
   }
+
+  // Open the discovery curriculum from the Career Profile building state:
+  // the active lesson if any, else the Introduction lesson, else the first curriculum lesson.
+  const handleDiscover = () => {
+    const curriculum = sessions.filter((s) => s.mode === "curriculum")
+    const target =
+      curriculum.find((s) => s.lessonState === "active") ??
+      curriculum.find((s) => s.id === "lesson-introduction") ??
+      curriculum[0]
+    if (target) {
+      setActiveSessionId(target.id)
+      setView("thread")
+    }
+  }
+
+  // Discovery has started once the user has sent a prompt in the Introduction lesson.
+  const discoveryStarted = (sessions.find((s) => s.id === "lesson-introduction")?.messages ?? []).some(
+    (m) => m.role === "user",
+  )
 
   // Derive next lesson label from the currently active lesson session
   const activeLessonIdx = CURRICULUM_LESSONS.findIndex((l) => l.id === activeSessionId)
@@ -391,12 +417,13 @@ export default function ChatPage() {
               </>
             )}
             {view === "career-profile" && (
-              <>
-                <span className="sm:hidden absolute inset-x-4 text-center text-base-regular text-foreground truncate pointer-events-none select-none">
-                  Career profile
-                </span>
-                <span className="hidden sm:block text-base-regular text-foreground px-1">Career profile</span>
-              </>
+              <div className="ml-auto shrink-0">
+                <CareerProfileDevPanel
+                  value={careerProfileDevState}
+                  onSelect={setCareerProfileDevState}
+                  placement="header"
+                />
+              </div>
             )}
             {view === "thread" && activeSession && (
               <>
@@ -512,8 +539,14 @@ export default function ChatPage() {
           <CurriculumView onHeadingVisibilityChange={setCurriculumHeadingVisible} />
         ) : view === "career-profile" ? (
           <ChatCareerProfile
-            profile={deriveCareerProfile(sessions)}
+            profile={
+              careerProfileDevState
+                ? buildMockCareerProfile(careerProfileDevState)
+                : deriveCareerProfile(sessions)
+            }
             onStartFindingClarity={handleStartFindingClarity}
+            onDiscover={handleDiscover}
+            discoveryStarted={discoveryStarted}
           />
         ) : view === "welcome" || !activeSession ? (
           <WelcomeState
