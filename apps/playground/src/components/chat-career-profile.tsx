@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react"
 import { motion, AnimatePresence, useReducedMotion } from "motion/react"
-import { Badge, Button, Icon, cn } from "@mande/ui"
+import { Badge, Button, Card, Icon, cn } from "@mande/ui"
 import type { IconName } from "@mande/ui"
 import type { CareerProfile, CareerProfileSection, ReadinessBreakdownRow, ReadinessDimensionKey } from "./chat-data"
 import { CouponRedeemModal } from "./coupon-redeem/coupon-redeem-modal"
@@ -315,7 +315,7 @@ function ReadinessCard({ readiness }: { readiness: NonNullable<CareerProfile["re
   const [open, setOpen] = useState(false)
   const reduceMotion = useReducedMotion()
   return (
-    <div className="rounded-4 bg-neutral-100 p-4 sm:p-5">
+    <Card className="rounded-4 border-0 bg-neutral-100 shadow-none p-4 sm:p-5">
       <div className="flex items-start justify-between gap-3 sm:gap-4">
         <div className="flex min-w-0 flex-col gap-3">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blush-100">
@@ -364,7 +364,7 @@ function ReadinessCard({ readiness }: { readiness: NonNullable<CareerProfile["re
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </Card>
   )
 }
 
@@ -380,10 +380,10 @@ function AssessmentRow({ row, defaultOpen = false }: { row: ReadinessBreakdownRo
         aria-expanded={open}
         className="flex w-full items-start gap-3 text-left"
       >
-        <Icon name={READINESS_DIMENSION_ICONS[row.key]} size={20} className="mt-0.5 shrink-0 text-foreground" />
+        <Icon name={READINESS_DIMENSION_ICONS[row.key]} size={20} className="mt-0.5 shrink-0 text-neutral-500" />
         <span className="flex min-w-0 flex-1 flex-col gap-2">
           <span className="flex items-center justify-between gap-3">
-            <span className="text-base-medium text-foreground">{row.label}</span>
+            <span className="text-base-regular text-foreground">{row.label}</span>
             <motion.span
               animate={{ rotate: open ? 180 : 0 }}
               transition={{ duration: reduceMotion ? 0 : 0.18 }}
@@ -471,7 +471,7 @@ function BreakdownRevealed({
   framed?: boolean
 }) {
   return (
-    <div className={cn(framed && "rounded-4 border border-neutral-200 bg-white overflow-hidden")}>
+    <div className={cn(framed && "rounded-4 border border-neutral-200 bg-neutral-50 overflow-hidden")}>
       <Collapsible
         chevronIcon="IconChevronDownMedium"
         chevronRotation={180}
@@ -697,7 +697,7 @@ function PathCard({ path }: { path: CareerPath }) {
 /** Light nested card with a small label, used inside the "wired" accordion. */
 function ProfileSubCard({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-3 border border-neutral-100 bg-neutral-50 p-4 flex flex-col gap-3">
+    <div className="rounded-3 border border-neutral-100 bg-white p-4 flex flex-col gap-3">
       <span className="text-small-medium text-neutral-400">{label}</span>
       {children}
     </div>
