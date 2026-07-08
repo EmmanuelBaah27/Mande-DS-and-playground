@@ -97,7 +97,7 @@ function BuildingView({
             This fills in as you complete each assessment. Check back when it&apos;s done.
           </p>
         </div>
-        <ProfileBreakdown section={section} groups={groups} framed={false} />
+        <ProfileBreakdown section={section} groups={groups} />
         <div>
           <Button variant="secondary" onClick={onDiscover}>
             {discoveryStarted ? "Continue discovery" : "Discover yourself"}
@@ -297,7 +297,7 @@ function Collapsible({
 const READINESS_DIMENSION_ICONS: Record<ReadinessDimensionKey, IconName> = {
   clarity: "IconLightbulbGlow",
   skills: "IconToolbox",
-  jobSearch: "IconLightning",
+  jobSearch: "IconMagnifyingGlass",
   initiative: "IconInboxEmpty",
   visibility: "IconMegaphone",
   openness: "IconGlobe",
@@ -423,22 +423,19 @@ function AssessmentRow({ row, defaultOpen = false }: { row: ReadinessBreakdownRo
 function ProfileBreakdown({
   section,
   groups,
-  framed = true,
 }: {
   section: CareerProfileSection
   groups: Record<GroupKey, boolean>
-  framed?: boolean
 }) {
   const rows = PROFILE_GROUPS.map((g) =>
     groups[g.key] ? (
-      <BreakdownRevealed key={g.key} group={g} section={section} framed={framed} />
+      <BreakdownRevealed key={g.key} group={g} section={section} />
     ) : (
-      <BreakdownBlocked key={g.key} group={g} framed={framed} />
+      <BreakdownBlocked key={g.key} group={g} />
     ),
   )
 
-  // Building state: a plain flush list. Ready state: a stack of separate cards.
-  return <div className={cn("flex flex-col", framed ? "gap-3" : "")}>{rows}</div>
+  return <div className="flex flex-col">{rows}</div>
 }
 
 function BreakdownRowHeader({
@@ -464,40 +461,30 @@ function BreakdownRowHeader({
 function BreakdownRevealed({
   group,
   section,
-  framed = true,
 }: {
   group: GroupDef
   section: CareerProfileSection
-  framed?: boolean
 }) {
   return (
-    <div className={cn(framed && "rounded-4 border border-neutral-200 bg-white overflow-hidden")}>
-      <Collapsible
-        chevronIcon="IconChevronDownMedium"
-        chevronRotation={180}
-        chevronWrapperClassName="inline-flex shrink-0"
-        chevronIconClassName="text-neutral-400"
-        defaultOpen={group.key === "wired"}
-        buttonClassName={cn("w-full flex items-center gap-3 text-left hover:bg-neutral-50", framed ? "px-4 py-4" : "px-0 py-2.5")}
-        header={<BreakdownRowHeader icon={group.icon} label={group.label} subtitle={group.subtitle} />}
-      >
-        <div className={cn("pb-4", framed ? "px-4" : "")}>
-          <GroupContent groupKey={group.key} section={section} />
-        </div>
-      </Collapsible>
-    </div>
+    <Collapsible
+      chevronIcon="IconChevronDownMedium"
+      chevronRotation={180}
+      chevronWrapperClassName="inline-flex shrink-0"
+      chevronIconClassName="text-neutral-400"
+      defaultOpen={group.key === "wired"}
+      buttonClassName="w-full flex items-center gap-3 text-left hover:bg-neutral-50 px-0 py-2.5"
+      header={<BreakdownRowHeader icon={group.icon} label={group.label} subtitle={group.subtitle} />}
+    >
+      <div className="pb-4">
+        <GroupContent groupKey={group.key} section={section} />
+      </div>
+    </Collapsible>
   )
 }
 
-function BreakdownBlocked({
-  group,
-  framed = true,
-}: {
-  group: GroupDef
-  framed?: boolean
-}) {
+function BreakdownBlocked({ group }: { group: GroupDef }) {
   return (
-    <div className={cn("flex items-center gap-3", framed ? "px-4 py-4 border-b border-neutral-100 last:border-b-0" : "px-0 py-2.5")}>
+    <div className="flex items-center gap-3 px-0 py-2.5">
       <BreakdownRowHeader icon={group.icon} label={group.label} subtitle={group.subtitle} />
     </div>
   )
