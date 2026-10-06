@@ -1,5 +1,13 @@
 # Learnings
 
+## 2026-10-06 — Career Profile state-parity verification
+
+### Technical
+
+- **A stale `.next/types` directory can make a standalone `tsc --noEmit` fail with TS6053 for deleted generated routes.** Run `next build` to regenerate Next.js route types, then rerun the standalone typecheck. Treat the first failure as stale generated output only after the fresh build and typecheck both pass.
+- **`source "$NVM_DIR/nvm.sh"` can return a non-zero status even when Node and pnpm become available.** In this environment it returned status 3, so the documented `source ... && pnpm ...` form stopped before pnpm ran. Separating the commands with `;` allowed the intended verification command to execute.
+- **`tsx` uses a local IPC socket.** Sandboxed execution can fail with `listen EPERM` under the system temp directory; rerunning the same focused test command with the required sandbox approval provides valid test evidence.
+
 Things learned while building the Mande Design System. Captured so they compound over time.
 
 ---
