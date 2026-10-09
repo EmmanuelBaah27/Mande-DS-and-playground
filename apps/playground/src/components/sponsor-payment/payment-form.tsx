@@ -253,7 +253,7 @@ export function PaymentForm({
                 />
                 <span className="flex min-h-20 flex-col items-center justify-center gap-2 rounded-4 border border-border-subtle bg-background p-3 text-center text-small-regular text-foreground transition-colors peer-checked:border-border-strong peer-checked:bg-subtle peer-focus-visible:ring-2 peer-focus-visible:ring-ring">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={provider.logo} alt="" width={24} height={24} />
+                  <img className="rounded-full" src={provider.logo} alt="" width={24} height={24} />
                   {provider.label}
                 </span>
               </label>
@@ -332,14 +332,26 @@ export function PaymentForm({
 
       <Separator />
 
-      <Checkbox
-        id="sponsor-updates"
-        checked={state.fields.wantsUpdates}
-        disabled={isProcessing}
-        onCheckedChange={(checked) => editField("wantsUpdates", checked === true)}
-        label={`Keep me updated on ${learnerName}'s journey`}
-        subtext={`Get a few updates when he unlocks paths and reaches meaningful milestones.`}
-      />
+      <div className="flex items-start gap-3">
+        <Checkbox
+          id="sponsor-updates"
+          className="mt-0.5"
+          checked={state.fields.wantsUpdates}
+          disabled={isProcessing}
+          onCheckedChange={(checked) => editField("wantsUpdates", checked === true)}
+        />
+        <div className="flex flex-col gap-0.5">
+          <label
+            htmlFor="sponsor-updates"
+            className="cursor-pointer text-base-regular text-foreground"
+          >
+            Keep me updated on {learnerName}&apos;s journey
+          </label>
+          <span className="text-small-regular text-muted-foreground">
+            Get a few updates when he unlocks paths and reaches meaningful milestones.
+          </span>
+        </div>
+      </div>
 
       <div className="sr-only" aria-live="polite">
         {isProcessing

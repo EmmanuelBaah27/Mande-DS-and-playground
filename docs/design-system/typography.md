@@ -56,3 +56,6 @@ type system, two floors.
   rethink layout instead.
 - Use the DS type-scale utilities (`text-base-*`, `text-lg-*`, `text-H*`) — never raw Tailwind
   size + weight utilities (per `foundations.md`).
+## Fixed display heading
+
+Use `text-H1-fixed` when a composition intentionally keeps the 28 px H1 token at every viewport. Default product headings should continue to use responsive `text-H1`.

@@ -16,7 +16,7 @@ export function UnlockSummary({ data }: EvidenceProps): React.ReactElement {
         <div className="shrink-0 text-right">
           <div className="flex items-baseline justify-end gap-0.5">
             <span className="text-base-medium">{data.price.currency}</span>
-            <span className="text-H1">{data.price.amount}</span>
+            <span className="text-H1-fixed" data-price-amount>{data.price.amount}</span>
           </div>
           <p className="text-small-regular text-muted-foreground">
             {data.price.localReference} · one-time
@@ -28,9 +28,9 @@ export function UnlockSummary({ data }: EvidenceProps): React.ReactElement {
         <p className="mb-5 text-base-regular text-muted-foreground">What it unlocks</p>
         <ul className="flex flex-col gap-6">
           {data.benefits.map((benefit) => (
-            <li key={benefit.id} className="flex items-start gap-2">
+            <li key={benefit.id} className="flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="mt-0.5 size-5 shrink-0 object-contain" src={benefit.icon} alt="" />
+              <img className="size-5 shrink-0 object-contain" src={benefit.icon} alt="" />
               <span className="text-base-medium text-foreground">{benefit.text}</span>
             </li>
           ))}
@@ -109,8 +109,12 @@ export function EffortEvidence({ data }: EvidenceProps): React.ReactElement {
           >
             <div className="flex items-baseline gap-1.5">
               <dd className="text-H2 text-foreground">{metric.value}</dd>
-              {metric.unit ? (
-                <span className="text-base-medium text-foreground">{metric.unit}</span>
+              {metric.unit === "h 24 m" ? (
+                <span className="text-base-regular text-muted-foreground">
+                  h <strong className="text-H2 text-foreground">24</strong> m
+                </span>
+              ) : metric.unit ? (
+                <span className="text-base-regular text-muted-foreground">{metric.unit}</span>
               ) : null}
             </div>
             <dt className="text-small-regular text-muted-foreground">{metric.label}</dt>

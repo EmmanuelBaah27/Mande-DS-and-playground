@@ -8,6 +8,7 @@
 - **Independent desktop scrolling needs a viewport-height parent.** The page uses `h-dvh overflow-hidden`; the narrative column owns `overflow-y-auto`, while the payment panel remains in the adjacent non-scrolling column. Browser verification should assert the document stays at scroll `0`, the narrative container changes, and the form rectangle is unchanged.
 - **The two-column readiness comparison needs a narrow-screen escape hatch.** It remains side by side from 360 px upward and stacks below 360 px, preventing the duration labels from clipping at 320 px.
 - **Do not run `next build` against the same `.next` directory as `next dev`.** Concurrent writers caused transient manifest/module-resolution errors. Stop the development server before the production build, then restart it if more browser review is needed.
+- **A responsive heading utility is not interchangeable with a fixed display treatment.** The sponsor composition requires the 28 px H1 token at intermediate web widths where `text-H1` intentionally scales down. `text-H1-fixed` now exposes the same H1 tokens without breakpoint scaling for explicitly fixed compositions.
 
 ## 2026-10-06 — Career Profile state-parity verification
 

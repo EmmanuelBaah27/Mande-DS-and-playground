@@ -63,7 +63,7 @@ function BrandAndUnlock({ data }: { data: SponsorPageData }) {
 
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-3">
-          <h1 className="text-H1 text-foreground">
+          <h1 className="text-H1-fixed text-foreground">
             <span className="block text-muted-foreground">
               {data.learner.firstName} did the work.
             </span>
@@ -113,12 +113,6 @@ function PaymentPanel({
           forceFailure={forceFailure}
         />
       </div>
-      {process.env.NODE_ENV === "development" ? (
-        <p className="mt-3 text-center text-small-regular text-muted-foreground">
-          Prototype outcome: {forceFailure ? "failure" : "success"}. Add{" "}
-          <code>?outcome=failure</code> to review the error state.
-        </p>
-      ) : null}
     </aside>
   )
 }

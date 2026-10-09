@@ -15,6 +15,7 @@
 - Designed the missing mobile view with the approved sequence: brand/headline, unlock summary, payment form, then deeper proof.
 - Corrected the mobile DOM order so keyboard and screen-reader navigation match the visual sequence.
 - Added a below-360 px stacked readiness comparison to prevent clipped duration labels.
+- Applied the browser review pass: removed the development outcome note; corrected checkbox typography, effort metric emphasis, benefit alignment, MTN logo clipping, and the 28 px headline/price treatment.
 
 ## Key decisions
 
@@ -29,6 +30,7 @@
 - Playground TypeScript check: passed.
 - Playground production build: passed.
 - Browser checks passed at 1440×1024, 390×844, and 320×568.
+- A focused 728×988 browser check confirmed the reviewed computed typography, colors, alignment, clipping, and absence of horizontal overflow.
 - Desktop left-column scroll, stationary payment panel, mobile DOM order, overflow, validation focus, success details, and failure recovery all passed.
 - `git diff --check`: passed before session close-out.
 
