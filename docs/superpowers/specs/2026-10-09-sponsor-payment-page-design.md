@@ -33,12 +33,12 @@ This is preferred over embedding the flow into the chat page because the sponsor
 
 ### Desktop
 
-Use the Figma's centered 1120px content width and two-column composition:
+Use the Figma's centered 1120px content width inside a viewport-height, two-column composition:
 
-- **Left narrative column:** brand, personalized headline, summary, unlock card, time-to-role comparison, effort evidence, and learner profile.
-- **Right action column:** sticky payment card aligned near the start of the narrative.
+- **Left narrative column:** the only vertically scrollable region; contains the brand, personalized headline, summary, unlock card, time-to-role comparison, effort evidence, and learner profile.
+- **Right action column:** a non-scrolling region containing the payment card, aligned near the start of the narrative and fixed in position for the life of the desktop view.
 
-The payment card remains visible while the sponsor reviews deeper evidence, but it must not overlap the page header or viewport edges.
+The document body itself does not scroll at the desktop breakpoint. The outer page shell occupies the viewport, the left column owns vertical overflow, and the right column remains stationary while the sponsor reviews deeper evidence. The payment card must fit within the viewport without clipping; if its content grows because of validation or a state change, the card's own region may scroll as a safety fallback rather than moving with the narrative.
 
 ### Mobile
 
@@ -56,7 +56,7 @@ The mobile payment card is part of normal document flow. Do not use a sticky foo
 
 ### Tablet
 
-Remain single-column until both the narrative and payment card can fit at their intended widths without compression. The payment card follows the same order as mobile.
+Remain single-column until both the narrative and payment card can fit at their intended widths without compression. The payment card follows the same order as mobile, and the document uses normal page scrolling. Independent column scrolling begins only at the desktop split-layout breakpoint.
 
 ## Content model
 
@@ -195,7 +195,7 @@ Use the exact Figma-provided brand, provider, and profile imagery downloaded int
 - Interaction tests for method switching, validation, processing lock, success, failure, and consent default
 - Typecheck and production build
 - Visual review against the Figma screenshot at desktop width
-- Responsive review at representative tablet and narrow mobile widths
+- Responsive review at representative tablet and narrow mobile widths, plus desktop verification that wheel/trackpad scrolling moves only the left column
 - Keyboard-only review and focus-order check
 - Static-asset audit: local file exists, expected layer/callsite is present, and rendered geometry matches the design
 

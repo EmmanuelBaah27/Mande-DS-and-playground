@@ -34,7 +34,7 @@ The visitor is a family member, mentor, or institutional sponsor who followed a 
 - **Evidence before transaction.** The page leads with the learner's effort and the specific outcome the sponsor can unlock, not a generic checkout title.
 - **One fixed contribution.** The sponsor pays the displayed amount once; there is no custom amount, recurring plan, or cart.
 - **Two payment methods.** Mobile money offers MTN MoMo, Telecel, and AirtelTigo. Card exposes a compact card form.
-- **Responsive sequencing.** Desktop uses a two-column layout with a sticky payment card. Mobile places the payment card immediately after the unlock summary, followed by deeper proof.
+- **Responsive sequencing.** Desktop uses a viewport-height split layout: only the narrative column scrolls, while the payment column remains fixed in place. Mobile becomes one normal-flow page with the payment card immediately after the unlock summary, followed by deeper proof.
 - **Privacy boundary.** Sponsors see progress evidence and milestones, not raw curriculum responses or private journal content.
 - **Optional updates.** Milestone updates require explicit consent and are unchecked by default.
 - **Simulation boundary.** A typed local payment adapter owns processing, success, and failure states so a production provider can later replace it without restructuring the page.
@@ -82,5 +82,5 @@ The visitor is a family member, mentor, or institutional sponsor who followed a 
 - A sponsor can explain what their payment unlocks before entering payment details.
 - The primary payment action is reachable without scrolling past the deeper proof on mobile.
 - All simulated states are reviewable without external services.
-- Desktop and mobile layouts preserve the Figma hierarchy and remain keyboard accessible.
+- Desktop preserves independent left-column scrolling without moving the payment form; mobile preserves the agreed single-column hierarchy. Both remain keyboard accessible.
 - The implementation leaves a clear seam for the team to connect a real provider later.
