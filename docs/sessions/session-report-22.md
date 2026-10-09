@@ -2,7 +2,7 @@
 
 **Date:** 2026-10-09
 **Branch:** `Codex/sponsor-payment-page`
-**Status:** Implementation verified locally; topic branch not yet pushed or merged.
+**Status:** Shipped to `main` and live on Vercel.
 
 ---
 
@@ -16,6 +16,7 @@
 - Corrected the mobile DOM order so keyboard and screen-reader navigation match the visual sequence.
 - Added a below-360 px stacked readiness comparison to prevent clipped duration labels.
 - Applied the browser review pass: removed the development outcome note; corrected checkbox typography, effort metric emphasis, benefit alignment, MTN logo clipping, and the 28 px headline/price treatment.
+- Connected the locked Paths view’s “Ask someone to pay” action directly to the sponsor-payment route.
 
 ## Key decisions
 
@@ -26,7 +27,8 @@
 
 ## Verification
 
-- Sponsor unit suite: 33/33 passed.
+- Sponsor unit suite: 35/35 passed.
+- Paths-to-sponsor navigation regression test: passed.
 - Playground TypeScript check: passed.
 - Playground production build: passed.
 - Browser checks passed at 1440×1024, 390×844, and 320×568.
@@ -45,9 +47,8 @@
 - Local route: http://127.0.0.1:3000/screens/sponsor-payment
 - Failure state: http://127.0.0.1:3000/screens/sponsor-payment?outcome=failure
 - Figma source: https://www.figma.com/design/N1GKFiz4sGwhh1SCTxBwzL/Mandy--Career-Assistant?node-id=4305-490&m=dev
-- Deployed preview: pending push/deployment.
+- Production route: https://mande-playground.vercel.app/screens/sponsor-payment
 
 ## What's next
 
-- Attach the verified detached worktree commits to `Codex/sponsor-payment-page`.
-- Follow the repository's current solo workflow decision: merge the topic into `main`, push, and verify the deployed preview when the user asks to ship.
+- Replace the simulated payment adapter and fixture data when the product team implements the production sponsor-link contract.
