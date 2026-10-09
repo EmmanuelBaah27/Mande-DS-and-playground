@@ -332,15 +332,15 @@ export function PaymentForm({
 
       <Separator />
 
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-2">
         <Checkbox
           id="sponsor-updates"
-          className="mt-0.5"
+          className="m-0.5 size-4 rounded-1-5 border-border-strong bg-background shadow-xs"
           checked={state.fields.wantsUpdates}
           disabled={isProcessing}
           onCheckedChange={(checked) => editField("wantsUpdates", checked === true)}
         />
-        <div className="flex flex-col gap-0.5">
+        <div className="flex flex-col gap-0">
           <label
             htmlFor="sponsor-updates"
             className="cursor-pointer text-base-regular text-foreground"
