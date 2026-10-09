@@ -52,17 +52,17 @@
 - Consumes: Figma file `N1GKFiz4sGwhh1SCTxBwzL`, node `4305:490`, and the asset URLs returned by `figma_get_design_context`/`figma_download_assets`.
 - Produces: stable public paths under `/sponsor-payment/*` for the fixture and page components.
 
-- [ ] **Step 1: Start the playground verification surface**
+- [x] **Step 1: Start the playground verification surface**
 
 Run: `pnpm --filter @mande/playground dev`
 
 Expected: Next.js prints `http://127.0.0.1:3000`. Share `http://127.0.0.1:3000/screens/sponsor-payment` immediately; it will return 404 until Task 4 creates the route, then hot reload into the implementation.
 
-- [ ] **Step 2: Re-fetch high-fidelity Figma context and download the source assets**
+- [x] **Step 2: Re-fetch high-fidelity Figma context and download the source assets**
 
 Call `figma_get_design_context` for node `4305:490` with screenshot enabled and `skillNames: "figma-design-to-code"`. Use `figma_download_assets` only for assets not already returned. Save the exact files with the names above; do not redraw or substitute them.
 
-- [ ] **Step 3: Write the failing asset-presence test**
+- [x] **Step 3: Write the failing asset-presence test**
 
 ```ts
 // @ts-nocheck
@@ -92,17 +92,17 @@ for (const asset of assets) {
 }
 ```
 
-- [ ] **Step 4: Run the test from the playground package**
+- [x] **Step 4: Run the test from the playground package**
 
 Run: `cd apps/playground && npx tsx --test src/components/sponsor-payment/__tests__/assets.test.ts`
 
 Expected before every file is saved: FAIL with `ENOENT` for the missing asset. Expected after download: 10 passing tests.
 
-- [ ] **Step 5: Audit dimensions and asset roles**
+- [x] **Step 5: Audit dimensions and asset roles**
 
 Record the source dimensions returned by Figma in a comment at the top of `assets.test.ts`. Assert SVG roots have non-zero `width` and `height`; use `sips -g pixelWidth -g pixelHeight` for PNG metadata without modifying the images. Confirm each path corresponds to the named Figma layer rather than the whole-frame export.
 
-- [ ] **Step 6: Commit the asset set**
+- [x] **Step 6: Commit the asset set**
 
 ```bash
 git add apps/playground/public/sponsor-payment apps/playground/src/components/sponsor-payment/__tests__/assets.test.ts
@@ -122,7 +122,7 @@ git commit -m "feat(sponsor-payment): add exact Figma assets"
 - Consumes: public asset paths from Task 1.
 - Produces: `SponsorPageData`, `SPONSOR_PAGE_FIXTURE`, `PaymentMethod`, `MobileMoneyProvider`, `PaymentFields`, `PaymentErrors`, `validatePayment`, `normalizeMobileNumber`, `PaymentSimulator`, and `createPaymentSimulator`.
 
-- [ ] **Step 1: Write the failing validation tests**
+- [x] **Step 1: Write the failing validation tests**
 
 Cover these exact cases with `node:test`:
 
@@ -148,13 +148,13 @@ assert.equal(validatePayment("card", {
 
 Also assert valid card input (`4242 4242 4242 4242`, `12/30`, `123`, valid email) returns `{}` and that every missing field gets its field-specific message.
 
-- [ ] **Step 2: Run validation tests and verify failure**
+- [x] **Step 2: Run validation tests and verify failure**
 
 Run: `cd apps/playground && npx tsx --test src/components/sponsor-payment/__tests__/payment-validation.test.ts`
 
 Expected: FAIL because the module does not exist.
 
-- [ ] **Step 3: Implement the typed fixture and pure validation**
+- [x] **Step 3: Implement the typed fixture and pure validation**
 
 Define discriminated payment data:
 
@@ -182,7 +182,7 @@ export type PaymentErrors = Partial<Record<
 
 Build `SPONSOR_PAGE_FIXTURE` from the approved Figma copy and asset paths. Keep arrays readonly and use stable ids for benefits and metrics.
 
-- [ ] **Step 4: Write the failing simulator tests**
+- [x] **Step 4: Write the failing simulator tests**
 
 ```ts
 test("success mode resolves with a prototype receipt id", async () => {
@@ -202,7 +202,7 @@ test("failure mode rejects without claiming a charge", async () => {
 })
 ```
 
-- [ ] **Step 5: Implement the replaceable simulator interface**
+- [x] **Step 5: Implement the replaceable simulator interface**
 
 ```ts
 export interface PaymentSimulator {
@@ -220,13 +220,13 @@ export function createPaymentSimulator(config: {
 
 Use `setTimeout` with the supplied delay. Keep the default deterministic (`success`, 700ms). Do not read environment variables or call `fetch`.
 
-- [ ] **Step 6: Run the pure-logic suite**
+- [x] **Step 6: Run the pure-logic suite**
 
 Run: `cd apps/playground && npx tsx --test src/components/sponsor-payment/__tests__/payment-validation.test.ts src/components/sponsor-payment/__tests__/payment-simulator.test.ts`
 
 Expected: all tests pass.
 
-- [ ] **Step 7: Commit the domain layer**
+- [x] **Step 7: Commit the domain layer**
 
 ```bash
 git add apps/playground/src/components/sponsor-payment
@@ -244,7 +244,7 @@ git commit -m "feat(sponsor-payment): add fixture and payment simulation"
 - Consumes: `PaymentFields`, `PaymentErrors`, `PaymentMethod`, `validatePayment`, and `PaymentSimulator` from Task 2; `Button`, `Checkbox`, `Icon`, `Input`, and `Separator` from `@mande/ui`.
 - Produces: `PaymentState`, `PaymentAction`, `createInitialPaymentState()`, `paymentReducer()`, and `<PaymentForm learnerName price simulator forceFailure?>`.
 
-- [ ] **Step 1: Write failing reducer tests for the review-focus transitions**
+- [x] **Step 1: Write failing reducer tests for the review-focus transitions**
 
 The initial state is:
 
@@ -274,13 +274,13 @@ Tests must assert:
 - `SUCCEED` changes the phase to `success` and stores `SIM-MANDE-001`.
 - `EDIT_FIELD` clears only that field's existing error.
 
-- [ ] **Step 2: Run reducer tests and verify failure**
+- [x] **Step 2: Run reducer tests and verify failure**
 
 Run: `cd apps/playground && npx tsx --test src/components/sponsor-payment/__tests__/payment-machine.test.ts`
 
 Expected: FAIL because the reducer does not exist.
 
-- [ ] **Step 3: Implement the reducer with exhaustive actions**
+- [x] **Step 3: Implement the reducer with exhaustive actions**
 
 ```ts
 export type PaymentPhase = "editing" | "processing" | "success"
@@ -297,13 +297,13 @@ export type PaymentAction =
 
 Return the same object for invalid transitions, especially `SUBMIT` during `processing`.
 
-- [ ] **Step 4: Run reducer and domain tests**
+- [x] **Step 4: Run reducer and domain tests**
 
 Run: `cd apps/playground && npx tsx --test src/components/sponsor-payment/__tests__/*.test.ts`
 
 Expected: all tests pass.
 
-- [ ] **Step 5: Implement `PaymentForm` using DS primitives**
+- [x] **Step 5: Implement `PaymentForm` using DS primitives**
 
 Requirements:
 
@@ -318,13 +318,13 @@ Requirements:
 - Success replaces the form contents with the approved heading/body and a `View payment details` secondary button that reveals the simulated reference and receipt email.
 - `forceFailure` selects a failure-configured simulator only for the playground review affordance; it must not appear as sponsor-facing copy inside the payment card.
 
-- [ ] **Step 6: Run typecheck**
+- [x] **Step 6: Run typecheck**
 
 Run: `pnpm --filter @mande/playground typecheck`
 
 Expected: exit 0.
 
-- [ ] **Step 7: Commit the payment interaction**
+- [x] **Step 7: Commit the payment interaction**
 
 ```bash
 git add apps/playground/src/components/sponsor-payment
@@ -342,7 +342,7 @@ git commit -m "feat(sponsor-payment): build simulated payment form"
 - Consumes: `SPONSOR_PAGE_FIXTURE` from Task 2, `<PaymentForm>` from Task 3, exact public assets from Task 1, and `Icon`/`cn` from `@mande/ui`.
 - Produces: the review route `http://127.0.0.1:3000/screens/sponsor-payment` and reusable page-local evidence sections.
 
-- [ ] **Step 1: Complete the Figma-to-token mapping before JSX**
+- [x] **Step 1: Complete the Figma-to-token mapping before JSX**
 
 Add a comment block to `sponsor-payment-page.tsx` recording the mapping below and confirm each utility exists in `globals.css`:
 
@@ -361,7 +361,7 @@ Add a comment block to `sponsor-payment-page.tsx` recording the mapping below an
 
 If the teal surface or headline has no exact existing utility, stop and surface the gap before code. Add a semantic token pair only if it meets `build-component` reuse and contrast criteria; otherwise use the named decorative palette token already present.
 
-- [ ] **Step 2: Implement the evidence sections from fixture data**
+- [x] **Step 2: Implement the evidence sections from fixture data**
 
 `sponsor-evidence.tsx` owns these focused components:
 
@@ -374,7 +374,7 @@ export function LearnerProfile({ data }: { data: SponsorPageData }): React.React
 
 Use semantic headings, lists for unlock benefits, and `<dl>` for metric label/value pairs. Render exact local SVG/PNG assets in the Figma order and preserve their intrinsic proportions.
 
-- [ ] **Step 3: Implement desktop and mobile composition**
+- [x] **Step 3: Implement desktop and mobile composition**
 
 The outer page must express the scrolling contract directly:
 
@@ -398,11 +398,11 @@ The outer page must express the scrolling contract directly:
 
 On mobile/tablet, `contents` makes the pre-payment section, payment aside, and post-payment section flex siblings, so their `order-*` values produce the approved sequence with one form in the DOM. At `lg`, the narrative wrapper becomes the single scroll container and the five-column grid gives it three tracks while the fixed payment area gets two; `gap-12` preserves the Figma's inter-column separation. Keep semantic landmarks on the child sections because the layout-only wrapper uses `display: contents`.
 
-- [ ] **Step 4: Add a development-only simulator outcome control**
+- [x] **Step 4: Add a development-only simulator outcome control**
 
 Place a compact control outside the sponsor card, consistent with existing playground dev controls, that toggles `success`/`failure`. Mark it clearly as `Prototype outcome`; it must not appear at production build time if an established dev-only pattern exists. If the repository has no safe production exclusion pattern, use a `?outcome=failure` search parameter instead and document it below the route in development-only text.
 
-- [ ] **Step 5: Add route metadata and render the composed page**
+- [x] **Step 5: Add route metadata and render the composed page**
 
 `apps/playground/src/app/screens/sponsor-payment/page.tsx` stays a thin server component:
 
@@ -420,7 +420,7 @@ export default function Page() {
 }
 ```
 
-- [ ] **Step 6: Run tests, typecheck, and production build**
+- [x] **Step 6: Run tests, typecheck, and production build**
 
 Run:
 
@@ -432,7 +432,7 @@ pnpm --filter @mande/playground build
 
 Expected: all tests pass; typecheck and build exit 0.
 
-- [ ] **Step 7: Commit the responsive page**
+- [x] **Step 7: Commit the responsive page**
 
 ```bash
 git add apps/playground/src/app/screens/sponsor-payment apps/playground/src/components/sponsor-payment
@@ -449,13 +449,13 @@ git commit -m "feat(sponsor-payment): compose responsive sponsor page"
 - Consumes: complete route and Figma screenshot.
 - Produces: a verified local surface and evidence ready for the topic PR.
 
-- [ ] **Step 1: Confirm the playground server is still running**
+- [x] **Step 1: Confirm the playground server is still running**
 
 Run: `pnpm --filter @mande/playground dev`
 
 Expected: Next.js prints `http://127.0.0.1:3000`. If Task 1's server stopped, restart it; open `http://127.0.0.1:3000/screens/sponsor-payment` and keep it running through verification.
 
-- [ ] **Step 2: Verify the desktop scrolling contract at the Figma viewport**
+- [x] **Step 2: Verify the desktop scrolling contract at the Figma viewport**
 
 At the Figma frame's desktop dimensions:
 
@@ -465,7 +465,7 @@ At the Figma frame's desktop dimensions:
 - assert document scroll remains `0`, left-column scroll increases, and the payment card's rectangle is unchanged;
 - confirm the payment card fits or independently scrolls when validation messages are visible.
 
-- [ ] **Step 3: Verify the agreed mobile sequence**
+- [x] **Step 3: Verify the agreed mobile sequence**
 
 At 390×844 and 320×568, confirm the DOM/focus order is:
 
@@ -479,7 +479,7 @@ At 390×844 and 320×568, confirm the DOM/focus order is:
 
 Confirm there is one document scrollbar and no horizontal overflow.
 
-- [ ] **Step 4: Exercise every form state**
+- [x] **Step 4: Exercise every form state**
 
 Keyboard-only and pointer checks:
 
@@ -490,11 +490,11 @@ Keyboard-only and pointer checks:
 - run failure and confirm `Nothing was charged`, preserved email/provider/consent, and a working retry;
 - confirm every provider card and control has a visible focus indicator and at least a 44px mobile hit area.
 
-- [ ] **Step 5: Compare visual output to Figma and audit every asset**
+- [x] **Step 5: Compare visual output to Figma and audit every asset**
 
 Take desktop and mobile screenshots. Compare the desktop capture side-by-side with node `4305:490`, checking layout widths, vertical rhythm, typography hierarchy, radii, border contrast, and fixed-form alignment. For each visible static asset, confirm the local file is non-empty, the intended Figma layer maps to the callsite, and effective rendered geometry preserves the source aspect ratio.
 
-- [ ] **Step 6: Run final verification**
+- [x] **Step 6: Run final verification**
 
 Run:
 
@@ -507,7 +507,7 @@ git diff --check
 
 Expected: all commands exit 0 and no in-scope visual or interaction mismatch remains.
 
-- [ ] **Step 7: Commit verification fixes and plan state**
+- [x] **Step 7: Commit verification fixes and plan state**
 
 ```bash
 git add apps/playground docs/superpowers/plans/2026-10-09-sponsor-payment-page.md
@@ -517,10 +517,9 @@ git commit -m "test(sponsor-payment): verify responsive payment flow"
 ### Task 6: Ship the topic
 
 **Files:**
-- Modify: `docs/BUILD_LOG.md`
-- Create: next available `docs/SESSION_REPORT_0N.md`
-- Modify: `docs/LEARNINGS.md`
-- Modify if architectural decisions changed: `docs/DECISIONS.md`
+- Create: next available `docs/sessions/session-report-N.md`
+- Modify: `docs/ops/learnings.md`
+- Modify if architectural decisions changed: `docs/ops/decisions.md`
 
 **Interfaces:**
 - Consumes: verified branch from Task 5.
@@ -530,14 +529,14 @@ git commit -m "test(sponsor-payment): verify responsive payment flow"
 
 Re-run Task 5's final verification from a clean working tree, inspect `git status`, and confirm only intentional topic files are tracked.
 
-- [ ] **Step 2: Update the four session documents**
+- [x] **Step 2: Update the repository session documents**
 
-Record the fixed desktop panel decision, token/asset discoveries, test results, local URL, and pending preview URL. Do not add `.agents/` or `AGENTS.md`.
+Record the fixed desktop panel decision, token/asset discoveries, test results, local URL, and pending preview URL. The repository's documentation reorganisation removed the duplicated build log, so the session report is the sole session log. Do not add `.agents/` or `AGENTS.md`.
 
 - [ ] **Step 3: Commit session documentation**
 
 ```bash
-git add docs/BUILD_LOG.md docs/LEARNINGS.md docs/DECISIONS.md docs/SESSION_REPORT_*.md
+git add docs/sessions docs/ops/learnings.md docs/ops/decisions.md
 git commit -m "Add sponsor payment session docs"
 ```
 
@@ -548,3 +547,13 @@ Push `Codex/sponsor-payment-page`, open a PR against `main`, and include the spe
 - [ ] **Step 5: Pin and verify the deployed preview**
 
 Wait for the Vercel preview, open `/screens/sponsor-payment` at desktop and mobile widths, verify success/failure simulations, then add the preview URL to the PR description and session report. Treat a missing or broken preview as a ship blocker.
+
+## Verification notes — 2026-10-09
+
+- `npx tsx --test src/components/sponsor-payment/__tests__/*.test.ts` — 33/33 passed.
+- `pnpm --filter @mande/playground typecheck` — passed.
+- `pnpm --filter @mande/playground build` — passed; `/screens/sponsor-payment` is included in the production route manifest.
+- Browser checks passed at 1440×1024, 390×844, and 320×568.
+- Desktop document scroll stayed at `0`, the left narrative column moved from `0` to `600`, and the payment panel remained at `[864, 64, 432, 593]`.
+- Mobile used one document scrollbar, had no horizontal overflow, and exposed the agreed DOM order: headline → unlock summary → payment form → deeper proof.
+- Empty submission focused the first invalid field; success revealed a prototype reference; forced failure stated that nothing was charged and preserved entered values and update consent.
