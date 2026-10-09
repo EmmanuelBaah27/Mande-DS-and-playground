@@ -74,7 +74,7 @@ export const SPONSOR_PAGE_FIXTURE: SponsorPageData = {
   gapStatement:
     "What's missing: a clear career direction grounded in these insights.",
   effortStatement:
-    "Mike has shown up for himself: 3 hours of honest reflection, every assessment completed, and 3 weeks of consistent effort. These numbers show he's ready for clear direction and the next step forward.",
+    "These numbers are a snapshot of the work Mike has already put in. They reflect the care and consistency he's bringing to figuring out what fits.",
   benefits: [
     {
       id: "ranked-paths",
