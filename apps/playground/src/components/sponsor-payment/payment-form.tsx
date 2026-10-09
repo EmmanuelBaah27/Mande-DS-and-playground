@@ -251,7 +251,7 @@ export function PaymentForm({
                   checked={state.fields.provider === provider.id}
                   onChange={() => editField("provider", provider.id)}
                 />
-                <span className="flex min-h-20 flex-col items-center justify-center gap-2 rounded-4 border border-border-subtle bg-background p-3 text-center text-small-regular text-foreground transition-colors peer-checked:border-border-strong peer-checked:bg-subtle peer-focus-visible:ring-2 peer-focus-visible:ring-ring">
+                <span className="flex min-h-20 flex-col items-center justify-center gap-2 rounded-4 border border-border-subtle bg-background p-3 text-center text-small-regular text-foreground transition-colors peer-checked:border-foreground peer-checked:bg-muted peer-checked:shadow-xs peer-focus-visible:ring-2 peer-focus-visible:ring-ring">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img className="rounded-full" src={provider.logo} alt="" width={24} height={24} />
                   {provider.label}
