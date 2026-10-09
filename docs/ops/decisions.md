@@ -4,6 +4,18 @@ Key decisions, patterns, and processes for the Mande Design System. Updated as t
 
 ---
 
+## Sponsor payment prototype composition (Session 22)
+
+**Decision:** Desktop uses a viewport-locked shell with an independently scrolling narrative column and a stationary payment column. Mobile renders a single document in the order brand/headline → unlock summary → payment form → deeper proof.
+
+**Why:** A single CSS-reordered DOM could satisfy the screenshots but not the keyboard and screen-reader sequence. Breakpoint-specific composition preserves accessible order and renders only one payment form at a time.
+
+**Trade-off:** Crossing the 1024 px breakpoint remounts the prototype payment form and clears draft values. That is acceptable for this review-only simulator; a production payment flow should hoist form state above the layout switch or use a shared state store.
+
+**Asset decision:** The exact rendered export of Figma shader node `4447:1378` is stored as the profile artwork. The playground does not add an experimental WebGPU runtime for a static proof card.
+
+---
+
 ## Artifact taxonomy — specific over generic (Session 17)
 
 **Decision:** `ArtifactType` uses 13 specific named types rather than a generic `"self-report"` umbrella.
@@ -198,4 +210,3 @@ git push origin --delete claude/<topic-slug>   # if it was pushed
 **When PRs come back:** Add them when a second person joins the repo. The workflow above doesn't change — just insert `gh pr create` before step 5 and `gh pr merge` instead of the manual merge.
 
 **Branch naming:** `claude/<topic-slug>` — lowercase, hyphenated, short description of the work unit.
-

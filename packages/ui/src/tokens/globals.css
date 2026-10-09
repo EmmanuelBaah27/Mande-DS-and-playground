@@ -569,6 +569,18 @@
     font-weight: 600;
     letter-spacing: var(--letter-spacing-H3);
   }
+  .text-H1-fixed {
+    font-size: var(--font-size-H1);
+    line-height: var(--line-height-H1);
+    font-weight: var(--font-weight-H1);
+    letter-spacing: var(--letter-spacing-H1);
+  }
+  .text-H3-fixed {
+    font-size: var(--font-size-H3);
+    line-height: var(--line-height-H3);
+    font-weight: var(--font-weight-H3);
+    letter-spacing: var(--letter-spacing-H3);
+  }
   .text-H2 {
     font-size: 18px;                          /* mobile */
     line-height: var(--line-height-H2);       /* 32 — constant */
