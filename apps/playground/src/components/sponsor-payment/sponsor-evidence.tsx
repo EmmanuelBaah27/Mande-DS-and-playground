@@ -116,7 +116,7 @@ export function EffortEvidence({ data }: EvidenceProps): React.ReactElement {
                 <span className="text-base-regular text-muted-foreground">{metric.unit}</span>
               ) : null}
             </div>
-            <dt className="text-small-regular text-muted-foreground">{metric.label}</dt>
+            <dt className="text-base-regular text-muted-foreground">{metric.label}</dt>
           </div>
         ))}
       </dl>
@@ -140,7 +140,7 @@ export function LearnerProfile({ data }: EvidenceProps): React.ReactElement {
           <div className="flex flex-1 items-center p-4">
             <h3 className="text-H1 max-w-48 text-red-900">{data.profile.title}</h3>
           </div>
-          <p className="border-t border-border-subtle bg-background p-4 text-small-regular text-foreground">
+          <p className="border-t border-border-subtle bg-background p-4 text-base-regular text-foreground">
             {data.profile.description}
           </p>
         </div>
