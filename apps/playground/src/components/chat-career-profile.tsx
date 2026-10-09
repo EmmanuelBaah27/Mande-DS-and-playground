@@ -1,12 +1,12 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
+import { useRouter } from "next/navigation"
 import { motion, AnimatePresence, useReducedMotion } from "motion/react"
 import { Badge, Button, Card, Icon, cn } from "@mande/ui"
 import type { IconName } from "@mande/ui"
 import type { CareerProfile, CareerProfileSection, ReadinessBreakdownRow, ReadinessDimensionKey } from "./chat-data"
 import { CouponRedeemModal } from "./coupon-redeem/coupon-redeem-modal"
-import { SponsorLinkShare } from "./sponsor-link-share/sponsor-link-share"
 import { DEMO_CAREER_PATHS, type CareerPath, type CareerPathFit } from "../lib/career-profile-data"
 import {
   PROFILE_GROUPS,
@@ -125,9 +125,9 @@ function ReadyView({
   onStartFindingClarity?: () => void
   onLearnMore?: () => void
 }) {
+  const router = useRouter()
   const [activeTab, setActiveTab] = useState<ProfileTab>("profile")
   const [couponOpen, setCouponOpen] = useState(false)
-  const [sponsorOpen, setSponsorOpen] = useState(false)
   const [couponUnlocked, setCouponUnlocked] = useState(false)
   const unlocked = pathsUnlocked || couponUnlocked
   const allGroups: Record<GroupKey, boolean> = { wired: true, edge: true, posture: true }
@@ -187,7 +187,7 @@ function ReadyView({
             <PathsUnlockSection
               onUnlock={onStartFindingClarity}
               onUseCoupon={() => setCouponOpen(true)}
-              onAskSomeone={() => setSponsorOpen(true)}
+              onAskSomeone={() => router.push("/screens/sponsor-payment")}
             />
           )}
         </div>
@@ -196,11 +196,6 @@ function ReadyView({
         open={couponOpen}
         onOpenChange={setCouponOpen}
         onRedeemed={() => setCouponUnlocked(true)}
-      />
-      <SponsorLinkShare
-        trigger={<span className="hidden" aria-hidden />}
-        open={sponsorOpen}
-        onOpenChange={setSponsorOpen}
       />
     </div>
   )
