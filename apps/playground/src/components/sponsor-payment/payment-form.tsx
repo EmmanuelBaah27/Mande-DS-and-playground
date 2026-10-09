@@ -333,13 +333,25 @@ export function PaymentForm({
       <Separator />
 
       <div className="flex items-start gap-2">
-        <Checkbox
-          id="sponsor-updates"
-          className="m-0.5 size-4 rounded-1-5 border-border-strong bg-background shadow-xs"
-          checked={state.fields.wantsUpdates}
-          disabled={isProcessing}
-          onCheckedChange={(checked) => editField("wantsUpdates", checked === true)}
-        />
+        <div className="relative size-5 shrink-0">
+          <Checkbox
+            id="sponsor-updates"
+            className="absolute m-0.5 size-4 rounded-1-5 border-border-strong bg-background text-transparent shadow-xs data-[state=checked]:m-0 data-[state=checked]:size-5 data-[state=checked]:border-transparent data-[state=checked]:bg-transparent data-[state=checked]:shadow-none"
+            checked={state.fields.wantsUpdates}
+            disabled={isProcessing}
+            onCheckedChange={(checked) => editField("wantsUpdates", checked === true)}
+          />
+          {state.fields.wantsUpdates ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              className="pointer-events-none absolute inset-0 size-5"
+              src="/sponsor-payment/checkbox-checked.svg"
+              alt=""
+              width={20}
+              height={20}
+            />
+          ) : null}
+        </div>
         <div className="flex flex-col gap-0">
           <label
             htmlFor="sponsor-updates"

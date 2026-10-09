@@ -16,6 +16,7 @@ import { resolve } from "node:path"
  * - list-checks.svg — 18.75 × 13.75 (4311:1276 child vector)
  * - lightning.svg — 13.7534 × 18.7437 (4311:1286 child vector)
  * - footprints.svg — 15.0001 × 17.502 (4311:1296 child vector)
+ * - checkbox-checked.svg — 20 × 20 (4435:871 exact checked-state icon)
  */
 const assets = [
   "mande-mark.svg",
@@ -28,6 +29,7 @@ const assets = [
   "list-checks.svg",
   "lightning.svg",
   "footprints.svg",
+  "checkbox-checked.svg",
 ]
 
 for (const asset of assets) {
