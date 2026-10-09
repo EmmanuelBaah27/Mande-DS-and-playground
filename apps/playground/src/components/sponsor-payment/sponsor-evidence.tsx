@@ -44,7 +44,7 @@ export function TimeToRoleComparison({ data }: EvidenceProps): React.ReactElemen
   return (
     <section className="flex flex-col gap-6" aria-labelledby="time-to-role-title">
       <div className="flex flex-col gap-2">
-        <h2 id="time-to-role-title" className="text-H3 text-foreground">
+        <h2 id="time-to-role-title" className="text-H3-fixed text-foreground">
           Estimated time to first paid role
         </h2>
         <p className="text-base-regular text-muted-foreground">
@@ -59,9 +59,9 @@ export function TimeToRoleComparison({ data }: EvidenceProps): React.ReactElemen
             Based on their readiness test and current job market conditions
           </p>
           <div className="flex items-baseline gap-1.5">
-            <span className="text-H2">{data.readiness.current.years}</span>
+            <span className="text-H3-fixed">{data.readiness.current.years}</span>
             <span className="text-base-regular text-muted-foreground">years</span>
-            <span className="ml-2 text-H2">{data.readiness.current.months}</span>
+            <span className="ml-2 text-H3-fixed">{data.readiness.current.months}</span>
             <span className="text-base-regular text-muted-foreground">months</span>
           </div>
         </div>
@@ -70,7 +70,7 @@ export function TimeToRoleComparison({ data }: EvidenceProps): React.ReactElemen
             With a clear direction, focused preparation and action
           </p>
           <div className="flex items-baseline gap-1.5 text-green-900">
-            <span className="text-H2">
+            <span className="text-H3-fixed">
               {data.readiness.guided.minMonths}–{data.readiness.guided.maxMonths}
             </span>
             <span className="text-base-regular">months</span>
@@ -88,12 +88,11 @@ export function EffortEvidence({ data }: EvidenceProps): React.ReactElement {
   return (
     <section className="flex flex-col gap-6" aria-labelledby="effort-title">
       <div className="flex flex-col gap-2">
-        <h2 id="effort-title" className="text-H3 text-foreground">
+        <h2 id="effort-title" className="text-H3-fixed text-foreground">
           Invest in someone who has shown up
         </h2>
         <p className="text-base-regular text-muted-foreground">
-          Help {data.learner.firstName} land {data.learner.possessivePronoun} first paid role
-          sooner with clear career guidance, free upskilling, and opportunities sourced for {data.learner.objectPronoun}.
+          {data.effortStatement}
         </p>
       </div>
 
@@ -108,10 +107,10 @@ export function EffortEvidence({ data }: EvidenceProps): React.ReactElement {
             ].join(" ")}
           >
             <div className="flex items-baseline gap-1.5">
-              <dd className="text-H2 text-foreground">{metric.value}</dd>
+              <dd className="text-H3-fixed text-foreground">{metric.value}</dd>
               {metric.unit === "h 24 m" ? (
                 <span className="text-base-regular text-muted-foreground">
-                  h <strong className="text-H2 text-foreground">24</strong> m
+                  h <strong className="text-H3-fixed text-foreground">24</strong> m
                 </span>
               ) : metric.unit ? (
                 <span className="text-base-regular text-muted-foreground">{metric.unit}</span>
@@ -128,7 +127,7 @@ export function EffortEvidence({ data }: EvidenceProps): React.ReactElement {
 export function LearnerProfile({ data }: EvidenceProps): React.ReactElement {
   return (
     <section className="flex flex-col gap-6" aria-labelledby="profile-title">
-      <h2 id="profile-title" className="text-H3 text-foreground">
+      <h2 id="profile-title" className="text-H3-fixed text-foreground">
         Who {data.learner.firstName} is
       </h2>
       <div className="grid overflow-hidden rounded-3 border border-border-subtle bg-background sm:grid-cols-2">

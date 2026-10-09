@@ -58,4 +58,4 @@ type system, two floors.
   size + weight utilities (per `foundations.md`).
 ## Fixed display heading
 
-Use `text-H1-fixed` when a composition intentionally keeps the 28 px H1 token at every viewport. Default product headings should continue to use responsive `text-H1`.
+Use `text-H1-fixed` or `text-H3-fixed` when a composition intentionally keeps its heading token at every viewport. Default product headings should continue to use responsive `text-H1`/`text-H3`.

@@ -34,6 +34,7 @@ export interface SponsorPageData {
   }
   completedWorkSummary: string
   gapStatement: string
+  effortStatement: string
   benefits: readonly {
     id: string
     icon: string
@@ -72,6 +73,8 @@ export const SPONSOR_PAGE_FIXTURE: SponsorPageData = {
     "In 3 hours, Mike clarified what most students struggle to define: his values, interests, work style, and ideal environment.",
   gapStatement:
     "What's missing: a clear career direction grounded in these insights.",
+  effortStatement:
+    "Mike has shown up for himself: 3 hours of honest reflection, every assessment completed, and 3 weeks of consistent effort. These numbers show he's ready for clear direction and the next step forward.",
   benefits: [
     {
       id: "ranked-paths",
