@@ -32,6 +32,7 @@ The visitor is a family member, mentor, or institutional sponsor who followed a 
 ## Key UI decisions
 
 - **Evidence before transaction.** The page leads with the learner's effort and the specific outcome the sponsor can unlock, not a generic checkout title.
+- **Learner-led request.** The narrative is written in the learner's first-person voice so the sponsor hears directly from the person asking for support. Transactional labels remain written for the sponsor completing the form.
 - **One fixed contribution.** The sponsor pays the displayed amount once; there is no custom amount, recurring plan, or cart.
 - **Two payment methods.** Mobile money offers MTN MoMo, Telecel, and AirtelTigo. Card exposes a compact card form.
 - **Responsive sequencing.** Desktop uses a viewport-height split layout: only the narrative column scrolls, while the payment column remains fixed in place. Mobile becomes one normal-flow page with the payment card immediately after the unlock summary, followed by deeper proof.

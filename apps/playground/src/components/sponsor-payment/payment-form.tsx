@@ -106,14 +106,12 @@ function FormField({
 }
 
 export interface PaymentFormProps {
-  learnerName: string
   price: string
   simulator?: PaymentSimulator
   forceFailure?: boolean
 }
 
 export function PaymentForm({
-  learnerName,
   price,
   simulator,
   forceFailure = false,
@@ -177,10 +175,10 @@ export function PaymentForm({
         </div>
         <div className="flex flex-col gap-2">
           <h2 className="text-xlg-semibold text-foreground">
-            {learnerName}&apos;s paths are unlocked
+            You&apos;ve unlocked my career paths
           </h2>
           <p className="text-base-regular text-muted-foreground">
-            Your support gives {learnerName} a clearer way forward. In the live experience,
+            Your support gives me a clearer way forward. In the live experience,
             we&apos;ll send your receipt to {state.fields.email}.
           </p>
         </div>
@@ -211,7 +209,7 @@ export function PaymentForm({
 
   return (
     <form className="flex flex-col gap-5" noValidate onSubmit={submit}>
-      <h2 className="text-xlg-semibold text-foreground">Back {learnerName}&apos;s next step</h2>
+      <h2 className="text-xlg-semibold text-foreground">Back my next step</h2>
 
       <fieldset disabled={isProcessing}>
         <legend className="sr-only">Payment method</legend>
@@ -357,10 +355,10 @@ export function PaymentForm({
             htmlFor="sponsor-updates"
             className="cursor-pointer text-base-regular text-foreground"
           >
-            Keep me updated on {learnerName}&apos;s journey
+            Get updates on my journey
           </label>
           <span className="text-small-regular text-muted-foreground">
-            Get a few updates when he unlocks paths and reaches meaningful milestones.
+            I&apos;ll share a few updates when I unlock paths and reach meaningful milestones.
           </span>
         </div>
       </div>
@@ -389,7 +387,7 @@ export function PaymentForm({
         icon={isProcessing ? undefined : <Icon name="IconArrowRight" size={20} />}
         iconPosition="right"
       >
-        {isProcessing ? "Processing payment…" : `Pay to unlock ${learnerName}'s paths`}
+        {isProcessing ? "Processing payment…" : "Pay to unlock my paths"}
       </Button>
     </form>
   )
