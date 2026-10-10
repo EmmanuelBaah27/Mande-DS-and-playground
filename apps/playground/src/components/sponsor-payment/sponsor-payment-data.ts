@@ -35,6 +35,9 @@ export interface SponsorPageData {
   completedWorkSummary: string
   gapStatement: string
   effortStatement: string
+  socialProof: string
+  closingAppeal: string
+  closingPriceLine: string
   benefits: readonly {
     id: string
     icon: string
@@ -75,6 +78,12 @@ export const SPONSOR_PAGE_FIXTURE: SponsorPageData = {
     "The missing piece is a clear direction on how this translates into my optimum career path.",
   effortStatement:
     "These numbers are a snapshot of the work I've already put in. They reflect the care and consistency I'm bringing to figuring out what fits.",
+  socialProof:
+    "Mande has helped students and professionals find work that fits them.",
+  closingAppeal:
+    "I've done the work to understand what fits me. Your support would help me turn that clarity into a path I can act on.",
+  closingPriceLine:
+    "For $30, you can help me take that next step.",
   benefits: [
     {
       id: "ranked-paths",

@@ -5,6 +5,7 @@ import * as React from "react"
 import {
   EffortEvidence,
   LearnerProfile,
+  SponsorClosingAppeal,
   TimeToRoleComparison,
   UnlockSummary,
 } from "./sponsor-evidence"
@@ -90,6 +91,7 @@ function MoreEvidence({ data }: { data: SponsorPageData }) {
       <TimeToRoleComparison data={data} />
       <EffortEvidence data={data} />
       <LearnerProfile data={data} />
+      <SponsorClosingAppeal data={data} />
     </section>
   )
 }

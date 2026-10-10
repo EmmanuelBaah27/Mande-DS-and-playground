@@ -11,10 +11,12 @@
 - Kept transactional form labels in the sponsor's perspective while moving the request, benefits, evidence, CTA, and update invitation into first person.
 - Added explicit 20×20 dimensions to every unlock-benefit icon.
 - Added regression coverage for the first-person voice and benefit icon dimensions.
+- Added a restrained closing section after the learner profile: an outlined credibility row and a soft neutral first-person appeal card.
+- Avoided the unverified “thousands” claim and used a non-numeric statement instead.
 
 ## Verification
 
-- Sponsor unit suite: 37/37 passed.
+- Sponsor unit suite: 38/38 passed.
 - Playground TypeScript check: passed.
 - Playground production build: passed.
 - Browser review confirmed the first-person narrative and measured all four benefit icons at 20×20px.

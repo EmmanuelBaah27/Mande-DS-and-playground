@@ -162,3 +162,23 @@ export function LearnerProfile({ data }: EvidenceProps): React.ReactElement {
     </section>
   )
 }
+
+export function SponsorClosingAppeal({ data }: EvidenceProps): React.ReactElement {
+  return (
+    <section className="flex flex-col gap-3" aria-label="Why your support matters">
+      <div className="flex items-center gap-3 rounded-4 border border-border-subtle bg-background p-5">
+        <Icon name="IconPeople" size={20} className="shrink-0 text-teal-700" />
+        <p className="text-base-regular text-muted-foreground">{data.socialProof}</p>
+      </div>
+
+      <div className="rounded-6 border border-border-subtle bg-subtle px-6 py-6">
+        <blockquote className="text-H3-fixed text-foreground">
+          {data.closingAppeal}
+        </blockquote>
+        <p className="mt-4 text-base-medium text-muted-foreground">
+          {data.closingPriceLine}
+        </p>
+      </div>
+    </section>
+  )
+}

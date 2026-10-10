@@ -40,3 +40,15 @@ test("benefit icons have explicit 20px dimensions", () => {
     /className="size-5 shrink-0 object-contain"[\s\S]*?width=\{20\}[\s\S]*?height=\{20\}/,
   )
 })
+
+test("the page closes with restrained social proof and a learner appeal", () => {
+  assert.ok("socialProof" in SPONSOR_PAGE_FIXTURE)
+  assert.ok("closingAppeal" in SPONSOR_PAGE_FIXTURE)
+  assert.ok("closingPriceLine" in SPONSOR_PAGE_FIXTURE)
+
+  const pageSource = readFileSync(
+    resolve(process.cwd(), "src/components/sponsor-payment/sponsor-payment-page.tsx"),
+    "utf8",
+  )
+  assert.match(pageSource, /<SponsorClosingAppeal data=\{data\} \/>/)
+})
