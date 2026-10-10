@@ -65,9 +65,9 @@ function BrandAndUnlock({ data }: { data: SponsorPageData }) {
         <div className="flex flex-col gap-3">
           <h1 className="text-H1-fixed text-foreground">
             <span className="block text-muted-foreground">
-              {data.learner.firstName} did the work.
+              I&apos;ve done the work.
             </span>
-            Help {data.learner.objectPronoun} see where it leads.
+            Help me see where it leads.
           </h1>
           <p className="text-base-regular text-muted-foreground">
             {data.completedWorkSummary}
@@ -108,7 +108,6 @@ function PaymentPanel({
         data-payment-panel
       >
         <PaymentForm
-          learnerName={data.learner.firstName}
           price={`${data.price.currency} ${data.price.amount}`}
           forceFailure={forceFailure}
         />

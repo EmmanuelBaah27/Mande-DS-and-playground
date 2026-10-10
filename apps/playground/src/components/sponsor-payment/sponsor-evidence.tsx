@@ -11,7 +11,7 @@ export function UnlockSummary({ data }: EvidenceProps): React.ReactElement {
     <div className="flex flex-col gap-1.5">
       <div className="flex items-center justify-between gap-5 rounded-6 bg-accent-subtle px-6 py-5 text-teal-900">
         <h2 className="text-xlg-semibold">
-          Unlock {data.learner.firstName}&apos;s career guidance
+          Help me unlock my career direction
         </h2>
         <div className="shrink-0 text-right">
           <div className="flex items-baseline justify-end gap-0.5">
@@ -30,7 +30,13 @@ export function UnlockSummary({ data }: EvidenceProps): React.ReactElement {
           {data.benefits.map((benefit) => (
             <li key={benefit.id} className="flex items-center gap-2">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img className="size-5 shrink-0 object-contain" src={benefit.icon} alt="" />
+              <img
+                className="size-5 shrink-0 object-contain"
+                src={benefit.icon}
+                alt=""
+                width={20}
+                height={20}
+              />
               <span className="text-base-medium text-foreground">{benefit.text}</span>
             </li>
           ))}
@@ -48,15 +54,15 @@ export function TimeToRoleComparison({ data }: EvidenceProps): React.ReactElemen
           Estimated time to first paid role
         </h2>
         <p className="text-base-regular text-muted-foreground">
-          Help {data.learner.firstName} land {data.learner.possessivePronoun} first paid role
-          sooner with clear career guidance, free upskilling, and opportunities sourced for {data.learner.objectPronoun}.
+          Your support can help me reach my first paid role sooner, with clear career
+          direction, free upskilling, and opportunities that fit me.
         </p>
       </div>
 
       <div className="relative grid grid-cols-1 gap-1 min-[360px]:grid-cols-2">
         <div className="flex flex-col justify-between gap-6 rounded-t-4 bg-subtle px-6 py-5 min-[360px]:rounded-l-4 min-[360px]:rounded-tr-none">
           <p className="text-lg-medium text-foreground">
-            Based on their readiness test and current job market conditions
+            Based on my readiness test and current job market conditions
           </p>
           <div className="flex items-baseline gap-1.5">
             <span className="text-H3-fixed">{data.readiness.current.years}</span>
@@ -89,7 +95,7 @@ export function EffortEvidence({ data }: EvidenceProps): React.ReactElement {
     <section className="flex flex-col gap-6" aria-labelledby="effort-title">
       <div className="flex flex-col gap-2">
         <h2 id="effort-title" className="text-H3-fixed text-foreground">
-          Invest in someone who has shown up
+          The work I&apos;ve already put in
         </h2>
         <p className="text-base-regular text-muted-foreground">
           {data.effortStatement}
@@ -128,7 +134,7 @@ export function LearnerProfile({ data }: EvidenceProps): React.ReactElement {
   return (
     <section className="flex flex-col gap-6" aria-labelledby="profile-title">
       <h2 id="profile-title" className="text-H3-fixed text-foreground">
-        Who {data.learner.firstName} is
+        A little about me
       </h2>
       <div className="grid overflow-hidden rounded-3 border border-border-subtle bg-background sm:grid-cols-2">
         <div className="flex min-h-72 flex-col bg-red-50">
@@ -147,7 +153,7 @@ export function LearnerProfile({ data }: EvidenceProps): React.ReactElement {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={data.profile.artwork}
-          alt="Abstract red artwork representing Mike's investigative personality"
+          alt="Abstract red artwork representing an investigative personality"
           width={326}
           height={325}
           className="h-full min-h-72 w-full object-cover"

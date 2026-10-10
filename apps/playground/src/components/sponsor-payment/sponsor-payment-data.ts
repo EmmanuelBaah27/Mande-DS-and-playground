@@ -70,31 +70,31 @@ export const SPONSOR_PAGE_FIXTURE: SponsorPageData = {
     localReference: "GHS 470",
   },
   completedWorkSummary:
-    "In 3 hours, Mike clarified what most students struggle to define: his values, interests, work style, and ideal environment.",
+    "In 3 hours, I clarified what most students struggle to define: my values, interests, work style, and ideal environment.",
   gapStatement:
-    "What's missing: a clear career direction grounded in these insights.",
+    "The missing piece is a clear direction on how this translates into my optimum career path.",
   effortStatement:
-    "These numbers are a snapshot of the work Mike has already put in. They reflect the care and consistency he's bringing to figuring out what fits.",
+    "These numbers are a snapshot of the work I've already put in. They reflect the care and consistency I'm bringing to figuring out what fits.",
   benefits: [
     {
       id: "ranked-paths",
       icon: "/sponsor-payment/ranking.svg",
-      text: "Five ranked career paths tailored to him.",
+      text: "Five ranked career paths tailored to me.",
     },
     {
       id: "reasons",
       icon: "/sponsor-payment/list-checks.svg",
-      text: "Honest reasons to choose his best path confidently, not society's expectations.",
+      text: "Honest reasons to choose my best path confidently, not society's expectations.",
     },
     {
       id: "skills-map",
       icon: "/sponsor-payment/lightning.svg",
-      text: "A clear map of his skills and gaps to be work-ready for his chosen career.",
+      text: "A clear map of my skills and gaps to be work-ready for my chosen career.",
     },
     {
       id: "first-week",
       icon: "/sponsor-payment/footprints.svg",
-      text: "A first-week plan to keep his momentum going.",
+      text: "A first-week plan to keep my momentum going.",
     },
   ],
   readiness: {
