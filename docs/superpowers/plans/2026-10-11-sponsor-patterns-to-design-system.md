@@ -44,13 +44,13 @@
 - `RadioCardGroup` accepts the Radix radio root API.
 - `RadioCardItem` accepts `value`, `label`, optional `description`, optional `media`, and `disabled`; `media` is consumer content and is not resized by the component.
 
-- [ ] Write tests covering controlled selection, disabled items, keyboard focus, label association, and long copy.
-- [ ] Verify tests fail because the exports do not exist.
-- [ ] Implement the components by composing the existing Radix `RadioGroup`; use token utilities for border, selected surface, focus ring, radius, and type.
-- [ ] Add Default, WithMedia, WithDescription, Disabled, and LongContent stories.
-- [ ] Export the component and types, then document it under `Components/Form`.
-- [ ] Replace the sponsor provider-card markup while leaving `PROVIDERS` and payment state in the app.
-- [ ] Run UI tests, playground typecheck, Storybook build, and commit `feat(ui): add radio card group`.
+- [x] Write tests covering controlled selection, disabled items, keyboard focus, label association, and long copy.
+- [x] Verify tests fail because the exports do not exist.
+- [x] Implement the components by composing the existing Radix `RadioGroup`; use token utilities for border, selected surface, focus ring, radius, and type.
+- [x] Add Default, WithMedia, WithDescription, Disabled, and LongContent stories.
+- [x] Export the component and types, then document it under `Components/Form`.
+- [x] Replace the sponsor provider-card markup while leaving `PROVIDERS` and payment state in the app.
+- [x] Run UI tests, playground typecheck, Storybook build, and commit `feat(ui): add radio card group`.
 
 ### Task 2: Promote `MetricGrid`
 
@@ -159,4 +159,3 @@
 - [ ] Confirm the page contains no duplicated local implementation for the promoted patterns.
 - [ ] Update plan checkboxes and session documentation.
 - [ ] Commit final verification/docs, push the approved branch destination, open or update the PR, and surface both Vercel and Storybook preview URLs.
-

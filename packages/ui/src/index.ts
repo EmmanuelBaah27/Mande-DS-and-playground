@@ -44,6 +44,9 @@ export type { InputWithLabelProps } from "./components/ui/input-with-label"
 
 export { RadioGroup, RadioGroupItem } from "./components/ui/radio-group"
 
+export { RadioCardGroup, RadioCardItem } from "./components/ui/radio-card-group"
+export type { RadioCardItemProps } from "./components/ui/radio-card-group"
+
 export { Switch } from "./components/ui/switch"
 
 export { Slider } from "./components/ui/slider"

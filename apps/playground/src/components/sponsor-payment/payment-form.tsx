@@ -6,6 +6,8 @@ import {
   Checkbox,
   Icon,
   Input,
+  RadioCardGroup,
+  RadioCardItem,
   Separator,
 } from "@mande/ui"
 
@@ -238,25 +240,25 @@ export function PaymentForm({
       {state.method === "mobile-money" ? (
         <fieldset disabled={isProcessing}>
           <legend className="sr-only">Mobile money provider</legend>
-          <div className="grid grid-cols-3 gap-3">
+          <RadioCardGroup
+            className="grid-cols-3"
+            name="provider"
+            value={state.fields.provider}
+            onValueChange={(value) => editField("provider", value as MobileMoneyProvider)}
+            aria-label="Mobile money provider"
+          >
             {PROVIDERS.map((provider) => (
-              <label key={provider.id} className="cursor-pointer">
-                <input
-                  className="peer sr-only"
-                  type="radio"
-                  name="provider"
-                  value={provider.id}
-                  checked={state.fields.provider === provider.id}
-                  onChange={() => editField("provider", provider.id)}
-                />
-                <span className="flex min-h-20 flex-col items-center justify-center gap-2 rounded-4 border border-border-subtle bg-background p-3 text-center text-small-regular text-foreground transition-colors peer-checked:border-foreground peer-checked:bg-muted peer-checked:shadow-xs peer-focus-visible:ring-2 peer-focus-visible:ring-ring">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
+              <RadioCardItem
+                key={provider.id}
+                value={provider.id}
+                label={provider.label}
+                media={(
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img className="rounded-full" src={provider.logo} alt="" width={24} height={24} />
-                  {provider.label}
-                </span>
-              </label>
+                )}
+              />
             ))}
-          </div>
+          </RadioCardGroup>
           {state.errors.provider ? (
             <p className="mt-1 text-small-regular text-danger">{state.errors.provider}</p>
           ) : null}

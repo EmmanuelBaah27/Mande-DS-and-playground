@@ -8,7 +8,7 @@ Designer reference for what exists in the design system. Source of truth: `packa
 
 Check Storybook for the current live list. Components are grouped as:
 
-- `Components/Form` — inputs, selects, checkboxes, radio, textarea, switch, chip, chip-select-group
+- `Components/Form` — inputs, selects, checkboxes, radio, radio-card-group, textarea, switch, chip, chip-select-group
 - `Components/Display` — badge, avatar, card, separator, skeleton
 - `Components/Navigation` — sidebar, tabs, breadcrumb
 - `Components/Overlays` — dialog, popover, dropdown-menu, tooltip, sheet
@@ -24,6 +24,10 @@ Check Storybook for the current live list. Components are grouped as:
 - Size props: `"sm" | "md" | "lg"` (or `"default"` for the base size)
 - All components accept `className` for extension
 - All interactive components accept `disabled`
+
+### RadioCardGroup
+
+Use `RadioCardGroup` for mutually exclusive choices that need a larger selectable surface. `RadioCardItem` owns selection, focus, disabled, label, and optional description styling; consumers own the choice data and any `media` content.
 
 ---
 
