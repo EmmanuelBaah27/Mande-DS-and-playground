@@ -90,13 +90,13 @@
 - Props: `eyebrow`, `title`, `description`, `descriptors`, `media`, and semantic `tone?: "teal" | "orange" | "blush" | "green" | "neutral"`.
 - `media` remains caller-owned so the DS has no knowledge of MBTI or sponsor assets.
 
-- [ ] Write tests for semantic article output, eyebrow/title hierarchy, descriptor list labeling, missing descriptors, long text, and caller media.
-- [ ] Verify tests fail before implementation.
-- [ ] Implement the stacked/mobile and split/desktop layout with independent rounded text and media surfaces, zero gap, a border only on the text surface, and 14px description text.
-- [ ] Add one story per tone plus LongContent and WithoutDescriptors.
-- [ ] Export and document under `Components/Display`.
-- [ ] Replace the local card body with a thin sponsor adapter that maps `SponsorMbtiProfile` data into DS props.
-- [ ] Run tests, the 16-profile gallery, playground typecheck, Storybook build, and commit `feat(ui): add profile summary card`.
+- [x] Write tests for semantic article output, eyebrow/title hierarchy, descriptor list labeling, missing descriptors, long text, and caller media.
+- [x] Verify tests fail before implementation.
+- [x] Implement the stacked/mobile and split/desktop layout with independent rounded text and media surfaces, zero gap, a border only on the text surface, and 14px description text.
+- [x] Add one story per tone plus LongContent and WithoutDescriptors.
+- [x] Export and document under `Components/Display`.
+- [x] Replace the local card body with a thin sponsor adapter that maps `SponsorMbtiProfile` data into DS props.
+- [x] Run tests, the 16-profile gallery, playground typecheck, Storybook build, and commit `feat(ui): add profile summary card`.
 
 ### Task 4: Promote `ComparisonPanel`
 

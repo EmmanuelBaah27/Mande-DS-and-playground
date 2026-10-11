@@ -1,58 +1,30 @@
+import { ProfileSummaryCard } from "@mande/ui"
+
 import type { SponsorMbtiProfile } from "../../lib/sponsor-mbti-profiles"
 import type { SponsorProfileFallbackData } from "./sponsor-payment-data"
-
-const PALETTE_CLASSES = {
-  teal: { surface: "bg-teal-50", heading: "text-teal-900" },
-  orange: { surface: "bg-orange-50", heading: "text-orange-900" },
-  blush: { surface: "bg-blush-50", heading: "text-blush-900" },
-  green: { surface: "bg-green-50", heading: "text-green-900" },
-} as const satisfies Record<
-  SponsorMbtiProfile["palette"],
-  { surface: string; heading: string }
->
 
 export function SponsorProfileCard({
   profile,
 }: {
   profile: SponsorMbtiProfile
 }): React.ReactElement {
-  const palette = PALETTE_CLASSES[profile.palette]
-
   return (
-    <article className="grid sm:grid-cols-2">
-      <div className={`flex flex-col rounded-4 border border-border-subtle sm:min-h-80 ${palette.surface}`}>
-        <div className="flex flex-col gap-1 p-4">
-          <p className="text-small-regular text-muted-foreground">{profile.mbtiType}</p>
-          <h3 className={`text-H1 ${palette.heading}`}>{profile.title}</h3>
-        </div>
-        <div className="mt-5 flex flex-col gap-4 p-4 sm:mt-auto">
-          <p className="text-base-regular text-foreground">
-            {profile.description}
-          </p>
-          <ul className="flex flex-wrap gap-2" aria-label="Profile descriptors">
-            {profile.descriptors.map((descriptor) => (
-              <li
-                key={descriptor}
-                className="rounded-full border border-border-strong px-2 py-0.5 text-small-regular text-foreground"
-              >
-                {descriptor}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="aspect-square overflow-hidden rounded-4">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+    <ProfileSummaryCard
+      eyebrow={profile.mbtiType}
+      title={profile.title}
+      description={profile.description}
+      descriptors={profile.descriptors}
+      tone={profile.palette}
+      media={(
+        // eslint-disable-next-line @next/next/no-img-element
         <img
-          className="size-full object-cover"
           src={profile.artwork}
           alt={profile.artworkAlt}
           width={960}
           height={960}
         />
-      </div>
-    </article>
+      )}
+    />
   )
 }
 
