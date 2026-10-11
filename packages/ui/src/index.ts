@@ -42,7 +42,12 @@ export type { CheckboxProps } from "./components/ui/checkbox"
 export { InputWithLabel } from "./components/ui/input-with-label"
 export type { InputWithLabelProps } from "./components/ui/input-with-label"
 
-export { RadioGroup, RadioGroupItem } from "./components/ui/radio-group"
+export {
+  RadioGroup,
+  RadioGroupItem,
+  RadioSegmentGroup,
+  RadioSegmentItem,
+} from "./components/ui/radio-group"
 
 export { RadioCardGroup, RadioCardItem } from "./components/ui/radio-card-group"
 export type { RadioCardItemProps } from "./components/ui/radio-card-group"

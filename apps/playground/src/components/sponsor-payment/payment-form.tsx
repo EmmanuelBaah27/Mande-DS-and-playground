@@ -8,6 +8,8 @@ import {
   Input,
   RadioCardGroup,
   RadioCardItem,
+  RadioSegmentGroup,
+  RadioSegmentItem,
   Separator,
 } from "@mande/ui"
 
@@ -215,26 +217,18 @@ export function PaymentForm({
 
       <fieldset disabled={isProcessing}>
         <legend className="sr-only">Payment method</legend>
-        <div className="grid grid-cols-2 rounded-full bg-subtle p-1">
+        <RadioSegmentGroup
+          value={state.method}
+          onValueChange={(value) => setMethod(value as PaymentMethod)}
+          aria-label="Payment method"
+        >
           {([
             ["mobile-money", "Mobile money"],
             ["card", "Card"],
           ] as const).map(([method, label]) => (
-            <label key={method} className="cursor-pointer">
-              <input
-                className="peer sr-only"
-                type="radio"
-                name="payment-method"
-                value={method}
-                checked={state.method === method}
-                onChange={() => setMethod(method)}
-              />
-              <span className="flex min-h-10 items-center justify-center rounded-full border border-transparent px-3 text-base-medium text-muted-foreground transition-colors peer-checked:border-border peer-checked:bg-background peer-checked:text-foreground peer-focus-visible:ring-2 peer-focus-visible:ring-ring">
-                {label}
-              </span>
-            </label>
+            <RadioSegmentItem key={method} value={method}>{label}</RadioSegmentItem>
           ))}
-        </div>
+        </RadioSegmentGroup>
       </fieldset>
 
       {state.method === "mobile-money" ? (

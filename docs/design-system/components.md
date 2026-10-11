@@ -29,6 +29,10 @@ Check Storybook for the current live list. Components are grouped as:
 
 Use `RadioCardGroup` for mutually exclusive choices that need a larger selectable surface. `RadioCardItem` owns selection, focus, disabled, label, and optional description styling; consumers own the choice data and any `media` content.
 
+### RadioSegmentGroup
+
+Use `RadioSegmentGroup` and `RadioSegmentItem` for two to four peer choices in a compact pill. It retains Radix controlled/uncontrolled radio semantics, arrow-key navigation, disabled state, and visible keyboard focus.
+
 ### MetricGrid
 
 Use `MetricGrid` and `MetricGridItem` for compact definition-list metrics. Choose one to four columns; items own their internal dividers so incomplete rows retain clean boundaries. Values and units accept rich React content.

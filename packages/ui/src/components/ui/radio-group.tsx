@@ -42,4 +42,34 @@ const RadioGroupItem = React.forwardRef<
 })
 RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName
 
-export { RadioGroup, RadioGroupItem }
+const RadioSegmentGroup = React.forwardRef<
+  React.ElementRef<typeof RadioGroupPrimitive.Root>,
+  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
+>(({ className, ...props }, ref) => (
+  <RadioGroupPrimitive.Root
+    ref={ref}
+    className={cn("grid auto-cols-fr grid-flow-col rounded-full bg-subtle p-1", className)}
+    {...props}
+  />
+))
+RadioSegmentGroup.displayName = "RadioSegmentGroup"
+
+const RadioSegmentItem = React.forwardRef<
+  React.ElementRef<typeof RadioGroupPrimitive.Item>,
+  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Item>
+>(({ className, ...props }, ref) => (
+  <RadioGroupPrimitive.Item
+    ref={ref}
+    className={cn(
+      "flex min-h-11 min-w-0 items-center justify-center rounded-full border border-transparent px-3 text-center text-base-medium text-muted-foreground outline-none transition-[background-color,border-color,color]",
+      "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+      "disabled:cursor-not-allowed disabled:opacity-50",
+      "data-[state=checked]:border-border data-[state=checked]:bg-background data-[state=checked]:text-foreground",
+      className,
+    )}
+    {...props}
+  />
+))
+RadioSegmentItem.displayName = "RadioSegmentItem"
+
+export { RadioGroup, RadioGroupItem, RadioSegmentGroup, RadioSegmentItem }

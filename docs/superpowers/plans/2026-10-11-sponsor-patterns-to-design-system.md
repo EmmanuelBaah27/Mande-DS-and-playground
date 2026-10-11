@@ -135,13 +135,13 @@
 - Adds `RadioSegmentGroup` and `RadioSegmentItem` rather than overloading the circular `RadioGroupItem` API.
 - Both use the existing Radix radio root semantics and controlled/uncontrolled value behavior.
 
-- [ ] Write tests for selection, arrow-key movement, disabled state, focus visibility, and two-to-four labels.
-- [ ] Verify tests fail before implementation.
-- [ ] Implement the pill container and selected segment entirely with semantic tokens.
-- [ ] Add TwoItems, FourItems, Disabled, and LongLabels stories.
-- [ ] Export and document under `Components/Form`.
-- [ ] Replace the Mobile money/Card selector with the new segmented radio components.
-- [ ] Run tests, playground typecheck, Storybook build, and commit `feat(ui): add segmented radio group`.
+- [x] Write tests for selection, arrow-key movement, disabled state, focus visibility, and two-to-four labels.
+- [x] Verify tests fail before implementation.
+- [x] Implement the pill container and selected segment entirely with semantic tokens.
+- [x] Add TwoItems, FourItems, Disabled, and LongLabels stories.
+- [x] Export and document under `Components/Form`.
+- [x] Replace the Mobile money/Card selector with the new segmented radio components.
+- [x] Run tests, playground typecheck, Storybook build, and commit `feat(ui): add segmented radio group`.
 
 ### Task 6: Integrated verification and shipping
 

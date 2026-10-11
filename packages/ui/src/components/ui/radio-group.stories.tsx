@@ -1,5 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react"
-import { RadioGroup, RadioGroupItem } from "./radio-group"
+import {
+  RadioGroup,
+  RadioGroupItem,
+  RadioSegmentGroup,
+  RadioSegmentItem,
+} from "./radio-group"
 import { Label } from "./label"
 
 const meta: Meta<typeof RadioGroup> = {
@@ -27,5 +32,42 @@ export const Default: Story = {
         <Label htmlFor="r3">Option three</Label>
       </div>
     </RadioGroup>
+  ),
+}
+
+export const TwoSegments: Story = {
+  render: () => (
+    <RadioSegmentGroup defaultValue="mobile" aria-label="Payment method" className="w-80">
+      <RadioSegmentItem value="mobile">Mobile money</RadioSegmentItem>
+      <RadioSegmentItem value="card">Card</RadioSegmentItem>
+    </RadioSegmentGroup>
+  ),
+}
+
+export const FourSegments: Story = {
+  render: () => (
+    <RadioSegmentGroup defaultValue="week" aria-label="Range" className="w-[28rem]">
+      {[
+        ["day", "Day"], ["week", "Week"], ["month", "Month"], ["year", "Year"],
+      ].map(([value, label]) => <RadioSegmentItem key={value} value={value}>{label}</RadioSegmentItem>)}
+    </RadioSegmentGroup>
+  ),
+}
+
+export const DisabledSegment: Story = {
+  render: () => (
+    <RadioSegmentGroup defaultValue="available" aria-label="Availability" className="w-80">
+      <RadioSegmentItem value="available">Available</RadioSegmentItem>
+      <RadioSegmentItem value="unavailable" disabled>Unavailable</RadioSegmentItem>
+    </RadioSegmentGroup>
+  ),
+}
+
+export const LongSegmentLabels: Story = {
+  render: () => (
+    <RadioSegmentGroup defaultValue="first" aria-label="Long labels" className="w-80">
+      <RadioSegmentItem value="first">First longer option</RadioSegmentItem>
+      <RadioSegmentItem value="second">Second longer option</RadioSegmentItem>
+    </RadioSegmentGroup>
   ),
 }
