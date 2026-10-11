@@ -1,6 +1,11 @@
 import { Icon } from "@mande/ui"
 
+import { resolveSponsorMbtiProfile } from "../../lib/sponsor-mbti-profiles"
 import type { SponsorPageData } from "./sponsor-payment-data"
+import {
+  SponsorProfileCard,
+  SponsorProfileFallback,
+} from "./sponsor-profile-card"
 
 interface EvidenceProps {
   data: SponsorPageData
@@ -131,34 +136,18 @@ export function EffortEvidence({ data }: EvidenceProps): React.ReactElement {
 }
 
 export function LearnerProfile({ data }: EvidenceProps): React.ReactElement {
+  const profile = resolveSponsorMbtiProfile(data.profile.mbtiType)
+
   return (
     <section className="flex flex-col gap-6" aria-labelledby="profile-title">
       <h2 id="profile-title" className="text-H3-fixed text-foreground">
-        A little about me
+        About them
       </h2>
-      <div className="grid overflow-hidden rounded-3 border border-border-subtle bg-background sm:grid-cols-2">
-        <div className="flex min-h-72 flex-col bg-red-50">
-          <div className="p-4">
-            <span className="inline-flex rounded-full border border-border-strong px-2 py-0.5 text-small-regular text-foreground">
-              {data.profile.badge}
-            </span>
-          </div>
-          <div className="flex flex-1 items-center p-4">
-            <h3 className="text-H1 max-w-48 text-red-900">{data.profile.title}</h3>
-          </div>
-          <p className="border-t border-border-subtle bg-background p-4 text-base-regular text-foreground">
-            {data.profile.description}
-          </p>
-        </div>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={data.profile.artwork}
-          alt="Abstract red artwork representing an investigative personality"
-          width={326}
-          height={325}
-          className="h-full min-h-72 w-full object-cover"
-        />
-      </div>
+      {profile ? (
+        <SponsorProfileCard profile={profile} />
+      ) : (
+        <SponsorProfileFallback fallback={data.profile.fallback} />
+      )}
     </section>
   )
 }

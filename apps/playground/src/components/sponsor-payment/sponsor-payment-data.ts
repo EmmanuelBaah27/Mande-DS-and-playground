@@ -21,6 +21,13 @@ export type PaymentErrorField =
 
 export type PaymentErrors = Partial<Record<PaymentErrorField, string>>
 
+export interface SponsorProfileFallbackData {
+  title: string
+  description: string
+  artwork: string
+  artworkAlt: string
+}
+
 export interface SponsorPageData {
   learner: {
     firstName: string
@@ -54,10 +61,8 @@ export interface SponsorPageData {
     label: string
   }[]
   profile: {
-    badge: string
-    title: string
-    description: string
-    artwork: string
+    mbtiType?: string
+    fallback: SponsorProfileFallbackData
   }
 }
 
@@ -117,10 +122,13 @@ export const SPONSOR_PAGE_FIXTURE: SponsorPageData = {
     { id: "effort", value: "3", unit: "weeks", label: "consistent effort" },
   ],
   profile: {
-    badge: "INTJ",
-    title: "Artistic, investigative thinker",
-    description:
-      "A logical analyst who leads with curiosity and values autonomy above all.",
-    artwork: "/sponsor-payment/profile-artwork.png",
+    mbtiType: "ESTP",
+    fallback: {
+      title: "Artistic, investigative thinker",
+      description:
+        "A logical analyst who leads with curiosity and values autonomy above all.",
+      artwork: "/sponsor-payment/profile-artwork.png",
+      artworkAlt: "Abstract red artwork representing an investigative personality",
+    },
   },
 }

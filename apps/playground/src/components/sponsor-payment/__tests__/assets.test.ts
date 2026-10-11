@@ -32,9 +32,23 @@ const assets = [
   "checkbox-checked.svg",
 ]
 
+const mbtiArtwork = [
+  "intj.png", "intp.png", "entj.png", "entp.png",
+  "infj.png", "infp.png", "enfj.png", "enfp.png",
+  "istj.png", "isfj.png", "estj.png", "esfj.png",
+  "istp.png", "isfp.png", "estp.png", "esfp.png",
+]
+
 for (const asset of assets) {
   test(`${asset} exists and is non-empty`, async () => {
     const file = resolve(process.cwd(), "public/sponsor-payment", asset)
+    assert.ok((await stat(file)).size > 0)
+  })
+}
+
+for (const asset of mbtiArtwork) {
+  test(`${asset} MBTI artwork exists and is non-empty`, async () => {
+    const file = resolve(process.cwd(), "public/sponsor-payment/mbti", asset)
     assert.ok((await stat(file)).size > 0)
   })
 }
