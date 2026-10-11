@@ -20,9 +20,12 @@ export function SponsorProfileCard({
 
   return (
     <article className="grid sm:grid-cols-2">
-      <div className={`flex flex-col rounded-4 border border-border-subtle p-4 sm:min-h-80 sm:p-0 ${palette.surface}`}>
-        <h3 className={`text-H1 sm:p-4 ${palette.heading}`}>{profile.title}</h3>
-        <div className="mt-5 flex flex-col gap-4 sm:mt-auto sm:p-4">
+      <div className={`flex flex-col rounded-4 border border-border-subtle sm:min-h-80 ${palette.surface}`}>
+        <div className="flex flex-col gap-1 p-4">
+          <p className="text-small-regular text-muted-foreground">{profile.mbtiType}</p>
+          <h3 className={`text-H1 ${palette.heading}`}>{profile.title}</h3>
+        </div>
+        <div className="mt-5 flex flex-col gap-4 p-4 sm:mt-auto">
           <p className="text-base-regular text-foreground">
             {profile.description}
           </p>
