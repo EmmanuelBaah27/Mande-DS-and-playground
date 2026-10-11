@@ -1,4 +1,4 @@
-import { Icon } from "@mande/ui"
+import { Icon, MetricGrid, MetricGridItem } from "@mande/ui"
 
 import { resolveSponsorMbtiProfile } from "../../lib/sponsor-mbti-profiles"
 import type { SponsorPageData } from "./sponsor-payment-data"
@@ -108,30 +108,18 @@ export function EffortEvidence({ data }: EvidenceProps): React.ReactElement {
         </p>
       </div>
 
-      <dl className="grid grid-cols-2 overflow-hidden rounded-4 border border-border-subtle bg-background">
-        {data.effortMetrics.map((metric, index) => (
-          <div
+      <MetricGrid columns={2} aria-label="Work completed">
+        {data.effortMetrics.map((metric) => (
+          <MetricGridItem
             key={metric.id}
-            className={[
-              "flex flex-col gap-1 p-5",
-              index % 2 === 0 ? "border-r border-border-subtle" : "",
-              index < 2 ? "border-b border-border-subtle" : "",
-            ].join(" ")}
-          >
-            <div className="flex items-baseline gap-1.5">
-              <dd className="text-H3-fixed text-foreground">{metric.value}</dd>
-              {metric.unit === "h 24 m" ? (
-                <span className="text-base-regular text-muted-foreground">
-                  h <strong className="text-H3-fixed text-foreground">24</strong> m
-                </span>
-              ) : metric.unit ? (
-                <span className="text-base-regular text-muted-foreground">{metric.unit}</span>
-              ) : null}
-            </div>
-            <dt className="text-base-regular text-muted-foreground">{metric.label}</dt>
-          </div>
+            value={metric.value}
+            unit={metric.unit === "h 24 m" ? (
+              <>h <strong className="text-H3-fixed text-foreground">24</strong> m</>
+            ) : metric.unit}
+            label={metric.label}
+          />
         ))}
-      </dl>
+      </MetricGrid>
     </section>
   )
 }

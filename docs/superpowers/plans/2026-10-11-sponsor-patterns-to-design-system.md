@@ -67,13 +67,13 @@
 - `MetricGrid` accepts `columns?: 1 | 2 | 3 | 4` and renders a semantic definition list.
 - `MetricGridItem` accepts `value: ReactNode`, optional `unit: ReactNode`, and `label: ReactNode`.
 
-- [ ] Write tests for semantic `dl/dt/dd` output, one through five items, mixed units, and responsive column classes.
-- [ ] Verify tests fail because the components do not exist.
-- [ ] Implement border ownership from item position so incomplete final rows do not produce doubled or missing boundaries.
-- [ ] Add TwoByTwo, UnevenItems, LongLabels, and FourColumns stories.
-- [ ] Export and document under `Components/Display`.
-- [ ] Migrate `EffortEvidence`, preserving the special rich `3 h 24 m` value as React content.
-- [ ] Run tests, playground typecheck, Storybook build, and commit `feat(ui): add metric grid`.
+- [x] Write tests for semantic `dl/dt/dd` output, one through five items, mixed units, and responsive column classes.
+- [x] Verify tests fail because the components do not exist.
+- [x] Implement border ownership from item position so incomplete final rows do not produce doubled or missing boundaries.
+- [x] Add TwoByTwo, UnevenItems, LongLabels, and FourColumns stories.
+- [x] Export and document under `Components/Display`.
+- [x] Migrate `EffortEvidence`, preserving the special rich `3 h 24 m` value as React content.
+- [x] Run tests, playground typecheck, Storybook build, and commit `feat(ui): add metric grid`.
 
 ### Task 3: Promote `ProfileSummaryCard`
 

@@ -9,7 +9,7 @@ Designer reference for what exists in the design system. Source of truth: `packa
 Check Storybook for the current live list. Components are grouped as:
 
 - `Components/Form` — inputs, selects, checkboxes, radio, radio-card-group, textarea, switch, chip, chip-select-group
-- `Components/Display` — badge, avatar, card, separator, skeleton
+- `Components/Display` — badge, avatar, card, metric-grid, separator, skeleton
 - `Components/Navigation` — sidebar, tabs, breadcrumb
 - `Components/Overlays` — dialog, popover, dropdown-menu, tooltip, sheet
 - `Components/Feedback` — toast (Sonner), progress, alert
@@ -28,6 +28,10 @@ Check Storybook for the current live list. Components are grouped as:
 ### RadioCardGroup
 
 Use `RadioCardGroup` for mutually exclusive choices that need a larger selectable surface. `RadioCardItem` owns selection, focus, disabled, label, and optional description styling; consumers own the choice data and any `media` content.
+
+### MetricGrid
+
+Use `MetricGrid` and `MetricGridItem` for compact definition-list metrics. Choose one to four columns; items own their internal dividers so incomplete rows retain clean boundaries. Values and units accept rich React content.
 
 ---
 

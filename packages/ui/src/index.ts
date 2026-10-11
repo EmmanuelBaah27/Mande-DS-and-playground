@@ -74,6 +74,9 @@ export {
 export { Badge } from "./components/ui/badge"
 export type { BadgeProps } from "./components/ui/badge"
 
+export { MetricGrid, MetricGridItem } from "./components/ui/metric-grid"
+export type { MetricGridProps, MetricGridItemProps } from "./components/ui/metric-grid"
+
 export { StepIndicator } from "./components/ui/step-indicator"
 export type { StepIndicatorProps, StepIndicatorStatus, StepIndicatorSize } from "./components/ui/step-indicator"
 
