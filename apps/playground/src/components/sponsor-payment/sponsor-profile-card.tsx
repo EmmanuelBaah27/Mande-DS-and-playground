@@ -20,9 +20,9 @@ export function SponsorProfileCard({
 
   return (
     <article className="grid overflow-hidden rounded-4 border border-border-subtle bg-background shadow-xs sm:grid-cols-2">
-      <div className={`flex min-h-72 flex-col sm:min-h-80 ${palette.surface}`}>
-        <h3 className={`p-4 text-H1 ${palette.heading}`}>{profile.title}</h3>
-        <div className="mt-auto flex flex-col gap-4 p-4">
+      <div className={`flex flex-col p-4 sm:min-h-80 sm:p-0 ${palette.surface}`}>
+        <h3 className={`text-H1 sm:p-4 ${palette.heading}`}>{profile.title}</h3>
+        <div className="mt-5 flex flex-col gap-4 sm:mt-auto sm:p-4">
           <p className="text-small-regular text-foreground">
             {profile.description}
           </p>
@@ -60,7 +60,7 @@ export function SponsorProfileFallback({
 }): React.ReactElement {
   return (
     <article className="grid overflow-hidden rounded-4 border border-border-subtle bg-background shadow-xs sm:grid-cols-2">
-      <div className="flex min-h-72 flex-col justify-between bg-red-50 p-4 sm:min-h-80">
+      <div className="flex flex-col gap-5 bg-red-50 p-4 sm:min-h-80 sm:justify-between sm:gap-0">
         <h3 className="max-w-64 text-H1 text-red-900">{fallback.title}</h3>
         <p className="text-small-regular text-foreground">{fallback.description}</p>
       </div>
