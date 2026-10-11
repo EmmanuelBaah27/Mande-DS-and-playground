@@ -88,7 +88,7 @@ export function TimeToRoleComparison({ data }: EvidenceProps): React.ReactElemen
           </div>
         </div>
         <div className="absolute left-1/2 top-1/2 flex size-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-border-subtle bg-background text-muted-foreground shadow-xs">
-          <Icon name="IconChevronDownMedium" size={16} className="sm:hidden" />
+          <Icon name="IconChevronDoubleRight" size={16} className="rotate-90 sm:hidden" />
           <Icon name="IconChevronDoubleRight" size={16} className="hidden sm:block" />
         </div>
       </div>
