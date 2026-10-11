@@ -80,6 +80,9 @@ export type { MetricGridProps, MetricGridItemProps } from "./components/ui/metri
 export { ProfileSummaryCard } from "./components/ui/profile-summary-card"
 export type { ProfileSummaryCardProps } from "./components/ui/profile-summary-card"
 
+export { ComparisonPanel, ComparisonSide } from "./components/ui/comparison-panel"
+export type { ComparisonPanelProps, ComparisonSideProps } from "./components/ui/comparison-panel"
+
 export { StepIndicator } from "./components/ui/step-indicator"
 export type { StepIndicatorProps, StepIndicatorStatus, StepIndicatorSize } from "./components/ui/step-indicator"
 

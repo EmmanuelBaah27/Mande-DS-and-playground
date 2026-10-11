@@ -9,7 +9,7 @@ Designer reference for what exists in the design system. Source of truth: `packa
 Check Storybook for the current live list. Components are grouped as:
 
 - `Components/Form` — inputs, selects, checkboxes, radio, radio-card-group, textarea, switch, chip, chip-select-group
-- `Components/Display` — badge, avatar, card, metric-grid, profile-summary-card, separator, skeleton
+- `Components/Display` — badge, avatar, card, comparison-panel, metric-grid, profile-summary-card, separator, skeleton
 - `Components/Navigation` — sidebar, tabs, breadcrumb
 - `Components/Overlays` — dialog, popover, dropdown-menu, tooltip, sheet
 - `Components/Feedback` — toast (Sonner), progress, alert
@@ -36,6 +36,10 @@ Use `MetricGrid` and `MetricGridItem` for compact definition-list metrics. Choos
 ### ProfileSummaryCard
 
 Use `ProfileSummaryCard` for a short identity or archetype summary paired with optional caller-owned media. Semantic tone names map to system surfaces; domain records, artwork sources, and descriptor copy remain in the consuming product.
+
+### ComparisonPanel
+
+Use `ComparisonPanel` with two `ComparisonSide` children to contrast a neutral state with a positive state. It supports responsive, horizontal, and vertical layouts; its labeled 20px double-chevron automatically follows the layout direction.
 
 ---
 

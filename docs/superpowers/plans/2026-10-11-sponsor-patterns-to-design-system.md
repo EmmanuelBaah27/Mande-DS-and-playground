@@ -113,13 +113,13 @@
 - `ComparisonPanel` accepts `orientation?: "responsive" | "horizontal" | "vertical"` and `separatorLabel`.
 - `ComparisonSide` accepts `title`, `value`, optional `detail`, and `tone?: "neutral" | "positive"`.
 
-- [ ] Write tests for accessible reading order, all orientations, long content, tone classes, and separator labeling.
-- [ ] Verify tests fail before implementation.
-- [ ] Implement the responsive layout with a 20px double-chevron icon that points down vertically and right horizontally.
-- [ ] Add Responsive, Horizontal, Vertical, and LongContent stories.
-- [ ] Export and document under `Components/Display`.
-- [ ] Migrate `TimeToRoleComparison` while keeping readiness data and prose in the app.
-- [ ] Run tests, playground typecheck, Storybook build, and commit `feat(ui): add comparison panel`.
+- [x] Write tests for accessible reading order, all orientations, long content, tone classes, and separator labeling.
+- [x] Verify tests fail before implementation.
+- [x] Implement the responsive layout with a 20px double-chevron icon that points down vertically and right horizontally.
+- [x] Add Responsive, Horizontal, Vertical, and LongContent stories.
+- [x] Export and document under `Components/Display`.
+- [x] Migrate `TimeToRoleComparison` while keeping readiness data and prose in the app.
+- [x] Run tests, playground typecheck, Storybook build, and commit `feat(ui): add comparison panel`.
 
 ### Task 5: Add a segmented `RadioGroup` variant
 
