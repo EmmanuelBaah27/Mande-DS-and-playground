@@ -142,7 +142,7 @@ export function LearnerProfile({ data }: EvidenceProps): React.ReactElement {
   return (
     <section className="flex flex-col gap-6" aria-labelledby="profile-title">
       <h2 id="profile-title" className="text-H3-fixed text-foreground">
-        About them
+        About me
       </h2>
       {profile ? (
         <SponsorProfileCard profile={profile} />
