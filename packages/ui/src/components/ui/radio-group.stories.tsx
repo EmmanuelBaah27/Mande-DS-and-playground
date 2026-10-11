@@ -65,7 +65,7 @@ export const DisabledSegment: Story = {
 
 export const LongSegmentLabels: Story = {
   render: () => (
-    <RadioSegmentGroup defaultValue="first" aria-label="Long labels" className="w-80">
+    <RadioSegmentGroup defaultValue="first" aria-label="Long labels" className="w-[calc(100vw-2rem)] max-w-80">
       <RadioSegmentItem value="first">First longer option</RadioSegmentItem>
       <RadioSegmentItem value="second">Second longer option</RadioSegmentItem>
     </RadioSegmentGroup>

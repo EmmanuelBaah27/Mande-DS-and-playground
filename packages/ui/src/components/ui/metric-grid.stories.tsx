@@ -24,7 +24,7 @@ export const TwoByTwo: Story = {
 
 export const UnevenItems: Story = {
   render: () => (
-    <MetricGrid className="w-96">
+    <MetricGrid className="w-[calc(100vw-2rem)] max-w-96">
       {["One", "Two", "Three", "Four", "Five"].map((label, index) => (
         <MetricGridItem key={label} value={index + 1} label={label} />
       ))}
@@ -34,7 +34,7 @@ export const UnevenItems: Story = {
 
 export const LongLabels: Story = {
   render: () => (
-    <MetricGrid className="w-72">
+    <MetricGrid className="w-[calc(100vw-2rem)] max-w-72">
       <MetricGridItem value="24" label="A label that needs several lines at narrow widths" />
       <MetricGridItem value="6" unit="months" label="Until the next meaningful milestone" />
     </MetricGrid>

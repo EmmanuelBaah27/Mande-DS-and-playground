@@ -25,7 +25,7 @@ export const Horizontal: Story = {
   render: () => <ComparisonPanel orientation="horizontal" className="w-[40rem]" separatorLabel="Compared with">{sides}</ComparisonPanel>,
 }
 export const Vertical: Story = {
-  render: () => <ComparisonPanel orientation="vertical" className="w-80" separatorLabel="Compared with">{sides}</ComparisonPanel>,
+  render: () => <ComparisonPanel orientation="vertical" className="w-[calc(100vw-2rem)] max-w-80" separatorLabel="Compared with">{sides}</ComparisonPanel>,
 }
 export const LongContent: Story = {
   render: () => (

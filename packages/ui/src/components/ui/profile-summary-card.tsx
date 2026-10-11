@@ -40,7 +40,7 @@ function ProfileSummaryCard({
           <h3 className={cn("text-H1", palette.heading)}>{title}</h3>
         </div>
         <div className="mt-5 flex flex-col gap-4 p-4 sm:mt-auto">
-          <p className="text-small-regular text-foreground">{description}</p>
+          <p className="text-base-regular text-foreground">{description}</p>
           {descriptors.length > 0 ? (
             <ul className="flex flex-wrap gap-2" aria-label="Profile descriptors">
               {descriptors.map((descriptor, index) => (

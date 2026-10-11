@@ -153,9 +153,9 @@
 - Consumes all five DS APIs and the migrated sponsor page.
 - Produces a reviewable Storybook catalog and unchanged sponsor-page behavior.
 
-- [ ] Run the complete UI test suite, playground sponsor tests, UI typecheck, playground typecheck, playground production build, and Storybook production build.
-- [ ] Inspect every new Storybook story at mobile and desktop widths, including keyboard and focus behavior.
-- [ ] Compare the sponsor page at 320px, 565px, and desktop against the approved page; verify every visible icon is 20px where it is supplied by `Icon`.
-- [ ] Confirm the page contains no duplicated local implementation for the promoted patterns.
-- [ ] Update plan checkboxes and session documentation.
+- [x] Run the complete UI test suite, playground sponsor tests, UI typecheck, playground typecheck, playground production build, and Storybook production build.
+- [x] Inspect every new Storybook story at mobile and desktop widths, including keyboard and focus behavior.
+- [x] Compare the sponsor page at 320px, 565px, and desktop against the approved page; verify every visible icon is 20px where it is supplied by `Icon`.
+- [x] Confirm the page contains no duplicated local implementation for the promoted patterns.
+- [x] Update plan checkboxes and session documentation.
 - [ ] Commit final verification/docs, push the approved branch destination, open or update the PR, and surface both Vercel and Storybook preview URLs.

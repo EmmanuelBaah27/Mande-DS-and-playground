@@ -1,5 +1,13 @@
 # Learnings
 
+## 2026-10-11 — Sponsor patterns to design system
+
+### Technical
+
+- **Verify requested pixel sizes against the token source, not the token name.** In this system `text-small-regular` resolves to 12px and `text-base-regular` resolves to 14px. The requested 14px profile description therefore belongs on the base token.
+- **Story fixtures need responsive constraints too.** A component can wrap correctly while a fixed-width Storybook wrapper still creates page overflow. Use `w-[calc(100vw-2rem)] max-w-*` for narrow-screen catalog examples.
+- **Grid dividers are simpler when owned by the top and left edges.** Removing the top border from the first row and left border from the first column handles incomplete final rows without needing to know the child count.
+
 ## 2026-10-09 — Sponsor payment page
 
 ### Technical

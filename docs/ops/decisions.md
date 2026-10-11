@@ -4,6 +4,14 @@ Key decisions, patterns, and processes for the Mande Design System. Updated as t
 
 ---
 
+## Sponsor pattern design-system boundary (Session 24)
+
+**Decision:** Promote selection surfaces, metric layout, profile presentation, and comparison layout as generic `@mande/ui` APIs, while leaving payment providers, price, learner records, MBTI records, copy, and artwork sources in the consuming app.
+
+**Why:** The visual and interaction patterns are reusable across Mande, but their current data sources are prototype-specific. This boundary lets production data replace fixed presentation records later without changing the DS APIs or adding a new qualities/traits table prematurely.
+
+**Verification decision:** Until `packages/ui` gains a runtime component-test harness, new components use compile-time contract fixtures, Storybook variants, production builds, and browser accessibility/keyboard checks. Introducing a runner is a separate infrastructure topic.
+
 ## Sponsor payment prototype composition (Session 22)
 
 **Decision:** Desktop uses a viewport-locked shell with an independently scrolling narrative column and a stationary payment column. Mobile renders a single document in the order brand/headline → unlock summary → payment form → deeper proof.
