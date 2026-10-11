@@ -165,7 +165,11 @@ export function SponsorClosingAppeal({ data }: EvidenceProps): React.ReactElemen
       </span>
       <h2 className="mt-5 text-H3-fixed text-foreground">{data.socialProof}</h2>
       <p className="mt-3 text-base-regular text-muted-foreground">
-        {data.closingAppeal} {data.closingPriceLine}
+        {data.learner.firstName} has done the work to understand what fits{" "}
+        {data.learner.objectPronoun}. Your support would help{" "}
+        {data.learner.objectPronoun} turn that clarity into a path{" "}
+        {data.learner.subjectPronoun} can act on. For ${data.price.amount}, you can help{" "}
+        {data.learner.objectPronoun} take that next step.
       </p>
     </section>
   )

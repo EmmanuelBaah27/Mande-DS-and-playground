@@ -31,6 +31,7 @@ export interface SponsorProfileFallbackData {
 export interface SponsorPageData {
   learner: {
     firstName: string
+    subjectPronoun: string
     objectPronoun: string
     possessivePronoun: string
   }
@@ -43,8 +44,6 @@ export interface SponsorPageData {
   gapStatement: string
   effortStatement: string
   socialProof: string
-  closingAppeal: string
-  closingPriceLine: string
   benefits: readonly {
     id: string
     icon: string
@@ -69,8 +68,9 @@ export interface SponsorPageData {
 export const SPONSOR_PAGE_FIXTURE: SponsorPageData = {
   learner: {
     firstName: "Mike",
-    objectPronoun: "him",
-    possessivePronoun: "his",
+    subjectPronoun: "they",
+    objectPronoun: "them",
+    possessivePronoun: "their",
   },
   price: {
     currency: "USD",
@@ -85,10 +85,6 @@ export const SPONSOR_PAGE_FIXTURE: SponsorPageData = {
     "These numbers are a snapshot of the work I've already put in. They reflect the care and consistency I'm bringing to figuring out what fits.",
   socialProof:
     "Mande has helped 100s of students and professionals find work that fits them.",
-  closingAppeal:
-    "Mike has done the work to understand what fits them. Your support would help them turn that clarity into a path they can act on.",
-  closingPriceLine:
-    "For $30, you can help them take that next step.",
   benefits: [
     {
       id: "ranked-paths",

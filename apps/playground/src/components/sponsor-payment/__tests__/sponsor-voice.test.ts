@@ -43,11 +43,17 @@ test("benefit icons have explicit 20px dimensions", () => {
 
 test("the page closes with social proof and a third-person learner appeal", () => {
   assert.ok("socialProof" in SPONSOR_PAGE_FIXTURE)
-  assert.ok("closingAppeal" in SPONSOR_PAGE_FIXTURE)
-  assert.ok("closingPriceLine" in SPONSOR_PAGE_FIXTURE)
   assert.match(SPONSOR_PAGE_FIXTURE.socialProof, /100s of students/)
-  assert.match(SPONSOR_PAGE_FIXTURE.closingAppeal, /Mike has done the work/)
-  assert.match(SPONSOR_PAGE_FIXTURE.closingPriceLine, /help them take that next step/)
+
+  const evidenceSource = readFileSync(
+    resolve(process.cwd(), "src/components/sponsor-payment/sponsor-evidence.tsx"),
+    "utf8",
+  )
+  assert.match(evidenceSource, /data\.learner\.firstName/)
+  assert.match(evidenceSource, /data\.learner\.objectPronoun/)
+  assert.match(evidenceSource, /data\.learner\.subjectPronoun/)
+  assert.match(evidenceSource, /data\.price\.amount/)
+  assert.doesNotMatch(evidenceSource, /Mike has done the work/)
 
   const pageSource = readFileSync(
     resolve(process.cwd(), "src/components/sponsor-payment/sponsor-payment-page.tsx"),
