@@ -64,8 +64,8 @@ export function TimeToRoleComparison({ data }: EvidenceProps): React.ReactElemen
         </p>
       </div>
 
-      <div className="relative grid grid-cols-1 gap-1 min-[360px]:grid-cols-2">
-        <div className="flex flex-col justify-between gap-6 rounded-t-4 bg-subtle px-6 py-5 min-[360px]:rounded-l-4 min-[360px]:rounded-tr-none">
+      <div className="relative grid grid-cols-1 gap-1 sm:grid-cols-2">
+        <div className="flex flex-col justify-between gap-6 rounded-t-4 bg-subtle px-6 py-5 sm:rounded-l-4 sm:rounded-tr-none">
           <p className="text-lg-medium text-foreground">
             Based on my readiness test and current job market conditions
           </p>
@@ -76,7 +76,7 @@ export function TimeToRoleComparison({ data }: EvidenceProps): React.ReactElemen
             <span className="text-base-regular text-muted-foreground">months</span>
           </div>
         </div>
-        <div className="flex flex-col justify-between gap-6 rounded-b-4 bg-green-50 px-6 py-5 min-[360px]:rounded-r-4 min-[360px]:rounded-bl-none">
+        <div className="flex flex-col justify-between gap-6 rounded-b-4 bg-green-50 px-6 py-5 sm:rounded-r-4 sm:rounded-bl-none">
           <p className="text-lg-medium text-green-900">
             With a clear direction, focused preparation and action
           </p>
@@ -87,8 +87,9 @@ export function TimeToRoleComparison({ data }: EvidenceProps): React.ReactElemen
             <span className="text-base-regular">months</span>
           </div>
         </div>
-        <div className="absolute left-1/2 top-1/2 flex size-8 -translate-x-1/2 -translate-y-1/2 rotate-90 items-center justify-center rounded-full border border-border-subtle bg-background text-muted-foreground shadow-xs min-[360px]:rotate-0">
-          <Icon name="IconChevronDoubleRight" size={16} />
+        <div className="absolute left-1/2 top-1/2 flex size-8 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-border-subtle bg-background text-muted-foreground shadow-xs">
+          <Icon name="IconChevronDownMedium" size={16} className="sm:hidden" />
+          <Icon name="IconChevronDoubleRight" size={16} className="hidden sm:block" />
         </div>
       </div>
     </section>
@@ -154,20 +155,18 @@ export function LearnerProfile({ data }: EvidenceProps): React.ReactElement {
 
 export function SponsorClosingAppeal({ data }: EvidenceProps): React.ReactElement {
   return (
-    <section className="flex flex-col gap-3" aria-label="Why your support matters">
-      <div className="flex items-center gap-3 rounded-4 border border-border-subtle bg-background p-5">
-        <Icon name="IconPeople" size={20} className="shrink-0 text-teal-700" />
-        <p className="text-base-regular text-muted-foreground">{data.socialProof}</p>
-      </div>
-
-      <div className="rounded-6 border border-border-subtle bg-subtle px-6 py-6">
-        <blockquote className="text-H3-fixed text-foreground">
-          {data.closingAppeal}
-        </blockquote>
-        <p className="mt-4 text-base-medium text-muted-foreground">
-          {data.closingPriceLine}
-        </p>
-      </div>
+    <section
+      className="rounded-6 bg-lime-50 p-5 sm:p-6"
+      aria-label="Why your support matters"
+    >
+      <span className="flex size-8 items-center justify-center rounded-2 bg-primary">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/sponsor-payment/mande-mark.svg" alt="" width={16} height={13} />
+      </span>
+      <h2 className="mt-5 text-H3-fixed text-foreground">{data.socialProof}</h2>
+      <p className="mt-3 text-base-regular text-muted-foreground">
+        {data.closingAppeal} {data.closingPriceLine}
+      </p>
     </section>
   )
 }

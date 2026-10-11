@@ -39,7 +39,7 @@ export function SponsorProfileCard({
         </div>
       </div>
 
-      <div className="aspect-[8/5] overflow-hidden sm:aspect-square">
+      <div className="aspect-square overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           className="size-full object-cover"
@@ -64,7 +64,7 @@ export function SponsorProfileFallback({
         <h3 className="max-w-64 text-H1 text-red-900">{fallback.title}</h3>
         <p className="text-small-regular text-foreground">{fallback.description}</p>
       </div>
-      <div className="aspect-[8/5] overflow-hidden sm:aspect-square">
+      <div className="aspect-square overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           className="size-full object-cover"

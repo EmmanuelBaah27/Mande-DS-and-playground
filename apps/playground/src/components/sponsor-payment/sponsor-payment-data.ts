@@ -84,11 +84,11 @@ export const SPONSOR_PAGE_FIXTURE: SponsorPageData = {
   effortStatement:
     "These numbers are a snapshot of the work I've already put in. They reflect the care and consistency I'm bringing to figuring out what fits.",
   socialProof:
-    "Mande has helped students and professionals find work that fits them.",
+    "Mande has helped 100s of students and professionals find work that fits them.",
   closingAppeal:
-    "I've done the work to understand what fits me. Your support would help me turn that clarity into a path I can act on.",
+    "Mike has done the work to understand what fits them. Your support would help them turn that clarity into a path they can act on.",
   closingPriceLine:
-    "For $30, you can help me take that next step.",
+    "For $30, you can help them take that next step.",
   benefits: [
     {
       id: "ranked-paths",
