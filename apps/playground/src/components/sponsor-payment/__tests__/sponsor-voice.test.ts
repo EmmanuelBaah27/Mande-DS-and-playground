@@ -26,6 +26,10 @@ test("the learner's story is written in first person", () => {
     "utf8",
   )
   assert.match(formSource, /Get updates on my journey/)
+  assert.match(
+    formSource,
+    /And perhaps, I could show you the details of what I have been up to/,
+  )
   assert.doesNotMatch(formSource, /Mike&apos;s journey|when he unlocks/)
 })
 

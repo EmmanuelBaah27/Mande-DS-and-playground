@@ -24,3 +24,13 @@
   from { background-position: 200% center; }
   to { background-position: -200% center; }
 }
+
+/* Keep the sponsor story independently scrollable without adding visual chrome. */
+[data-sponsor-scroll] {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+[data-sponsor-scroll]::-webkit-scrollbar {
+  display: none;
+}

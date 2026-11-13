@@ -354,7 +354,7 @@ export function PaymentForm({
             Get updates on my journey
           </label>
           <span className="text-small-regular text-muted-foreground">
-            I&apos;ll share a few updates when I unlock paths and reach meaningful milestones.
+            And perhaps, I could show you the details of what I have been up to
           </span>
         </div>
       </div>
