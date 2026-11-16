@@ -59,15 +59,9 @@ export function UnlockSummary({ data }: EvidenceProps): React.ReactElement {
 export function TimeToRoleComparison({ data }: EvidenceProps): React.ReactElement {
   return (
     <section className="flex flex-col gap-6" aria-labelledby="time-to-role-title">
-      <div className="flex flex-col gap-2">
-        <h2 id="time-to-role-title" className="text-H3-fixed text-foreground">
-          Estimated time to first paid role
-        </h2>
-        <p className="text-base-regular text-muted-foreground">
-          Your support can help me reach my first paid role sooner, with clear career
-          direction, free upskilling, and opportunities that fit me.
-        </p>
-      </div>
+      <h2 id="time-to-role-title" className="text-H3-fixed text-foreground">
+        Estimated time to first paid role
+      </h2>
 
       <ComparisonPanel separatorLabel="Compared with focused preparation">
         <ComparisonSide
@@ -86,6 +80,11 @@ export function TimeToRoleComparison({ data }: EvidenceProps): React.ReactElemen
           tone="positive"
         />
       </ComparisonPanel>
+
+      <p className="text-base-regular text-muted-foreground">
+        Your support can help me reach my first paid role sooner, with clear career
+        direction, free upskilling, and opportunities that fit me.
+      </p>
     </section>
   )
 }
@@ -93,14 +92,9 @@ export function TimeToRoleComparison({ data }: EvidenceProps): React.ReactElemen
 export function EffortEvidence({ data }: EvidenceProps): React.ReactElement {
   return (
     <section className="flex flex-col gap-6" aria-labelledby="effort-title">
-      <div className="flex flex-col gap-2">
-        <h2 id="effort-title" className="text-H3-fixed text-foreground">
-          The work I&apos;ve already put in
-        </h2>
-        <p className="text-base-regular text-muted-foreground">
-          {data.effortStatement}
-        </p>
-      </div>
+      <h2 id="effort-title" className="text-H3-fixed text-foreground">
+        The work I&apos;ve already put in
+      </h2>
 
       <MetricGrid columns={2} aria-label="Work completed">
         {data.effortMetrics.map((metric) => (
@@ -114,6 +108,10 @@ export function EffortEvidence({ data }: EvidenceProps): React.ReactElement {
           />
         ))}
       </MetricGrid>
+
+      <p className="text-base-regular text-muted-foreground">
+        {data.effortStatement}
+      </p>
     </section>
   )
 }

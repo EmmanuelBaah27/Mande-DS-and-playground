@@ -45,6 +45,36 @@ test("benefit icons have explicit 20px dimensions", () => {
   )
 })
 
+test("the time-to-role takeaway follows the comparison cards", () => {
+  const source = readFileSync(
+    resolve(process.cwd(), "src/components/sponsor-payment/sponsor-evidence.tsx"),
+    "utf8",
+  )
+
+  const headingIndex = source.indexOf("Estimated time to first paid role")
+  const comparisonIndex = source.indexOf("<ComparisonPanel")
+  const takeawayIndex = source.indexOf("Your support can help me reach my first paid role sooner")
+
+  assert.ok(headingIndex >= 0)
+  assert.ok(comparisonIndex > headingIndex)
+  assert.ok(takeawayIndex > comparisonIndex)
+})
+
+test("the effort takeaway follows the stats grid", () => {
+  const source = readFileSync(
+    resolve(process.cwd(), "src/components/sponsor-payment/sponsor-evidence.tsx"),
+    "utf8",
+  )
+
+  const headingIndex = source.indexOf("The work I&apos;ve already put in")
+  const statsIndex = source.indexOf("<MetricGrid columns={2}")
+  const takeawayIndex = source.indexOf("{data.effortStatement}")
+
+  assert.ok(headingIndex >= 0)
+  assert.ok(statsIndex > headingIndex)
+  assert.ok(takeawayIndex > statsIndex)
+})
+
 test("the page closes with social proof and a third-person learner appeal", () => {
   assert.ok("socialProof" in SPONSOR_PAGE_FIXTURE)
   assert.match(SPONSOR_PAGE_FIXTURE.socialProof, /100s of students/)
